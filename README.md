@@ -27,7 +27,7 @@ Miután bejelentkeztél, kattints a **'létező diagram nyitása'** lehetőségr
 Válaszd ki a megfelelő repository-t (jelen esetben a `matekos_leetcode`), majd a 'documentation' ágból válaszd ki a **'Math_Solve_Database.drawio'** fájlt.  
 (Select the appropriate repository (in this case `matekos_leetcode`), then from the 'documentation' branch, choose the **'Math_Solve_Database.drawio'** file.)
 
-![select repository](https://github.com/user-attachments/assets/f008e8bf-05ba-4f4c-9e36-a359062febdb)
+![image](https://github.com/user-attachments/assets/f1d3790e-877d-4b60-9f23-74c7646f3452)
 
 ---
 
