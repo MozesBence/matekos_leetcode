@@ -37,4 +37,5 @@ Válaszd ki a megfelelő repository-t (jelen esetben a `matekos_leetcode`), majd
 Miután kiválasztottad a fájlt, a diagram automatikusan meg fog jelenni:  
 (After selecting the file, the diagram will appear automatically:)
 
-![diagram visible](https://github.com/user-attachments/assets/6fd469f7-4029-42bd-8ed5-aafd3cf5d3bc)
+![image](https://github.com/user-attachments/assets/1aa760f9-bd70-449e-a02c-ad6da8cc8a8a)
+
