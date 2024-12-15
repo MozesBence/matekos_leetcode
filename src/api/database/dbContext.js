@@ -72,8 +72,6 @@ const initializeDatabase = async () => {
 
 initializeDatabase();
 
-
-
 try
 {
     sequelize.authenticate();
