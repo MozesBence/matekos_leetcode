@@ -37,3 +37,45 @@ npm run build
 ```sh
 npm run test:unit
 ```
+
+## Node Modules Installation for Running the Website and API Locally
+To run the project locally, make sure you have XAMPP (with Apache and MySQL) running, and follow these steps:
+
+### Prerequisites
+1. Install XAMPP from [XAMPP](https://www.apachefriends.org)
+2. Start `Apache` and `MySQL` services in the XAMPP Control Panel.
+3. Make sure you have `Node.js` and `npm` installed. You can download them from [here](https://nodejs.org/en)
+
+### Steps to Set Up the Website
+
+1. Clone the repository:
+```sh
+git clone https://github.com/MozesBence/matekos_leetcode.git
+cd your-repo
+```
+2. Install the required modules for the website:
+```sh
+npm install
+```
+
+### Steps to Set Up the API
+
+1. Navigate to the `src` folder:
+```sh
+cd src
+```
+2. Install the required modules for the API:
+```sh
+npm install
+```
+
+### Start the Application
+
+Navigate back to your repository's root folder and start the frontend:
+```sh
+npm run dev
+```
+### Notes
+- Ensure that `Apache` and `MySQL` are running in [XAMPP](https://www.apachefriends.org) for the backend API to connect to the database.
+- Modify any configuration files (e.g., .env) if needed to match your local setup.
+
