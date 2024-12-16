@@ -71,7 +71,7 @@ npm install
 
 ### Start the Application
 
-Navigate back to your repository:
+Navigate back to your repository's root folder and start the frontend:
 ```sh
 npm run dev
 ```
