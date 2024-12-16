@@ -261,22 +261,26 @@
   const rememberMe = ref(false);
 
   const handleLogin = () => {
-      if (LogindataRef.value.email && LogindataRef.value.password) {
-        LogindataRef.value.token = route.query.token ? (route.query.token as string) : 'null';
-        loginUser(LogindataRef.value, {
-          onError: (err: any) => {
-            errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
-            snackbar.value = true;
-          },
-          onSuccess:(user) =>{
-            if (rememberMe) {
-              setCookieWithExpiry('user', user.user_name, 1);
-            } else {
-              setPersistentCookie('user', user.user_name);
-            }
+    if (LogindataRef.value.email && LogindataRef.value.password) {
+      LogindataRef.value.token = route.query.token ? (route.query.token as string) : 'null';
+      loginUser(LogindataRef.value, {
+        onError: (err: any) => {
+          errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
+          snackbar.value = true;
+        },
+        onSuccess: (user) => {
+          const userData = {
+            email: LogindataRef.value.email,
+            user: user.user_name
+          };
+
+          if (rememberMe) {
+            setCookieWithExpiry('user', JSON.stringify(userData), 1);
+          } else {
+            setPersistentCookie('user', JSON.stringify(userData));
           }
-        }
-      );
+        },
+      });
     }
   };
 

@@ -311,3 +311,24 @@ exports.setNewPassword = async (req, res, next) =>{
         next(error);
     }
 }
+
+exports.getFullUser = async (req, res, next) =>{
+    const email = req.headers['email']
+
+    const full_user = await mathSolveServices.getUserAndCustomization(email);
+
+    try{
+        if(full_user == null){
+            const error = new Error("A felhasználó nem található!");
+
+            error.status = 404;
+
+            throw error;
+        }
+
+        res.status(200).send(full_user);
+    }
+    catch(error){
+        next(error);
+    }
+}

@@ -6,6 +6,11 @@ class UserService
     {
         return await mathSolveRepository.registerUser(user);
     }
+    
+    async addUserCustom(user_custom)
+    {
+        return await mathSolveRepository.addUserCustom(user_custom);
+    }
 
     async checkUser(email, user_name)
     {
@@ -40,6 +45,11 @@ class UserService
     async getUser(email)
     {
         return await mathSolveRepository.getUser(email);
+    }
+
+    async getUserAndCustomization(email)
+    {
+        return await mathSolveRepository.getUserAndCustomization(email);
     }
 
     async activateUser(id)

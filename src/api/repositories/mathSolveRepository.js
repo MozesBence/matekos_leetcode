@@ -2,6 +2,8 @@ const db = require("../database/dbContext");
 
 const { Op } = require('sequelize');
 
+const { Sequelize, DataTypes } = require('sequelize');
+
 class UserRepository
 {
     constructor(db)
@@ -9,15 +11,32 @@ class UserRepository
         this.Users = db.Users;
 
         this.Tokenz = db.Tokenz;
+
+        this.User_customization = db.User_customization;
     }
 
-    async registerUser(user)
-    {
+    async registerUser(user) {
         const newUser = await this.Users.build(user);
-
+        
         await newUser.save();
+    
+        const newUserCustomization = await this.addUserCustom(newUser.id);
         
         return newUser;
+    }
+    
+    async addUserCustom(user_id) {
+        const user_custom = {
+            id: null,
+            darkmode: false,
+            profil_picture: null,
+            user_id: user_id,
+        };
+        const newUser_custom = await this.User_customization.build(user_custom);
+
+        await newUser_custom.save();
+        
+        return newUser_custom;
     }
 
     async checkUser(email, user_name)
@@ -116,6 +135,23 @@ class UserRepository
                 }
             }
         )
+    }
+
+    async getUserAndCustomization(email) {
+        try {
+            const userWithCustomization = await this.Users.findOne({
+                where: { email: email },
+                include: [{
+                    model: this.User_customization,
+                    required: true,
+                }],
+            });
+
+            return userWithCustomization;
+        } catch (error) {
+            console.error('Hiba történt a felhasználó és a testreszabás lekérése során:', error);
+            throw error;
+        }
     }
 
     async activateUser(id)

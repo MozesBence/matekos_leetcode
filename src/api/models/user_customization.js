@@ -16,6 +16,10 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: false,
             },
+            profil_picture:{
+                type: DataTypes.BLOB,
+                allowNull: true,
+            },
         },
         {
             sequelize,

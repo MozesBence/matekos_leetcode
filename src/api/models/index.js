@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) =>{
         },
     });
 
-    Users.hasMany(Vip_custom,{
+    Users.hasOne(Vip_custom,{
         foreignKey: "user_id",
     });
 
-    Users.hasMany(User_custom,{
+    Users.hasOne(User_custom,{
         foreignKey: "user_id",
     });
 
@@ -104,9 +104,5 @@ module.exports = (sequelize, DataTypes) =>{
         foreignKey: "user_id",
     });
 
-<<<<<<< HEAD
-    return { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz };
-=======
     return { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz, User_custom, Vip_custom };
->>>>>>> cc1befd44e9c21112dae9d93c2b9bb110a952ccc
 }

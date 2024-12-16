@@ -116,7 +116,7 @@
                 :color="isHovering ? 'nav_btn_hover' : 'transparent'"
                 v-bind="props"
                 class="rounded-circle nav-right-btn"
-                v-if="get_user != null"
+                v-if="get_user_email != null"
               >
                 <v-menu
                   activator="parent" 
@@ -134,14 +134,63 @@
                       width="50"
                     ></v-btn>
                   </template>
-                  <v-card class="pa-3" elevation="3" width="200">
-                    <v-btn block color="primary" class="mb-2" @click="router.push({name: 'profile'})">
-                      Profil
+                  <v-card class="pa-4 d-flex flex-column justify-center align-center" elevation="1" width="auto">
+                    <div style="position: relative; display: inline-block;">
+                      <v-btn
+                        icon
+                        elevation="0"
+                        class="elevation-2"
+                        @click="router.push({ name: 'profile', query: {full_user: JSON.stringify(get_fullUser) } })"
+                        :style="{
+                          borderRadius: '50%',
+                          width: '8vh',
+                          height: '8vh',
+                          padding: 0,
+                          overflow: 'hidden',
+                        }"
+                      >
+                        <!-- Ha van kép az src-ben, azt mutatja -->
+                        <template v-if="profileImage">
+                          <img
+                            :src="profileImage"
+                            alt="Profil"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                          />
+                        </template>
+                        <template v-else>
+                          <v-icon size="48">mdi-account</v-icon>
+                        </template>
+                      </v-btn>
+                      <v-tooltip bottom>
+                        Profil
+                      </v-tooltip>
+                    </div>
+
+                    <h2 class="mb-3"> {{ get_user_name }}</h2>
+
+                    <v-btn 
+                      block 
+                      color="secondary" 
+                      elevation="0" 
+                      class="mb-3 rounded"
+                      min-width="180" 
+                      @click="router.push({ name: 'profile' })" 
+                      prepend-icon="mdi-account-cog"
+                      height="40"
+                    >
+                      Beállítások
                     </v-btn>
-                    <v-btn block color="secondary" class="mb-2">
-                      Értesítések
-                    </v-btn>
-                    <v-btn block color="error" class="mb-2" @click="deleteCookie('user')">
+
+                    <v-btn 
+                      block 
+                      color="error" 
+                      elevation="0" 
+                      class="mb-3 rounded"
+                      min-width="180" 
+                      @click="deleteCookie('user')"
+                      prepend-icon="mdi-logout"
+                      height="40"
+                    >
                       Kijelentkezés
                     </v-btn>
                   </v-card>
@@ -233,7 +282,7 @@
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
-              v-if="get_user == null"
+              v-if="get_user_email == null"
             >
               <v-btn
                 class="rounded-pill"
@@ -277,15 +326,49 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useProfileGetUser } from '@/api/profile/profileQuery'
+
+const { mutate : ProfileGetUser} = useProfileGetUser()
 
 const { currentRoute } = useRouter()
 
 const router = useRouter()
 
-const get_user = getCookie('user');
+var get_user_name = JSON.parse(getCookie('user')).user;
+var get_user_email = JSON.parse(getCookie('user')).email;
 
-function getCookie(name){
+let get_fullUser = ref(null);
+
+onMounted(async () => {
+  if (get_user_email) {
+    try {
+      await ProfileGetUser(get_user_email, {
+        onSuccess: (get_user) => {
+          get_user_name = get_user.user_name;
+          get_fullUser.value = get_user;
+        },
+        onError: (error) => {
+          console.error('Hiba történt a felhasználó lekérésekor:', error);
+        },
+      });
+    } catch (error) {
+      console.error('Hiba történt a felhasználó lekérésekor:', error);
+    }
+  }
+});
+
+watch(get_fullUser, (newUser) => {
+  if (newUser) {
+    console.log(newUser.User_customization);
+  }
+});
+
+const profileImage = ref("");
+
+// Cookie-k kezelése
+function getCookie(name) {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
     const [key, value] = cookie.split('=');
@@ -294,24 +377,15 @@ function getCookie(name){
     }
   }
   return null;
-<<<<<<< HEAD
 }
 
-function deleteCookie(name){
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-=======
-} 
-
-function deleteCookie(name){
+function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   window.location.reload();
->>>>>>> cc1befd44e9c21112dae9d93c2b9bb110a952ccc
 }
-
 </script>
 
 <script>
-
 import { ref, watch } from 'vue'
 
 const drawer = ref(false)

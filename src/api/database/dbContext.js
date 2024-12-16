@@ -70,7 +70,7 @@ const initializeDatabase = async () => {
 
         // Létrehozzuk a triggert, amely a Tokenz törlésekor a Users táblát is módosítja
         const createTriggerQuery = `
-            CREATE TRIGGER delete_user_when_token_deleted
+            CREATE TRIGGER IF NOT EXISTS delete_user_when_token_deleted
             AFTER DELETE ON Tokenz
             FOR EACH ROW
             BEGIN
