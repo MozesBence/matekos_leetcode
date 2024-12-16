@@ -19,7 +19,7 @@ db.Sequelize = Sequelize;
 
 db.sequelize = sequelize;
 
-const { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz } = require("../models")(sequelize, DataTypes);
+const { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz, User_custom, Vip_custom } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
 db.Topics = Topics;
@@ -32,6 +32,8 @@ db.Competitions_types = Competitions_types;
 db.Badges = Badges;
 db.Alerts = Alerts;
 db.Tokenz = Tokenz;
+db.User_customization = User_custom;
+db.Vip_customization = Vip_custom;
 
 const initializeDatabase = async () => {
     try {

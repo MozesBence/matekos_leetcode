@@ -27,7 +27,6 @@ exports.registerUser = async (req, res, next) =>
         experience_level: 0,
         currency_cout: 0,
         admin: false,
-        vip: false,
         activated: 0,
     }
 

@@ -42,11 +42,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue: false,
             },
-            vip: {
-                type: DataTypes.BOOLEAN,
-                allowNull: false,
-                defaultValue: false,
-            },
             join_date: {
                 type: DataTypes.DATE,
                 allowNull: false,

@@ -111,8 +111,41 @@
 
           <div class="nav-right-content">
             <v-hover v-slot="{ isHovering, props }">
-              <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class='rounded-circle nav-right-btn' v-if="get_user != null">
-                <v-btn color="info" icon="mdi-account" class='rounded-circle' size="large" height="50" width="50" @click="currentRoute.name !== 'profile' && router.push({ name: 'profile' })"></v-btn>
+              <v-card
+                elevation="0"
+                :color="isHovering ? 'nav_btn_hover' : 'transparent'"
+                v-bind="props"
+                class="rounded-circle nav-right-btn"
+                v-if="get_user != null"
+              >
+                <v-menu
+                  activator="parent" 
+                  transition="scale-transition"
+                  offset-y
+                >
+                  <template #activator="{ props }">
+                    <v-btn
+                      v-bind="props"
+                      color="info"
+                      icon="mdi-account"
+                      class="rounded-circle"
+                      size="large"
+                      height="50"
+                      width="50"
+                    ></v-btn>
+                  </template>
+                  <v-card class="pa-3" elevation="3" width="200">
+                    <v-btn block color="primary" class="mb-2" @click="router.push({name: 'profile'})">
+                      Profil
+                    </v-btn>
+                    <v-btn block color="secondary" class="mb-2">
+                      Értesítések
+                    </v-btn>
+                    <v-btn block color="error" class="mb-2" @click="deleteCookie('user')">
+                      Kijelentkezés
+                    </v-btn>
+                  </v-card>
+                </v-menu>
               </v-card>
             </v-hover>
           </div>
@@ -265,6 +298,7 @@ function getCookie(name){
 
 function deleteCookie(name){
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  window.location.reload();
 }
 
 </script>
