@@ -57,13 +57,29 @@ const initializeDatabase = async () => {
         });
 
         const createEventQuery = `
-            CREATE EVENT IF NOT EXISTS delete_expired_tokens
-            ON SCHEDULE EVERY 10 SECOND
-            DO
-                DELETE FROM Tokenz
-                WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR);`;
+        CREATE EVENT IF NOT EXISTS delete_expired_tokens
+        ON SCHEDULE EVERY 10 SECOND
+        DO
+            DELETE FROM Tokenz
+            WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR);`;
 
         await db.sequelize.query(createEventQuery);
+        console.log('Event for automatic token deletion created.');
+
+        // Létrehozzuk a triggert, amely a Tokenz törlésekor a Users táblát is módosítja
+        const createTriggerQuery = `
+            CREATE TRIGGER delete_user_when_token_deleted
+            AFTER DELETE ON Tokenz
+            FOR EACH ROW
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM Tokenz WHERE user_id = OLD.user_id
+                ) THEN
+                    DELETE FROM Users WHERE id = OLD.user_id;
+                END IF;
+            END;`;
+
+        await db.sequelize.query(createTriggerQuery);
         console.log('Event for automatic token deletion created.');
     } catch (error) {
         console.error('Error initializing database:', error);
