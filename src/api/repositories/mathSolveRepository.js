@@ -22,14 +22,21 @@ class UserRepository
 
     async checkUser(email, user_name)
     {
-        return await this.Users.findOne({
-            where: {
-                [Op.or]: [
-                    { email: email },
-                    { user_name: user_name }
-                ]
-            }
-        });
+        try{
+            const check_user = await this.Users.findOne({
+                where: {
+                    [Op.or]: [
+                        { email: email },
+                        { user_name: user_name }
+                    ]
+                }
+            })
+
+            return check_user;
+        }
+        catch(error){
+            throw error;
+        }
     }
 
     async uploadToken(tokenz)

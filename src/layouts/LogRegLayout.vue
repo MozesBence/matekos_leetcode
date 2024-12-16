@@ -31,7 +31,8 @@
         variant="outlined"
         v-model="emailValue"
         v-if="route.name != 'set-new-password'"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni']"
+        :rules="[
+          (v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 35) || 'Maximum 35 karakter lehet.']" 
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name == 'register'">Fiók név</div>
@@ -43,7 +44,7 @@
         variant="outlined"
         v-if="route.name == 'register'"
         v-model="RegdataRef.user_name"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni']"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 12) || 'Maximum 12 karakter lehet.']"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'">
@@ -68,7 +69,7 @@
         @click:append-inner="visible = !visible"
         v-model="passwordValue"
         v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni']"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.']"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'register' || route.name == 'set-new-password'">
@@ -85,12 +86,13 @@
         @click:append-inner="visible = !visible"
         v-if="route.name == 'register' || route.name == 'set-new-password'"
         v-model="confirmPassword"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni']"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.', (v) => (v && confirmPassword == passwordValue) || 'Nem egyezik a két jelszó']"
       ></v-text-field>
 
       <v-checkbox
         v-model="rememberMe"
         :label="`Maradjak bejelentkezve`"
+        v-if="route.name == 'login'"
       ></v-checkbox>
 
         <v-btn
@@ -207,7 +209,7 @@
 
 <script setup lang="ts">
   import { useRouter, useRoute } from 'vue-router';
-  import { ref, computed  } from 'vue'
+  import { ref, computed } from 'vue'
 
   import type { RegisterData } from '@/api/register/register'
   import { useRegisterUser } from '@/api/register/registerQuery'
@@ -236,7 +238,9 @@
   const { mutate: registerUser } = useRegisterUser(loading, RegBtnValue) //, isPending
 
   const handleRegister = async () => {
-  if (RegdataRef.value.user_name && RegdataRef.value.email && RegdataRef.value.password) {
+  if (RegdataRef.value.user_name && RegdataRef.value.email && RegdataRef.value.password &&
+    RegdataRef.value.user_name.length <= 12 && RegdataRef.value.email.length <= 35 && RegdataRef.value.password.length <= 30
+  ) {
       loading.value = true;
       registerUser(RegdataRef.value, {
           onError: (err: any) => {
@@ -306,7 +310,6 @@
   const SetBtnValue = ref("Új jelszó beállítás");
 
   const { mutate: setNewPassword} = useSetNewPassword(loading, SetBtnValue) //, isPending
-
 
   const handSetNewPassword = () => {
     if (SetNewPassworddataRef.value.password) {

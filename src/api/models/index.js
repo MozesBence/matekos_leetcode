@@ -20,6 +20,10 @@ module.exports = (sequelize, DataTypes) =>{
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
 
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
+    
+    const User_custom = require("../models/user_customization")(sequelize, DataTypes);
+
+    const Vip_custom = require("../models/vip_customization")(sequelize, DataTypes);
 
     const competition_submissions = sequelize.define("competition_submissions", {
         point: {
@@ -32,6 +36,14 @@ module.exports = (sequelize, DataTypes) =>{
             allowNull: false,
             defaultValue: 1,
         },
+    });
+
+    Users.hasMany(Vip_custom,{
+        foreignKey: "user_id",
+    });
+
+    Users.hasMany(User_custom,{
+        foreignKey: "user_id",
     });
 
     Badges.belongsToMany(Users,{
@@ -92,5 +104,9 @@ module.exports = (sequelize, DataTypes) =>{
         foreignKey: "user_id",
     });
 
+<<<<<<< HEAD
     return { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz };
+=======
+    return { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz, User_custom, Vip_custom };
+>>>>>>> cc1befd44e9c21112dae9d93c2b9bb110a952ccc
 }

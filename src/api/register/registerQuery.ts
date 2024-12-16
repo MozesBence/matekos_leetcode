@@ -22,6 +22,7 @@ export const useRegisterUser = (loading: Ref<boolean, boolean>,  RegBtnValue: Re
     },
     onError: (error) => {
       // Hiba esetén is beállítjuk a loading-ot false-ra
+      RegBtnValue.value = 'Sikertelen';
       loading.value = false
     }
   })
