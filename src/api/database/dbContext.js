@@ -76,6 +76,8 @@ const initializeDatabase = async () => {
             BEGIN
                 IF NOT EXISTS (
                     SELECT 1 FROM Tokenz WHERE user_id = OLD.user_id
+                ) AND EXISTS (
+                    SELECT 1 FROM Users WHERE id = OLD.user_id AND activated = 0
                 ) THEN
                     DELETE FROM Users WHERE id = OLD.user_id;
                 END IF;
