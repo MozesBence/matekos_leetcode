@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
+
 class UserRepository
 {
     constructor(db)
@@ -146,6 +147,16 @@ class UserRepository
                     required: true,
                 }],
             });
+            if (userWithCustomization && userWithCustomization.User_customization) {
+                // Feltételezzük, hogy a blob adat a `profil_picture` mezőben van
+                const profilePicBuffer = userWithCustomization.User_customization.profil_picture;
+    
+                if (profilePicBuffer) {
+                    // Blob fájl átalakítása Base64 formátumba
+                    const base64Image = profilePicBuffer.toString('base64');
+                    userWithCustomization.User_customization.profil_picture = `data:image/jpeg;base64,${base64Image}`;
+                }
+            }
 
             return userWithCustomization;
         } catch (error) {
@@ -163,6 +174,28 @@ class UserRepository
         await User.save();
 
         return User.activated == 1;
+    }
+
+    async ProfPicUpload(id, blob)
+    {
+        try {
+            const user = await this.User_customization.findOne({
+                where: {
+                    user_id: id,
+                }
+            });
+            if (!user) {
+                throw new Error("Felhasználó nem található!");
+            }
+
+            user.profil_picture = blob;
+            await user.save();
+    
+            return { success: true, message: "Profilkép sikeresen frissítve!"};
+        } catch (error) {
+            console.error("Hiba történt a profilkép frissítésekor:", error);
+            return { success: false, message: "Hiba történt a profilkép frissítésekor!", error };
+        }
     }
 
 }

@@ -121,6 +121,7 @@
                 <v-menu
                   activator="parent" 
                   transition="scale-transition"
+                  v-if="get_user_email != null"
                   offset-y
                 >
                   <template #activator="{ props }">
@@ -140,7 +141,7 @@
                         icon
                         elevation="0"
                         class="elevation-2"
-                        @click="router.push({ name: 'profile', query: {full_user: JSON.stringify(get_fullUser) } })"
+                        @click="router.push({ name: 'profile', query: {email: get_fullUser.email } })"
                         :style="{
                           borderRadius: '50%',
                           width: '8vh',
@@ -336,10 +337,11 @@ const { currentRoute } = useRouter()
 
 const router = useRouter()
 
-var get_user_name = JSON.parse(getCookie('user')).user;
-var get_user_email = JSON.parse(getCookie('user')).email;
+var get_user_name = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
+var get_user_email = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
 
 let get_fullUser = ref(null);
+let get_fullUser_customs = ref(null);
 
 onMounted(async () => {
   if (get_user_email) {
@@ -348,6 +350,7 @@ onMounted(async () => {
         onSuccess: (get_user) => {
           get_user_name = get_user.user_name;
           get_fullUser.value = get_user;
+          get_fullUser_customs.value = get_user.User_customization;
         },
         onError: (error) => {
           console.error('Hiba történt a felhasználó lekérésekor:', error);
@@ -361,11 +364,22 @@ onMounted(async () => {
 
 watch(get_fullUser, (newUser) => {
   if (newUser) {
-    console.log(newUser.User_customization);
+    //console.log(newUser.User_customization);
+    handleProfilePic();
   }
 });
 
 const profileImage = ref("");
+
+const handleProfilePic = () => {
+  const base64Image = get_fullUser_customs.value.profil_picture;
+
+  if (base64Image) {
+    profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
+  } else {
+    console.error("Hiba történt a képadat betöltésekor.");
+  }
+};
 
 // Cookie-k kezelése
 function getCookie(name) {

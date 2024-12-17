@@ -56,6 +56,11 @@ class UserService
     {
         return await mathSolveRepository.activateUser(id);
     }
+
+    async ProfPicUpload(id, blob)
+    {
+        return await mathSolveRepository.ProfPicUpload(id, blob);
+    }
 }
 
 module.exports = new UserService();

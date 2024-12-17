@@ -225,6 +225,10 @@
 
   import { useDisplay } from 'vuetify';
 
+  if(getCookie('user') != null){
+    deleteCookie('user');
+  }
+
   const route = useRoute()
   const router = useRouter()
   
@@ -440,6 +444,21 @@
 
   const visible = ref(false);
   const confirmPassword = ref('');
+
+  function getCookie(name: string): string | null {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+      const [key, value] = cookie.split('=');
+      if (key === name) {
+        return decodeURIComponent(value);
+      }
+    }
+    return null;
+  }
+
+  function deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
 </script>
 
 <script lang="ts">
