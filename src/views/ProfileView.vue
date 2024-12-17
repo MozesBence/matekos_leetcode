@@ -6,8 +6,11 @@
     </video>
     <div class="background-overlay"></div>
   </div>
-  <main style="height: 100vh; overflow: hidden; background-color: transparent; position: relative; z-index: 2;" class="d-flex justify-center align-center">
-    <div style="height: 100vh; overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc));" class="rounded-lg">
+  <main style="height: auto; overflow: hidden; background-color: transparent; position: relative; z-index: 2;" class="d-flex justify-center align-center">
+    <div style="height: 100vh; overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="rounded-lg">
+      <v-btn icon @click="goBack" style="position: absolute; top: .2vh; left: .2vw; z-index: 3;">
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
       <header>
         <div class="profile-header rounded-t-lg">
           <img 
@@ -17,7 +20,7 @@
             ref="backgroundImg"
           />
         </div>
-        <div class="d-flex justify-center align-center mt-4 overlay-div">
+        <div class="d-flex flex-column justify-center align-center mt-4 overlay-div">
           <v-btn 
             icon
             elevation="0"
@@ -43,8 +46,14 @@
               <v-icon size="64" color="black">mdi-account</v-icon>
             </template>
           </v-btn>
+          <h1 style="position: relative; color: rgb(var(--v-theme-profile_textColor)); font-size: xx-large;">
+            {{ get_UserName }}
+          </h1>
         </div>
-         <!-- Rejtett fájlfeltöltő -->
+         <body style="overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="rounded-b-lg">
+          
+         </body>
+
         <input
           type="file"
           ref="fileInput"
@@ -52,6 +61,7 @@
           @change="handleFileUpload"
         />
       </header>
+      
     </div>
   </main>
 </template>
@@ -89,6 +99,8 @@ const get_user_email: string | null = route.query.email as string | null;
 
 const get_fullUser = ref<any>(null);
 
+const get_UserName = ref<string>('Betöltés...');
+
 const get_fullUser_customs = ref<any>(null);
 
 const { mutate: ProfileGetUser } = useProfileGetUser();
@@ -99,6 +111,7 @@ onMounted(async () => {
       await ProfileGetUser(get_user_email, {
         onSuccess: (get_user: any) => {
           get_fullUser.value = get_user;
+          get_UserName.value = get_fullUser.value.user_name;
           get_fullUser_customs.value = get_user.User_customization;
         },
         onError: (error: any) => {
@@ -117,6 +130,7 @@ watch(get_fullUser, (newUser: any | null) => {
     handleProfilePic();
   }
 });
+
 const profileImage = ref<string>('hibas-kep-url.jpg');
 
 const handleProfilePic = () => {
@@ -174,8 +188,6 @@ const handleFileUpload = async (event: Event) => {
       isImageAvailable.value = true;
       compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
 
-      console.log(compressedFile.type); 
-
       // Tömörített fájl adatainak továbbítása
       const ProfPicUploaddata: ProfilPicdata = {
         id: Number(get_fullUser.value.id),
@@ -197,6 +209,16 @@ const handleFileUpload = async (event: Event) => {
 const triggerFileInput = () => {
   fileInput.value?.click();
 };
+</script>
+
+<script lang="ts">
+  export default {
+    methods: {
+      goBack() {
+        this.$router.back();
+      }
+    }
+  }
 </script>
 
 <style>
@@ -242,7 +264,7 @@ template{
 .profile-header {
   position: relative;
   width: 100%;
-  height: 30vh;
+  height: 11vw;
   background-color: #333;
   overflow: hidden;
 }
@@ -255,7 +277,7 @@ template{
 
 .overlay-div {
   position: relative;
-  top: -10rem;
+  top: -20vh;
   z-index: 3;
   text-align: center;
 }
