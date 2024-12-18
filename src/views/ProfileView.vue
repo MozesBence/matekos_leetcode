@@ -8,19 +8,43 @@
   </div>
   <main style="height: auto; overflow: hidden; background-color: transparent; position: relative; z-index: 2;" class="d-flex justify-center align-center">
     <div style="height: 100vh; overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="rounded-lg">
-      <v-btn icon @click="goBack" style="position: absolute; top: .2vh; left: .2vw; z-index: 3;">
+      <v-btn icon @click="goBack" style="position: absolute; top: .2vh; left: .2vw; z-index: 5; pointer-events: visible;">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <header>
-        <div class="profile-header rounded-t-lg">
-          <img 
-            :src="backgroundImage" 
-            @error="setDefaultBackground"
-            class="background"
-            ref="backgroundImg"
+        <div class="profile-header rounded-t-lg" style="height: 22vh; width: 100%; position: relative;">
+          <v-btn
+            class="rounded-t-lg rounded-b-0"
+            elevation="0"
+            :style="{
+              position: 'absolute',
+              top: '0',
+              left: '0',
+              zIndex: '3',
+              width: '100%',
+              height: '100%',
+              cursor: 'pointer',
+              backgroundColor: 'transparent'
+            }"
+            @click="triggerBackPicFileInput">
+            <template v-if="isBackImageAvailable" style="height: 100%;">
+              <img 
+                :src="backImage" 
+                @error="setDefaultBackground"
+                class="background"
+                ref="backgroundImg"
+                style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
+                />
+            </template>
+          </v-btn>
+          <input
+            type="file"
+            ref="fileBackPicInput"
+            style="display: none;"
+            @change="handlebackPicUpload"
           />
         </div>
-        <div class="d-flex flex-column justify-center align-center mt-4 overlay-div">
+        <div class="d-flex flex-column justify-center align-center mt-4 overlay-div" style="pointer-events: none">
           <v-btn 
             icon
             elevation="0"
@@ -31,15 +55,16 @@
               height: '23vh',
               padding: 0,
               overflow: 'hidden',
-              position: 'relative'
+              position: 'relative',
+              pointerEvents: 'visible'
               }"
-            @click="triggerFileInput"
+            @click="triggerProfPicFileInput"
             >
-            <template v-if="isImageAvailable">
+            <template v-if="isProfImageAvailable">
               <img
                 :src="profileImage"
                 class="profile-image"
-                @error="handleImageError"
+                @error="handleProfImageError"
               />
             </template>
             <template v-else>
@@ -50,15 +75,11 @@
             {{ get_UserName }}
           </h1>
         </div>
-         <body style="overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="rounded-b-lg">
-          
-         </body>
-
         <input
           type="file"
-          ref="fileInput"
+          ref="fileProfPicInput"
           style="display: none;"
-          @change="handleFileUpload"
+          @change="handleProfPicUpload"
         />
       </header>
       
@@ -75,8 +96,9 @@ import imageCompression from 'browser-image-compression';
 
 // Definiáld az adat típust
 interface ProfilPicdata {
-  id: number;
-  pic: Blob;
+  id: number
+  pic: Blob
+  type: number
 }
 
 // Router és Route hook-ok
@@ -127,32 +149,37 @@ onMounted(async () => {
 // Változó figyelése
 watch(get_fullUser, (newUser: any | null) => {
   if (newUser) {
-    handleProfilePic();
+    handlePtofilPicters();
   }
 });
 
 const profileImage = ref<string>('hibas-kep-url.jpg');
+const backImage = ref<string>('hibas-kep-url.jpg');
 
-const handleProfilePic = () => {
-  const base64Image = get_fullUser_customs.value.profil_picture;
+const handlePtofilPicters = () => {
+  const base64ImageProf = get_fullUser_customs.value.profil_picture;
+  const base64ImageBack = get_fullUser_customs.value.background_picture;
 
-  if (base64Image) {
-    profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
-    isImageAvailable.value = true;
-  } else {
-    console.error("Hiba történt a képadat betöltésekor.");
+  if (base64ImageProf && base64ImageProf != null) {
+    profileImage.value = base64ImageProf; // Közvetlenül beállítjuk a Base64 kódolt képet
+    isProfImageAvailable.value = true;
+  }
+
+  if (base64ImageBack && base64ImageBack != null) {
+    backImage.value = base64ImageBack; // Közvetlenül beállítjuk a Base64 kódolt képet
+    isBackImageAvailable.value = true;
   }
 };
 
 
 // Állapotok
-const backgroundImage = ref('hibas-kep-url.jpg');
 const compressedImageBlob = ref<Blob | null>(null);
-const isImageAvailable = ref(true);
+const isProfImageAvailable = ref(true);
+const isBackImageAvailable = ref(true);
 
 // Kép hiba kezelése
-const handleImageError = () => {
-  isImageAvailable.value = false;
+const handleProfImageError = () => {
+  isProfImageAvailable.value = false;
 };
 
 // Alapértelmezett háttér beállítása
@@ -160,16 +187,19 @@ const setDefaultBackground = (event: Event) => {
   const target = event.target as HTMLImageElement;
   target.style.backgroundColor = '#333';
   target.style.display = 'none';
+  isBackImageAvailable.value = false;
 };
 
 // Rejtett fájl input hivatkozás
-const fileInput = ref<HTMLInputElement | null>(null);
+const fileProfPicInput = ref<HTMLInputElement | null>(null);
+
+const fileBackPicInput = ref<HTMLInputElement | null>(null);
 
 // API hívás
 const { mutate: ProfilePicUpload } = useProfilePicUpload();
 
 // Fájl feltöltési kezelő
-const handleFileUpload = async (event: Event) => {
+const handleProfPicUpload = async (event: Event) => {
   const input = event.target as HTMLInputElement;
   const file = input.files ? input.files[0] : null;
 
@@ -185,13 +215,14 @@ const handleFileUpload = async (event: Event) => {
 
       // Frissítjük a profilképet a tömörített fájl URL-jével
       profileImage.value = URL.createObjectURL(compressedFile);
-      isImageAvailable.value = true;
+      isProfImageAvailable.value = true;
       compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
 
       // Tömörített fájl adatainak továbbítása
-      const ProfPicUploaddata: ProfilPicdata = {
+      var ProfPicUploaddata: ProfilPicdata = {
         id: Number(get_fullUser.value.id),
-        pic: compressedFile
+        pic: compressedFile,
+        type: Number(0)
       };
 
       console.log("Frontendről: ",ProfPicUploaddata);
@@ -206,13 +237,72 @@ const handleFileUpload = async (event: Event) => {
 };
 
 // Fájl input triggerelése
-const triggerFileInput = () => {
-  fileInput.value?.click();
+const triggerProfPicFileInput = () => {
+  fileProfPicInput.value?.click();
+};
+
+const handlebackPicUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  const file = input.files ? input.files[0] : null;
+
+  if (file) {
+    try {
+      // Ellenőrizzük, hogy GIF fájl
+      if (file.type === 'image/gif') {
+        // Fájl bináris adatként történő beolvasása
+
+          // GIF fájl adatainak továbbítása bináris formátumban
+          var ProfBackUploaddata: ProfilPicdata = {
+            id: Number(get_fullUser.value.id),
+            pic: file, // A bináris adat Blob formátumban
+            type: 1,
+          };
+
+          // Profilkép feltöltése
+          ProfilePicUpload(ProfBackUploaddata);
+
+          // A GIF fájl URL-jének létrehozása és megjelenítése
+          backImage.value = URL.createObjectURL(file);
+          isBackImageAvailable.value = true;
+          compressedImageBlob.value = file; // Tárolhatjuk a blob fájlt későbbi használatra
+      } else {
+        // Ha nem GIF, akkor alkalmazunk tömörítést
+        const options = {
+          maxSizeMB: 0.1,
+          useWebWorker: true,
+        };
+
+        const compressedFile = await imageCompression(file, options);
+
+        // Tömörített fájl adatainak Blob-ként történő elküldése
+        var ProfBackUploaddata: ProfilPicdata = {
+          id: Number(get_fullUser.value.id),
+          pic: compressedFile,  // A tömörített fájl Blob formátumban
+          type: 1,
+        };
+
+        // Profilkép feltöltése
+        ProfilePicUpload(ProfBackUploaddata);
+
+        // Frissítjük a profilképet a tömörített fájl URL-jével
+        backImage.value = URL.createObjectURL(compressedFile);
+        isBackImageAvailable.value = true;
+        compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
+      }
+    } catch (error) {
+      console.error("Képtömörítési hiba:", error);
+    }
+  }
+};
+
+
+const triggerBackPicFileInput = () => {
+  fileBackPicInput.value?.click();
 };
 </script>
 
 <script lang="ts">
-  export default {
+export default {
     methods: {
       goBack() {
         this.$router.back();
@@ -269,10 +359,15 @@ template{
   overflow: hidden;
 }
 
+.profile-header img{
+  background-attachment: fixed;
+  background-size: cover;
+  height: 100%;
+}
+
 .background {
   width: 100%;
   height: 100%;
-  object-fit: cover;
 }
 
 .overlay-div {

@@ -23,9 +23,11 @@ export const useProfileGetUser = () => {
 
 const ProfilePicUpload = async (data: ProfilPicdata) => {
     const formData = new FormData();
-    
     formData.append('blob', data.pic);  // A fájl blob néven
     formData.append('id', data.id.toString());  // ID
+    formData.append('type', data.type.toString());  // type
+
+    console.log(data);
 
     try {
         const response = await axiosClient.patch('http://localhost:3000/profile', formData);

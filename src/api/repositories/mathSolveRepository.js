@@ -4,7 +4,6 @@ const { Op } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
-
 class UserRepository
 {
     constructor(db)
@@ -31,6 +30,9 @@ class UserRepository
             id: null,
             darkmode: false,
             profil_picture: null,
+            profil_picture_type: null,
+            background_picture: null,
+            background_picture_type: null,
             user_id: user_id,
         };
         const newUser_custom = await this.User_customization.build(user_custom);
@@ -148,13 +150,22 @@ class UserRepository
                 }],
             });
             if (userWithCustomization && userWithCustomization.User_customization) {
-                // Feltételezzük, hogy a blob adat a `profil_picture` mezőben van
-                const profilePicBuffer = userWithCustomization.User_customization.profil_picture;
-    
-                if (profilePicBuffer) {
+                const profileProfPicBuffer = userWithCustomization.User_customization.profil_picture;
+                const profileBackPicBuffer = userWithCustomization.User_customization.background_picture;
+            
+                const profileProfPicMimeType = userWithCustomization.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+                const profileBackPicMimeType = userWithCustomization.User_customization.background_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+
+                if (profileProfPicBuffer) {
                     // Blob fájl átalakítása Base64 formátumba
-                    const base64Image = profilePicBuffer.toString('base64');
-                    userWithCustomization.User_customization.profil_picture = `data:image/jpeg;base64,${base64Image}`;
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    userWithCustomization.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            
+                if (profileBackPicBuffer) {
+                    // Blob fájl átalakítása Base64 formátumba
+                    const base64Image = Buffer.from(profileBackPicBuffer).toString('base64');
+                    userWithCustomization.User_customization.background_picture = `data:${profileBackPicMimeType};base64,${base64Image}`;
                 }
             }
 
@@ -176,7 +187,7 @@ class UserRepository
         return User.activated == 1;
     }
 
-    async ProfPicUpload(id, blob)
+    async ProfPicUpload(id, blob, type, mimeType)
     {
         try {
             const user = await this.User_customization.findOne({
@@ -188,7 +199,13 @@ class UserRepository
                 throw new Error("Felhasználó nem található!");
             }
 
-            user.profil_picture = blob;
+            if(type == '0'){
+                user.profil_picture = blob;
+                user.profil_picture_type = mimeType;
+            }else if(type == '1'){
+                user.background_picture = blob;
+                user.background_picture_type = mimeType;
+            }
             await user.save();
     
             return { success: true, message: "Profilkép sikeresen frissítve!"};

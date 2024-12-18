@@ -57,9 +57,9 @@ class UserService
         return await mathSolveRepository.activateUser(id);
     }
 
-    async ProfPicUpload(id, blob)
+    async ProfPicUpload(id, blob, type, mimeType)
     {
-        return await mathSolveRepository.ProfPicUpload(id, blob);
+        return await mathSolveRepository.ProfPicUpload(id, blob, type, mimeType);
     }
 }
 

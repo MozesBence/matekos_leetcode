@@ -340,16 +340,16 @@ exports.getFullUser = async (req, res, next) =>{
 }
 
 exports.profilPicUpload = async (req, res, next) => {
-    const { id } = req.body;
+    const { id, type } = req.body;
     const blob = req.file ? req.file.buffer : null;
-
+    const mimeType = req.file ? req.file.mimetype : null;
     if (!blob) {
         return res.status(400).json({ message: 'Fájl nem található!' });
     }
 
     try {
         // Fájl feltöltésének logikája
-        const upload_result = await mathSolveServices.ProfPicUpload(id, blob);
+        const upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
 
         // Válasz küldése
         res.status(200).json({ message: 'Profilkép sikeresen feltöltve!', result: upload_result });

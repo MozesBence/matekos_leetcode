@@ -354,17 +354,20 @@ onMounted(async () => {
         },
         onError: (error) => {
           console.error('Hiba történt a felhasználó lekérésekor:', error);
+          if(getCookie('user') != null){
+            deleteCookie('user');
+          }
         },
       });
     } catch (error) {
       console.error('Hiba történt a felhasználó lekérésekor:', error);
     }
   }
-});
 
+});
 watch(get_fullUser, (newUser) => {
   if (newUser) {
-    //console.log(newUser.User_customization);
+    //console.log(newUser);
     handleProfilePic();
   }
 });
@@ -374,7 +377,7 @@ const profileImage = ref("");
 const handleProfilePic = () => {
   const base64Image = get_fullUser_customs.value.profil_picture;
 
-  if (base64Image) {
+  if (base64Image && base64Image != null) {
     profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
   } else {
     console.error("Hiba történt a képadat betöltésekor.");

@@ -17,7 +17,19 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: false,
             },
             profil_picture:{
-                type: DataTypes.BLOB,
+                type: DataTypes.BLOB('long'),
+                allowNull: true,
+            },
+            profil_picture_type:{
+                type: DataTypes.CHAR(50),
+                allowNull: true,
+            },
+            background_picture:{
+                type: DataTypes.BLOB('long'),
+                allowNull: true,
+            },
+            background_picture_type:{
+                type: DataTypes.CHAR(50),
                 allowNull: true,
             },
         },
