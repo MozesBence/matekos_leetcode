@@ -478,10 +478,12 @@ const handleDarkmodeSwitch = async () => {
   theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
 
   // API hívás a sötét mód változtatásához
-  try {
-    await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
-  } catch (error) {
-    console.error('Hiba történt a sötét mód váltásakor:', error);
+  if(get_fullUser != null){
+    try {
+      await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
+    } catch (error) {
+      console.error('Hiba történt a sötét mód váltásakor:', error);
+    }
   }
 };
 
