@@ -97,7 +97,7 @@
           @change="handleProfPicUpload"
         />
       </header>
-      <body 
+      <div 
       style="background-color: transparent; position: relative; top: -21vh;"
       :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
       >
@@ -186,7 +186,7 @@
             </v-card>
           </v-dialog>
         </div>
-      </body>
+      </div>
     </div>
   </main>
 </template>
