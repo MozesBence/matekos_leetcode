@@ -1,15 +1,11 @@
-<script setup lang="ts">
-
-</script>
-
 <template>
   <!-- First container with dynamic cards -->
   <v-container fluid>
     <v-row class="d-flex justify-center align-center" style="overflow-x: auto; margin: 1vw 2vw;">
       <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
-        <v-card style="position: relative; display: flex; flex-direction: column; padding: 1.2rem; overflow: hidden;">
-          <video autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
-            <source src="../components/background/main_page_card1.mp4" type="video/mp4">
+        <v-card style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw">
+          <video autoplay loop muted playsinline style="width: 100%; height: 100%;top: 0; left: 0; position: absolute; z-index: -1; object-fit: fill;">
+            <source src="http://localhost:3000/drive-video" type="video/mp4" />
           </video>
 
           <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(107, 212, 234, 0.9); text-align: center; padding: .6rem; color: rgb(var(--v-theme-text_color))">
@@ -120,7 +116,34 @@
 </template>
 
 <script lang="ts">
+import { ref, onMounted } from "vue";
+
 export default {
+  /*setup() {
+    const videoURL = ref<string>('null');
+
+    // Aszinkron API hívás a videó URL-ért
+    const fetchVideoURL = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/drive-video");
+        if (!response.ok) {
+          throw new Error("Video not found");
+        }
+        // Ellenőrizd, hogy valódi URL-t kapsz vissza
+        videoURL.value = response.url; // Ha közvetlen URL-t ad vissza a szerver
+      } catch (error) {
+        console.error("Error fetching video URL:", error);
+      }
+    };
+
+    onMounted(() => {
+      fetchVideoURL(); // Hívás az URL betöltésére
+    });
+
+    return {
+      videoURL,
+    };
+  },*/
   data() {
     return {
       cards: [
