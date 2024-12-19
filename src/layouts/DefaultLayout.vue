@@ -175,7 +175,7 @@
                       elevation="0" 
                       class="mb-3 rounded"
                       min-width="180" 
-                      @click="router.push({ name: 'profile' })" 
+                      @click="dialog = true"
                       prepend-icon="mdi-account-cog"
                       height="40"
                     >
@@ -320,6 +320,74 @@
             </v-btn>
           </v-container>
 
+          <div class="pa-4 text-center" :style="{position: dialog ? 'relativ': 'absolute'}">
+            <v-dialog
+              v-model="dialog"
+              max-width="700"
+            >
+              <v-card>
+                <v-card-title>
+                  <span class="text-h6">{{ get_user_name }} felhasználó beállításai</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <!-- Felhasználónév -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="userName"
+                          :label="get_user_name"
+                          outlined
+                        ></v-text-field>
+                      </v-col>
+                      <!-- E-mail -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="email"
+                          :label="get_fullUser.email"
+                          outlined
+                          type="email"
+                        ></v-text-field>
+                      </v-col>
+                      <!-- Jelszó -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="password"
+                          label="Új Jelszó"
+                          outlined
+                          type="password"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="confpassword"
+                          label="Új Jelszó megerősítés"
+                          outlined
+                          type="confpassword"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    text="Bezárás"
+                    variant="plain"
+                    @click="dialog = false"
+                  ></v-btn>
+                  <v-btn
+                    color="primary"
+                    text="Mentés"
+                    variant="tonal"
+                    @click="saveSettings"
+                  >Mentés</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+
           <RouterView></RouterView>
         </v-main>
       </v-layout>
@@ -327,7 +395,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 
@@ -336,6 +404,8 @@ const { mutate : ProfileGetUser} = useProfileGetUser()
 const { currentRoute } = useRouter()
 
 const router = useRouter()
+
+const dialog = shallowRef(false)
 
 var get_user_name = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
 var get_user_email = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
@@ -423,6 +493,11 @@ export default {
         fontSize: 'large',
         isLoginHovering: false,
         isRegisterHovering: false,
+        dialog: false,
+        userName: '', // Felhasználónév
+        email: '', // E-mail cím
+        password: '', // Jelszó
+        confpassword: '',
       };
     },
     watch: {

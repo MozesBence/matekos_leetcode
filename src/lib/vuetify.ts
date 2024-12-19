@@ -37,7 +37,8 @@ const vuetify = createVuetify({
           login_title: colors.grey.lighten5,
 
           profile_bc: colors.grey.lighten1,
-          profile_textColor: colors.grey.darken4,
+          profile_textColor: colors.grey.lighten5,
+          profile_cardsColor: colors.grey.lighten2,
         },
       },
     },

@@ -2,17 +2,28 @@
 <template>
   <div class="background-video-container">
     <video autoplay loop muted playsinline id="background-video">
-      <source src="../components/background/logreg_background.mp4" type="video/mp4" />
+      <source src="../components/background/profile_background.mp4" type="video/mp4" />
     </video>
     <div class="background-overlay"></div>
   </div>
-  <main style="height: auto; overflow: hidden; background-color: transparent; position: relative; z-index: 2;" class="d-flex justify-center align-center">
-    <div style="height: 100vh; overflow: hidden; width: 75%; background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="rounded-lg">
+  <main 
+  style="height: auto; background-color: transparent; position: relative; z-index: 2;" 
+  class="d-flex justify-center align-center"
+  :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
+  >
+    <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded-lg">
       <v-btn icon @click="goBack" style="position: absolute; top: .2vh; left: .2vw; z-index: 5; pointer-events: visible;">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
+      <v-btn
+        icon
+        @click="dialog = true"
+        style="position: absolute; top: .2vh; right: .2vw; z-index: 5; pointer-events: visible;"
+      >
+        <v-icon>mdi-account-cog</v-icon>
+      </v-btn>
       <header>
-        <div class="profile-header rounded-t-lg" style="height: 22vh; width: 100%; position: relative;">
+        <div class="profile-header rounded-lg" style="height: 22vh; width: 100%; position: relative;">
           <v-btn
             class="rounded-t-lg rounded-b-0"
             elevation="0"
@@ -44,7 +55,11 @@
             @change="handlebackPicUpload"
           />
         </div>
-        <div class="d-flex flex-column justify-center align-center mt-4 overlay-div" style="pointer-events: none">
+        <div 
+        class="d-flex flex-column justify-center align-center mt-4 overlay-div" 
+        style="pointer-events: none;"
+        :style="{top: $vuetify.display.smAndDown ? '-11rem' : '-14.5rem'}"
+        >
           <v-btn 
             icon
             elevation="0"
@@ -82,17 +97,108 @@
           @change="handleProfPicUpload"
         />
       </header>
-      
+      <body 
+      style="background-color: transparent; position: relative; top: -21vh;"
+      :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
+      >
+        <v-container>
+          <v-row justify="space-evenly">
+            <v-col
+              v-for="elevation in 6"
+              :key="elevation"
+              cols="12"
+              md="6"
+            >
+              <v-sheet
+                class="pa-2 rounded-lg"
+                color="profile_cardsColor"
+                height="220"
+              >
+              </v-sheet>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <div class="pa-4 text-center">
+          <v-dialog
+            v-model="dialog"
+            max-width="700"
+          >
+            <v-card>
+              <v-card-title>
+                <span class="text-h6">{{ get_UserName }} felhasználó beállításai</span>
+              </v-card-title>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <!-- Felhasználónév -->
+                    <v-col cols="12" md="12">
+                      <v-text-field
+                        v-model="userName"
+                        :label="get_UserName"
+                        outlined
+                      ></v-text-field>
+                    </v-col>
+                    <!-- E-mail -->
+                    <v-col cols="12" md="12">
+                      <v-text-field
+                        v-model="email"
+                        :label="get_fullUser.email"
+                        outlined
+                        type="email"
+                      ></v-text-field>
+                    </v-col>
+                    <!-- Jelszó -->
+                    <v-col cols="12" md="12">
+                      <v-text-field
+                        v-model="password"
+                        label="Új Jelszó"
+                        outlined
+                        type="password"
+                      ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" md="12">
+                      <v-text-field
+                        v-model="confpassword"
+                        label="Új Jelszó megerősítés"
+                        outlined
+                        type="confpassword"
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </v-container>
+              </v-card-text>
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  text="Bezárás"
+                  variant="plain"
+                  @click="dialog = false"
+                ></v-btn>
+                <v-btn
+                  color="primary"
+                  text="Mentés"
+                  variant="tonal"
+                  @click="saveSettings"
+                >Mentés</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
+      </body>
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import imageCompression from 'browser-image-compression';
+
+const dialog = shallowRef(false)
 
 // Definiáld az adat típust
 interface ProfilPicdata {
@@ -303,19 +409,36 @@ const triggerBackPicFileInput = () => {
 
 <script lang="ts">
 export default {
-    methods: {
+  data() {
+    return {
+      dialog: false, // Dialógus vezérlés
+      userName: '', // Felhasználónév
+      email: '', // E-mail cím
+      password: '', // Jelszó
+      confpassword: '',
+    };
+  },
+  methods: {
       goBack() {
         this.$router.back();
-      }
-    }
+      },
+      saveSettings() {
+        // Mentési logika
+        console.log("Felhasználónév:", this.userName);
+        console.log("E-mail:", this.email);
+        console.log("Jelszó:", this.password);
+        this.dialog = false; // Dialógus bezárása
+      },
+    },
+  computed: {
+    get_UserName() {
+      return "PéldaFelhasználó"; // Cseréld le a valódi logikád szerint
+    },
+  },
   }
 </script>
 
 <style>
-template{
-  overflow: hidden;
-}
-
 .background-video-container {
   position: absolute;
   width: 100%;
@@ -356,7 +479,6 @@ template{
   width: 100%;
   height: 11vw;
   background-color: #333;
-  overflow: hidden;
 }
 
 .profile-header img{
@@ -372,7 +494,6 @@ template{
 
 .overlay-div {
   position: relative;
-  top: -20vh;
   z-index: 3;
   text-align: center;
 }
