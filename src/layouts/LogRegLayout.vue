@@ -225,6 +225,10 @@
 
   import { useDisplay } from 'vuetify';
 
+  if(getCookie('user') != null){
+    deleteCookie('user');
+  }
+
   const route = useRoute()
   const router = useRouter()
   
@@ -261,22 +265,26 @@
   const rememberMe = ref(false);
 
   const handleLogin = () => {
-      if (LogindataRef.value.email && LogindataRef.value.password) {
-        LogindataRef.value.token = route.query.token ? (route.query.token as string) : 'null';
-        loginUser(LogindataRef.value, {
-          onError: (err: any) => {
-            errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
-            snackbar.value = true;
-          },
-          onSuccess:(user) =>{
-            if (rememberMe) {
-              setCookieWithExpiry('user', user.user_name, 1);
-            } else {
-              setPersistentCookie('user', user.user_name);
-            }
+    if (LogindataRef.value.email && LogindataRef.value.password) {
+      LogindataRef.value.token = route.query.token ? (route.query.token as string) : 'null';
+      loginUser(LogindataRef.value, {
+        onError: (err: any) => {
+          errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
+          snackbar.value = true;
+        },
+        onSuccess: (user) => {
+          const userData = {
+            email: LogindataRef.value.email,
+            user: user.user_name
+          };
+
+          if (rememberMe) {
+            setCookieWithExpiry('user', JSON.stringify(userData), 1);
+          } else {
+            setPersistentCookie('user', JSON.stringify(userData));
           }
-        }
-      );
+        },
+      });
     }
   };
 
@@ -436,6 +444,21 @@
 
   const visible = ref(false);
   const confirmPassword = ref('');
+
+  function getCookie(name: string): string | null {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+      const [key, value] = cookie.split('=');
+      if (key === name) {
+        return decodeURIComponent(value);
+      }
+    }
+    return null;
+  }
+
+  function deleteCookie(name: string): void {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  }
 </script>
 
 <script lang="ts">

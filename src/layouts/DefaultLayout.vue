@@ -116,11 +116,12 @@
                 :color="isHovering ? 'nav_btn_hover' : 'transparent'"
                 v-bind="props"
                 class="rounded-circle nav-right-btn"
-                v-if="get_user != null"
+                v-if="get_user_email != null"
               >
                 <v-menu
                   activator="parent" 
                   transition="scale-transition"
+                  v-if="get_user_email != null"
                   offset-y
                 >
                   <template #activator="{ props }">
@@ -134,14 +135,63 @@
                       width="50"
                     ></v-btn>
                   </template>
-                  <v-card class="pa-3" elevation="3" width="200">
-                    <v-btn block color="primary" class="mb-2" @click="router.push({name: 'profile'})">
-                      Profil
+                  <v-card class="pa-4 d-flex flex-column justify-center align-center" elevation="1" width="auto">
+                    <div style="position: relative; display: inline-block;">
+                      <v-btn
+                        icon
+                        elevation="0"
+                        class="elevation-2"
+                        @click="router.push({ name: 'profile', query: {email: get_fullUser.email } })"
+                        :style="{
+                          borderRadius: '50%',
+                          width: '8vh',
+                          height: '8vh',
+                          padding: 0,
+                          overflow: 'hidden',
+                        }"
+                      >
+                        <!-- Ha van kép az src-ben, azt mutatja -->
+                        <template v-if="profileImage">
+                          <img
+                            :src="profileImage"
+                            alt="Profil"
+                            style="width: 100%; height: 100%; object-fit: cover;"
+                          />
+                        </template>
+                        <template v-else>
+                          <v-icon size="48">mdi-account</v-icon>
+                        </template>
+                      </v-btn>
+                      <v-tooltip bottom>
+                        Profil
+                      </v-tooltip>
+                    </div>
+
+                    <h2 class="mb-3"> {{ get_user_name }}</h2>
+
+                    <v-btn 
+                      block 
+                      color="secondary" 
+                      elevation="0" 
+                      class="mb-3 rounded"
+                      min-width="180" 
+                      @click="dialog = true"
+                      prepend-icon="mdi-account-cog"
+                      height="40"
+                    >
+                      Beállítások
                     </v-btn>
-                    <v-btn block color="secondary" class="mb-2">
-                      Értesítések
-                    </v-btn>
-                    <v-btn block color="error" class="mb-2" @click="deleteCookie('user')">
+
+                    <v-btn 
+                      block 
+                      color="error" 
+                      elevation="0" 
+                      class="mb-3 rounded"
+                      min-width="180" 
+                      @click="deleteCookie('user')"
+                      prepend-icon="mdi-logout"
+                      height="40"
+                    >
                       Kijelentkezés
                     </v-btn>
                   </v-card>
@@ -233,7 +283,7 @@
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
-              v-if="get_user == null"
+              v-if="get_user_email == null"
             >
               <v-btn
                 class="rounded-pill"
@@ -270,6 +320,74 @@
             </v-btn>
           </v-container>
 
+          <div class="pa-4 text-center" :style="{position: dialog ? 'relativ': 'absolute'}">
+            <v-dialog
+              v-model="dialog"
+              max-width="700"
+            >
+              <v-card>
+                <v-card-title>
+                  <span class="text-h6">{{ get_user_name }} felhasználó beállításai</span>
+                </v-card-title>
+                <v-card-text>
+                  <v-container>
+                    <v-row>
+                      <!-- Felhasználónév -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="userName"
+                          :label="get_user_name"
+                          outlined
+                        ></v-text-field>
+                      </v-col>
+                      <!-- E-mail -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="email"
+                          :label="get_fullUser.email"
+                          outlined
+                          type="email"
+                        ></v-text-field>
+                      </v-col>
+                      <!-- Jelszó -->
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="password"
+                          label="Új Jelszó"
+                          outlined
+                          type="password"
+                        ></v-text-field>
+                      </v-col>
+                      <v-col cols="12" md="12">
+                        <v-text-field
+                          v-model="confpassword"
+                          label="Új Jelszó megerősítés"
+                          outlined
+                          type="confpassword"
+                        ></v-text-field>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </v-card-text>
+                <v-divider></v-divider>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    text="Bezárás"
+                    variant="plain"
+                    @click="dialog = false"
+                  ></v-btn>
+                  <v-btn
+                    color="primary"
+                    text="Mentés"
+                    variant="tonal"
+                    @click="saveSettings"
+                  >Mentés</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </div>
+
           <RouterView></RouterView>
         </v-main>
       </v-layout>
@@ -277,15 +395,67 @@
 </template>
 
 <script setup>
+import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
+import { useProfileGetUser } from '@/api/profile/profileQuery'
+
+const { mutate : ProfileGetUser} = useProfileGetUser()
 
 const { currentRoute } = useRouter()
 
 const router = useRouter()
 
-const get_user = getCookie('user');
+const dialog = shallowRef(false)
 
-function getCookie(name){
+var get_user_name = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
+var get_user_email = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
+
+let get_fullUser = ref(null);
+let get_fullUser_customs = ref(null);
+
+onMounted(async () => {
+  if (get_user_email) {
+    try {
+      await ProfileGetUser(get_user_email, {
+        onSuccess: (get_user) => {
+          get_user_name = get_user.user_name;
+          get_fullUser.value = get_user;
+          get_fullUser_customs.value = get_user.User_customization;
+        },
+        onError: (error) => {
+          console.error('Hiba történt a felhasználó lekérésekor:', error);
+          if(getCookie('user') != null){
+            deleteCookie('user');
+          }
+        },
+      });
+    } catch (error) {
+      console.error('Hiba történt a felhasználó lekérésekor:', error);
+    }
+  }
+
+});
+watch(get_fullUser, (newUser) => {
+  if (newUser) {
+    //console.log(newUser);
+    handleProfilePic();
+  }
+});
+
+const profileImage = ref("");
+
+const handleProfilePic = () => {
+  const base64Image = get_fullUser_customs.value.profil_picture;
+
+  if (base64Image && base64Image != null) {
+    profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
+  } else {
+    console.error("Hiba történt a képadat betöltésekor.");
+  }
+};
+
+// Cookie-k kezelése
+function getCookie(name) {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
     const [key, value] = cookie.split('=');
@@ -294,17 +464,15 @@ function getCookie(name){
     }
   }
   return null;
-} 
+}
 
-function deleteCookie(name){
+function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   window.location.reload();
 }
-
 </script>
 
 <script>
-
 import { ref, watch } from 'vue'
 
 const drawer = ref(false)
@@ -325,6 +493,11 @@ export default {
         fontSize: 'large',
         isLoginHovering: false,
         isRegisterHovering: false,
+        dialog: false,
+        userName: '', // Felhasználónév
+        email: '', // E-mail cím
+        password: '', // Jelszó
+        confpassword: '',
       };
     },
     watch: {

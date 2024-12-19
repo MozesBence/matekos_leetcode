@@ -38,11 +38,11 @@ module.exports = (sequelize, DataTypes) =>{
         },
     });
 
-    Users.hasMany(Vip_custom,{
+    Users.hasOne(Vip_custom,{
         foreignKey: "user_id",
     });
 
-    Users.hasMany(User_custom,{
+    Users.hasOne(User_custom,{
         foreignKey: "user_id",
     });
 

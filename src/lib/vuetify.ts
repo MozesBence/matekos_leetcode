@@ -35,6 +35,10 @@ const vuetify = createVuetify({
           nav_btn_active: colors.blue.base,
           site_title: colors.blue.accent4,
           login_title: colors.grey.lighten5,
+
+          profile_bc: colors.grey.lighten1,
+          profile_textColor: colors.grey.lighten5,
+          profile_cardsColor: colors.grey.lighten2,
         },
       },
     },

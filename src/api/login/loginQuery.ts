@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 
 const loginUser = async (data: LoginData) => {
   try {
-    const response = await axiosClient.post('http://localhost:3000/login', data);
+    const response = await axiosClient.post('http://localhost:3000/login', data); 
     return response.data; // Sikeres válasz
   } catch (error: any) {
     // Ha hiba van, elkapjuk és továbbítjuk a hibaüzenetet
