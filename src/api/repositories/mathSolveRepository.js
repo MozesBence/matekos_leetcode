@@ -215,6 +215,16 @@ class UserRepository
         }
     }
 
+    async DarkmodeUpload(id, darkmode){
+        const User = await this.User_customization.findByPk(id);
+
+        User.darkmode = darkmode; 
+
+        await User.save();
+
+        return "Felhasználónak firssült a kinézet!";
+    }
+
 }
 
 module.exports = new UserRepository(db);

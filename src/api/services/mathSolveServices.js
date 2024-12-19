@@ -61,6 +61,11 @@ class UserService
     {
         return await mathSolveRepository.ProfPicUpload(id, blob, type, mimeType);
     }
+
+    async DarkmodeUpload(id, darkmode)
+    {
+        return await mathSolveRepository.DarkmodeUpload(id, darkmode);
+    }
 }
 
 module.exports = new UserService();

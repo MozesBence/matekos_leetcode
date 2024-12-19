@@ -340,21 +340,27 @@ exports.getFullUser = async (req, res, next) =>{
 }
 
 exports.profilPicUpload = async (req, res, next) => {
-    const { id, type } = req.body;
+    const { id, type, darkmode } = req.body;
     const blob = req.file ? req.file.buffer : null;
     const mimeType = req.file ? req.file.mimetype : null;
-    if (!blob) {
+    if (!blob && (type == '1' || type == '2')) {
         return res.status(400).json({ message: 'Fájl nem található!' });
     }
 
     try {
         // Fájl feltöltésének logikája
-        const upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
+        var upload_result;
+
+        if(type == '1' || type == '2'){
+            upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
+        }else if(type == '4'){
+            upload_result = await mathSolveServices.DarkmodeUpload(id, darkmode);
+        }
 
         // Válasz küldése
         res.status(200).json({ message: 'Profilkép sikeresen feltöltve!', result: upload_result });
     } catch (error) {
         console.error('Hiba a profilkép feltöltésekor:', error);
-        res.status(500).json({ message: 'Hiba történt a profilkép feltöltése közben.' });
+        res.status(500).json({ message: 'Hiba történt a profil frissítése közben.' });
     }
 };

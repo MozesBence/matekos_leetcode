@@ -116,6 +116,26 @@
                 :color="isHovering ? 'nav_btn_hover' : 'transparent'"
                 v-bind="props"
                 class="rounded-circle nav-right-btn"
+              >
+                <v-btn
+                    color="info"
+                    class="rounded-circle"
+                    size="large"
+                    height="50"
+                    width="50"
+                    icon
+                    @click="handleDarkmodeSwitch"
+                  >
+                  <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+                </v-btn>
+              </v-card>
+            </v-hover>
+            <v-hover v-slot="{ isHovering, props }">
+              <v-card
+                elevation="0"
+                :color="isHovering ? 'nav_btn_hover' : 'transparent'"
+                v-bind="props"
+                class="rounded-circle nav-right-btn"
                 v-if="get_user_email != null"
               >
                 <v-menu
@@ -398,6 +418,8 @@
 import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
+import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
+import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
 
@@ -412,6 +434,12 @@ var get_user_email = getCookie('user') != null && typeof getCookie('user') != "o
 
 let get_fullUser = ref(null);
 let get_fullUser_customs = ref(null);
+
+const theme = useTheme();
+
+// A useProfileDarkmodeSwitch hook a setup() részben
+const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
+const DarkmodeChange = ref(false);
 
 onMounted(async () => {
   if (get_user_email) {
@@ -433,14 +461,29 @@ onMounted(async () => {
       console.error('Hiba történt a felhasználó lekérésekor:', error);
     }
   }
-
 });
 watch(get_fullUser, (newUser) => {
   if (newUser) {
-    //console.log(newUser);
+    DarkmodeChange.value = newUser.User_customization.darkmode;
+    theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
     handleProfilePic();
   }
 });
+
+// A sötét mód váltásának kezelése
+const handleDarkmodeSwitch = async () => {
+  DarkmodeChange.value = !DarkmodeChange.value;
+
+  // Téma módosítása
+  theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
+
+  // API hívás a sötét mód változtatásához
+  try {
+    await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
+  } catch (error) {
+    console.error('Hiba történt a sötét mód váltásakor:', error);
+  }
+};
 
 const profileImage = ref("");
 
@@ -467,7 +510,7 @@ function getCookie(name) {
 }
 
 function deleteCookie(name) {
-  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+  document.cookie = "${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;;"
   window.location.reload();
 }
 </script>
@@ -498,6 +541,7 @@ export default {
         email: '', // E-mail cím
         password: '', // Jelszó
         confpassword: '',
+        DarkmodeChange: false,
       };
     },
     watch: {

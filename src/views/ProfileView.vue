@@ -12,20 +12,20 @@
   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
   >
     <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded-lg">
-      <v-btn icon @click="goBack" style="position: absolute; top: .2vh; left: .2vw; z-index: 5; pointer-events: visible;">
+      <v-btn icon @click="goBack" style="position: absolute; top: .2rem; left: .4rem; z-index: 5; pointer-events: visible;">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
       <v-btn
         icon
         @click="dialog = true"
-        style="position: absolute; top: .2vh; right: .2vw; z-index: 5; pointer-events: visible;"
+        style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
       >
         <v-icon>mdi-account-cog</v-icon>
       </v-btn>
       <header>
-        <div class="profile-header rounded-lg" style="height: 22vh; width: 100%; position: relative;">
+        <div class="profile-header rounded-lg" style="height: 22vh; width: 100%; position: relative; overflow: hidden;">
           <v-btn
-            class="rounded-t-lg rounded-b-0"
+            class="rounded-lg"
             elevation="0"
             :style="{
               position: 'absolute',

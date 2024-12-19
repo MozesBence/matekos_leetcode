@@ -28,13 +28,15 @@ const upload = multer({
     storage,
     limits: { fileSize: MAX_SIZE }, // Maximum fájlméret
     fileFilter: (req, file, cb) => {
-        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
-        // Ellenőrzés
-        
-        if (allowedMimeTypes.includes(file.mimetype)) {
-            return cb(null, true); // Elfogadott fájl
-        } else {
-            return cb(new Error('Csak JPEG, JPG, PNG és GIF (ha type = 1) fájlok engedélyezettek.'));
+        if(file != null){
+            const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+            // Ellenőrzés
+            
+            if (allowedMimeTypes.includes(file.mimetype)) {
+                return cb(null, true); // Elfogadott fájl
+            } else {
+                return cb(new Error('Csak JPEG, JPG, PNG és GIF (ha type = 1) fájlok engedélyezettek.'));
+            }
         }
     }
 });

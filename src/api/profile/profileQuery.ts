@@ -27,11 +27,8 @@ const ProfilePicUpload = async (data: ProfilPicdata) => {
     formData.append('id', data.id.toString());  // ID
     formData.append('type', data.type.toString());  // type
 
-    console.log(data);
-
     try {
         const response = await axiosClient.patch('http://localhost:3000/profile', formData);
-        console.log('Server response:', response.data);
     } catch (error: any) {
         console.error('Request failed:', error.response ? error.response.data : error.message);
     }
@@ -45,6 +42,28 @@ export const useProfilePicUpload = () => {
         },
         onError: (error: any) => {
             console.error('Hiba történt a profilkép feltöltése közben :', error);
+        },
+        }
+    );
+}
+
+
+const ProfileDarkMode = async (data: Object) => {
+    try {
+        const response = await axiosClient.patch('http://localhost:3000/profile', data);
+    } catch (error: any) {
+        console.error('Request failed:', error.response ? error.response.data : error.message);
+    }
+};
+
+export const useProfileDarkmodeSwitch = () => {
+    return useMutation({
+        mutationFn: ProfileDarkMode,
+        onSuccess: (user) => {
+
+        },
+        onError: (error: any) => {
+            console.error('Hiba történt a darkmode feltöltése közben :', error);
         },
         }
     );
