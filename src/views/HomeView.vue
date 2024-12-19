@@ -5,21 +5,21 @@
 <template>
   <!-- First container with dynamic cards -->
   <v-container fluid>
-    <v-row class="d-flex justify-center align-center flex-nowrap" style="overflow-x: auto; margin: 2em; white-space: nowrap;">
-      <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="6" md="4" lg="3" style="min-width: 300px;">
-        <v-card style="position: relative; display: flex; flex-direction: column; padding: 16px; overflow: hidden;">
+    <v-row class="d-flex justify-center align-center" style="overflow-x: auto; margin: 1vw 2vw;">
+      <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
+        <v-card style="position: relative; display: flex; flex-direction: column; padding: 1.2rem; overflow: hidden;">
           <video autoplay loop muted playsinline style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
             <source src="../components/background/main_page_card1.mp4" type="video/mp4">
           </video>
-  
-          <v-card-title class="text-h6" style="background-color: rgba(107, 212, 234, 0.9); border-radius: 15px; text-align: center; padding: 8px; color:white">
+
+          <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(107, 212, 234, 0.9); text-align: center; padding: .6rem; color: rgb(var(--v-theme-text_color))">
             {{ card.title }}
           </v-card-title>
-          <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color:white">
+          <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: rgb(var(--v-theme-text_color))">
             {{ card.description }}
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
-            <v-btn append-icon="mdi-chevron-right" color="white" text="Program megkezdése" variant="outlined" block style="max-width: 200px;">
+            <v-btn append-icon="mdi-chevron-right" color="rgb(var(--v-theme-text_color))" text="Program megkezdése" variant="outlined" block style="width: 4rem;">
               Program megkezdése
             </v-btn>
           </v-card-actions>
