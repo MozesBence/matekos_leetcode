@@ -8,14 +8,14 @@
             <source src="http://localhost:3000/drive-video" type="video/mp4" />
           </video>
 
-          <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(107, 212, 234, 0.9); text-align: center; padding: .6rem; color: rgb(var(--v-theme-text_color))">
+          <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(107, 212, 234, 0.9); text-align: center; padding: .6rem; color: rgb(var(--v-theme-cards_text_color))">
             {{ card.title }}
           </v-card-title>
-          <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: rgb(var(--v-theme-text_color))">
+          <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: rgb(var(--v-theme-cards_text_color))">
             {{ card.description }}
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
-            <v-btn append-icon="mdi-chevron-right" color="rgb(var(--v-theme-text_color))" text="Program megkezdése" variant="outlined" block style="width: 4rem;">
+            <v-btn append-icon="mdi-chevron-right" color="rgb(var(--v-theme-cards_text_color))" text="Program megkezdése" variant="outlined" block style="width: 4rem;">
               Program megkezdése
             </v-btn>
           </v-card-actions>

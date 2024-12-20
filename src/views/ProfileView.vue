@@ -197,6 +197,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import imageCompression from 'browser-image-compression';
+import { useTheme } from 'vuetify';
 
 const dialog = shallowRef(false)
 
@@ -210,6 +211,7 @@ interface ProfilPicdata {
 // Router és Route hook-ok
 const router = useRouter();
 const route = useRoute();
+const theme = useTheme();
 
 // Cookie lekérdezés
 const getCookie = (name: string) => {
@@ -252,9 +254,13 @@ onMounted(async () => {
   }
 });
 
+const DarkmodeChange = ref(false);
+
 // Változó figyelése
 watch(get_fullUser, (newUser: any | null) => {
   if (newUser) {
+    DarkmodeChange.value = newUser.User_customization.darkmode;
+    theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
     handlePtofilPicters();
   }
 });

@@ -452,6 +452,7 @@ onMounted(async () => {
         },
         onError: (error) => {
           console.error('Hiba történt a felhasználó lekérésekor:', error);
+          console.log(getCookie('user'));
           if(getCookie('user') != null){
             deleteCookie('user');
           }
@@ -478,7 +479,7 @@ const handleDarkmodeSwitch = async () => {
   theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
 
   // API hívás a sötét mód változtatásához
-  if(get_fullUser != null){
+  if(get_fullUser.value != null){
     try {
       await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
     } catch (error) {
@@ -512,7 +513,7 @@ function getCookie(name) {
 }
 
 function deleteCookie(name) {
-  document.cookie = "${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;;"
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   window.location.reload();
 }
 </script>

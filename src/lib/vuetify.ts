@@ -30,6 +30,7 @@ const vuetify = createVuetify({
           surface: colors.grey.lighten5,
           primary: colors.grey.lighten2,
           secondary: colors.indigo.accent1,
+          cards_text_color: colors.grey.lighten5,
           text_color: colors.grey.darken4,
 
           nav_btn_hover: colors.blue.lighten3,
@@ -52,6 +53,7 @@ const vuetify = createVuetify({
           surface: colors.grey.darken3, // Sötétebb szürke felületekhez
           primary: colors.grey.darken2, // Mélyebb kék, kiemelt szín
           secondary: colors.indigo.darken3, // Sötét indigó másodlagos színként
+          cards_text_color: colors.grey.lighten5,
           text_color: colors.grey.lighten5,
 
           nav_btn_hover: colors.blue.lighten4, // Enyhén világosabb kék hover állapothoz

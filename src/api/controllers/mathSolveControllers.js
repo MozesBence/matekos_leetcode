@@ -343,7 +343,7 @@ exports.profilPicUpload = async (req, res, next) => {
     const { id, type, darkmode } = req.body;
     const blob = req.file ? req.file.buffer : null;
     const mimeType = req.file ? req.file.mimetype : null;
-    if (!blob && (type == '1' || type == '2')) {
+    if (!blob && (type == '0' || type == '1')) {
         return res.status(400).json({ message: 'Fájl nem található!' });
     }
 
@@ -351,7 +351,7 @@ exports.profilPicUpload = async (req, res, next) => {
         // Fájl feltöltésének logikája
         var upload_result;
 
-        if(type == '1' || type == '2'){
+        if(type == '0' || type == '1'){
             upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
         }else if(type == '4'){
             upload_result = await mathSolveServices.DarkmodeUpload(id, darkmode);
