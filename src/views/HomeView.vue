@@ -134,7 +134,7 @@
     </v-list-item>
 
       <v-list-item class="d-flex flex-column align-center justify-center" 
-      style="text-align: center;  width:400px; margin-top:2em margin-bottom:2em">
+      style="text-align: center;  width: 400px; margin-top: 2em; margin-bottom: 2em">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
@@ -230,7 +230,7 @@
   </v-footer>
 </template>
 
-<script lang="ts">
+<script>
 import VueApexCharts from "vue3-apexcharts";
 import axios from "axios";
 import * as cheerio from 'cheerio';
@@ -493,41 +493,41 @@ export default {
 
 </script>
 
-  <style>
-    .listitem
-    {
-      background-color: black;
-      border-radius: 15px;
-    }
-    .v-layout{
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .heatmap {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      margin-top: 20px;
-    }
-    .heatmap-cell {
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 5px;
-      color: white;
-    }
-    .red {
-      background-color: rgb(185, 98, 98);
-    }
-    .light-blue {
-      background-color: rgba(107, 212, 234, 0.9);;
-    }
-    .dark-blue {
-      background-color: rgb(26, 26, 77);
-    }
-  </style>
+<style>
+  .listitem
+  {
+    background-color: black;
+    border-radius: 15px;
+  }
+  .v-layout{
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .heatmap {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+  }
+  .heatmap-cell {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+    color: white;
+  }
+  .red {
+    background-color: rgb(185, 98, 98);
+  }
+  .light-blue {
+    background-color: rgba(107, 212, 234, 0.9);;
+  }
+  .dark-blue {
+    background-color: rgb(26, 26, 77);
+  }
+</style>
