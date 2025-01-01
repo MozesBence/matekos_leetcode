@@ -42,10 +42,6 @@ const tasksRoutes = require('../src/api/routes/tasksRoute')
 app.use('/api/tasks',tasksRoutes)
 /*------------*/
 
-/*User info for mainpage (not working maybe not even neccersary)*/
-const userdataRoutes = require('./api/routes/userdataRoute')
-app.use('/api/userdata',userdataRoutes)
-/*--------------------- */
 const quoteRoute = require('./api/routes/quoteroute');
 app.use('/api/quotes', quoteRoute);
 
