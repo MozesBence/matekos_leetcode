@@ -6,12 +6,12 @@ const app = express();
 
 app.use(express.json());
 
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
-// Engedélyezz minden origin-t (fejlesztéshez):
+// Enable CORS for all origins (for development):
 app.use(cors());
 
-// Vagy csak egy adott origin-t engedélyezz:
+// Or allow only a specific origin:
 app.use(cors({
   origin: 'http://localhost:5173'
 }));
@@ -31,6 +31,23 @@ app.get('/drive-video', async (req, res) => {
 });
 
 const mathSolveRoutes = require("./api/routes/mathSolveRoute");
+
+/*Theme routes*/
+const themeRoutes = require('../src/api/routes/themeRoute');
+app.use('/api/themes', themeRoutes);
+/*------------*/
+
+/*Task routes */
+const tasksRoutes = require('../src/api/routes/tasksRoute')
+app.use('/api/tasks',tasksRoutes)
+/*------------*/
+
+/*User info for mainpage (not working maybe not even neccersary)*/
+const userdataRoutes = require('./api/routes/userdataRoute')
+app.use('/api/userdata',userdataRoutes)
+/*--------------------- */
+const quoteRoute = require('./api/routes/quoteroute');
+app.use('/api/quotes', quoteRoute);
 
 const errorHandler = require("./api/middlewares/errorHandler");
 
