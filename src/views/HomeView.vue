@@ -66,51 +66,35 @@
       </v-list>
     </v-navigation-drawer>
     <v-main class="d-block align-center justify-center" height="10rem">
-      <v-row>
-        <v-row style="margin: 2em;">
-          <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Státusz</v-col>
-          <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Cím</v-col>
-          <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Teljesítési arány</v-col>
-          <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Nehézség</v-col>
-        </v-row>
-      </v-row>
-      <v-row>
-        <br>  
-         <!-- Card Row (in a new line) -->
-      <v-card class="mx-auto" width="100%" link height="3em">
-        <v-row align="center" justify="space-between" class="py-1 px-2">
-          <!-- Zöld pipálás ikon -->
-          <v-col cols="2" class="text-center">
-            <v-icon color="green" small>mdi-check</v-icon>
-          </v-col>
-    
-          <!-- Cím és sorszám -->
-          <v-col cols="2" class="text-left">
-            <span class="text-h6">1. Pelda feladat</span>
-          </v-col>
-    
-          <!-- Százalékos érték -->
-          <v-col cols="2" class="text-center">
-            <span class="text-h6">50.0%</span>
-          </v-col>
-    
-          <!-- Nehézség szintje -->
-          <v-col cols="2" class="text-right">
-            <v-chip color="green-lighten-1" outlined small>
-              Konnyu
-            </v-chip>
-          </v-col>
-    
-          <!-- Zár ikon -->
-          <v-col cols="1" class="text-right">
-          </v-col>
-        </v-row>
-      </v-card>
-      </v-row>
-      <!-- Header Row -->
-     
-     
-    </v-main>
+  <!-- Header Row -->
+  <v-row style="margin: 2em;">
+    <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Státusz</v-col>
+    <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Cím</v-col>
+    <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Teljesítési arány</v-col>
+    <v-col class="text-center" style="border-bottom: 1px solid #ccc;">Nehézség</v-col>
+  </v-row>
+
+  <!-- Card Row -->
+  <v-card class="mx-auto" width="90%" link height="6em" style="vertical-align: middle;">
+  <v-row align="center" justify="center" class="py-1 px-2">
+    <v-col class="d-flex align-center justify-center">
+      <v-icon color="green" small>mdi-check</v-icon>
+    </v-col>
+    <v-col class="d-flex align-center justify-center">
+      <span class="text-h7">1. Pelda feladat</span>
+    </v-col>
+    <v-col class="d-flex align-center justify-center">
+      <span class="text-h7">50.00%</span>
+    </v-col>
+    <v-col class="d-flex align-center justify-center">
+      <v-chip color="green-lighten-1" outlined small>
+        Konnyu
+      </v-chip>
+    </v-col>
+  </v-row>
+</v-card>
+
+</v-main>
     
   </v-layout>
 </template>
