@@ -10,16 +10,6 @@ const nodemailer = require('nodemailer');
 
 const multer = require("multer");
 
-// Set up multer storage to store file in memory (as a buffer)
-const storage = multer.memoryStorage();  // Use diskStorage if you want to save to disk
-const upload = multer({ storage: storage });
-
-exports.getUsers = async (req, res, next) =>
-{
-    res.status(200).send(await mathSolveServices.getUsers());
-<<<<<<< HEAD
-}
-
 exports.registerUser = async (req, res, next) =>
 {
     const { email, user_name, password } = req.body;
@@ -122,7 +112,7 @@ exports.registerUser = async (req, res, next) =>
         next(error);
     }
 }
-
+    
 exports.loginUser = async (req, res, next) =>
 {
     const { token, email, password } = req.body;
@@ -196,7 +186,7 @@ exports.loginUser = async (req, res, next) =>
         next(error);
     }
 }
-
+    
 exports.forgetPassword = async (req, res, next) =>{
     const { email } = req.body;
 
@@ -269,7 +259,7 @@ exports.forgetPassword = async (req, res, next) =>{
         next(error);
     }
 }
-
+    
 exports.setNewPassword = async (req, res, next) =>{
     const { token, password } = req.body;
 
@@ -318,53 +308,3 @@ exports.setNewPassword = async (req, res, next) =>{
         next(error);
     }
 }
-
-exports.getFullUser = async (req, res, next) =>{
-    const email = req.headers['email']
-
-    const full_user = await mathSolveServices.getUserAndCustomization(email);
-
-    try{
-        if(full_user == null){
-            const error = new Error("A felhasználó nem található!");
-
-            error.status = 404;
-
-            throw error;
-        }
-
-        res.status(200).send(full_user);
-    }
-    catch(error){
-        next(error);
-    }
-}
-
-exports.profilPicUpload = async (req, res, next) => {
-    const { id, type, darkmode } = req.body;
-    const blob = req.file ? req.file.buffer : null;
-    const mimeType = req.file ? req.file.mimetype : null;
-    if (!blob && (type == '0' || type == '1')) {
-        return res.status(400).json({ message: 'Fájl nem található!' });
-    }
-
-    try {
-        // Fájl feltöltésének logikája
-        var upload_result;
-
-        if(type == '0' || type == '1'){
-            upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
-        }else if(type == '4'){
-            upload_result = await mathSolveServices.DarkmodeUpload(id, darkmode);
-        }
-
-        // Válasz küldése
-        res.status(200).json({ message: 'Profilkép sikeresen feltöltve!', result: upload_result });
-    } catch (error) {
-        console.error('Hiba a profilkép feltöltésekor:', error);
-        res.status(500).json({ message: 'Hiba történt a profil frissítése közben.' });
-    }
-};
-=======
-}
->>>>>>> e0f7a6b0b3c2313c761b3b81bf8b88c506eb541c

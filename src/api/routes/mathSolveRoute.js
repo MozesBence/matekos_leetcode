@@ -4,17 +4,21 @@ const route = express.Router();
 
 const mathSolveControllers = require("../controllers/mathSolveControllers");
 
+const logregControllers = require("../controllers/logregController");
+
+const profileControllers = require("../controllers/profileController");
+
 route.get("/register", mathSolveControllers.getUsers);
 
-route.post("/register", mathSolveControllers.registerUser);
+route.post("/register", logregControllers.registerUser);
 
-route.post("/login", mathSolveControllers.loginUser);
+route.post("/login", logregControllers.loginUser);
 
-route.post("/forget-password", mathSolveControllers.forgetPassword);
+route.post("/forget-password", logregControllers.forgetPassword);
 
-route.patch("/set-new-password", mathSolveControllers.setNewPassword);
+route.patch("/set-new-password", logregControllers.setNewPassword);
 
-route.get("/profile", mathSolveControllers.getFullUser);
+route.get("/profile", profileControllers.getFullUser);
 
 const multer = require('multer');
 const path = require('path');
@@ -41,6 +45,6 @@ const upload = multer({
     }
 });
 
-route.patch("/profile", upload.single('blob'), mathSolveControllers.profilPicUpload);
+route.patch("/profile", upload.single('blob'), profileControllers.profilPicUpload);
 
 module.exports = route;

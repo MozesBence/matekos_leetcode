@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
             theme: {
                 type: DataTypes.TEXT,
                 allowNull: false,
-                defaultValue: null,
             },
         },
         {
@@ -24,6 +23,36 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false,
         }
     );
+
+    // Add default themes
+    Themes.initializeThemes = async () => {
+        const defaultThemes = [
+            { theme: "Abszolútérték, gyök" },
+            { theme: "Bizonyítások" },
+            { theme: "Egyenletek" },
+            { theme: "Egyenletrendszerek" },
+            { theme: "Egyenlőtlenségek" },
+            { theme: "Egyszerűsítések, átalakítások" },
+            { theme: "Értelmezési tartomány, értékkészlet" },
+            { theme: "Exponenciális és logaritmusos feladatok" },
+            { theme: "Függvények, analízis" },
+            { theme: "Halmazok" },
+            { theme: "Kombinatorika" },
+            { theme: "Paraméter" },
+            { theme: "Koordinátageometria" },
+            { theme: "Logika, grafok" },
+            { theme: "Síkmértan" },
+            { theme: "Sorozatok" },
+            { theme: "Statisztika" },
+            { theme: "Számelmélet" },
+            { theme: "Szöveges feladatok" },
+            { theme: "Térmértan" },
+            { theme: "Trigonometria" },
+            { theme: "Valószínűségszámítás" },
+        ];
+
+        await Themes.bulkCreate(defaultThemes, { ignoreDuplicates: true });
+    };
 
     return Themes;
 };
