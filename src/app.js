@@ -8,6 +8,8 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+const errorHandler = require("./api/middlewares/errorHandler");
+
 // Enable CORS for all origins (for development):
 app.use(cors());
 
@@ -39,15 +41,23 @@ app.use('/api/themes', themeRoutes);
 
 /*Task routes */
 const tasksRoutes = require('../src/api/routes/tasksRoute')
-app.use('/api/tasks',tasksRoutes)
+app.use('/api/tasks',tasksRoutes);
 /*------------*/
 
 const quoteRoute = require('./api/routes/quoteroute');
 app.use('/api/quotes', quoteRoute);
 
-const errorHandler = require("./api/middlewares/errorHandler");
-
 app.use("/", mathSolveRoutes);
+
+/*LogReg routes */
+const logregRoute = require('../src/api/routes/logregRoute')
+app.use('/',logregRoute);
+/*------------*/
+
+/*Profile routes */
+const profileRoute = require('../src/api/routes/profileRoute')
+app.use('/',profileRoute);
+/*------------*/
 
 app.use(errorHandler.notFoundError);
 

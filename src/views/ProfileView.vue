@@ -177,7 +177,7 @@
                   @click="dialog = false"
                 ></v-btn>
                 <v-btn
-                  color="primary"
+                  color="success"
                   text="Mentés"
                   variant="tonal"
                   @click="saveSettings"
@@ -196,6 +196,7 @@ import { onMounted, ref, watch, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
 
 const dialog = shallowRef(false)
@@ -252,9 +253,15 @@ onMounted(async () => {
   }
 });
 
+
+const DarkmodeChange = ref(false);
+const theme = useTheme();
+
 // Változó figyelése
 watch(get_fullUser, (newUser: any | null) => {
   if (newUser) {
+    DarkmodeChange.value = newUser.User_customization.darkmode;
+    theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
     handlePtofilPicters();
   }
 });
