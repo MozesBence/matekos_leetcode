@@ -1,4 +1,4 @@
-const mathSolveServices = require("../services/mathSolveServices");
+const logregServices = require("../services/logregService");
 
 const bcrypt = require("bcrypt");
 
@@ -27,7 +27,7 @@ exports.registerUser = async (req, res, next) =>
         activated: 0,
     }
 
-    const user_check = await mathSolveServices.checkUser(email, user_name);
+    const user_check = await logregServices.checkUser(email, user_name);
     
     try{
 
@@ -47,7 +47,7 @@ exports.registerUser = async (req, res, next) =>
             }
         }
 
-        const result = await mathSolveServices.registerUser(newUser);
+        const result = await logregServices.registerUser(newUser);
 
         try{
             if(result)
@@ -66,7 +66,7 @@ exports.registerUser = async (req, res, next) =>
                     type: 0,
                     user_id: result.id,
                 }
-                const token_result = await mathSolveServices.uploadToken(newToken);
+                const token_result = await logregServices.uploadToken(newToken);
                 
                 // Verifikációs link
                 const verificationLink = `http://localhost:5173/login?token=${token_result.token}`;
@@ -117,12 +117,12 @@ exports.loginUser = async (req, res, next) =>
 {
     const { token, email, password } = req.body;
 
-    const user = await mathSolveServices.getUser(email);
+    const user = await logregServices.getUser(email);
 
     var token_result;
     
     if(user != null){
-        token_result = token != 'null' ? await mathSolveServices.getToken(token, user.id) : null;
+        token_result = token != 'null' ? await logregServices.getToken(token, user.id) : null;
     }
 
     try
@@ -172,7 +172,7 @@ exports.loginUser = async (req, res, next) =>
             throw error;
         }
 
-        const user_activated = await mathSolveServices.activateUser(user.id);
+        const user_activated = await logregServices.activateUser(user.id);
 
         if(user.activated == 0 && user_activated){
             res.status(200).send("A felhasználó profilja aktiválva lett és be lett jelentkeztetve!");
@@ -190,7 +190,7 @@ exports.loginUser = async (req, res, next) =>
 exports.forgetPassword = async (req, res, next) =>{
     const { email } = req.body;
 
-    const user = await mathSolveServices.getUser(email);
+    const user = await logregServices.getUser(email);
     try{
         if(user == null){
             const error = new Error("Ilyen felhasználó nem létezik!");
@@ -216,7 +216,7 @@ exports.forgetPassword = async (req, res, next) =>{
             user_id: user.id,
         }
 
-        const token_result = await mathSolveServices.uploadToken(newToken);
+        const token_result = await logregServices.uploadToken(newToken);
         
         // Verifikációs link
         const verificationLink = `http://localhost:5173/set-new-password?token=${token_result.token}`;
@@ -263,7 +263,7 @@ exports.forgetPassword = async (req, res, next) =>{
 exports.setNewPassword = async (req, res, next) =>{
     const { token, password } = req.body;
 
-    const token_result = await mathSolveServices.getUseridThroughToken(token);
+    const token_result = await logregServices.getUseridThroughToken(token);
 
     try
     {
@@ -296,7 +296,7 @@ exports.setNewPassword = async (req, res, next) =>{
 
         const hashed_password = await bcrypt.hash(password, salt);
 
-        const password_change_result = await mathSolveServices.SetNewPassword(token_result.user_id, hashed_password);
+        const password_change_result = await logregServices.SetNewPassword(token_result.user_id, hashed_password);
         if(password_change_result.success){
             res.status(200).send(password_change_result.message)
         }else{
