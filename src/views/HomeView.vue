@@ -4,7 +4,7 @@
       <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
         <v-card style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw">
           <video autoplay loop muted playsinline style="width: 100%; height: 100%;top: 0; left: 0; position: absolute; z-index: -1; object-fit: fill;">
-            <source src="http://localhost:3000/drive-video" type="video/mp4" />
+            <source src="http://localhost:3000/drive-video" type="video/mp4"/>
           </video>
 
           <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(107, 212, 234, 0.9); text-align: center; padding: .6rem; color: white">
@@ -23,7 +23,7 @@
     </v-row>
   </v-container>
 
-  <v-sheet class="mx-auto" max-width="100%">
+  <v-sheet class="mx-auto" max-width="100%" style="background: transparent;">
     <v-slide-group show-arrows>
       <v-slide-group-item
         v-for="n in options"
@@ -98,7 +98,9 @@
   <v-layout class="rounded rounded-md" height="100em">
     <v-navigation-drawer 
     location="right" 
-    width="400"  >
+    width="400"
+    style="background: transparent;"
+    >
     <v-list>
       <v-list-item>
         <div
@@ -124,7 +126,7 @@
           v-model="percentage"
           color="green-darken-2"
           height="25"
-          style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;" 
+          style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: transparent;" 
         >
           <template v-slot:default="{ value }">
             <strong>{{ Math.ceil(level) }}. szint</strong> <!-- Display 'level' -->
@@ -169,7 +171,7 @@
       </v-list>
     </v-navigation-drawer>
   
-    <v-main class="d-block align-center justify-center">
+    <v-main class="d-block align-center justify-center" style="background: transparent;">
       <v-row style="margin: 2em; border-bottom: 1px solid #ccc;">
         <v-col class="d-flex align-center justify-center" cols="2">
           <span>Státusz</span>
@@ -208,10 +210,10 @@
     </v-main>
   </v-layout>
   
-  <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
+  <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em; background: transparent;">
     <v-pagination :length="6"></v-pagination>
   </v-row>
-  <v-footer class="bg-blue-darken-1">
+  <v-footer style="background: rgb(var(--v-theme-secondary));">
     <v-row justify="center" no-gutters>
       <v-btn
         v-for="link in links"

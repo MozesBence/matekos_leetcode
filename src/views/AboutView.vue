@@ -116,7 +116,7 @@ html, body {
 
 main {
   font-family: 'Roboto', sans-serif;
-  background: #f9f9f9;
+  background: rgb(var(--v-theme-background));
   color: #333;
   padding: 20px;
   overflow-y: auto; 
@@ -132,7 +132,7 @@ main::-webkit-scrollbar {
 .hero {
   text-align: center;
   background: linear-gradient(135deg, #6a11cb, #2575fc);
-  color: #fff;
+  color: rgb(var(--v-theme-about_main_text_color));
   padding: 50px 20px;
   border-radius: 12px;
   margin-bottom: 30px;
@@ -146,7 +146,7 @@ main::-webkit-scrollbar {
 .content {
   max-width: 800px;
   margin: 0 auto;
-  background: #fff;
+  background: rgb(var(--v-theme-about_bc));
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -158,7 +158,7 @@ section {
 
 h2 {
   font-size: 2rem;
-  color: #333;
+  color: rgb(var(--v-theme-about_text_color));
   margin-bottom: 10px;
 }
 
@@ -166,7 +166,7 @@ p {
   font-size: 1rem;
   line-height: 1.6;
   text-align: justify;
-  color: #555;
+  color: rgb(var(--v-theme-about_text_color));
 }
 
 @media (max-width: 768px) {

@@ -1,5 +1,4 @@
-
-const themeRepository = require('../repositories/themeRepository');
+//const themeRepository = require('../repositories/themeRepository');
 
 const getAllThemesController = async (req, res) => {
   try {

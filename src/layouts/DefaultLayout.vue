@@ -1,6 +1,6 @@
 <template>
     <v-card>
-      <v-layout>
+      <v-layout style="background-color: rgb(var(--v-theme-background));">
         <v-app-bar
           color="primary"
           prominent
@@ -298,7 +298,7 @@
           </v-list>
         </v-navigation-drawer>
   
-        <v-main style="height: 100vh;">
+        <v-main style="height: 100vh; background: rgb(var(--v-theme-background));">
           <v-container
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
@@ -451,8 +451,6 @@ onMounted(async () => {
           get_fullUser_customs.value = get_user.User_customization;
         },
         onError: (error) => {
-          console.error('Hiba történt a felhasználó lekérésekor:', error);
-          console.log(getCookie('user'));
           if(getCookie('user') != null){
             deleteCookie('user');
           }

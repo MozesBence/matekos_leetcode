@@ -1,4 +1,4 @@
-const mathSolveServices = require("../services/mathSolveServices");
+const profileService = require("../services/profileService");
 
 const bcrypt = require("bcrypt");
 
@@ -17,7 +17,7 @@ const upload = multer({ storage: storage });
 exports.getFullUser = async (req, res, next) =>{
     const email = req.headers['email']
 
-    const full_user = await mathSolveServices.getUserAndCustomization(email);
+    const full_user = await profileService.getUserAndCustomization(email);
 
     try{
         if(full_user == null){
@@ -48,9 +48,9 @@ exports.profilPicUpload = async (req, res, next) => {
         var upload_result;
 
         if(type == '0' || type == '1' || type == '2'){
-            upload_result = await mathSolveServices.ProfPicUpload(id, blob, type, mimeType);
+            upload_result = await profileService.ProfPicUpload(id, blob, type, mimeType);
         }else if(type == '4'){
-            upload_result = await mathSolveServices.DarkmodeUpload(id, darkmode);
+            upload_result = await profileService.DarkmodeUpload(id, darkmode);
         }
 
         // Válasz küldése
