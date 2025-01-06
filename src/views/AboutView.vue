@@ -13,14 +13,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">A weboldalról</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">A weboldalról</span>
           <v-icon style="position: absolute; right: .5vw;">{{ AboutOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="AboutOpen" class="dropdown-content">
-            <p>2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
+          <div v-if="AboutOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
               hogy vigyük tovább szakmai vizsgának, amit 2024 szeptemberében kezdtünk el megcsinálni. Itt a már meglévő beadandónkat
               kellett átírni.</p>
           </div>
@@ -35,14 +35,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">MathSolve, miért a MathSolve?</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">MathSolve, miért a MathSolve?</span>
           <v-icon style="position: absolute; right: .5vw;">{{ WhyOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="WhyOpen" class="dropdown-content">
-            <p>Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
+          <div v-if="WhyOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
               és innen jött a matek-infó közötti kapocs, amit próbálunk a leghatékonyabban diáktársaink részére átadni mint gyakorlófelület.
               Ezért lett a név MathSolve.</p>
           </div>
@@ -57,14 +57,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">Hogyan használd a weboldalt?</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Hogyan használd a weboldalt?</span>
           <v-icon style="position: absolute; right: .5vw;">{{ UsageOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="UsageOpen" class="dropdown-content">
-            <p>Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
+          <div v-if="UsageOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
               megkönnyíteni dolgukat, hogy a lehető legszűkebben tudják tudásukat bővíteni vagy tesztelni.</p>
           </div>
         </v-expand-transition>
@@ -78,14 +78,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">Az oldal funkcióiról</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Az oldal funkcióiról</span>
           <v-icon style="position: absolute; right: .5vw;">{{ FeaturesOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="FeaturesOpen" class="dropdown-content">
-            <p>Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
+          <div v-if="FeaturesOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
               emellett vannak challengek, amik speciálisabb módon, de beleszámítanak a ranglistába.</p>
           </div>
         </v-expand-transition>
@@ -99,14 +99,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">Rólunk</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Rólunk</span>
           <v-icon style="position: absolute; right: .5vw;">{{ AboutUsOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="AboutUsOpen" class="dropdown-content">
-            <p>Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
+          <div v-if="AboutUsOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
           </div>
         </v-expand-transition>
       </section>
@@ -119,14 +119,14 @@
           elevation="0"
           style="position: relative;"
         >
-          <span style="font-size: 2.5vh;">GYIK - Gyakran ismételt kérdések</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">GYIK - Gyakran ismételt kérdések</span>
           <v-icon style="position: absolute; right: .5vw;">{{ FaqOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
-          <div v-if="FaqOpen" class="dropdown-content">
-            <p>Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!</p>
+          <div v-if="FaqOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!</p>
           </div>
         </v-expand-transition>
       </section>
@@ -157,8 +157,23 @@ export default {
       texts: [
         "Üdv a fedélzeten!",
         "Köszöntünk az oldalon!",
-        "Örülünk hogy itt vagy!",
+        "Örülünk, hogy itt vagy!",
         "Nézz szét!",
+        "Jó, hogy csatlakoztál hozzánk!",
+        "Reméljük, jól fogod érezni magad!",
+        "Kellemes időtöltést kívánunk!",
+        "Üdvözlünk a közösségünkben!",
+        "Nagyszerű, hogy itt vagy!",
+        "Fedezd fel az oldalunkat!",
+        "Köszönjük, hogy benéztél!",
+        "Várnak rád izgalmas tartalmak!",
+        "Lépj be, és érezd otthon magad!",
+        "Szuper, hogy csatlakoztál!",
+        "Kezdd el a felfedezést most!",
+        "Legyen szép napod nálunk!",
+        "Készülj az élményekre!",
+        "Üdv a csapatban!",
+        "Lazíts, és böngéssz kedvedre!"
       ],
       currentFont: "",
       currentText: "",
@@ -269,13 +284,7 @@ p {
 }
 
 .dropdown-content {
-  margin: auto; 
-  margin-top: .7vw; 
-  width: 98%;
+  margin: auto;
+  width: 96%;
 }
-
-.dropdown-content p{
-  font-size: large;
-}
-
 </style>
