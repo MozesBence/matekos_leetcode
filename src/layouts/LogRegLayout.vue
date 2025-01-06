@@ -224,13 +224,17 @@
   import { useSetNewPassword } from '@/api/set-new-password/SetNewPasswordQuery'
 
   import { useDisplay } from 'vuetify';
+  import { useTheme } from 'vuetify';
 
   if(getCookie('user') != null){
     deleteCookie('user');
   }
 
-  const route = useRoute()
-  const router = useRouter()
+  const route = useRoute();
+  const router = useRouter();
+  const theme = useTheme();
+
+  theme.global.name.value = 'lightTheme';
   
   const loading = ref(false)
 

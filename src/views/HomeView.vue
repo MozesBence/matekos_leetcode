@@ -104,8 +104,8 @@
     <v-list>
       <v-list-item>
         <div
-          style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
-          class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+          style="padding: 10px; width: 17.5vw; margin-bottom: 2em"
+          class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg"
         >
           <h1>Napi idézet</h1>
           <br>
@@ -113,12 +113,12 @@
         </div>
       </v-list-item>
       <v-list-item 
-      class="d-flex flex-column align-center justify-center" 
-      style="text-align: center; height: 10em; width:400px; margin-bottom:2em"
+      class="d-flex flex-column align-center justify-center rounded-lg" 
+      style="text-align: center; height: 10em; width: 400px; margin-bottom: 2em"
     >
       <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        style="padding: 10px; width: 17.5vw; height: 9em;" 
+        class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg  "
       >
         <h1 >Fiók szintje:</h1>
     
@@ -159,8 +159,8 @@
       <v-list-item class="d-flex flex-column align-center justify-center" 
       style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
       <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        style="padding: 10px; width: 17.5vw; height: 100%;" 
+        class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg"
       >
         <h1>Teljesítési statisztika:</h1>
         <div id="chart">
