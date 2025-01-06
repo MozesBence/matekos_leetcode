@@ -6,51 +6,129 @@
 
     <div class="content">
       <section class="about">
-        <h2>A weboldalról</h2>
-        <p>
-          2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
-          hogy vigyük tovább szakmai vizsgának, amit 2024 szeptemberében kezdtünk el megcsinálni. Itt a már meglévő beadandónkat
-          kellett átírni.
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="AboutOpen = !AboutOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">A weboldalról</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ AboutOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="AboutOpen" class="dropdown-content">
+            <p>2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
+              hogy vigyük tovább szakmai vizsgának, amit 2024 szeptemberében kezdtünk el megcsinálni. Itt a már meglévő beadandónkat
+              kellett átírni.</p>
+          </div>
+        </v-expand-transition>
       </section>
 
       <section class="why">
-        <h2>MathSolve, miért a MathSolve?</h2>
-        <p>
-          Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
-          és innen jött a matek-infó közötti kapocs, amit próbálunk a leghatékonyabban diáktársaink részére átadni mint gyakorlófelület.
-          Ezért lett a név MathSolve.
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="WhyOpen = !WhyOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">MathSolve, miért a MathSolve?</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ WhyOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="WhyOpen" class="dropdown-content">
+            <p>Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
+              és innen jött a matek-infó közötti kapocs, amit próbálunk a leghatékonyabban diáktársaink részére átadni mint gyakorlófelület.
+              Ezért lett a név MathSolve.</p>
+          </div>
+        </v-expand-transition>
       </section>
 
       <section class="usage">
-        <h2>Hogyan használd a weboldalt?</h2>
-        <p>
-          Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
-          megkönnyíteni dolgukat, hogy a lehető legszűkebben tudják tudásukat bővíteni vagy tesztelni.
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="UsageOpen = !UsageOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">Hogyan használd a weboldalt?</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ UsageOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="UsageOpen" class="dropdown-content">
+            <p>Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
+              megkönnyíteni dolgukat, hogy a lehető legszűkebben tudják tudásukat bővíteni vagy tesztelni.</p>
+          </div>
+        </v-expand-transition>
       </section>
 
       <section class="features">
-        <h2>Az oldal funkcióiról</h2>
-        <p>
-          Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
-          emellett vannak challengek, amik speciálisabb módon, de beleszámítanak a ranglistába.
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="FeaturesOpen = !FeaturesOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">Az oldal funkcióiról</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ FeaturesOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="FeaturesOpen" class="dropdown-content">
+            <p>Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
+              emellett vannak challengek, amik speciálisabb módon, de beleszámítanak a ranglistába.</p>
+          </div>
+        </v-expand-transition>
       </section>
 
       <section class="about-us">
-        <h2>Rólunk</h2>
-        <p>
-          Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="AboutUsOpen = !AboutUsOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">Rólunk</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ AboutUsOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="AboutUsOpen" class="dropdown-content">
+            <p>Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
+          </div>
+        </v-expand-transition>
       </section>
 
       <section class="faq">
-        <h2>GYIK - Gyakran ismételt kérdések</h2>
-        <p>
-          Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!
-        </p>
+        <v-btn
+          block
+          class="d-flex justify-space-between align-center custom-btn"
+          @click="FaqOpen = !FaqOpen"
+          elevation="0"
+          style="position: relative;"
+        >
+          <span style="font-size: 2.5vh;">GYIK - Gyakran ismételt kérdések</span>
+          <v-icon style="position: absolute; right: .5vw;">{{ FaqOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
+        </v-btn>
+
+        <!-- Lenyíló tartalom -->
+        <v-expand-transition>
+          <div v-if="FaqOpen" class="dropdown-content">
+            <p>Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!</p>
+          </div>
+        </v-expand-transition>
       </section>
     </div>
   </main>
@@ -82,26 +160,31 @@ export default {
         "Örülünk hogy itt vagy!",
         "Nézz szét!",
       ],
-      currentFontIndex: 0,
-      currentTextIndex: 0,
-      currentText: "Üdv a fedélzeten!",
+      currentFont: "",
+      currentText: "",
+      AboutOpen: false,
+      WhyOpen: false,
+      UsageOpen: false,
+      FeaturesOpen: false,
+      AboutUsOpen: false,
+      FaqOpen: false,
     };
   },
   mounted() {
-    this.startRotation();
+    this.selectRandomTextAndFont();
   },
   methods: {
-    startRotation() {
-      setInterval(() => {
-        this.currentTextIndex = (this.currentTextIndex + 1) % this.texts.length;
-        this.currentText = this.texts[this.currentTextIndex];
+    selectRandomTextAndFont() {
+      // Véletlenszerű szöveg kiválasztása
+      const randomTextIndex = Math.floor(Math.random() * this.texts.length);
+      this.currentText = this.texts[randomTextIndex];
 
-        this.currentFontIndex = (this.currentFontIndex + 1) % this.fonts.length;
-        this.updateFont();
-      }, 2000);
-    },
-    updateFont() {
-      this.$refs.rotatingText.style.fontFamily = this.fonts[this.currentFontIndex];
+      // Véletlenszerű betűtípus kiválasztása
+      const randomFontIndex = Math.floor(Math.random() * this.fonts.length);
+      this.currentFont = this.fonts[randomFontIndex];
+
+      // Betűtípus alkalmazása
+      this.$refs.rotatingText.style.fontFamily = this.currentFont;
     },
   },
 };
@@ -144,7 +227,7 @@ main::-webkit-scrollbar {
 }
 
 .content {
-  max-width: 800px;
+  max-width: 100%;
   margin: 0 auto;
   background: rgb(var(--v-theme-about_bc));
   padding: 20px;
@@ -178,4 +261,21 @@ p {
     font-size: 1.5rem;
   }
 }
+
+.custom-btn {
+  background-color: transparent;
+  font-weight: bold;
+  padding: 1.5vw;
+}
+
+.dropdown-content {
+  margin: auto; 
+  margin-top: .7vw; 
+  width: 98%;
+}
+
+.dropdown-content p{
+  font-size: large;
+}
+
 </style>
