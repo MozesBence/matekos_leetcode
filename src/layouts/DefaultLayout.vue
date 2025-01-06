@@ -429,8 +429,8 @@ const router = useRouter()
 
 const dialog = shallowRef(false)
 
-var get_user_name = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
-var get_user_email = getCookie('user') != null && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
+var get_user_name = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
+var get_user_email = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
 
 let get_fullUser = ref(null);
 let get_fullUser_customs = ref(null);
