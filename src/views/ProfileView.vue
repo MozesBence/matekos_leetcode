@@ -198,7 +198,6 @@ import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
-import { useTheme } from 'vuetify';
 
 const dialog = shallowRef(false)
 
@@ -212,7 +211,6 @@ interface ProfilPicdata {
 // Router és Route hook-ok
 const router = useRouter();
 const route = useRoute();
-const theme = useTheme();
 
 // Cookie lekérdezés
 const getCookie = (name: string) => {
