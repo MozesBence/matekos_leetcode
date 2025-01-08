@@ -22,7 +22,19 @@
       min-width="420"
       rounded="lg"
     >
-      <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name != 'set-new-password'">Fiók</div>
+      <v-expand-transition class="d-flex flex-column justify-center align-center">
+        <div v-if="SuccessOpen">
+          <v-icon :color="SuccessText.split(' ')[0] == 'Sikeres' ? 'green' : 'red'" size="120">
+            {{ SuccessText.split(' ')[0] == "Sikeres" ? 'mdi-check' : 'mdi-close' }}
+          </v-icon>
+          <h2 class="text-center">{{ SuccessText }}</h2>
+          <div class="dropdown-content text-center" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
+            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '.9vw'}">{{ SuccessMessage }}</p>
+          </div>
+        </div>
+      </v-expand-transition>
+
+      <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name != 'set-new-password' && route.name != 'success-register'">Fiók</div>
 
       <v-text-field
         density="compact"
@@ -30,7 +42,7 @@
         prepend-inner-icon="mdi-email-outline"
         variant="outlined"
         v-model="emailValue"
-        v-if="route.name != 'set-new-password'"
+        v-if="route.name != 'set-new-password' && route.name != 'success-register'"
         :rules="[
           (v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 35) || 'Maximum 35 karakter lehet.']" 
       ></v-text-field>
@@ -150,7 +162,7 @@
         {{ SetBtnValue }}
     </v-btn>
 
-      <v-card-text class="text-center" @click="router.push({ name: 'register' })" v-if="route.name == 'login'">
+      <v-card-text class="text-center" @click="RegisterPushHandler" v-if="route.name == 'login'">
         <a
           class="text-blue text-decoration-none"
           rel="noopener noreferrer"
@@ -161,7 +173,7 @@
       </v-card-text>
 
       <h2 v-if="route.name == 'register'" class="text-center">Van már fiókod?</h2>
-      <v-card-text class="text-center" @click="router.push({ name: 'login' })" v-if="route.name == 'register'">
+      <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'register' || route.name == 'success-register'">
         <a
           class="text-blue text-decoration-none"
           rel="noopener noreferrer"
@@ -171,7 +183,7 @@
         </a>
       </v-card-text>
 
-      <v-card-text class="text-center" @click="router.push({ name: 'login' })" v-if="route.name == 'forget-password' || route.name == 'set-new-password'">
+      <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'forget-password' || route.name == 'set-new-password'">
         <a
           class="text-blue text-decoration-none"
           rel="noopener noreferrer"
@@ -214,6 +226,8 @@
   import type { RegisterData } from '@/api/register/register'
   import { useRegisterUser } from '@/api/register/registerQuery'
 
+  import { useUserActivation } from '@/api/register/registerQuery'
+
   import type { LoginData } from '@/api/login/login'
   import { useLoginUser } from '@/api/login/loginQuery'
 
@@ -225,6 +239,8 @@
 
   import { useDisplay } from 'vuetify';
   import { useTheme } from 'vuetify';
+
+  import { SignJWT, type JWTPayload } from 'jose';
 
   if(getCookie('user') != null){
     deleteCookie('user');
@@ -240,6 +256,48 @@
 
   var RegBtnValue = ref("Regisztrálás");
 
+  var SuccessText = ref("");
+  var SuccessMessage = ref("");
+  var SuccessOpen = ref(false);
+
+  const LoginPushHandler = () =>{
+    SuccessOpen.value = false;
+    router.push({ name: 'login' });
+  }
+
+  const RegisterPushHandler = () =>{
+    SuccessOpen.value = false;
+    router.push({ name: 'register' })
+  }
+
+  var RegisterToken = route.query.token ? (route.query.token as string) : 'null';
+
+  const { mutate: UserActivation } = useUserActivation() //, isPending
+  
+  if(RegisterToken != 'null' && route.name == 'success-register'){
+    const userActivation = async () =>{
+      SuccessOpen.value = false;
+      UserActivation({token: RegisterToken} ,{
+          onSuccess: (response) => {
+            SuccessText.value = "Sikeres regisztrálás!";
+            SuccessMessage.value = response;
+            SuccessOpen.value = true;
+          },
+          onError: (err: any) => {
+            SuccessText.value = "Nem sikerült regisztrálás!";
+            SuccessMessage.value = err.response.data;
+            SuccessOpen.value = true;
+          },
+        }
+      )
+    };
+    userActivation();
+  }else if(RegisterToken == 'null' && route.name == 'success-register'){
+    SuccessText.value = "Nem sikerült regisztrálás!";
+    SuccessMessage.value = "Rossz az elérésí út!";
+    SuccessOpen.value = true;
+  }
+
   const PasswordValue = ref("Jelszó");
   const ConfPasswordValue = ref("Jelszó megerősítése");
   
@@ -251,6 +309,10 @@
   ) {
       loading.value = true;
       registerUser(RegdataRef.value, {
+          onSuccess: (response) => {
+            loading.value = false
+            RegBtnValue.value = 'Email elküldve';
+          },
           onError: (err: any) => {
             errorMessage.value = err.response.data || "Hiba történt a bejelentkezés során.";
             snackbar.value = true;
@@ -277,20 +339,30 @@
           snackbar.value = true;
         },
         onSuccess: (user) => {
-          const userData = {
-            email: LogindataRef.value.email,
-            user: user.user_name
-          };
-
-          if (rememberMe) {
-            setCookieWithExpiry('user', JSON.stringify(userData), 1);
-          } else {
-            setPersistentCookie('user', JSON.stringify(userData));
-          }
+          createJwt(user.id);
         },
       });
     }
   };
+
+  async function createJwt(id: number) {
+    const secret = new TextEncoder().encode('Titkos Kulcs 1 2 3');
+    const payload = { id: id };
+    var token = null;
+    if (rememberMe) {
+      token = await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).setExpirationTime('1d').sign(secret);
+    }else{
+      token = await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).sign(secret);
+    }
+
+    console.log(token);
+
+    if (rememberMe) {
+      setCookieWithExpiry('user', token, 1);
+    } else {
+      setPersistentCookie('user', token);
+    }
+  }
 
   function setCookieWithExpiry(name: string, value: string, years: number) {
     const date = new Date();

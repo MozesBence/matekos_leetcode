@@ -224,7 +224,8 @@ const getCookie = (name: string) => {
   return null;
 };
 
-const get_user_email: string | null = route.query.email as string | null;
+var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+
 
 const get_fullUser = ref<any>(null);
 
@@ -235,16 +236,15 @@ const get_fullUser_customs = ref<any>(null);
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 onMounted(async () => {
-  if (get_user_email) {
+  if (get_user_by_token != null) {
     try {
-      await ProfileGetUser(get_user_email, {
-        onSuccess: (get_user: any) => {
+      await ProfileGetUser(get_user_by_token, {
+        onSuccess: (get_user) => {
+          get_UserName.value = get_user.user_name;
           get_fullUser.value = get_user;
-          get_UserName.value = get_fullUser.value.user_name;
           get_fullUser_customs.value = get_user.User_customization;
         },
-        onError: (error: any) => {
-          console.error('Hiba történt a felhasználó lekérésekor:', error);
+        onError: (error) => {
         },
       });
     } catch (error) {
@@ -252,7 +252,6 @@ onMounted(async () => {
     }
   }
 });
-
 
 const DarkmodeChange = ref(false);
 const theme = useTheme();
@@ -338,8 +337,6 @@ const handleProfPicUpload = async (event: Event) => {
         type: Number(0)
       };
 
-      console.log("Frontendről: ",ProfPicUploaddata);
-
       // Profilkép feltöltése
       ProfilePicUpload(ProfPicUploaddata);
 
@@ -407,7 +404,6 @@ const handlebackPicUpload = async (event: Event) => {
     }
   }
 };
-
 
 const triggerBackPicFileInput = () => {
   fileBackPicInput.value?.click();

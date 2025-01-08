@@ -136,12 +136,12 @@
                 :color="isHovering ? 'nav_btn_hover' : 'transparent'"
                 v-bind="props"
                 class="rounded-circle nav-right-btn"
-                v-if="get_user_email != null"
+                v-if="get_user_name != null"
               >
                 <v-menu
                   activator="parent" 
                   transition="scale-transition"
-                  v-if="get_user_email != null"
+                  v-if="get_user_name != null"
                   offset-y
                 >
                   <template #activator="{ props }">
@@ -161,7 +161,7 @@
                         icon
                         elevation="0"
                         class="elevation-2"
-                        @click="router.push({ name: 'profile', query: {email: get_fullUser.email } })"
+                        @click="router.push({ name: 'profile'})"
                         :style="{
                           borderRadius: '50%',
                           width: '8vh',
@@ -303,7 +303,7 @@
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
-              v-if="get_user_email == null"
+              v-if="get_user_name == null"
             >
               <v-btn
                 class="rounded-pill"
@@ -429,11 +429,11 @@ const router = useRouter()
 
 const dialog = shallowRef(false)
 
-var get_user_name = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).user : null;
-var get_user_email = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? JSON.parse(getCookie('user')).email : null;
+var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
-let get_fullUser = ref(null);
-let get_fullUser_customs = ref(null);
+var get_fullUser = ref(null);
+var get_fullUser_customs = ref(null);
+var get_user_name = ref(null);
 
 const theme = useTheme();
 
@@ -442,11 +442,11 @@ const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
 const DarkmodeChange = ref(false);
 
 onMounted(async () => {
-  if (get_user_email) {
+  if (get_user_by_token != null) {
     try {
-      await ProfileGetUser(get_user_email, {
+      await ProfileGetUser(get_user_by_token, {
         onSuccess: (get_user) => {
-          get_user_name = get_user.user_name;
+          get_user_name.value = get_user.user_name;
           get_fullUser.value = get_user;
           get_fullUser_customs.value = get_user.User_customization;
         },

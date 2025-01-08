@@ -4,7 +4,9 @@ const route = express.Router();
 
 const profileControllers = require("../controllers/profileController");
 
-route.get("/profile", profileControllers.getFullUser);
+const profileAuth = require("../middlewares/profileAuth");
+
+route.get("/profile", [ profileAuth.verifyToken ], profileControllers.getFullUser);
 
 const multer = require('multer');
 const path = require('path');

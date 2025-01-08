@@ -66,7 +66,6 @@ const initializeDatabase = async () => {
             WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR);`;
 
         await db.sequelize.query(createEventQuery);
-        console.log('Event for automatic token deletion created.');
 
         // Létrehozzuk a triggert, amely a Tokenz törlésekor a Users táblát is módosítja
         const createTriggerQuery = `
@@ -74,6 +73,7 @@ const initializeDatabase = async () => {
             AFTER DELETE ON Tokenz
             FOR EACH ROW
             BEGIN
+                -- Csak akkor töröljük a felhasználót, ha az activated = 0 és nincs több tokenje
                 IF NOT EXISTS (
                     SELECT 1 FROM Tokenz WHERE user_id = OLD.user_id
                 ) AND EXISTS (
@@ -81,10 +81,9 @@ const initializeDatabase = async () => {
                 ) THEN
                     DELETE FROM Users WHERE id = OLD.user_id;
                 END IF;
-            END;`;
+            END;`
 
         await db.sequelize.query(createTriggerQuery);
-        console.log('Event for automatic token deletion created.');
     } catch (error) {
         console.error('Error initializing database:', error);
     }

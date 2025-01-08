@@ -1,9 +1,5 @@
 const db = require("../database/dbContext");
 
-const { Op } = require('sequelize');
-
-const { Sequelize, DataTypes } = require('sequelize');
-
 class profileRepository
 {
     constructor(db)
@@ -15,10 +11,10 @@ class profileRepository
         this.User_customization = db.User_customization;
     }
 
-    async getUserAndCustomization(email) {
+    async getUserAndCustomization(id) {
         try {
             const userWithCustomization = await this.Users.findOne({
-                where: { email: email },
+                where: { id: id },
                 include: [{
                     model: this.User_customization,
                     required: true,

@@ -12,14 +12,14 @@ class logregService
         return await logregRepository.registerUser(user);
     }
 
-    async getUser(email)
+    async getUser(email,id)
     {
-        return await logregRepository.getUser(email);
+        return await logregRepository.getUser(email,id);
     }
 
-    async getToken(token,user_id)
+    async getToken(token)
     {
-        return await logregRepository.getToken(token,user_id);
+        return await logregRepository.getToken(token);
     }
     
     async activateUser(id)
@@ -32,9 +32,9 @@ class logregService
         return await logregRepository.uploadToken(tokenz);
     }
 
-    async getUserAndCustomization(email)
+    async getUserAndCustomization(id)
     {
-        return await logregRepository.getUserAndCustomization(email);
+        return await logregRepository.getUserAndCustomization(id);
     }
 
     async SetNewPassword(user_id, new_password)

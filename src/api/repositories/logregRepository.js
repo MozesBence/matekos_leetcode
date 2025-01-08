@@ -70,16 +70,13 @@ class logregRepository
         return newToken;
     }
 
-    async getToken(token,user_id)
+    async getToken(token)
     {
         return await this.Tokenz.findOne
         (
             {
                 where: {
-                    [Op.and]:{
-                        token: String(token),
-                        user_id: user_id,
-                    }
+                    token: String(token)
                 }
             }
         )
@@ -122,15 +119,15 @@ class logregRepository
         }
     }
 
-    async getUser(email)
+    async getUser(email, id)
     {
         return await this.Users.findOne
         (
             {
-                where:
-                {
-                    email: email,
-                }
+                [Op.or]: [
+                    { email: email },
+                    { id: id }
+                ]
             }
         )
     }

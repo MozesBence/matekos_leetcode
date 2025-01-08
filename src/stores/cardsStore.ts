@@ -13,7 +13,7 @@ export const useCardsStore = defineStore('cardsStore',{
                 this.cards = response.data;
             }catch(error){
                 console.log(`Error in cards store! Error: ${error}`)
-            }
+            }   
         },
     },
 });

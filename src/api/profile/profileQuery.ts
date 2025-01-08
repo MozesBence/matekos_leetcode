@@ -3,8 +3,8 @@ import { useMutation } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import type { ProfilPicdata } from "./profile"
 
-const ProfileGetUser = async (email: string) => {
-    const response = await axiosClient.get('http://localhost:3000/profile', {headers: {email: email}});
+const ProfileGetUser = async (token: string) => {
+    const response = await axiosClient.get('http://localhost:3000/profile', {headers: {token: token}});
     return response.data;
 }
 
@@ -38,7 +38,7 @@ export const useProfilePicUpload = () => {
     return useMutation({
         mutationFn: ProfilePicUpload,
         onSuccess: (user) => {
-
+            
         },
         onError: (error: any) => {
             console.error('Hiba történt a profilkép feltöltése közben :', error);

@@ -69,7 +69,7 @@ exports.registerUser = async (req, res, next) =>
                 const token_result = await logregServices.uploadToken(newToken);
                 
                 // Verifikációs link
-                const verificationLink = `http://localhost:5173/login?token=${token_result.token}`;
+                const verificationLink = `http://localhost:5173/success-register?token=${token_result.token}`;
         
                 // Email küldése
                 const transporter = nodemailer.createTransport({
@@ -112,12 +112,54 @@ exports.registerUser = async (req, res, next) =>
         next(error);
     }
 }
+
+exports.successRegister = async (req,res,next) =>{
+    const { token } = req.body;
+
+    token_result = token != 'null' ? await logregServices.getToken(token) : null;
+
+    try{
+        if(token_result == null){
+            const error = new Error("Nem megfelelő a token vagy már nem létezik!");
+            
+            error.status = 404;
+
+            throw error;
+        }
+
+        const user = await logregServices.getUser(null,token_result.user_id);
+
+        if(user.activated == 1){
+            const error = new Error("A felhasználó már aktiválva lett!");
+            
+            error.status = 400;
+            
+            throw error;
+        }
+
+        const user_activated = await logregServices.activateUser(token_result.user_id);
+
+        
+        if(user_activated == false){
+            const error = new Error("Nem lehetett a felhasználót aktiválni!");
+            
+            error.status = 500;
+            
+            throw error;
+        }
+
+        res.status(200).send("A felhasználó sikeresen aktiválva lett!");
+    }
+    catch(error){
+        next(error);
+    }
+}
     
 exports.loginUser = async (req, res, next) =>
 {
     const { token, email, password } = req.body;
 
-    const user = await logregServices.getUser(email);
+    const user = await logregServices.getUser(email,null);
 
     var token_result;
     
@@ -190,7 +232,7 @@ exports.loginUser = async (req, res, next) =>
 exports.forgetPassword = async (req, res, next) =>{
     const { email } = req.body;
 
-    const user = await logregServices.getUser(email);
+    const user = await logregServices.getUser(email, null);
     try{
         if(user == null){
             const error = new Error("Ilyen felhasználó nem létezik!");

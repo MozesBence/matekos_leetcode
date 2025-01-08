@@ -16,4 +16,6 @@ route.post("/forget-password", logregControllers.forgetPassword);
 
 route.patch("/set-new-password", logregControllers.setNewPassword);
 
+route.post("/success-register", logregControllers.successRegister);
+
 module.exports = route;

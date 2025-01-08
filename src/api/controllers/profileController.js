@@ -1,25 +1,22 @@
 const profileService = require("../services/profileService");
 
-const bcrypt = require("bcrypt");
-
-const salt = 10;
-
 const jwt = require("jsonwebtoken");
 
-const nodemailer = require('nodemailer');
+require('dotenv').config(); 
 
-const multer = require("multer");
-
-// Set up multer storage to store file in memory (as a buffer)
-const storage = multer.memoryStorage();  // Use diskStorage if you want to save to disk
-const upload = multer({ storage: storage });
+const { TextEncoder } = require('util');
 
 exports.getFullUser = async (req, res, next) =>{
-    const email = req.headers['email']
+    const token = req.headers['token'];
 
-    const full_user = await profileService.getUserAndCustomization(email);
+    const secretKey = new TextEncoder().encode(process.env.JWT_KEY);
+
+    const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+
+    const full_user = await profileService.getUserAndCustomization(decoded.id);
 
     try{
+
         if(full_user == null){
             const error = new Error("A felhasználó nem található!");
 

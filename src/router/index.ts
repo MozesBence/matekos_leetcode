@@ -64,6 +64,11 @@ const router = createRouter({
           name: 'set-new-password',
           component: () => import('../views/SetNewPasswordView.vue')
         },
+        {
+          path: '/success-register',
+          name: 'success-register',
+          component: () => import('../views/SuccessRegisterView.vue')
+        },
       ]
     },
     
