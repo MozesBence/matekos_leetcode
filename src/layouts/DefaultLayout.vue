@@ -533,8 +533,8 @@ export default {
         currentFont: "Roboto",
         currentTextIndex: 0,
         displayedText: "",
-        isMobile: false,
-        fontSize: 'large',
+        IsMobile: false,
+        FontSize: 'large',
         isLoginHovering: false,
         isRegisterHovering: false,
         dialog: false,
@@ -547,18 +547,18 @@ export default {
     },
     watch: {
       '$vuetify.display.mobile'(newValue) {
-        this.isMobile = newValue;
+        this.IsMobile = newValue;
 
-        if (!this.isMobile) {
+        if (!this.IsMobile) {
           this.performDesktopAction();
         }
       },
     },
     mounted() {
       this.typeAndSwitchFont();
-      this.isMobile = this.$vuetify.display.mobile;
+      this.IsMobile = this.$vuetify.display.mobile;
 
-      if (!this.isMobile) {
+      if (!this.IsMobile) {
         this.performDesktopAction();
       }
     },
@@ -591,11 +591,8 @@ export default {
       },
     },
     computed: {
-      isMobile() {
-        return this.$vuetify.display.mobile;
-      },
       fontSize() {
-        return this.isMobile ? 'x-large' : 'large'; // Ha mobil eszköz van, kisebb betűméret
+        return this.IsMobile ? 'x-large' : 'large'; // Ha mobil eszköz van, kisebb betűméret
       },
       loginButtonStyles() {
         return {
