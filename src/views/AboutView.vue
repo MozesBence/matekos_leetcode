@@ -107,6 +107,39 @@
         <v-expand-transition>
           <div v-if="AboutUsOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
             <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
+
+            <div class="team-section">
+              <div class="profile left">
+                <img src="../components/background/test_profile.jpg" alt="Profile 1" class="profile-img" />
+                <div class="profile-info">
+                  <h1>Bujdosó Bálint</h1>
+                  <p>Rövid bemutatkozás...</p>
+                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, JavaScript</p>
+                </div>
+              </div>
+              
+              <div class="profile right">
+                <img src="../components/background/test_profile.jpg" alt="Profile 2" class="profile-img" />
+                <div class="profile-info">
+                  <h1>Mózes Bence</h1>
+                  <p>Rövid bemutatkozás...</p>
+                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
+                </div>
+              </div>
+              
+              <div class="profile left">
+                <img src="../components/background/test_profile.jpg" alt="Profile 3" class="profile-img"/>
+                <div class="profile-info">
+                  <h1>Pintea Dániel</h1>
+                  <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum diákja vagyok. Az elmúlt években számos projektben és versenyen vettem részt, amelyek során folyamatosan bővítettem tudásomat és fejlesztettem készségeimet.
+                    <br>
+                    <br>
+                    A programozás nemcsak a munkám, hanem a hobbim is – szenvedélyesen szeretek új dolgokat alkotni és problémákat megoldani.</p>
+                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, TypeScript, JavaScript, Lua, C#, C++, Python, Rust</p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </v-expand-transition>
       </section>
@@ -286,5 +319,50 @@ p {
 .dropdown-content {
   margin: auto;
   width: 96%;
+}
+
+.team-section {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  margin: 3rem 0 3rem 0;
+  padding: 0 18rem;
+  position: relative;
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+.profile.left {
+  justify-content: flex-start;
+}
+
+.profile.right {
+  justify-content: flex-end;
+}
+
+.profile-img {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  position: relative;
+}
+
+.profile-info {
+  max-width: 40rem;
+}
+
+.profile-info h1 {
+  margin-bottom: 10px;
+  color: rgb(var(--v-theme-about_text_color));
+}
+
+.profile-info p {
+  margin: 5px 0;
+  color: rgb(var(--v-theme-about_text_color));
 }
 </style>
