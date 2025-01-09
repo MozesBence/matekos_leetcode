@@ -46,36 +46,34 @@
   </v-sheet>
 
   <v-row 
-  class="d-flex align-center justify-center" 
-  style="padding: 10px; gap: 16px;"
->
-<v-col cols="2" class="d-flex align-center justify-center">
-  <v-select
-    clearable
-    label="Nehézség"
-    :items="['Könnyű', 'Közepes', 'Nehéz']"
-    variant="solo"
-    class="responsive-item"
-    theme="light"
-  ></v-select>
-</v-col>
+    style="display: flex; height: min-content; justify-content: center; align-content: center; padding: .5rem;"
+  >
+    <v-col cols="auto">
+      <v-select
+        clearable
+        label="Nehézség"
+        :items="['Könnyű', 'Közepes', 'Nehéz']"
+        variant="solo"
+        class="responsive-item"
+        width="300"
+        theme="light"
+      ></v-select>
+    </v-col>
 
-<v-col cols="2" class="d-flex align-center justify-center">
-  <v-select
-    clearable
-    label="Állapot"
-    :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
-    variant="solo"
-    class="responsive-item"
-    theme="light"
-  ></v-select>
-</v-col>
+    <v-col cols="auto">
+      <v-select
+        clearable
+        label="Állapot"
+        :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
+        variant="solo"
+        class="responsive-item"
+        width="300"
+        theme="light"
+      ></v-select>
+    </v-col>
 
-
-<v-col cols="3" class="d-flex align-center justify-start search-bar" style="vertical-align:middle">
- 
+    <v-col cols="auto">
       <v-text-field
-        style="height: 4.5em;text-align:center; vertical-align:middle;"
         :loading="loading"
         append-inner-icon="mdi-magnify"
         density="compact"
@@ -84,16 +82,19 @@
         hide-details
         single-line
         @click:append-inner="onClick"
+        width="350"
+        class="custom-text-field"
+        style="margin-top: -.2vh;"
       ></v-text-field>
-</v-col>
+    </v-col>
 
 
-  <v-col cols="2" class="d-flex align-center justify-center" style="align-items: center; vertical-align:middle">
-    <v-btn class="responsive-item bg-green" style="width: 100%; height:4em">
-      Random feladat  <v-icon color="white">mdi-shuffle-variant</v-icon>
-    </v-btn>
-  </v-col>
-</v-row>
+    <v-col cols="auto">
+      <v-btn class="responsive-item bg-green" width="250" height="57">
+        Random feladat  <v-icon color="white">mdi-shuffle-variant</v-icon>
+      </v-btn>
+    </v-col>
+  </v-row>
 
   <v-layout class="rounded rounded-md" height="100em">
     <v-navigation-drawer 
@@ -104,7 +105,7 @@
     <v-list>
       <v-list-item>
         <div
-          style="padding: 10px; width: 17.5vw; margin-bottom: 2em"
+          style="padding: 10px; width: 23rem; margin-bottom: 2em"
           class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg"
         >
           <h1>Napi idézet</h1>
@@ -117,7 +118,7 @@
       style="text-align: center; height: 10em; width: 400px; margin-bottom: 2em"
     >
       <div 
-        style="padding: 10px; width: 17.5vw; height: 9em;" 
+        style="padding: 10px; width: 23rem; height: 9em;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg  "
       >
         <h1 >Fiók szintje:</h1>
@@ -138,7 +139,7 @@
       <v-list-item class="d-flex flex-column align-center justify-center" 
       style="text-align: center;  width: 400px; margin-top: 2em; margin-bottom: 2em">
       <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
+        style="border-radius: 15px; padding: 10px; width: 23rem; height: 100%;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
       >
       <div class="heatmap">
@@ -159,7 +160,7 @@
       <v-list-item class="d-flex flex-column align-center justify-center" 
       style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
       <div 
-        style="padding: 10px; width: 17.5vw; height: 100%;" 
+        style="padding: 10px; width: 23rem; height: 100%;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4 rounded-lg"
       >
         <h1>Teljesítési statisztika:</h1>
@@ -213,23 +214,6 @@
   <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em; background: transparent;">
     <v-pagination :length="6"></v-pagination>
   </v-row>
-  <v-footer style="background: rgb(var(--v-theme-secondary));">
-    <v-row justify="center" no-gutters>
-      <v-btn
-        v-for="link in links"
-        :key="link"
-        class="mx-2"
-        color="white"
-        rounded="xl"
-        variant="text"
-      >
-        {{ link }}
-      </v-btn>
-      <v-col class="text-center mt-4" cols="12">
-        Copyright © {{ new Date().getFullYear() }} — Math Solve
-      </v-col>
-    </v-row>
-  </v-footer>
 </template>
 
 <script>
@@ -531,5 +515,11 @@ export default {
   }
   .dark-blue {
     background-color: rgb(26, 26, 77);
+  }
+
+  .custom-text-field input {
+    display: flex;
+    align-items: center;
+    height: 60px;
   }
 </style>

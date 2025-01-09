@@ -47,7 +47,7 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync({ alter: false, force: false });
         console.log('Database connected and models synchronized.');
 
         sequelize.query('SET GLOBAL event_scheduler = ON;')

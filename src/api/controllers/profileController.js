@@ -9,7 +9,7 @@ const { TextEncoder } = require('util');
 exports.getFullUser = async (req, res, next) =>{
     const token = req.headers['token'];
 
-    const secretKey = new TextEncoder().encode(process.env.JWT_KEY);
+    const secretKey = process.env.JWT_KEY;
 
     const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
 

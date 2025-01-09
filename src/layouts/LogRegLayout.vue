@@ -221,7 +221,7 @@
 
 <script setup lang="ts">
   import { useRouter, useRoute } from 'vue-router';
-  import { ref, computed } from 'vue'
+  import { ref, computed, defineComponent } from 'vue'
 
   import type { RegisterData } from '@/api/register/register'
   import { useRegisterUser } from '@/api/register/registerQuery'
@@ -354,9 +354,7 @@
     }else{
       token = await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).sign(secret);
     }
-
-    console.log(token);
-
+    
     if (rememberMe) {
       setCookieWithExpiry('user', token, 1);
     } else {
@@ -538,7 +536,6 @@
 </script>
 
 <script lang="ts">
-
 export default {
   data() {
     return {

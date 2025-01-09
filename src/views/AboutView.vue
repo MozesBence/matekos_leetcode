@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main style="min-height: 88vh;">
     <div class="hero">
       <h1 ref="rotatingText">{{ currentText }}</h1>
     </div>
