@@ -6,9 +6,7 @@ const salt = 10;
 
 const jwt = require("jsonwebtoken");
 
-const nodemailer = require('nodemailer');
-
-const multer = require("multer");
+const nodemailer = require('nodemailer');;
 
 exports.registerUser = async (req, res, next) =>
 {

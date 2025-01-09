@@ -45,7 +45,7 @@
     </v-slide-group>
   </v-sheet>
 
-  <v-row 
+  <v-row
     style="display: flex; height: min-content; justify-content: center; align-content: center; padding: .5rem;"
   >
     <v-col cols="auto">
@@ -84,7 +84,6 @@
         @click:append-inner="onClick"
         width="350"
         class="custom-text-field"
-        style="margin-top: -.2vh;"
       ></v-text-field>
     </v-col>
 
@@ -96,7 +95,7 @@
     </v-col>
   </v-row>
 
-  <v-layout class="rounded rounded-md" height="100em">
+  <v-layout class="rounded rounded-md" height="auto">
     <v-navigation-drawer 
     location="right" 
     width="400"
@@ -520,6 +519,6 @@ export default {
   .custom-text-field input {
     display: flex;
     align-items: center;
-    height: 60px;
+    height: 57px;
   }
 </style>

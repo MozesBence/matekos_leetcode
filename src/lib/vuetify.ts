@@ -45,6 +45,10 @@ const vuetify = createVuetify({
           about_bc: colors.grey.lighten2,
           about_main_text_color: colors.grey.lighten5,
           about_text_color: colors.grey.darken4,
+
+          community_posts_bc: colors.grey.lighten4,
+          community_primary_color: colors.grey.darken4,
+          community_comment_bc: colors.grey.lighten3,
         },
       },
       darkTheme: {
@@ -71,6 +75,10 @@ const vuetify = createVuetify({
           about_bc: colors.grey.darken3,
           about_main_text_color: colors.grey.lighten5,
           about_text_color: colors.grey.lighten5,
+
+          community_posts_bc: colors.grey.darken3,
+          community_primary_color: colors.grey.lighten4,
+          community_comment_bc: colors.grey.darken2,
         },
       },
     },
