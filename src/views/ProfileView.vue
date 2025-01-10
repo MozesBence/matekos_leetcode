@@ -226,7 +226,6 @@ const getCookie = (name: string) => {
 
 var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
-
 const get_fullUser = ref<any>(null);
 
 const get_UserName = ref<string>('Betöltés...');

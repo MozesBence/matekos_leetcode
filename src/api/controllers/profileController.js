@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 
 require('dotenv').config(); 
 
-const { TextEncoder } = require('util');
-
 exports.getFullUser = async (req, res, next) =>{
     const token = req.headers['token'];
 

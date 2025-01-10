@@ -4,7 +4,7 @@
       <div class="d-flex">
         <div 
           class="d-flex align-center" 
-          style="height: max-content; position: absolute; left: 7rem; z-index: 1;">
+          style="height: max-content; position: fixed; left: 7rem; z-index: 1;">
           <v-form>
             <v-container>
               <v-row>
@@ -68,8 +68,8 @@
                 <v-icon color="purple">{{ post.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                 {{ post.dislikes }}
               </v-btn>
-              <v-btn icon color="community_primary_color" @click="toggleComments(post)" class="rounded-circle">
-                <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
+              <v-btn icon color="community_primary_color" @click="toggleCommentsForPost(post)" class="rounded-circle">
+                <v-icon> {{ post.showCommentsFromPost ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
               </v-btn>
               <v-btn text color="community_primary_color" @click="prepareReplyForPost(post)">
                 Válasz
@@ -77,11 +77,49 @@
             </v-card-actions>
             <!-- Komment szekció -->
             <v-expand-transition>
-              <div v-if="post.showComments">
+              <div v-if="post.showCommentsFromPost">
+                <!-- Új komment -->
+                <v-divider class="my-2"></v-divider>
+                <div class="position-relative mx-4 pa-2" style="border: .1vw solid red;">
+                  <div class="d-flex flex-row align-center mb-3 ml-2 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
+                    <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                    {{ get_UserName }}
+                  </div>
+                  <div>
+                    <v-textarea
+                      v-model="post.newComment"
+                      label="Válaszod"
+                      hide-details
+                      variant="outlined"
+                      rows="1"
+                      style="min-height: min-content;"
+                    ></v-textarea>
+                    <div class="d-flex pa-2 ga-2">
+                      <v-btn
+                        :disabled="post.newComment == ''"
+                        color="transparent"
+                        elevation="0"
+                        small
+                        @click="addCommentToPost(post)"
+                      >
+                        Küldés
+                      </v-btn>
+                      <v-btn
+                        color="transparent"
+                        elevation="0"
+                        small
+                        @click="cancelPrepareReplyForPost(post)"
+                      >
+                        Mégse
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+
                 <!-- Kommentek listája -->
                 <div v-for="(comment, index) in limitedComments(post)" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                   <div class="d-flex flex-column pl-2">
-                    <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-background));">
+                    <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
                       <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                       {{ comment.author }}
                     </div>
@@ -98,6 +136,9 @@
                       <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                       {{ comment.dislikes }}
                     </v-btn>
+                    <v-btn icon color="transparent" elevation="0" @click="toggleCommentsForComments(comment)" class="rounded-circle">
+                      <v-icon> {{ comment.showCommentsFromComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
+                    </v-btn>
                     <v-btn text color="transparent" elevation="0" @click="prepareReplyForComment(comment)">
                       Válasz
                     </v-btn>
@@ -110,25 +151,6 @@
                   class="pl-4"
                 >
                   Több komment megjelenítése
-                </v-btn>
-                <!-- Új komment -->
-                <v-divider class="my-2"></v-divider>
-                <v-textarea
-                  v-model="post.newComment"
-                  label="Írd meg a válaszod"
-                  outlined
-                  rows="1"
-                  style="min-height: min-content;"
-                  v-if="post.preparingReply"
-                ></v-textarea>
-                <v-btn
-                  v-if="post.preparingReply"
-                  color="transparent"
-                  elevation="0"
-                  small
-                  @click="addCommentToPost(post)"
-                >
-                  Küldés
                 </v-btn>
               </div>
             </v-expand-transition>
@@ -170,6 +192,54 @@
   </main>
 </template>
 
+<script setup>
+import { onMounted, ref, watch, shallowRef } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useProfilePicUpload } from '@/api/profile/profileQuery';
+import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { useTheme } from 'vuetify';
+
+const router = useRouter();
+const route = useRoute();
+
+const getCookie = (name) => {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=');
+    if (key === name) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+
+const get_fullUser = ref(null);
+
+const get_UserName = ref('Betöltés...');
+
+
+const { mutate: ProfileGetUser } = useProfileGetUser();
+
+onMounted(async () => {
+  if (get_user_by_token != null) {
+    try {
+      await ProfileGetUser(get_user_by_token, {
+        onSuccess: (get_user) => {
+          get_UserName.value = get_user.user_name;
+          get_fullUser.value = get_user;
+        },
+        onError: (error) => {
+        },
+      });
+    } catch (error) {
+      console.error('Hiba történt a felhasználó lekérésekor:', error);
+    }
+  }
+});
+</script>
+
 <script>
 export default {
   name: "CommunityPage",
@@ -187,11 +257,11 @@ export default {
           userReaction: null,
           createdAt: "2025-01-01",
           comments: [
-            { id: 1, author: "Helper99", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null,},
-            { id: 2, author: "AnotherUser", text: "Ugyanez a kérdésem!", likes: 1, dislikes: 0, userReaction: null,},
+            { id: 1, author: "Helper99", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null, showCommentsFromComments: false,},
+            { id: 2, author: "AnotherUser", text: "Ugyanez a kérdésem!", likes: 1, dislikes: 0, userReaction: null, showCommentsFromComments: false,},
           ],
           newComment: "",
-          showComments: false,
+          showCommentsFromPost: false,
           preparingReply: false,
           commentLimit: 10,
         },
@@ -229,7 +299,7 @@ export default {
         userReaction: null,
         comments: [],
         newComment: "",
-        showComments: false,
+        showCommentsFromPost: false,
         preparingReply: false,
         commentLimit: 10,
         createdAt: new Date().toISOString(),
@@ -277,12 +347,18 @@ export default {
         Comment.userReaction = "dislike";
       }
     },
-    toggleComments(post) {
-      post.showComments = !post.showComments;
+    toggleCommentsForPost(post) {
+      post.showCommentsFromPost = !post.showCommentsFromPost;
+    },
+    toggleCommentsForComments(comment) {
+      comment.showCommentsFromComments = !comment.showCommentsFromComments;
     },
     prepareReplyForPost(post) {
-      post.showComments = true;
+      post.showCommentsFromPost = true;
       post.preparingReply = true;
+    },
+    cancelPrepareReplyForPost(post) {
+      post.preparingReply = false;
     },
     prepareReplyForComment(comment) {
       comment.preparingReply = true;
@@ -303,6 +379,7 @@ export default {
           likes: 0, 
           dislikes: 0, 
           userReaction: null,
+          comments: [],
         });
         post.newComment = "";
         post.preparingReply = false; // Visszazárja az írást
@@ -310,7 +387,7 @@ export default {
     },
     addCommentToComment(Comment) {
       if (Comment.newComment.trim()) {
-        const commentId = Comment.comments.length + 1;
+        const commentId = post.comments.length + 1;
         Comment.comments.push({
           id: commentId,
           author: "Én",
@@ -319,8 +396,8 @@ export default {
           dislikes: 0, 
           userReaction: null,
         });
-        Comment.newComment = "";
-        Comment.preparingReply = false; // Visszazárja az írást
+        post.newComment = "";
+        post.preparingReply = false; // Visszazárja az írást
       }
     },
   },
