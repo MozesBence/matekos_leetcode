@@ -37,7 +37,7 @@
             v-for="post in filteredPosts"
             :key="post.id"
             class="mb-4 pt-2"
-            min-width="40vw"
+            width="45vw"
           >
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
               <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
@@ -1142,8 +1142,7 @@ export default {
 
 /* ---- editor-area ----*/
 .editor-area .editor-container {
-  width: 100%;
-  max-width: 800px;
+  max-width: 60vw;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -1155,10 +1154,10 @@ export default {
   padding: 10px;
   min-height: 40vh;
   font-size: 16px;
-  font-family: Arial, sans-serif;
   white-space: pre-wrap;
   overflow-y: auto;
   border-radius: 4px;
+  font-size: medium;
   transition: .3s;
 }
 

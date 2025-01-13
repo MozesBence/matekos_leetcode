@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
     const Users = require("../models/users")(sequelize, DataTypes);
-    const Topics = require("../models/topics")(sequelize, DataTypes);
-    const Topics_comments = require("../models/topic_comments")(sequelize, DataTypes);
+    const Community_posts = require("../models/community_posts")(sequelize, DataTypes);
+    const Community_comments = require("../models/community_comments")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Task_comments = require("../models/task_comments")(sequelize, DataTypes);
@@ -83,9 +83,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "task_comments_id",
     });
 
-    Topics.belongsToMany(Topics_comments, {
-        foreignKey: "topics_comment_id",
-        through: "topics_connection",
+    Community_posts.hasMany(Community_comments, {
+        foreignKey: "post_id",
+    });
+
+    Users.hasMany(Community_posts, {
+        foreignKey: "user_id",
     });
 
     Users.hasMany(Alerts, {
@@ -98,8 +101,8 @@ module.exports = (sequelize, DataTypes) => {
 
     return {
         Users,
-        Topics,
-        Topics_comments,
+        Community_posts,
+        Community_comments,
         Themes,
         Tasks,
         Task_comments,
