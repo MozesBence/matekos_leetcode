@@ -1,4 +1,5 @@
 const { Model } = require('sequelize');
+const { nullable } = require('zod');
 
 module.exports = (sequelize, DataTypes) => {
     class Tasks extends Model {}
@@ -18,6 +19,11 @@ module.exports = (sequelize, DataTypes) => {
             solution: {
                 type: DataTypes.STRING(150),
                 allowNull: false,
+            },
+            creator_id:{
+                type: DataTypes.INTEGER,
+                allowNull:true,
+                defaultValue: nullable
             },
             difficulty: {
                 type: DataTypes.INTEGER,
