@@ -38,7 +38,6 @@ npm run build
 npm run test:unit
 ```
 
-=======
 
 ## Node Modules Installation for Running the Website and API Locally
 To run the project locally, make sure you have XAMPP (with Apache and MySQL) running, and follow these steps:
