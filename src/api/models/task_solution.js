@@ -1,4 +1,4 @@
-const { Model, DataTypes, Sequelize } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Task_solutions extends Model {}
@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       submission_date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'), // Let the DB handle this
       },
       task_id: {
         type: DataTypes.INTEGER,
@@ -39,9 +39,8 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Task_solutions',
       tableName: 'task_solutions',
-      timestamps: false,
+      timestamps: false, // You are manually controlling the timestamps
     }
   );
-
   return Task_solutions;
 };
