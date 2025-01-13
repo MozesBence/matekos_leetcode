@@ -37,8 +37,7 @@ npm run build
 ```sh
 npm run test:unit
 ```
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 =======
 
 ## Node Modules Installation for Running the Website and API Locally
@@ -81,7 +80,3 @@ npm run dev
 ### Notes
 - Ensure that `Apache` and `MySQL` are running in [XAMPP](https://www.apachefriends.org) for the backend API to connect to the database.
 - Modify any configuration files (e.g., .env) if needed to match your local setup.
-
->>>>>>> cc1befd44e9c21112dae9d93c2b9bb110a952ccc
-=======
->>>>>>> 51a7ed9 (szar)
