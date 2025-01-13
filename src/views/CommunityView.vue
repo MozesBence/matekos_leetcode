@@ -370,8 +370,9 @@
             <v-text-field
               v-model="newPost.title"
               label="Cím"
-              outlined
-              class="mb-3"
+              variant="outlined"
+              class="mx-4 mb-1"
+              hide-details
             ></v-text-field>
             
             <v-container class="editor-area">
@@ -470,10 +471,25 @@
                       >
                         <v-icon>mdi-link</v-icon>
                       </v-btn>
+                      
+                      <input
+                        type="file"
+                        ref="imageInput"
+                        accept="image/*"
+                        style="display: none"
+                        @change="handleImageUpload"
+                      />
 
+                      <v-btn 
+                      elevation="0"
+                      icon 
+                      small  
+                      @click="triggerFileInput"
+                      >
+                        <v-icon>mdi-image</v-icon>
+                      </v-btn>
                     </div>
 
-                    <!-- Contenteditable div helyettesíti a textarea-t -->
                     <div
                       ref="editor"
                       contenteditable="true"
@@ -486,13 +502,6 @@
               </v-row>
             </v-container>
 
-            <v-file-input
-              v-model="newPost.images"
-              label="Képek feltöltése"
-              accept="image/*"
-              multiple
-              outlined
-            ></v-file-input>
           </v-card-text>
           <v-card-actions>
             <v-btn color="community_primary_color" @click="addPost(get_UserName)">Poszt létrehozása</v-btn>
@@ -610,10 +619,30 @@ export default {
     };
   },
   mounted() {
-    this.insertImages();
-  },
-  updated() {
-    this.insertImages(); // Ha a posts frissül, új képeket is beillesztünk
+    this.$nextTick(() => {
+    const editor = this.$refs.editor;
+
+    if (editor) {
+      // Drag & Drop események hozzáadása
+      editor.addEventListener("dragover", (event) => {
+        event.preventDefault(); // Az alapértelmezett viselkedés megakadályozása
+      });
+
+      editor.addEventListener("drop", (event) => {
+        event.preventDefault();
+        const files = event.dataTransfer.files;
+        if (files.length > 0) {
+          const file = files[0];
+          const reader = new FileReader();
+
+          reader.onload = (e) => {
+            this.insertImage(e.target.result); // A kép beszúrása
+          };
+
+          reader.readAsDataURL(file);
+        }
+      });
+    }});
   },
   computed: {
     filteredPosts() {
@@ -627,26 +656,43 @@ export default {
   },
   methods: {
     updateContent(event) {
-      // A kurzor pozíciójának mentése
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-      const cursorPosition = range.startOffset;
+    // A kurzor és a tartalom tartományának mentése
+    const selection = window.getSelection();
+    const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
 
+    if (range) {
+      // Kurzor pozíció és referencia csomópont mentése
+      const cursorPosition = range.startOffset;
+      const startContainer = range.startContainer;
+      
       // A div tartalmának frissítése
       this.content = event.target.innerHTML;
 
       // A kurzor pozíciójának visszaállítása
       this.$nextTick(() => {
         const editor = this.$refs.editor;
-        const range = document.createRange();
-        const selection = window.getSelection();
 
-        // A kurzor visszahelyezése
-        range.setStart(editor.firstChild, cursorPosition);
-        range.setEnd(editor.firstChild, cursorPosition);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      });
+        if (editor.contains(startContainer)) {
+          // Ha a korábbi csomópont még létezik, visszaállítjuk a kurzort
+          const newRange = document.createRange();
+          const newSelection = window.getSelection();
+
+          newRange.setStart(startContainer, cursorPosition);
+          newRange.collapse(true);
+
+          newSelection.removeAllRanges();
+          newSelection.addRange(newRange);
+        } else {
+          // Ha nem található a korábbi csomópont, a kurzor a végére kerül
+          const fallbackRange = document.createRange();
+          fallbackRange.selectNodeContents(editor);
+          fallbackRange.collapse(false);
+
+          const fallbackSelection = window.getSelection();
+          fallbackSelection.removeAllRanges();
+          fallbackSelection.addRange(fallbackRange);
+        }});
+      }
     },
     toggleBold() {
       this.execCommand("bold");
@@ -669,18 +715,44 @@ export default {
       this.activeAlignLeft = true;
       this.activeAlignCenter = false;
       this.activeAlignRight = false;
+
+      // Kép igazítása
+      const selection = window.getSelection();
+      const selectedNode = selection.anchorNode;
+
+      if (selectedNode && selectedNode.nodeName === "IMG") {
+        selectedNode.parentElement.style.textAlign = "left"; // Igazítás balra
+      }
     },
+
     applyAlignCenter() {
       this.execCommand("justifyCenter");
       this.activeAlignCenter = true;
       this.activeAlignLeft = false;
       this.activeAlignRight = false;
+
+      // Kép igazítása
+      const selection = window.getSelection();
+      const selectedNode = selection.anchorNode;
+
+      if (selectedNode && selectedNode.nodeName === "IMG") {
+        selectedNode.parentElement.style.textAlign = "center"; // Igazítás középre
+      }
     },
+
     applyAlignRight() {
       this.execCommand("justifyRight");
       this.activeAlignRight = true;
       this.activeAlignLeft = false;
       this.activeAlignCenter = false;
+
+      // Kép igazítása
+      const selection = window.getSelection();
+      const selectedNode = selection.anchorNode;
+
+      if (selectedNode && selectedNode.nodeName === "IMG") {
+        selectedNode.parentElement.style.textAlign = "right"; // Igazítás jobbra
+      }
     },
     applyOrderedList() {
       this.execCommand("insertOrderedList");
@@ -720,6 +792,53 @@ export default {
       const pattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
       return pattern.test(url);
     },
+      triggerFileInput() {
+      this.$refs.imageInput.click(); // File input megnyitása
+    },
+    handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          this.insertImage(e.target.result); // Kép beszúrása base64 kódolt formában
+        };
+        reader.readAsDataURL(file);
+      }
+    },
+    insertImage(imageUrl) {
+      const selection = window.getSelection();
+      const range = selection.getRangeAt(0);
+
+      if (range) {
+        // Kép konténer div létrehozása
+        const imgContainer = document.createElement("div");
+        imgContainer.style.display = "inline-block"; // Hogy ne törjön el a szöveg
+        imgContainer.style.textAlign = "left"; // Alapértelmezett igazítás
+
+        // Kép létrehozása
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = "Uploaded Image";
+        img.style.maxWidth = "20vw";
+        img.style.maxHeight = "20vh";
+        img.style.display = "block"; // Új sorba kerüljön
+
+        imgContainer.appendChild(img);
+
+        // Kép beszúrása a kijelölt pozícióba
+        range.deleteContents(); // Kijelölt szöveg törlése
+        range.insertNode(imgContainer); // Kép konténer beszúrása
+
+        // A kurzor a kép utánra helyezése
+        const newRange = document.createRange();
+        newRange.setStartAfter(imgContainer);
+        newRange.setEndAfter(imgContainer);
+
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(newRange);
+      }
+    },
     execCommand(command) {
       // A kurzor pozíciójának mentése
       const selection = window.getSelection();
@@ -741,8 +860,6 @@ export default {
         newSelection.addRange(newRange);
       });
     },
-
-
     clearMessage () {
       this.searchQuery = ''
     },
@@ -750,8 +867,20 @@ export default {
       this.showCreatePost = !this.showCreatePost;
     },
     addPost(get_UserName) {
+      const editor = this.$refs.editor;
+      let htmlContent = editor.innerHTML;
+
+      // Képek kinyerése az HTML tartalomból
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = htmlContent;
+
+      const images = [];
+      tempDiv.querySelectorAll("img").forEach((img) => {
+        images.push(img.src); // Képek forrását eltároljuk az images tömbben
+      });
+
+      // Az eredeti HTML tartalom megmarad a képekkel együtt
       const newId = this.posts.length + 1;
-      
       this.posts.unshift({
         ...this.newPost,
         id: newId,
@@ -765,12 +894,14 @@ export default {
         preparingReply: false,
         commentLimit: 10,
         createdAt: formatDate(new Date()),
-        title: "",
-        content: "", 
-        images: []
+        title: this.newPost.title || "",
+        content: htmlContent, // Az eredeti HTML tartalom képekkel
+        images: images, // Képek külön tömbben, ha szükséges
       });
+
+      // Új post inicializálása
       this.newPost = { title: "", content: "", images: [] };
-      this.toggleCreatePost();
+      this.toggleCreatePost(); // Opció: Bezárja a létrehozási felületet
     },
     openPreview(image) {
       this.selectedImage = image;
@@ -1019,18 +1150,26 @@ export default {
 }
 
 .editor-area .editor {
-  border: 1px solid #ccc;
+  border: 1px solid gray;
   outline: none;
   padding: 10px;
-  min-height: 150px;
+  min-height: 40vh;
   font-size: 16px;
   font-family: Arial, sans-serif;
   white-space: pre-wrap;
   overflow-y: auto;
-  border-radius: 8px;
+  border-radius: 4px;
+  transition: .3s;
 }
 
-.editor-area  button {
+.editor-area .editor:focus {
+  border: 1px solid white;
+}
+.editor-area .editor:hover {
+  border: 1px solid white;
+}
+
+.editor-area button {
   padding: 5px 10px;
   cursor: pointer;
 }
