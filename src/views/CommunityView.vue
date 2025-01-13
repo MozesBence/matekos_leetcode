@@ -1067,5 +1067,4 @@ export default {
   text-decoration: none;
   color: #1565c0;
 }
-
 </style>
