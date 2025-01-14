@@ -61,7 +61,12 @@ app.use('/',profileRoute);
 
 //main page stats routes
 const task_solution_route = require('../src/api/routes/task_solutionsRoute')
-app.use('/api/task_solution',task_solution_route)
+app.use('/api/task_solution',task_solution_route);
+//----------------------
+
+//community page routes
+const community_route = require('../src/api/routes/communityRoute')
+app.use('/',community_route);
 //----------------------
 
 app.use(errorHandler.notFoundError);

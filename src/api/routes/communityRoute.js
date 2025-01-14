@@ -10,6 +10,6 @@ const profileAuth = require("../middlewares/profileAuth");
 
 route.get("/community", [ profileAuth.verifyToken ], profileControllers.getFullUser);
 
-route.post("/community", communityControllers.getFullUser);
+route.post("/community", communityControllers.postUpload);
 
 module.exports = route;

@@ -550,12 +550,12 @@
 
               <!-- Kiválasztott fájlok listája -->
               <v-expand-transition>
-                <div v-if="uploadedFiles.length">
+                <div v-if="newPost.files.length">
                   <p class="mx-4">
                     Kiválasztott fájlok:
                   </p>
                   <ul class="mx-12">
-                    <li v-for="(file, index) in uploadedFiles" :key="index">
+                    <li v-for="(file, index) in newPost.files" :key="index">
                       {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
 
                       <v-btn 
@@ -575,7 +575,7 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="community_primary_color" @click="callAddPost(get_UserName,get_fullUser.id)">Poszt létrehozása</v-btn>
+            <v-btn color="community_primary_color" @click="addPost">Poszt létrehozása</v-btn>
             <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
           </v-card-actions>
         </v-card>
@@ -641,7 +641,6 @@ function formatDate(date) {
 
 // Állapotok és változók
 const content = ref(""); // A textarea tartalma
-const images = [];
 const activeBold = ref(false);
 const activeItalic = ref(false);
 const activeStrikethrough = ref(false);
@@ -652,9 +651,9 @@ const activeAlignRight = ref(false);
 const activeOrderedList = ref(false);
 const activeUnorderedList = ref(false);
 const activeLink = ref(false);
+const fileInput = ref(null);
 
-const uploadedFiles = ref([]);
-const newPost = reactive({ title: "", content: "", images: [], files: [] });
+const newPost = reactive({ title: "", content: "", images: reactive([]), files: ref([]) });
 
 // Posts tömb
 const posts = reactive([
@@ -727,8 +726,6 @@ const showCreatePost = ref(false);
 const editingText = ref("");
 const dialog = ref(false);
 const selectedImage = ref(null);
-
-const { mutate: handlePostUpload } = useCommunityPost();
 
 // Computed properties
 const filteredPosts = computed(() => {
@@ -832,12 +829,13 @@ function isLink(text) {
     const url = new URL(text);
     return url.protocol === 'http:' || url.protocol === 'https:';
   } catch (e) {
-    return false; // Ha nem érvényes URL, kivételt dob
+    return false;
   }
 }
 
 const triggerImageInput = () => {
-  imageInput.value.click(); // Aktiválja a fájl inputot
+  const input = document.querySelector('input[type="file"]'); // Alternatíva: this.$refs.imageInput
+  if (input) input.click();
 };
 
 const handleImageUpload = async (event) => {
@@ -847,36 +845,23 @@ const handleImageUpload = async (event) => {
     const reader = new FileReader();
     
     reader.onload = () => {
-      const img = new Image();
-      img.src = reader.result;
-      img.style.maxWidth = '100%';  // Maximális szélesség
-      img.style.height = '20vh';  // Magasság beállítása
-
-      // Generálj egy egyedi ID-t (pl. timestamp)
-      const imageId = images.length+1;
+      const imgUrl = reader.result;
 
       // Mentés az images tömbbe
-      images.push({
+      const imageId = newPost.images.length + 1;
+      newPost.images.push({
         id: imageId,
-        url: reader.result
+        url: imgUrl,
+        type: file.type,
       });
 
-      // A képet a kurzor helyére illeszti
-      const selection = window.getSelection();
-      if (selection.rangeCount > 0) {
-        const range = selection.getRangeAt(0);
-        const imgNode = document.createElement('img');
-        imgNode.src = reader.result;
-        imgNode.style.maxWidth = '100%';
-        imgNode.style.height = '20vh';
-
-        // Kép beillesztése a kurzor helyére
-        range.deleteContents();
-        range.insertNode(imgNode);
-      }
+      // Kép beszúrása a kurzor helyére
+      insertImage(imgUrl);
     };
     
-    reader.readAsDataURL(file); // Beolvassa a képet
+    reader.readAsDataURL(file);
+  } else {
+    alert('A fájl nem megfelelő típusú vagy túl nagy (max 1MB).');
   }
 };
 
@@ -947,14 +932,12 @@ function checkSelection(){
         }else{
           activeLink.value = false;
         }
-
       }
     }
   }
 }
 
 let execCommandCheckInterval = null;
-
 function startMonitoring() {
   if (!execCommandCheckInterval) {
     execCommandCheckInterval = setInterval(() => {
@@ -962,7 +945,6 @@ function startMonitoring() {
     }, 200);
   }
 }
-
 function stopMonitoring() {
   if (execCommandCheckInterval) {
     clearInterval(execCommandCheckInterval);
@@ -978,48 +960,26 @@ watch(showCreatePost, (newValue) => {
   }
 });
 
-const addPost = (get_UserName, get_UserID) => {
-  const editor = document.querySelector("#editor");
+const { mutate: CommunityPostUpload } = useCommunityPost();
+const addPost = async () =>{
+  const editor = document.getElementsByClassName("editor")[0];
   let htmlContent = editor.innerHTML;
 
-  const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = htmlContent;
-
-  const images = [];
-  tempDiv.querySelectorAll("img").forEach((img) => {
-    images.push(img.src);
-  });
-
-  const files = uploadedFiles.value.map((file) => ({
-    name: file.name,
-    size: file.size,
-    type: file.type,
-    url: URL.createObjectURL(file),
-  }));
-
-  const mergedArray = images.concat(files);
-
-  if (newPost.title && get_UserName && htmlContent) {
-    // Hívjuk meg a `handlePostUpload`-ot az API kéréshez
-    handlePostUpload({
-      id: get_UserID, 
-      title: newPost.title,
-      content: htmlContent,
-      files: mergedArray,
+  const mergedArray = [...newPost.images, ...newPost.files];
+  if(get_fullUser.value.id && newPost.title && htmlContent){
+    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: htmlContent, type: 'valami'}, {
+      onSuccess: (response) => {
+  
+      },
+      onError: (error) => {
+  
+      },
     });
   }
-
-  // Reseteljük az űrlap adatokat
-  newPost.title = "";
-  newPost.content = "";
-  newPost.images = [];
-  newPost.files = [];
-  uploadedFiles.value = [];
 };
 
-// Drag & Drop események hozzáadása
 nextTick(() => {
-  const editor = document.querySelector("#editor");
+  const editor = document.getElementsByClassName("editor")[0];
 
   if (editor) {
     editor.addEventListener("dragover", (event) => {
@@ -1034,7 +994,7 @@ nextTick(() => {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-          insertImage(e.target.result); // A kép beszúrása
+          insertImage(e.target.result);
         };
 
         reader.readAsDataURL(file);
@@ -1045,57 +1005,68 @@ nextTick(() => {
 
 // Kép beszúrása
 const insertImage = (imageUrl) => {
-  const selection = window.getSelection();
-  const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+  const editor = document.getElementsByClassName("editor")[0]; 
 
-  if (range) {
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = "Uploaded Image";
-    img.style.maxWidth = "20vw";
-    img.style.maxHeight = "20vh";
-    img.style.display = "block";
-
-    range.insertNode(img);
-    range.setStartAfter(img);
-    range.setEndAfter(img);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  } else {
-    const editor = document.querySelector("#editor");
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = "Uploaded Image";
-    img.style.maxWidth = "20vw";
-    img.style.maxHeight = "20vh";
-    img.style.display = "block";
-    editor.appendChild(img);
-
-    const range = document.createRange();
-    range.selectNode(img);
+  if (editor) {
     const selection = window.getSelection();
-    selection.removeAllRanges();
-    selection.addRange(range);
+
+    if (selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      
+      // Ellenőrizzük, hogy a kurzor az editor-ban van
+      if (editor.contains(range.startContainer)) {
+        const img = document.createElement('img');
+        img.src = imageUrl;
+        img.alt = 'Uploaded Image';
+        img.style.maxWidth = '100%';
+        img.style.height = '20vh';
+        img.style.display = 'block';
+
+        range.deleteContents();
+        range.insertNode(img);
+
+        range.setStartAfter(img);
+        range.setEndAfter(img);
+        selection.removeAllRanges();
+        selection.addRange(range);
+      }
+    }
+  } else {
+    console.error('Editor div nem található.');
   }
 };
 
-const handleFileUpload = (event) => {
-  const files = event.target.files;
-  const allowedTypes = ['.js', '.ts', '.vue', '.cs', '.lua', '.txt']; // Engedélyezett fájl típusok
-  const uploadedFilesArray = [...uploadedFiles.value]; // Az eddigi fájlok másolása, hogy ne veszítsd el őket
 
-  for (let file of files) {
-    const fileExtension = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-    if (allowedTypes.includes(`.${fileExtension}`)) {
-      uploadedFilesArray.push(file); // Ha a fájl kiterjesztése engedélyezett, hozzáadjuk
+function handleFileUpload(event) {
+  const uploadedFiles = event.target.files;
+
+  for (const file of uploadedFiles) {
+    if (file.size <= 1 * 1024 * 1024) { // 1 MB limit
+      const obj = {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      };
+
+      if (!newPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+        newPost.files.push(obj);
+      }
     } else {
-      alert(`A(z) ${file.name} fájl nem engedélyezett!`);
+      console.warn(`A fájl mérete túl nagy: ${file.name}`);
     }
   }
+  event.target.value = ''
+}
 
-  // Az összes feltöltött fájl frissítése a tömbben
-  uploadedFiles.value = uploadedFilesArray;
-};
+function triggerFileInput() {
+  if (fileInput.value) {
+    fileInput.value.click();
+  }
+}
+
+function fileDelete(index){
+  newPost.files.value.splice(index,1);
+}
 
 function like(array){
   if(array.userReaction != 'like'){
