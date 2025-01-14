@@ -18,7 +18,7 @@
                     type="text"
                     variant="outlined"
                     clearable
-                    @click:clear="clearMessage"
+                    @click:clear="searchQuery = ''"
                     style="min-width: 14vw;"
                   ></v-text-field>
                 </v-col>
@@ -26,7 +26,7 @@
             </v-container>
           </v-form>
 
-          <v-btn icon elevation="0" @click="toggleCreatePost">
+          <v-btn icon elevation="0" @click="showCreatePost = !showCreatePost">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </div>
@@ -408,7 +408,7 @@
                       small
                       icon 
                       :class="{'active-btn': activeBold}" 
-                      @click="toggleBold"
+                      @click="activeBold = !activeBold"
                       >
                         <v-icon>mdi-format-bold</v-icon>
                       </v-btn>
@@ -417,7 +417,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeItalic}" 
-                      @click="toggleItalic"
+                      @click="activeItalic = !activeItalic"
                       >
                         <v-icon>mdi-format-italic</v-icon>
                       </v-btn>
@@ -426,7 +426,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeStrikethrough}" 
-                      @click="toggleStrikethrough"
+                      @click="activeStrikethrough = !activeStrikethrough"
                       >
                         <v-icon>mdi-format-strikethrough</v-icon>
                       </v-btn>
@@ -435,7 +435,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeUnderline}"
-                      @click="toggleUnderline"
+                      @click="activeUnderline = !activeUnderline"
                       >
                         <v-icon>mdi-format-underline</v-icon>
                       </v-btn>
@@ -444,7 +444,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignLeft}" 
-                      @click="applyAlignLeft"
+                      @click="activeAlignLeft = true && activeAlignCenter = false && activeAlignRight = false"
                       >
                         <v-icon>mdi-format-align-left</v-icon>
                       </v-btn>
@@ -558,7 +558,6 @@
                     <li v-for="(file, index) in uploadedFiles" :key="index">
                       {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
 
-
                       <v-btn 
                         elevation="0" 
                         icon 
@@ -568,7 +567,6 @@
                         <v-icon>mdi-delete</v-icon>
                       </v-btn>
 
-
                     </li>
                   </ul>
                 </div>
@@ -577,7 +575,7 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="community_primary_color" @click="addPost(get_UserName)">Poszt létrehozása</v-btn>
+            <v-btn color="community_primary_color" @click="callAddPost(get_UserName,get_fullUser.id)">Poszt létrehozása</v-btn>
             <v-btn text @click="toggleCreatePost">Mégse</v-btn>
           </v-card-actions>
         </v-card>
@@ -590,6 +588,8 @@
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { reactive, computed, nextTick } from 'vue';
+import { useCommunityPost } from '@/api/community/communityQuery';
 
 const router = useRouter();
 const route = useRoute();
@@ -629,9 +629,7 @@ onMounted(async () => {
     }
   }
 });
-</script>
 
-<script>
 function formatDate(date) {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // hónap, 2 számjegyre
@@ -642,566 +640,207 @@ function formatDate(date) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-export default {
-  name: "CommunityPage",
-  data() {
-    return {
-      content: "", // A textarea tartalma
-      activeBold: false,
-      activeItalic: false,
-      activeStrikethrough: false,
-      activeUnderline: false,
-      activeAlignLeft: true,
-      activeAlignCenter: false,
-      activeAlignRight: false,
-      activeOrderedList: false,
-      activeUnorderedList: false,
-      activeLink: false,
+// Állapotok és változók
+const content = ref(""); // A textarea tartalma
+const activeBold = ref(false);
+const activeItalic = ref(false);
+const activeStrikethrough = ref(false);
+const activeUnderline = ref(false);
+const activeAlignLeft = ref(true);
+const activeAlignCenter = ref(false);
+const activeAlignRight = ref(false);
+const activeOrderedList = ref(false);
+const activeUnorderedList = ref(false);
+const activeLink = ref(false);
+const toggleCreatePost = ref(false);
 
-      uploadedFiles: [],
-      newPost: { title: "", content: "", images: [], files: [] },
+const uploadedFiles = ref([]);
+const newPost = reactive({ title: "", content: "", images: [], files: [] });
 
-      posts: [
-        {
-          id: 1,
-          author: "User123",
-          title: "Vue.js kérdés",
-          content: `<p>valami content</p>
-                    <div id="contentImages1" class="image-placeholder"></div>
-                    <p>Thank you for viewing!</p>`,
-          images: [{id: "contentImages1", src: "https://via.placeholder.com/300"}],
-          files: [],
-          likes: 3,
-          dislikes: 0,
-          userReaction: null,
-          createdAt: "2025-01-01 18:39",
-          comments: [
-            { id: 1, author: "Helper99", createdAt: "2025-01-01 18:39", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null, newComment: "", showCommentsFromComments: false, comments: [{
-              id: 1, author: "Helper99", createdAt: "2025-01-01 18:39", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null, newComment: "", showCommentsFromComments: false, commentLimit: 10, editable: false, gotEdit: false, linkAuthor: ""
-            }], commentLimit: 10, preparingReply: false, editable: false, gotEdit: false},
-            { id: 2, author: "AnotherUser", createdAt: "2025-01-01 18:39", text: "Ugyanez a kérdésem!", likes: 1, dislikes: 0, userReaction: null, newComment: "", showCommentsFromComments: false, comments: [], commentLimit: 10, preparingReply: false, editable: false, gotEdit: false},
-          ],
-          newComment: "",
-          showCommentsFromPost: false,
-          preparingReply: false,
-          commentLimit: 10,
-        },
-      ],
-      newPost: { title: "", content: "", images: [], files: [] },
-      searchQuery: "",
-      showCreatePost: false,
-      editingText: "",
-      dialog: false,
-      selectedImage: null,
-    };
-  },
-  mounted() {
-    this.$nextTick(() => {
-    const editor = this.$refs.editor;
-
-    if (editor) {
-      // Drag & Drop események hozzáadása
-      editor.addEventListener("dragover", (event) => {
-        event.preventDefault(); // Az alapértelmezett viselkedés megakadályozása
-      });
-
-      editor.addEventListener("drop", (event) => {
-        event.preventDefault();
-        const files = event.dataTransfer.files;
-        if (files.length > 0) {
-          const file = files[0];
-          const reader = new FileReader();
-
-          reader.onload = (e) => {
-            this.insertImage(e.target.result); // A kép beszúrása
-          };
-
-          reader.readAsDataURL(file);
-        }
-      });
-    }});
-  },
-  computed: {
-    filteredPosts() {
-      const query = this.searchQuery.toLowerCase();
-      return this.posts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(query) ||
-          post.content.toLowerCase().includes(query)
-      );
-    },
-  },
-  methods: {
-    handleFileUpload(event) {
-      const files = event.target.files;
-      const allowedTypes = ['.js', '.ts', '.vue', '.cs', '.lua', '.txt']; // Engedélyezett fájl típusok
-      const uploadedFiles = [...this.uploadedFiles];  // Az eddigi fájlok másolása, hogy ne veszítsd el őket
-
-      for (let file of files) {
-        const fileExtension = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
-        if (allowedTypes.includes(`.${fileExtension}`)) {
-          uploadedFiles.push(file);  // Ha a fájl kiterjesztése engedélyezett, hozzáadjuk
-        } else {
-          alert(`A(z) ${file.name} fájl nem engedélyezett!`);
-        }
-      }
-
-      // Az összes feltöltött fájl frissítése a tömbben
-      this.uploadedFiles = uploadedFiles;
-    },
-    triggerFileInput() {
-      this.$refs.fileInput.click(); // Fájl input aktiválása
-    },
-    fileDelete(index){
-      this.uploadedFiles.splice(index,1);
-    },
-    getFileUrl(file) {
-      // Ellenőrizd, hogy valóban fájlobjektumot kaptál
-      if (file instanceof File) {
-        return URL.createObjectURL(file); // Hozz létre egy URL-t a fájlhoz
-      }
-      return file.url; // Ha az nem fájl, akkor visszaadhatod közvetlenül a fájl URL-jét (pl. ha már rendelkezésre áll)
-    },
-    updateContent(event) {
-      const selection = window.getSelection();
-      const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-
-      if (range) {
-
-        const cursorPosition = range.startOffset;
-        const startContainer = range.startContainer;
-        
-        this.content = event.target.innerHTML;
-
-        this.$nextTick(() => {
-          const editor = this.$refs.editor;
-
-          if (editor.contains(startContainer)) {
-
-            const newRange = document.createRange();
-            const newSelection = window.getSelection();
-
-            newRange.setStart(startContainer, cursorPosition);
-            newRange.collapse(true);
-
-            newSelection.removeAllRanges();
-            newSelection.addRange(newRange);
-          } else {
-            const fallbackRange = document.createRange();
-            fallbackRange.selectNodeContents(editor);
-            fallbackRange.collapse(false);
-
-            const fallbackSelection = window.getSelection();
-            fallbackSelection.removeAllRanges();
-            fallbackSelection.addRange(fallbackRange);
-          }
-        });
-      }
-    },
-    toggleBold() {
-      this.execCommand("bold");
-      this.activeBold = !this.activeBold;
-    },
-    toggleItalic() {
-      this.execCommand("italic");
-      this.activeItalic = !this.activeItalic;
-    },
-    toggleStrikethrough() {
-      this.execCommand("strikeThrough");
-      this.activeStrikethrough = !this.activeStrikethrough;
-    },
-    toggleUnderline() {
-      this.execCommand("underline");
-      this.activeUnderline = !this.activeUnderline;
-    },
-    applyAlignLeft() {
-      this.execCommand("justifyLeft");
-      this.activeAlignLeft = true;
-      this.activeAlignCenter = false;
-      this.activeAlignRight = false;
-
-      const selection = window.getSelection();
-      const selectedNode = selection.anchorNode;
-
-      if (selectedNode && selectedNode.nodeName === "IMG") {
-        selectedNode.parentElement.style.textAlign = "left";
-      }
-    },
-
-    applyAlignCenter() {
-      this.execCommand("justifyCenter");
-      this.activeAlignCenter = true;
-      this.activeAlignLeft = false;
-      this.activeAlignRight = false;
-
-      const selection = window.getSelection();
-      const selectedNode = selection.anchorNode;
-
-      if (selectedNode && selectedNode.nodeName === "IMG") {
-        selectedNode.parentElement.style.textAlign = "center";
-      }
-    },
-
-    applyAlignRight() {
-      this.execCommand("justifyRight");
-      this.activeAlignRight = true;
-      this.activeAlignLeft = false;
-      this.activeAlignCenter = false;
-
-      const selection = window.getSelection();
-      const selectedNode = selection.anchorNode;
-
-      if (selectedNode && selectedNode.nodeName === "IMG") {
-        selectedNode.parentElement.style.textAlign = "right";
-      }
-    },
-    applyOrderedList() {
-      this.execCommand("insertOrderedList");
-      this.activeOrderedList = !this.activeOrderedList;
-    },
-    applyUnorderedList() {
-      this.execCommand("insertUnorderedList");
-      this.activeUnorderedList = !this.activeUnorderedList;
-    },
-    addLink() {
-      const selection = window.getSelection();
-      const selectedText = selection.toString().trim();
-
-      if (selectedText && this.isValidUrl(selectedText) && !this.activeLink) {
-        const linkNode = document.createElement("a");
-        linkNode.setAttribute("href", selectedText);
-        linkNode.setAttribute("target", "_blank");
-        linkNode.textContent = selectedText;
-
-        const range = selection.getRangeAt(0);
-        range.deleteContents();
-        range.insertNode(linkNode);
-
-        linkNode.addEventListener('click', (event) => {
-          event.preventDefault();
-          window.open(linkNode.href, '_blank');
-        });
-      }
-      else if(this.activeLink){
-        this.activeLink = false;
-      }
-    },
-    isValidUrl(url) {
-      const pattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-      return pattern.test(url);
-    },
-    triggerImageInput() {
-      this.$refs.imageInput.click(); // Kép input aktiválása
-    },
-    handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          this.insertImage(e.target.result);
-        };
-        reader.readAsDataURL(file);
-      }
-    },
-    insertImage(imageUrl) {
-      const selection = window.getSelection();
-      const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
-
-      if (range) {
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = "Uploaded Image";
-        img.style.maxWidth = "20vw";
-        img.style.maxHeight = "20vh";
-        img.style.display = "block";
-
-        range.insertNode(img);
-        range.setStartAfter(img);
-        range.setEndAfter(img);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      } else {
-        const editor = this.$refs.editor;
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = "Uploaded Image";
-        img.style.maxWidth = "20vw";
-        img.style.maxHeight = "20vh";
-        img.style.display = "block";
-        editor.appendChild(img);
-
-        const range = document.createRange();
-        range.selectNode(img);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    },
-    execCommand(command) {
-      // A kurzor pozíciójának mentése
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-
-      // Parancs végrehajtása
-      document.execCommand(command);
-
-      // A kurzor pozíciójának visszaállítása
-      this.$nextTick(() => {
-        const editor = this.$refs.editor;
-        const newRange = document.createRange();
-        const newSelection = window.getSelection();
-
-        // Az új pozíció beállítása
-        newRange.setStart(editor.firstChild, range.startOffset);
-        newRange.setEnd(editor.firstChild, range.endOffset);
-        newSelection.removeAllRanges();
-        newSelection.addRange(newRange);
-      });
-    },
-    clearMessage () {
-      this.searchQuery = ''
-    },
-    toggleCreatePost() {
-      this.showCreatePost = !this.showCreatePost;
-    },
-    addPost(get_UserName) {
-      const editor = this.$refs.editor;
-      let htmlContent = editor.innerHTML;
-
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = htmlContent;
-
-      const images = [];
-      tempDiv.querySelectorAll("img").forEach((img) => {
-        images.push(img.src);
-      });
-
-      const files = this.uploadedFiles.map(file => ({
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-      }));
-
-      const newId = this.posts.length + 1;
-      this.posts.unshift({
-        ...this.newPost,
-        id: newId,
-        author: get_UserName,
-        likes: 0,
+// Posts tömb
+const posts = reactive([
+  {
+    id: 1,
+    author: "User123",
+    title: "Vue.js kérdés",
+    content: `<p>valami content</p>
+              <div id="contentImages1" class="image-placeholder"></div>
+              <p>Thank you for viewing!</p>`,
+    images: [{id: "contentImages1", src: "https://via.placeholder.com/300"}],
+    files: [],
+    likes: 3,
+    dislikes: 0,
+    userReaction: null,
+    createdAt: "2025-01-01 18:39",
+    comments: [
+      {
+        id: 1,
+        author: "Helper99",
+        createdAt: "2025-01-01 18:39",
+        text: "Segíthetek ebben!",
+        likes: 2,
+        dislikes: 1,
+        userReaction: null,
+        newComment: "",
+        showCommentsFromComments: false,
+        comments: []
+      },
+      {
+        id: 2,
+        author: "AnotherUser",
+        createdAt: "2025-01-01 18:39",
+        text: "Ugyanez a kérdésem!",
+        likes: 1,
         dislikes: 0,
         userReaction: null,
-        comments: [],
         newComment: "",
-        showCommentsFromPost: false,
-        preparingReply: false,
-        commentLimit: 10,
-        createdAt: formatDate(new Date()),
-        title: this.newPost.title || "",
-        content: htmlContent,
-        images: images,
-        files: files,  // Fájlok hozzáadása
-      });
-
-      // Új post inicializálása
-      this.newPost = { title: "", content: "", images: [], files: [] };
-      this.uploadedFiles = [];  // Feltöltött fájlok ürítése
-      this.toggleCreatePost();  // Opció: Bezárja a létrehozási felületet
-    },
-    openPreview(image) {
-      this.selectedImage = image;
-      this.dialog = true;
-    },
-    insertImages() {
-      this.posts.forEach((post) => {
-        post.images.forEach((image) => {
-          const placeholder = document.getElementById(image.id);
-          if (placeholder) {
-            // Ellenőrizzük, hogy a kép még nincs-e beszúrva
-            if (!placeholder.querySelector(`img[src="${image.src}"]`)) {
-              const img = document.createElement("img");
-              img.src = image.src;
-              img.style.maxWidth = "100%";
-              img.style.height = "8vw";
-              img.style.cursor = "pointer";
-              //img.setAttribute.onClick(this.openPreview('this'));
-
-              img.addEventListener("click", () => {
-                this.openPreview(image);
-              });
-              placeholder.appendChild(img);
-            }
-          }
-        });
-      });
-    },
-    likePost(post) {
-      if (post.userReaction === "like") {
-        post.likes--;
-        post.userReaction = null;
-      } else {
-        if (post.userReaction === "dislike") post.dislikes--;
-        post.likes++;
-        post.userReaction = "like";
-      }
-    },
-    dislikePost(post) {
-      if (post.userReaction === "dislike") {
-        post.dislikes--;
-        post.userReaction = null;
-      } else {
-        if (post.userReaction === "like") post.likes--;
-        post.dislikes++;
-        post.userReaction = "dislike";
-      }
-    },
-    likeComment(Comment) {
-      if (Comment.userReaction === "like") {
-        Comment.likes--;
-        Comment.userReaction = null;
-      } else {
-        if (Comment.userReaction === "dislike") Comment.dislikes--;
-        Comment.likes++;
-        Comment.userReaction = "like";
-      }
-    },
-    dislikeComment(Comment) {
-      if (Comment.userReaction === "dislike") {
-        Comment.dislikes--;
-        Comment.userReaction = null;
-      } else {
-        if (Comment.userReaction === "like") Comment.likes--;
-        Comment.dislikes++;
-        Comment.userReaction = "dislike";
-      }
-    },
-    toggleCommentsForPost(post) {
-      post.showCommentsFromPost = !post.showCommentsFromPost;
-      if(post.showCommentsFromPost){
-        for (let i = 0; i < post.comments.length; i++) {
-          post.comments[i].showCommentsFromComments = false;
-          for (let j = 0; j < post.comments[i].comments.length; j++) {
-            post.comments[i].comments[j].showCommentsFromComments = false;
-          }
-        }
-      }
-    },
-    toggleCommentsForComments(comment) {
-      comment.showCommentsFromComments = !comment.showCommentsFromComments;
-    },
-    prepareReplyForPost(post) {
-      post.showCommentsFromPost = true;
-      post.preparingReply = true;
-    },
-    cancelPrepareReplyForPost(post) {
-      post.preparingReply = false;
-    },
-    prepareReplyForComment(comment) {
-      comment.showCommentsFromComments = true;
-      comment.preparingReply = true;
-    },
-    cancelPrepareReplyForComment(comment) {
-      comment.preparingReply = false;
-    },
-    cancelPrepareReplyForLastComment(comment) {
-      comment.preparingReply = false;
-    },
-    limitedComments(post) {
-      return post.comments.slice(0, post.commentLimit);
-    },
-    limitedCommentsAtComments(comment) {
-      return comment.comments.slice(0, comment.commentLimit);
-    },
-    loadMoreCommentsForPost(post) {
-      post.commentLimit += 10;
-    },
-    loadMoreCommentsForComments(comment) {
-      comment.commentLimit += 10;
-    },
-    commentEdit(comment,id){
-      comment.editable = true;
-      this.editingText = comment.text;
-
-      this.$nextTick(() => {
-        const inputElement = document.getElementById("commentId" + id);
-        if (inputElement) {
-          inputElement.focus();
-        } else {
-          console.error("Input element not found for id: " + id);
-        }
-      });
-    },
-    cancelCommentEdit(comment){
-      comment.editable = false;
-      comment.text = this.editingText;
-      this.editingText = null;
-    },
-    EditConfirme(comment){
-      comment.editable = false;
-      if(this.editingText != comment.text){
-        comment.gotEdit = true;
-      }
-    },
-    addCommentToPost(post,get_UserName) {
-      if (post.newComment.trim()) {
-        const commentId = post.comments.length + 1;
-        post.comments.push({
-          id: commentId,
-          author: get_UserName,
-          createdAt: formatDate(new Date()),
-          text: post.newComment.trim(),
-          likes: 0, 
-          dislikes: 0, 
-          userReaction: null,
-          comments: [],
-          showCommentsFromComments: false,
-          commentLimit: 10,
-          editable: false
-        });
-        post.newComment = "";
-        post.preparingReply = false; // Visszazárja az írást
-      }
-    },
-    addCommentToComment(Comment,get_UserName) {
-      if (Comment.newComment.trim()) {
-        const commentId = Comment.comments.length + 1;
-        Comment.comments.push({
-          id: commentId,
-          author: get_UserName,
-          createdAt: formatDate(new Date()),
-          text: Comment.newComment.trim(),
-          likes: 0, 
-          dislikes: 0, 
-          userReaction: null,
-          showCommentsFromComments: false,
-          commentLimit: 10,
-          editable: false,
-          gotEdit: false,
-        });
-        Comment.newComment = "";
-        Comment.preparingReply = false; // Visszazárja az írást
-      }
-    },
-    addLastCommentToComment(Comment, inner_comment, get_UserName) {
-      const commentId = Comment.comments.length + 1;
-      Comment.comments.push({
-        id: commentId,
-        author: get_UserName,
-        createdAt: formatDate(new Date()),
-        text: inner_comment.newComment.trim(),
-        likes: 0, 
-        dislikes: 0, 
-        userReaction: null,
         showCommentsFromComments: false,
-        commentLimit: 10,
-        editable: false,
-        gotEdit: false,
-        linkAuthor: "@"+inner_comment.author+ " ",
-      });
-      inner_comment.newComment = "";
-      inner_comment.preparingReply = false; // Visszazárja az írást
-    },
-  },
+        comments: []
+      }
+    ],
+    newComment: "",
+    showCommentsFromPost: false,
+    preparingReply: false,
+    commentLimit: 10,
+  }
+]);
+
+const searchQuery = ref("");
+const showCreatePost = ref(false);
+const editingText = ref("");
+const dialog = ref(false);
+const selectedImage = ref(null);
+
+const { mutate: handlePostUpload } = useCommunityPost();
+
+// Computed properties
+const filteredPosts = computed(() => {
+  const query = searchQuery.value.toLowerCase();
+  return posts.filter(
+    (post) =>
+      post.title.toLowerCase().includes(query) ||
+      post.content.toLowerCase().includes(query)
+  );
+});
+
+// Methods
+const addPost = (get_UserName, get_UserID) => {
+  const editor = document.querySelector("#editor");
+  let htmlContent = editor.innerHTML;
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlContent;
+
+  const images = [];
+  tempDiv.querySelectorAll("img").forEach((img) => {
+    images.push(img.src);
+  });
+
+  const files = uploadedFiles.value.map((file) => ({
+    name: file.name,
+    size: file.size,
+    type: file.type,
+    url: URL.createObjectURL(file),
+  }));
+
+  const mergedArray = images.concat(files);
+
+  if (newPost.title && get_UserName && htmlContent) {
+    // Hívjuk meg a `handlePostUpload`-ot az API kéréshez
+    handlePostUpload({
+      id: get_UserID, 
+      title: newPost.title,
+      content: htmlContent,
+      files: mergedArray,
+    });
+  }
+
+  // Reseteljük az űrlap adatokat
+  newPost.title = "";
+  newPost.content = "";
+  newPost.images = [];
+  newPost.files = [];
+  uploadedFiles.value = [];
+};
+
+// Drag & Drop események hozzáadása
+nextTick(() => {
+  const editor = document.querySelector("#editor");
+
+  if (editor) {
+    editor.addEventListener("dragover", (event) => {
+      event.preventDefault();
+    });
+
+    editor.addEventListener("drop", (event) => {
+      event.preventDefault();
+      const files = event.dataTransfer.files;
+      if (files.length > 0) {
+        const file = files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          insertImage(e.target.result); // A kép beszúrása
+        };
+
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+});
+
+// Kép beszúrása
+const insertImage = (imageUrl) => {
+  const selection = window.getSelection();
+  const range = selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+
+  if (range) {
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Uploaded Image";
+    img.style.maxWidth = "20vw";
+    img.style.maxHeight = "20vh";
+    img.style.display = "block";
+
+    range.insertNode(img);
+    range.setStartAfter(img);
+    range.setEndAfter(img);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  } else {
+    const editor = document.querySelector("#editor");
+    const img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = "Uploaded Image";
+    img.style.maxWidth = "20vw";
+    img.style.maxHeight = "20vh";
+    img.style.display = "block";
+    editor.appendChild(img);
+
+    const range = document.createRange();
+    range.selectNode(img);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  }
+};
+
+const handleFileUpload = (event) => {
+  const files = event.target.files;
+  const allowedTypes = ['.js', '.ts', '.vue', '.cs', '.lua', '.txt']; // Engedélyezett fájl típusok
+  const uploadedFilesArray = [...uploadedFiles.value]; // Az eddigi fájlok másolása, hogy ne veszítsd el őket
+
+  for (let file of files) {
+    const fileExtension = file.name.slice(((file.name.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
+    if (allowedTypes.includes(`.${fileExtension}`)) {
+      uploadedFilesArray.push(file); // Ha a fájl kiterjesztése engedélyezett, hozzáadjuk
+    } else {
+      alert(`A(z) ${file.name} fájl nem engedélyezett!`);
+    }
+  }
+
+  // Az összes feltöltött fájl frissítése a tömbben
+  uploadedFiles.value = uploadedFilesArray;
 };
 </script>
 

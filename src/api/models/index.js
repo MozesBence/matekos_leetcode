@@ -2,6 +2,7 @@ module.exports = (sequelize, DataTypes) => {
     const Users = require("../models/users")(sequelize, DataTypes);
     const Community_posts = require("../models/community_posts")(sequelize, DataTypes);
     const Community_comments = require("../models/community_comments")(sequelize, DataTypes);
+    const Community_files = require("../models/community_files")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Task_comments = require("../models/task_comments")(sequelize, DataTypes);
@@ -85,6 +86,15 @@ module.exports = (sequelize, DataTypes) => {
 
     Community_posts.hasMany(Community_comments, {
         foreignKey: "post_id",
+        allowNull: true,
+    });
+    Community_comments.hasMany(Community_comments, {
+        foreignKey: "parent_comment_id",
+        allowNull: true,
+    });
+    Community_posts.hasMany(Community_files, {
+        foreignKey: "post_id",
+        allowNull: true,
     });
 
     Users.hasMany(Community_posts, {
@@ -103,6 +113,7 @@ module.exports = (sequelize, DataTypes) => {
         Users,
         Community_posts,
         Community_comments,
+        Community_files,
         Themes,
         Tasks,
         Task_comments,

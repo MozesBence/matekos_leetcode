@@ -21,7 +21,8 @@ db.sequelize = sequelize;
 const { 
     Users, 
     Community_comments, 
-    Community_posts, 
+    Community_posts,
+    Community_files, 
     Themes, 
     Tasks, 
     Task_comments, 
@@ -32,12 +33,13 @@ const {
     Tokenz, 
     User_custom, 
     Vip_custom, 
-    Task_solutions // Import Task_solutions
+    Task_solutions
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
 db.Community_comments = Community_comments;
 db.Community_posts = Community_posts;
+db.Community_files = Community_files;
 db.Themes = Themes;
 db.Tasks = Tasks;
 db.Task_comments = Task_comments;
