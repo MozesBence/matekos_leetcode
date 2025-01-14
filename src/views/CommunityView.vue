@@ -408,7 +408,7 @@
                       small
                       icon 
                       :class="{'active-btn': activeBold}" 
-                      @click="activeBold = !activeBold"
+                      @click="toggleBold"
                       >
                         <v-icon>mdi-format-bold</v-icon>
                       </v-btn>
@@ -417,7 +417,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeItalic}" 
-                      @click="activeItalic = !activeItalic"
+                      @click="toggleItalic"
                       >
                         <v-icon>mdi-format-italic</v-icon>
                       </v-btn>
@@ -426,7 +426,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeStrikethrough}" 
-                      @click="activeStrikethrough = !activeStrikethrough"
+                      @click="toggleStrikethrough"
                       >
                         <v-icon>mdi-format-strikethrough</v-icon>
                       </v-btn>
@@ -444,7 +444,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignLeft}" 
-                      @click="activeAlignLeft = true && activeAlignCenter = false && activeAlignRight = false"
+                      @click="AlignActivate('left')"
                       >
                         <v-icon>mdi-format-align-left</v-icon>
                       </v-btn>
@@ -453,7 +453,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignCenter}" 
-                      @click="applyAlignCenter"
+                      @click="AlignActivate('center')"
                       >
                         <v-icon>mdi-format-align-center</v-icon>
                       </v-btn>
@@ -462,7 +462,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignRight}" 
-                      @click="applyAlignRight"
+                      @click="AlignActivate('right')"
                       >
                         <v-icon>mdi-format-align-right</v-icon>
                       </v-btn>
@@ -471,7 +471,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeOrderedList}" 
-                      @click="applyOrderedList"
+                      @click="activeOrderedList = !activeOrderedList"
                       >
                         <v-icon>mdi-format-list-numbered</v-icon>
                       </v-btn>
@@ -480,15 +480,14 @@
                       small
                       icon  
                       :class="{'active-btn': activeUnorderedList}" 
-                      @click="applyUnorderedList"
+                      @click="activeUnorderedList = !activeUnorderedList"
                       >
                         <v-icon>mdi-format-list-bulleted</v-icon>
                       </v-btn>
                       <v-btn 
                       elevation="0"
                       icon 
-                      small 
-                      :class="{'active-btn': activeLink}" 
+                      small
                       @click="addLink"
                       >
                         <v-icon>mdi-link</v-icon>
@@ -585,10 +584,9 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { reactive, computed, nextTick } from 'vue';
 import { useCommunityPost } from '@/api/community/communityQuery';
 
 const router = useRouter();
@@ -724,6 +722,95 @@ const filteredPosts = computed(() => {
 });
 
 // Methods
+function toggleBold() {
+  document.execCommand('bold');
+  activeBold.value = !activeBold.value;
+}
+
+function toggleItalic(){
+  document.execCommand('italic');
+  activeItalic.value = !activeItalic.value;
+}
+
+function toggleStrikethrough() {
+  document.execCommand('strikethrough');
+  activeStrikethrough.value = !activeStrikethrough.value;
+}
+
+function AlignActivate(side){
+  if(side == 'left'){
+    activeAlignLeft.value = true;
+    activeAlignCenter.value = false;
+    activeAlignRight.value = false;
+  }else if(side == 'center'){
+    activeAlignLeft.value = false;
+    activeAlignCenter.value = true;
+    activeAlignRight.value = false;
+  }else if(side == 'right'){
+    activeAlignLeft.value = false;
+    activeAlignCenter.value = false;
+    activeAlignRight.value = true;
+  }
+}
+
+function checkSelection(){
+  const editor = document.getElementsByClassName("editor")[0];
+  if (document.activeElement === editor) {
+    const selection = document.getSelection();
+    if (selection.rangeCount > 0) {
+      const selectedRange = selection.getRangeAt(0);
+      const parentElement = selectedRange.startContainer.parentElement;
+      const computedStyle = window.getComputedStyle(parentElement);
+
+      // Ellenőrizzük, hogy a szülő elem tartalmazza-e a 'font-weight: bold' stílust
+      if(parentElement){
+        if (computedStyle.fontWeight == 700) {
+          activeBold.value = true;
+        } else {
+          activeBold.value = false;
+        }
+  
+        if (computedStyle.fontStyle  == 'italic') {
+          activeItalic.value = true;
+        } else {
+          activeItalic.value = false;
+        }
+  
+        if (computedStyle.textDecorationLine == 'line-through') {
+          activeStrikethrough.value = true;
+        } else {
+          activeStrikethrough.value = false;
+        }
+      }
+    }
+  }
+}
+
+let execCommadnCheckInterval = null;
+
+function startMonitoring() {
+  if (!execCommadnCheckInterval) {
+    execCommadnCheckInterval = setInterval(() => {
+      checkSelection();
+    }, 200);
+  }
+}
+
+function stopMonitoring() {
+  if (execCommadnCheckInterval) {
+    clearInterval(execCommadnCheckInterval);
+    execCommadnCheckInterval = null;
+  }
+}
+
+watch(showCreatePost, (newValue) => {
+  if (newValue) {
+    startMonitoring(); 
+  } else {
+    stopMonitoring(); 
+  }
+});
+
 const addPost = (get_UserName, get_UserID) => {
   const editor = document.querySelector("#editor");
   let htmlContent = editor.innerHTML;
