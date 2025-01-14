@@ -20,8 +20,8 @@ db.sequelize = sequelize;
 
 const { 
     Users, 
-    Topics, 
-    Topics_comments, 
+    Community_comments, 
+    Community_posts, 
     Themes, 
     Tasks, 
     Task_comments, 
@@ -36,8 +36,8 @@ const {
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
-db.Topics = Topics;
-db.Topics_comments = Topics_comments;
+db.Community_comments = Community_comments;
+db.Community_posts = Community_posts;
 db.Themes = Themes;
 db.Tasks = Tasks;
 db.Task_comments = Task_comments;
