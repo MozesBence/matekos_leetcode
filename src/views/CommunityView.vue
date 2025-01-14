@@ -105,25 +105,25 @@
 
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn icon @click="likePost(post)">
-                <v-icon color="red">{{ post.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+              <v-btn icon @click="like(post)">
+                <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                 {{ post.likes }}
               </v-btn>
-              <v-btn icon @click="dislikePost(post)">
-                <v-icon color="purple">{{ post.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+              <v-btn icon @click="dislike(post)">
+                <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                 {{ post.dislikes }}
               </v-btn>
-              <v-btn icon color="community_primary_color" @click="toggleCommentsForPost(post)" class="rounded-circle" v-if="post.comments.length > 0">
-                <v-icon> {{ post.showCommentsFromPost ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
+              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="post.comments.length > 0">
+                <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
                 {{ post.comments.length }}
               </v-btn>
-              <v-btn text color="community_primary_color" @click="prepareReplyForPost(post)">
+              <v-btn text color="community_primary_color" @click="post.showComments = true">
                 Válasz
               </v-btn>
             </v-card-actions>
             <!-- Komment szekció -->
             <v-expand-transition>
-              <div v-if="post.showCommentsFromPost">
+              <div v-if="post.showComments">
                 <!-- Új komment -->
                 <div class="position-relative mx-4 pa-2">
                   <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
@@ -141,12 +141,12 @@
                     ></v-textarea>
                     <div class="d-flex pa-2 pl-0 ga-2">
                       <v-btn
-                        :disabled="post.newComment == ''"
+                        :disabled="post.newComment == ''" 
                         :style="post.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
                         color="transparent"
                         elevation="0"
                         small
-                        @click="addCommentToPost(post, get_UserName)"
+                        @click="addCommentToPost(post)"
                       >
                         Küldés
                       </v-btn>
@@ -187,36 +187,36 @@
                     </div>
                   </div>
                   <div class="ml-1">
-                    <v-btn icon @click="likePost(comment)" elevation="0" style="background-color: transparent;">
+                    <v-btn icon @click="like(comment)" elevation="0" style="background-color: transparent;">
                       <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                       {{ comment.likes }}
                     </v-btn>
-                    <v-btn icon @click="dislikePost(comment)" elevation="0" style="background-color: transparent;">
+                    <v-btn icon @click="dislike(comment)" elevation="0" style="background-color: transparent;">
                       <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                       {{ comment.dislikes }}
                     </v-btn>
-                    <v-btn icon color="transparent" elevation="0" @click="toggleCommentsForComments(comment)" class="rounded-circle" v-if="comment.comments.length > 0">
-                      <v-icon> {{ comment.showCommentsFromComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
+                    <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.comments.length > 0">
+                      <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
                       {{ comment.comments.length }}
                     </v-btn>
-                    <v-btn text color="transparent" elevation="0" @click="prepareReplyForComment(comment)">
+                    <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
                       Válasz
                     </v-btn>
-                    <v-btn v-if="comment.author == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,post.id+''+ index)">
+                    <v-btn v-if="comment.author == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
                       Módosítás
                     </v-btn>
-                    <v-btn v-if="comment.author == get_UserName && comment.editable" text color="transparent" elevation="0" @click="EditConfirme(comment)">
+                    <v-btn v-if="comment.author == get_UserName && comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
                       Módosít
                     </v-btn>
-                    <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="cancelCommentEdit(comment)">
+                    <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
                       Mégse
                     </v-btn>
                   </div>
                   <v-expand-transition>
-                    <div v-if="comment.showCommentsFromComments">
+                    <div v-if="comment.showComments">
                       <!-- Új komment -->
                       <v-expand-transition>
-                        <div class="position-relative mx-4 pa-2" v-if="comment.preparingReply">
+                        <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply">
                           <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                             <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                             <p style="font-size: .8vw;">{{ get_UserName }}</p>
@@ -237,7 +237,7 @@
                                 color="transparent"
                                 elevation="0"
                                 small
-                                @click="addCommentToComment(comment, get_UserName)"
+                                @click="addCommentToComment(comment)"
                               >
                                 Küldés
                               </v-btn>
@@ -245,7 +245,7 @@
                                 color="transparent"
                                 elevation="0"
                                 small
-                                @click="cancelPrepareReplyForComment(comment)"
+                                @click="comment.prepareReply = false"
                               >
                                 Mégse
                               </v-btn>
@@ -257,7 +257,7 @@
                       <v-divider class="my-2" v-if="comment.comments.length > 0"></v-divider>
                       <v-expand-transition>
                         <div>
-                          <div v-for="(inner_comment, index) in limitedCommentsAtComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
+                          <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                             <div class="d-flex flex-column pl-2">
                               <div class="d-flex ga-2 align-center">
                                 <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
@@ -288,35 +288,35 @@
                               </div>
                             </div>
                             <div class="ml-1">
-                              <v-btn icon @click="likePost(inner_comment)" elevation="0" style="background-color: transparent;">
+                              <v-btn icon @click="like(inner_comment)" elevation="0" style="background-color: transparent;">
                                 <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                                 {{ inner_comment.likes }}
                               </v-btn>
-                              <v-btn icon @click="dislikePost(inner_comment)" elevation="0" style="background-color: transparent;">
+                              <v-btn icon @click="dislike(inner_comment)" elevation="0" style="background-color: transparent;">
                                 <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                                 {{ inner_comment.dislikes }}
                               </v-btn>
-                              <v-btn v-if="inner_comment.author != get_UserName" text color="transparent" elevation="0" @click="prepareReplyForComment(inner_comment)">
+                              <v-btn v-if="inner_comment.author != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                 Válasz
                               </v-btn>
                               <v-expand-transition>
-                                <v-btn v-if="inner_comment.author == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,post.id+''+comment.id+''+ index)">
+                                <v-btn v-if="inner_comment.author == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
                                   Módosítás
                                 </v-btn>
                               </v-expand-transition>
                               <v-expand-transition>
-                                <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="EditConfirme(inner_comment)">
+                                <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
                                   Módosít
                                 </v-btn>
                               </v-expand-transition>
                               <v-expand-transition>
-                                <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="cancelCommentEdit(inner_comment)">
+                                <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
                                   Mégse
                                 </v-btn>
                               </v-expand-transition>
                             </div>
                             <v-expand-transition>
-                              <div class="position-relative mx-4 pa-2" v-if="inner_comment.preparingReply">
+                              <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
                                 <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                                   <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                   <p style="font-size: .8vw;">{{ get_UserName }}</p>
@@ -337,7 +337,7 @@
                                       color="transparent"
                                       elevation="0"
                                       small
-                                      @click="addLastCommentToComment(comment, inner_comment, get_UserName)"
+                                      @click="addLastCommentToComment(comment, inner_comment)"
                                     >
                                       Küldés
                                     </v-btn>
@@ -435,7 +435,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeUnderline}"
-                      @click="activeUnderline = !activeUnderline"
+                      @click="toggleUnderline"
                       >
                         <v-icon>mdi-format-underline</v-icon>
                       </v-btn>
@@ -471,7 +471,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeOrderedList}" 
-                      @click="activeOrderedList = !activeOrderedList"
+                      @click="toggleOrderedList"
                       >
                         <v-icon>mdi-format-list-numbered</v-icon>
                       </v-btn>
@@ -480,7 +480,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeUnorderedList}" 
-                      @click="activeUnorderedList = !activeUnorderedList"
+                      @click="toggleUnorderedList"
                       >
                         <v-icon>mdi-format-list-bulleted</v-icon>
                       </v-btn>
@@ -488,7 +488,8 @@
                       elevation="0"
                       icon 
                       small
-                      @click="addLink"
+                      :class="{'active-btn': activeLink}" 
+                      @click="createLink"
                       >
                         <v-icon>mdi-link</v-icon>
                       </v-btn>
@@ -575,7 +576,7 @@
 
           <v-card-actions>
             <v-btn color="community_primary_color" @click="callAddPost(get_UserName,get_fullUser.id)">Poszt létrehozása</v-btn>
-            <v-btn text @click="toggleCreatePost">Mégse</v-btn>
+            <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -640,6 +641,7 @@ function formatDate(date) {
 
 // Állapotok és változók
 const content = ref(""); // A textarea tartalma
+const images = [];
 const activeBold = ref(false);
 const activeItalic = ref(false);
 const activeStrikethrough = ref(false);
@@ -650,7 +652,6 @@ const activeAlignRight = ref(false);
 const activeOrderedList = ref(false);
 const activeUnorderedList = ref(false);
 const activeLink = ref(false);
-const toggleCreatePost = ref(false);
 
 const uploadedFiles = ref([]);
 const newPost = reactive({ title: "", content: "", images: [], files: [] });
@@ -680,8 +681,24 @@ const posts = reactive([
         dislikes: 1,
         userReaction: null,
         newComment: "",
-        showCommentsFromComments: false,
-        comments: []
+        showComments: false,
+        prepareReply: false,
+        gotEdit: false,
+        editable: false,
+        comments: [{
+            id: 1,
+            author: "Helper99",
+            createdAt: "2025-01-01 18:39",
+            text: "Segíthetek ebben!",
+            likes: 2,
+            dislikes: 1,
+            userReaction: null,
+            newComment: "",
+            showComments: false,
+            prepareReply: false,
+            gotEdit: false,
+            editable: false,
+          },]
       },
       {
         id: 2,
@@ -692,13 +709,15 @@ const posts = reactive([
         dislikes: 0,
         userReaction: null,
         newComment: "",
-        showCommentsFromComments: false,
+        showComments: false,
+        prepareReply: false,
+        gotEdit: false,
+        editable: false,
         comments: []
       }
     ],
     newComment: "",
-    showCommentsFromPost: false,
-    preparingReply: false,
+    showComments: false,
     commentLimit: 10,
   }
 ]);
@@ -737,21 +756,129 @@ function toggleStrikethrough() {
   activeStrikethrough.value = !activeStrikethrough.value;
 }
 
+function toggleUnderline(){
+  document.execCommand('underline');
+  activeUnderline.value = !activeUnderline.value;
+}
+
 function AlignActivate(side){
   if(side == 'left'){
+    document.execCommand('justifyLeft');
     activeAlignLeft.value = true;
     activeAlignCenter.value = false;
     activeAlignRight.value = false;
   }else if(side == 'center'){
+    document.execCommand('justifyCenter');
     activeAlignLeft.value = false;
     activeAlignCenter.value = true;
     activeAlignRight.value = false;
   }else if(side == 'right'){
+    document.execCommand('justifyRight');
     activeAlignLeft.value = false;
     activeAlignCenter.value = false;
     activeAlignRight.value = true;
   }
 }
+
+function toggleOrderedList(){
+  document.execCommand('insertOrderedList');
+  activeOrderedList.value = !activeOrderedList.value;
+}
+
+function toggleUnorderedList(){
+  document.execCommand('insertUnorderedList');
+  activeUnorderedList.value = !activeUnorderedList.value;
+}
+
+function createLink() {
+  const selection = window.getSelection();
+
+  if (selection && selection.toString().length > 0 && selection.toString() != '') {
+    let url = selection.toString().trim();
+
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'http://' + url;
+    }
+
+    if (isLink(url)) {
+      const range = selection.getRangeAt(0);
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+
+      const linkText = document.createTextNode(selection.toString());
+
+      link.appendChild(linkText);
+
+      range.deleteContents();
+      range.insertNode(link);
+
+      link.focus();
+      
+      link.addEventListener('click', (e) => {
+        window.open(link.href, '_blank');
+        e.preventDefault();
+      });
+
+      activeLink.value = true;
+    }
+  } else {
+    document.execCommand('unlink');
+    activeLink.value = false;
+  }
+}
+function isLink(text) {
+  try {
+    const url = new URL(text);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch (e) {
+    return false; // Ha nem érvényes URL, kivételt dob
+  }
+}
+
+const triggerImageInput = () => {
+  imageInput.value.click(); // Aktiválja a fájl inputot
+};
+
+const handleImageUpload = async (event) => {
+  const file = event.target.files[0];
+  
+  if (file && file.type.startsWith('image') && file.size <= 1048576) {
+    const reader = new FileReader();
+    
+    reader.onload = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.style.maxWidth = '100%';  // Maximális szélesség
+      img.style.height = '20vh';  // Magasság beállítása
+
+      // Generálj egy egyedi ID-t (pl. timestamp)
+      const imageId = images.length+1;
+
+      // Mentés az images tömbbe
+      images.push({
+        id: imageId,
+        url: reader.result
+      });
+
+      // A képet a kurzor helyére illeszti
+      const selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const imgNode = document.createElement('img');
+        imgNode.src = reader.result;
+        imgNode.style.maxWidth = '100%';
+        imgNode.style.height = '20vh';
+
+        // Kép beillesztése a kurzor helyére
+        range.deleteContents();
+        range.insertNode(imgNode);
+      }
+    };
+    
+    reader.readAsDataURL(file); // Beolvassa a képet
+  }
+};
 
 function checkSelection(){
   const editor = document.getElementsByClassName("editor")[0];
@@ -781,25 +908,65 @@ function checkSelection(){
         } else {
           activeStrikethrough.value = false;
         }
+
+        if (computedStyle.textDecorationLine == 'underline' && selectedRange.commonAncestorContainer.parentElement.tagName != 'A') {
+          activeUnderline.value = true;
+        } else {
+          activeUnderline.value = false;
+        }
+
+        if(computedStyle.textAlign == 'start' || computedStyle.textAlign == 'left'){
+          activeAlignLeft.value = true;
+          activeAlignCenter.value = false;
+          activeAlignRight.value = false;
+        }else if(computedStyle.textAlign == 'center'){;
+          activeAlignLeft.value = false;
+          activeAlignCenter.value = true;
+          activeAlignRight.value = false;
+        }else if(computedStyle.textAlign == 'right'){
+          activeAlignLeft.value = false;
+          activeAlignCenter.value = false;
+          activeAlignRight.value = true;
+        }
+
+        const orderlistParentElement = selectedRange.commonAncestorContainer.parentElement.parentElement;
+        if (orderlistParentElement.tagName == 'OL') {
+          activeOrderedList.value = true;
+        }else{
+          activeOrderedList.value = false;
+        }
+
+        if (orderlistParentElement.tagName == 'UL') {
+          activeUnorderedList.value = true;
+        }else{
+          activeUnorderedList.value = false;
+        }
+
+        if (selectedRange.commonAncestorContainer.parentElement.tagName == 'A') {
+          activeLink.value = true;
+        }else{
+          activeLink.value = false;
+        }
+
       }
     }
   }
 }
 
-let execCommadnCheckInterval = null;
+let execCommandCheckInterval = null;
 
 function startMonitoring() {
-  if (!execCommadnCheckInterval) {
-    execCommadnCheckInterval = setInterval(() => {
+  if (!execCommandCheckInterval) {
+    execCommandCheckInterval = setInterval(() => {
       checkSelection();
     }, 200);
   }
 }
 
 function stopMonitoring() {
-  if (execCommadnCheckInterval) {
-    clearInterval(execCommadnCheckInterval);
-    execCommadnCheckInterval = null;
+  if (execCommandCheckInterval) {
+    clearInterval(execCommandCheckInterval);
+    execCommandCheckInterval = null;
   }
 }
 
@@ -929,15 +1096,128 @@ const handleFileUpload = (event) => {
   // Az összes feltöltött fájl frissítése a tömbben
   uploadedFiles.value = uploadedFilesArray;
 };
+
+function like(array){
+  if(array.userReaction != 'like'){
+    if(array.userReaction == 'dislike'){
+      array.dislikes = array.dislikes - 1;
+    }
+    array.likes = array.likes + 1;
+    array.userReaction = 'like'
+  }else{
+    array.likes = array.likes - 1;
+    array.userReaction = null
+  }
+}
+
+function dislike(array){
+  if(array.userReaction != 'dislike'){
+    if(array.userReaction == 'like'){
+      array.likes = array.likes - 1;
+    }
+    array.dislikes = array.dislikes + 1;
+    array.userReaction = 'dislike'
+  }else{
+    array.dislikes = array.dislikes - 1;
+    array.userReaction = null
+  }
+}
+
+function prepareReply(array){
+  array.prepareReply = true;
+  array.showComments = true;
+}
+
+function limitedComments(array){
+  return array.comments.slice(0,array.limitedComments);
+}
+
+function commentEdit(comment,id){
+  comment.editable = true;
+  nextTick(() => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.focus();
+    }
+  });
+}
+
+function addCommentToPost(post){
+  if(post.newComment != ""){
+    post.comments.push({
+      id: post.comments.length+1,
+      author: get_UserName,
+      createdAt: formatDate(new Date()),
+      text: post.newComment,
+      likes: 0,
+      dislikes: 0,
+      userReaction: null,
+      newComment: "",
+      showComments: false,
+      prepareReply: false,
+      gotEdit: false,
+      editable: false,
+      comments: []
+    });
+    
+    post.newComment = "";
+  }
+}
+
+function addCommentToComment(comment){
+  if(comment.newComment != ""){
+    comment.comments.push({
+      id: comment.comments.length+1,
+      author: get_UserName,
+      createdAt: formatDate(new Date()),
+      text: comment.newComment,
+      likes: 0,
+      dislikes: 0,
+      userReaction: null,
+      newComment: "",
+      showComments: false,
+      prepareReply: false,
+      gotEdit: false,
+      editable: false,
+      comments: []
+    });
+    comment.prepareReply = false;
+    comment.newComment = "";
+  }
+}
+
+function addLastCommentToComment(comment, inner_comment){
+  if(inner_comment.newComment != ""){
+    comment.comments.push({
+      id: comment.comments.length+1,
+      author: get_UserName,
+      createdAt: formatDate(new Date()),
+      text: inner_comment.newComment,
+      likes: 0,
+      dislikes: 0,
+      userReaction: null,
+      newComment: "",
+      showComments: false,
+      prepareReply: false,
+      gotEdit: false,
+      editable: false,
+      linkAuthor: "@"+comment.author,
+      comments: []
+    });
+    inner_comment.prepareReply = false;
+    inner_comment.newComment = "";
+  }
+}
+
 </script>
 
 <style>
 .v-img {
-  cursor: pointer; /* Mutatja, hogy a kép kattintható */
-  transition: transform 0.2s ease; /* Finom animáció */
+  cursor: pointer;
+  transition: transform 0.2s ease;
 }
 .v-img:hover {
-  transform: scale(1.05); /* Kisebb nagyítás az egérrel való áthúzáskor */
+  transform: scale(1.05);
 }
 
 .PostsMargin:last-child{
@@ -1035,5 +1315,21 @@ const handleFileUpload = (event) => {
 .editor a:hover {
   text-decoration: none;
   color: #1565c0;
+}
+
+.editor ol li {
+  list-style-type: decimal;
+  margin-left: 1.5rem;
+  transition: .3s;
+}
+.editor ul li {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+  transition: .3s;
+}
+
+.editor a {
+  pointer-events: auto;
+  color: red;
 }
 </style>
