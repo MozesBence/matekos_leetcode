@@ -554,21 +554,23 @@
                   <p class="mx-4">
                     Kiválasztott fájlok:
                   </p>
-                  <ul class="mx-12">
-                    <li v-for="(file, index) in newPost.files" :key="index">
-                      {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
+                  <v-expand-transition>
+                    <ul class="mx-12">
+                      <li v-for="(file, index) in newPost.files" :key="index">
+                        {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
 
-                      <v-btn 
-                        elevation="0" 
-                        icon 
-                        small 
-                        @click="fileDelete(index)"
-                      >
-                        <v-icon>mdi-delete</v-icon>
-                      </v-btn>
+                        <v-btn 
+                          elevation="0" 
+                          icon 
+                          small 
+                          @click="fileDelete(index)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
 
-                    </li>
-                  </ul>
+                      </li>
+                    </ul>
+                  </v-expand-transition>
                 </div>
               </v-expand-transition>
             </div>
@@ -856,7 +858,7 @@ const handleImageUpload = async (event) => {
       });
 
       // Kép beszúrása a kurzor helyére
-      insertImage(imgUrl);
+      insertImage();
     };
     
     reader.readAsDataURL(file);
@@ -965,9 +967,52 @@ const addPost = async () =>{
   const editor = document.getElementsByClassName("editor")[0];
   let htmlContent = editor.innerHTML;
 
+   // Létrehozunk egy ideiglenes DOM elemet a HTML tartalommal
+   const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlContent;
+
+  // Az összes <img> elem `src` attribútumát eltávolítjuk
+  const imgElements = tempDiv.querySelectorAll("img");
+  imgElements.forEach(img => {
+    img.removeAttribute("src"); // Törli az `src` attribútumot
+  });
+
+  // A módosított HTML tartalom
+  const cleanedHtmlContent = tempDiv.innerHTML;
+
   const mergedArray = [...newPost.images, ...newPost.files];
+
+  for(file in mergedArray){
+    if (file) {
+      try {
+        // Kép tömörítése
+        const options = {
+          maxSizeMB: 0.1,
+          useWebWorker: true,
+        };
+  
+        const compressedFile = await imageCompression(file, options);
+  
+        // Frissítjük a profilképet a tömörített fájl URL-jével
+        profileImage.value = URL.createObjectURL(compressedFile);
+        isProfImageAvailable.value = true;
+        compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
+  
+        // Tömörített fájl adatainak továbbítása
+        var ProfPicUploaddata = {
+          file: compressedFile,
+          type: file.,
+        };
+  
+        // Profilkép feltöltése
+  
+      } catch (error) {
+        console.error("Képtömörítési hiba:", error);
+      }
+    }
+  }
   if(get_fullUser.value.id && newPost.title && htmlContent){
-    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: htmlContent, type: 'valami'}, {
+    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: mergedArray}, {
       onSuccess: (response) => {
   
       },
@@ -994,7 +1039,7 @@ nextTick(() => {
         const reader = new FileReader();
 
         reader.onload = (e) => {
-          insertImage(e.target.result);
+          insertImage();
         };
 
         reader.readAsDataURL(file);
@@ -1004,7 +1049,7 @@ nextTick(() => {
 });
 
 // Kép beszúrása
-const insertImage = (imageUrl) => {
+const insertImage = () => {
   const editor = document.getElementsByClassName("editor")[0]; 
 
   if (editor) {
@@ -1016,8 +1061,8 @@ const insertImage = (imageUrl) => {
       // Ellenőrizzük, hogy a kurzor az editor-ban van
       if (editor.contains(range.startContainer)) {
         const img = document.createElement('img');
-        img.src = imageUrl;
-        img.alt = 'Uploaded Image';
+        img.src = newPost.images[newPost.images.length-1].url;
+        img.alt = 'Uploaded ' + newPost.images.length+'. Image';
         img.style.maxWidth = '100%';
         img.style.height = '20vh';
         img.style.display = 'block';
@@ -1035,7 +1080,6 @@ const insertImage = (imageUrl) => {
     console.error('Editor div nem található.');
   }
 };
-
 
 function handleFileUpload(event) {
   const uploadedFiles = event.target.files;
@@ -1065,7 +1109,7 @@ function triggerFileInput() {
 }
 
 function fileDelete(index){
-  newPost.files.value.splice(index,1);
+  newPost.files.splice(index,1);
 }
 
 function like(array){
