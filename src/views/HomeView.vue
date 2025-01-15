@@ -128,7 +128,7 @@
           style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;" 
         >
           <template v-slot:default="{value }">
-            <strong>{{ Math.ceil(get_fullUser) }}. szint</strong> <!-- Display 'level' -->
+            <strong>{{ Math.ceil(1) }}. szint</strong> <!-- Display 'level' -->
           </template>
         </v-progress-linear>
       </div>
@@ -243,19 +243,17 @@
         {{ link }}
       </v-btn>
       <v-col class="text-center mt-4" cols="12">
-        Copyright © {{ new Date().getFullYear() }} — Math Solve{{cardsStore.solved_task_rates}}
+        Copyright © {{ new Date().getFullYear() }} — Math Solve{{get_fullUser}}
       </v-col>
     </v-row>
   </v-footer>
 </template>
-
 <script lang="ts">
 import { defineComponent, onMounted, ref } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { number } from 'zod';
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -270,7 +268,7 @@ function getCookie(name: string): string | null {
 
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
-const get_fullUser = ref<any>(null);
+const get_fullUser = ref<any[]>([]);
 
 export default defineComponent({
   name: 'ThemeComponent',
@@ -279,22 +277,26 @@ export default defineComponent({
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
 
+    // Assigning colors based on difficulty level
     const chipColor = (difficulty: number) => {
       if (difficulty === 0) return 'green';
       if (difficulty === 1) return 'orange';
       return 'red';
     };
 
+    // Assigning labels based on difficulty
     const difficultyLabel = (difficulty: number) => {
       if (difficulty === 0) return 'Könnyű';
       if (difficulty === 1) return 'Közepes';
       return 'Nehéz';
     };
 
+    // Getting task state based on task ID
     const getTaskStateForCard = (taskId: number) => {
       return cardsStore.task_state.find(task => task.task_id === taskId) || null;
     };
 
+    // Getting task icon based on task state
     const getTaskIcon = (taskId: number) => {
       const taskState = getTaskStateForCard(taskId);
       if (taskState) {
@@ -304,19 +306,18 @@ export default defineComponent({
       return { icon: '', color: '' };
     };
 
-    
+    // Calculate completion rate for cards
     const cardCompRate = (CompArray: { task_id: number; completionRate: number }[], cardId: number): number | "NaN" => {
       const found = CompArray.find((c) => c.task_id === cardId);
       return found ? found.completionRate : "NaN";
-    }
+    };
 
     onMounted(async () => {
-      const userCookie = getCookie('user');
+      const userCookie = getCookie('user'); // Retrieve the user token from the cookie
       if (userCookie) {
         try {
-          const userData = JSON.parse(userCookie);
-          get_user_name.value = userData.user;
-          get_user_email.value = userData.email;
+          const userData = JSON.parse(atob(userCookie.split('.')[1])); // Decode JWT payload
+          get_user_name.value = userData.id;  // Assuming user `id` from JWT
         } catch (error) {
           console.error('Error parsing user cookie:', error);
         }
@@ -328,7 +329,7 @@ export default defineComponent({
           await ProfileGetUser(get_user_email.value, {
             onSuccess: (get_user) => {
               get_user_name.value = get_user.user_name;
-              get_fullUser.value = get_user;
+              get_fullUser.value.push(get_user);
             },
           });
         } catch (error) {
@@ -336,15 +337,13 @@ export default defineComponent({
         }
       }
 
-
-
-      // MEG CSAK TEMP VALUEK
+      // Fetching data from various stores
       quoteStore.fetchQuote();
       themeStore.fetchThemes();
       cardsStore.fetchCards();
       cardsStore.fetchCompletionRate();
-      cardsStore.fetchSolvedTaskRates(1);
-      cardsStore.fetchTaskState(1); 
+      cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
+      cardsStore.fetchTaskState(Number(get_user_name.value)); 
     });
 
     return {
