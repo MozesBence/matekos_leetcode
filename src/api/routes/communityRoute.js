@@ -4,11 +4,7 @@ const route = express.Router();
 
 const communityControllers = require("../controllers/communityControllers");
 
-const profileControllers = require("../controllers/profileController");
-
-const profileAuth = require("../middlewares/profileAuth");
-
-route.get("/community", [ profileAuth.verifyToken ], profileControllers.getFullUser);
+route.get("/community", communityControllers.getLimitedPosts);
 
 const multer = require('multer');
 const path = require('path');

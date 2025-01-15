@@ -11,6 +11,31 @@ class communityRepository
         this.Community_posts = db.Community_posts;
 
         this.Community_files = db.Community_files;
+
+        this.Community_comments = db.Community_comments;
+    }
+
+    async getLimitedPost(limit) {
+        const posts = await this.Community_posts.findAll({
+            limit,
+            order: [['createdAt', 'DESC']],
+            include: [
+                {
+                    model: this.Community_files,
+                },
+                {
+                    model: this.Community_comments,
+                    include: [
+                        {
+                            model: this.Community_comments,
+                            as: 'total_comments',
+                        },
+                    ],
+                },
+            ],
+        });
+    
+        return posts;
     }
 
     async postUpload(post) {
@@ -33,9 +58,6 @@ class communityRepository
                 post_id: postId,
             });
 
-            console.log(newFiles);
-    
-            // Mentés adatbázisba
             await newFiles.save();
             saveFiles.push(newFiles);
         }

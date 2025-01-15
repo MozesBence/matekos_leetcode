@@ -2,6 +2,10 @@ const communityRepository  = require("../repositories/communityRepository");
 
 class communityService
 {
+    async getLimitedPost(limit){
+        communityRepository.getLimitedPost(limit);
+    }
+
     async postUpload(post)
     {
         return await communityRepository.postUpload(post);

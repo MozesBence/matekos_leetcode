@@ -1,5 +1,9 @@
 const communityService = require("../services/communityService");
 
+exports.getLimitedPosts = async (req, res, next) => {
+    const get_posts = await communityService.getLimitedPost(limit);
+};
+
 exports.postUpload = async (req, res, next) => {
     const {id, title, content} = req.body;
     const files = req.files;
@@ -13,11 +17,30 @@ exports.postUpload = async (req, res, next) => {
         user_id: id,
     }
 
-    const post_result = await communityService.postUpload(newPost);
+    try{
+        const post_result = await communityService.postUpload(newPost);
 
-    const postFiles_result = await communityService.postFilesUpload(files, post_result.id);
+        if(post_result == null){
+            const error = new Error("Sikertelen volt a poszt feltöltés!");
 
-    console.log(postFiles_result); // Fájlok
+            error.status(400);
 
-    res.status(200).send({ message: 'Files received', files: req.files });
+            throw error;
+        }
+    
+        const postFiles_result = await communityService.postFilesUpload(files, post_result.id);
+
+        if(postFiles_result == null){
+            const error = new Error("A poszt feltöltése megtörtént de sikertelen volt a fájl(ok) feltöltése(i)!");
+
+            error.status(400);
+
+            throw error;
+        }
+    
+        res.status(201).send("Sikeres volt a poszt feltöltése!");
+    }
+    catch(error){
+        next(error);
+    }
 };

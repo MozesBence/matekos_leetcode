@@ -65,7 +65,7 @@ app.use('/api/task_solution',task_solution_route);
 //----------------------
 
 //community page routes
-const community_route = require('../src/api/routes/communityRoute')
+const community_route = require('../src/api/routes/communityRoute');
 app.use('/',community_route);
 //----------------------
 
