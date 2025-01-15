@@ -3,27 +3,27 @@ import { useMutation } from '@tanstack/vue-query'
 import type { CommunityData } from './community'
 
 const CommunityPostUpload = async (data: CommunityData) => {
+  const formData = new FormData();
+  formData.append('id', data.id.toString());
+  formData.append('title', data.title);
+  formData.append('content', data.content);
+   // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
+  Object.keys(data.files).forEach(key => {
+    const file = data.files[key];
 
-    const baseData = {
-        id: data.id,
-        title: data.title,
-        content: data.content,
-        type: "alap_post",
-    };
-    
-      // Első POST kérés a base adatokkal
-    const response = await axiosClient.post('http://localhost:3000/community', baseData);
-      
-    /*for (const file of data.files) {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('postId', response.data.id); // Kapcsolat az alap adatokkal
+    // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
+    if (file instanceof File || file instanceof Blob) {
+      formData.append('files', file); // Hozzáadjuk a fájlt a FormData-hoz
+    } else {
+      // Ha nem fájl, logold az objektumot
+      console.error("Nem fájl objektum:", file);
+    }
+  });
 
-        const fileResponse = await axiosClient.post('http://localhost:3000/community/files', formData);
-        console.log('File response:', fileResponse.data);
-    }*/
-
-    return response.data;
+  const response = await axiosClient.post('http://localhost:3000/community', formData,{
+                                                                                        headers: { 'Content-Type': 'multipart/form-data' },
+                                                                                    });
+  return response.data;
 }
 
 export const useCommunityPost = () => {

@@ -591,6 +591,7 @@ import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost } from '@/api/community/communityQuery';
+import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
 const route = useRoute();
@@ -967,8 +968,8 @@ const addPost = async () =>{
   const editor = document.getElementsByClassName("editor")[0];
   let htmlContent = editor.innerHTML;
 
-   // Létrehozunk egy ideiglenes DOM elemet a HTML tartalommal
-   const tempDiv = document.createElement("div");
+  // Létrehozunk egy ideiglenes DOM elemet a HTML tartalommal
+  const tempDiv = document.createElement("div");
   tempDiv.innerHTML = htmlContent;
 
   // Az összes <img> elem `src` attribútumát eltávolítjuk
@@ -982,37 +983,10 @@ const addPost = async () =>{
 
   const mergedArray = [...newPost.images, ...newPost.files];
 
-  for(file in mergedArray){
-    if (file) {
-      try {
-        // Kép tömörítése
-        const options = {
-          maxSizeMB: 0.1,
-          useWebWorker: true,
-        };
-  
-        const compressedFile = await imageCompression(file, options);
-  
-        // Frissítjük a profilképet a tömörített fájl URL-jével
-        profileImage.value = URL.createObjectURL(compressedFile);
-        isProfImageAvailable.value = true;
-        compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
-  
-        // Tömörített fájl adatainak továbbítása
-        var ProfPicUploaddata = {
-          file: compressedFile,
-          type: file.,
-        };
-  
-        // Profilkép feltöltése
-  
-      } catch (error) {
-        console.error("Képtömörítési hiba:", error);
-      }
-    }
-  }
+  const compressingFilesArray = await compressingFiles(mergedArray);
+
   if(get_fullUser.value.id && newPost.title && htmlContent){
-    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: mergedArray}, {
+    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
       onSuccess: (response) => {
   
       },
@@ -1022,6 +996,49 @@ const addPost = async () =>{
     });
   }
 };
+
+const compressingFiles = async (mergedArray) =>{
+  var compressFilesArray = [];
+  for (const file of mergedArray) {
+    if (file) {
+      try {
+        let blob;
+
+        if (file.url) {
+          // Ha a fájlnak van URL-je (kép)
+          const response = await fetch(file.url);
+          blob = await response.blob();
+        } else if (file.name) {
+          // Ha a fájlnak van neve (feltöltött fájl)
+          blob = new Blob([file], { type: file.type });
+        }
+
+        // Ha a fájl típus képi adat, tömörítjük
+        if (file.type.startsWith('image/')) {
+          const options = {
+            maxSizeMB: 0.1,
+            useWebWorker: true,
+          };
+
+          blob = await imageCompression(blob, options);
+        }
+
+        // Blob tárolása vagy továbbítása
+        const compressedFile = new File([blob], file.name || `image_${Date.now()}.jpg`, {
+          type: blob.type,
+        });
+
+        // URL a blob fájlhoz (ha szükséges megjelenítéshez)
+        const fileUrl = URL.createObjectURL(compressedFile);
+
+        compressFilesArray.push(compressedFile);
+      } catch (error) {
+        console.error('Fájl feldolgozási hiba:', error);
+      }
+    }
+  }
+  return compressFilesArray;
+}
 
 nextTick(() => {
   const editor = document.getElementsByClassName("editor")[0];
@@ -1063,6 +1080,7 @@ const insertImage = () => {
         const img = document.createElement('img');
         img.src = newPost.images[newPost.images.length-1].url;
         img.alt = 'Uploaded ' + newPost.images.length+'. Image';
+        img.id = 'postImage'+newPost.images.length;
         img.style.maxWidth = '100%';
         img.style.height = '20vh';
         img.style.display = 'block';
