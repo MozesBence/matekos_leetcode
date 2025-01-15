@@ -29,7 +29,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.CHAR(15),
                 defaultValue: "member",
             },
-            experience_level: {
+            experience_point: {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
             },
