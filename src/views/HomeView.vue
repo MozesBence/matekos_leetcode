@@ -344,9 +344,11 @@ export default defineComponent({
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value)); 
+
     });
 
     return {
+      
       themeStore,
       cardsStore,
       quoteStore,

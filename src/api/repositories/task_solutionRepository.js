@@ -44,26 +44,41 @@ const task_solutionRepository = {
                 state: 1
             }
         });
-        //await countByDifficulty(completedTasksArray)
+        
+        const countpercenct = await task_solutionRepository.countByDifficulty(completedTasksArray);
+        
         return {
             userId,
             totalTasks,
             completedTasks,
             completedTasksArray,
-            solvedRate: (completedTasks / totalTasks) * 100
+            solvedRate: (completedTasks / totalTasks) * 100,
+            countpercenct
         };
     },
+    
     //emiatt nem mukodik meg
-    async countByDifficulty(completedTasksArray){
-        for(var i=0; i< completedTasksArray.length;++i){
-            await Tasks.findOne({
-                where:{
-                    id: completedTasksArray[i].task_id,
-                    attributes:['id','difficulty']
-                }
-            })
-        }
+    async countByDifficulty(completedTasksArray) {
+        const difficultyPromises = completedTasksArray.map(async (taskSolution) => {
+            const task = await Tasks.findOne({
+                where: { id: taskSolution.task_id },
+                attributes: ['id', 'difficulty']
+            });
+            return task ? task.difficulty : null; 
+        });
+    
+        const difficulties = await Promise.all(difficultyPromises);
+    
+        const difficultyCounts = difficulties.reduce((counts, difficulty) => {
+            if (difficulty) {
+                counts[difficulty] = (counts[difficulty] || 0) + 1;
+            }
+            return counts;
+        }, {});
+    
+        return difficultyCounts;
     }
+    
 };
 
 module.exports = task_solutionRepository;
