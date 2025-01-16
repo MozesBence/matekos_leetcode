@@ -4,6 +4,7 @@ const { Op } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
+
 class communityRepository
 {
     constructor(db)
@@ -16,26 +17,57 @@ class communityRepository
     }
 
     async getLimitedPost(limit) {
-        const posts = await this.Community_posts.findAll({
-            limit,
-            order: [['createdAt', 'DESC']],
-            include: [
-                {
-                    model: this.Community_files,
-                },
-                {
-                    model: this.Community_comments,
-                    include: [
-                        {
-                            model: this.Community_comments,
-                            as: 'total_comments',
-                        },
-                    ],
-                },
-            ],
-        });
+      // Gondoskodj arról, hogy a limit egy szám legyen
+      const parsedLimit = parseInt(limit, 10);
     
-        return posts;
+      if (isNaN(parsedLimit) || parsedLimit <= 0) {
+        throw new Error('The limit parameter must be a positive integer.');
+      }
+    
+      const posts = await this.Community_posts.findAll({
+        limit: parsedLimit, // A limit értéke most már helyesen szám
+        order: [['createdAt', 'DESC']],
+        include: [
+          {
+            model: this.Community_files,
+          },
+          {
+            model: this.Community_comments,
+            include: [
+              {
+                model: this.Community_comments, // Gyerek kommentek kapcsolása
+              },
+            ],
+          },
+        ],
+      });
+
+      const postsWithBase64Files = posts.map(post => {
+        // Átalakítjuk az instanciát sima objektummá
+        const postObj = post.get({ plain: true });
+      
+        // Hozzáadjuk a kívánt mezőket az objektumhoz, alapértelmezett értékekkel
+        postObj.userReaction = null;
+        postObj.newComment = "";
+        postObj.showComments = false;
+      
+        if (postObj.Community_files && postObj.Community_files.length > 0) {
+          postObj.Community_files = postObj.Community_files.map(file => {
+            const fileBuffer = file.file; // Feltételezve, hogy BLOB típusú
+            const mimeType = file.file_type || 'application/octet-stream'; // Alap MIME típus
+      
+            // BLOB fájl átalakítása Base64 formátumba
+            const base64File = Buffer.from(fileBuffer).toString('base64');
+            file.file = `data:${mimeType};base64,${base64File}`;
+      
+            return file;
+          });
+        }
+      
+        return postObj;
+      });
+      
+      return postsWithBase64Files;
     }
 
     async postUpload(post) {

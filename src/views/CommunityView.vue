@@ -590,7 +590,7 @@
 import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { useCommunityPost } from '@/api/community/communityQuery';
+import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
@@ -613,7 +613,11 @@ const get_fullUser = ref(null);
 
 const get_UserName = ref('Betöltés...');
 
+const posts_limit = ref(10);
+
 const { mutate: ProfileGetUser } = useProfileGetUser();
+const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
+
 
 onMounted(async () => {
   if (get_user_by_token != null) {
@@ -629,6 +633,18 @@ onMounted(async () => {
     } catch (error) {
       console.error('Hiba történt a felhasználó lekérésekor:', error);
     }
+  }
+
+  try {
+    await CommunityGetLimitedPosts(posts_limit.value, {
+      onSuccess: (posts) => {
+       console.log(posts);
+      },
+      onError: (error) => {
+      },
+    });
+  } catch (error) {
+    console.error('Hiba történt a posztok lekérésekor:', error);
   }
 });
 

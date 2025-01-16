@@ -4,7 +4,7 @@ const route = express.Router();
 
 const communityControllers = require("../controllers/communityControllers");
 
-route.get("/community", communityControllers.getLimitedPosts);
+route.get("/community/:limit", communityControllers.getLimitedPosts);
 
 const multer = require('multer');
 const path = require('path');

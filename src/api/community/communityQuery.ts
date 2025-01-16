@@ -37,3 +37,20 @@ export const useCommunityPost = () => {
     },
   })
 }
+
+const CommunityGetLimitedPosts = async (limit: number) => {
+  const response = await axiosClient.get(`http://localhost:3000/community/${limit}`)
+  return response.data;
+}
+
+export const useGetCommunityPost = () => {
+  return useMutation({
+    mutationFn: CommunityGetLimitedPosts,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}

@@ -1,7 +1,12 @@
 const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
+    const limit = req.params["limit"]; // Path paraméterből olvasás
+
     const get_posts = await communityService.getLimitedPost(limit);
+
+    res.status(200).send(get_posts);
+
 };
 
 exports.postUpload = async (req, res, next) => {
