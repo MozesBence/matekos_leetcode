@@ -1,5 +1,5 @@
 const db = require('../database/dbContext');
-const {Task_solutions} = db;
+const {Task_solutions,Tasks} = db;
 const sequelize = require('sequelize');
 
 
@@ -38,13 +38,31 @@ const task_solutionRepository = {
                 state: 1
             }
         });
-
+        const completedTasksArray = await Task_solutions.findAll({
+            where: {
+                UserId: userId,
+                state: 1
+            }
+        });
+        //await countByDifficulty(completedTasksArray)
         return {
             userId,
             totalTasks,
             completedTasks,
+            completedTasksArray,
             solvedRate: (completedTasks / totalTasks) * 100
         };
+    },
+    //emiatt nem mukodik meg
+    async countByDifficulty(completedTasksArray){
+        for(var i=0; i< completedTasksArray.length;++i){
+            await Tasks.findOne({
+                where:{
+                    id: completedTasksArray[i].task_id,
+                    attributes:['id','difficulty']
+                }
+            })
+        }
     }
 };
 

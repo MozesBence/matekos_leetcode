@@ -4,7 +4,7 @@ const { getTaskState,getCompletionRate,getSolvedTasksRate } = require('../contro
 
 router.get('/taskState/:id', getTaskState);
 router.get('/tasks/task-completion-rates', getCompletionRate);
-router.get('/tasks/solved-tasks-rate/:id', getSolvedTasksRate);
+router.get('/solved-tasks-rate/:id', getSolvedTasksRate);
 
 
 module.exports = router;
