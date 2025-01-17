@@ -127,8 +127,8 @@
           height="25"
           style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;" 
         >
-          <template v-slot:default="{value }">
-            <strong>{{ Math.ceil(1) }}. szint</strong> <!-- Display 'level' -->
+          <template v-slot:default="{ value }">
+            <strong>{{ Math.ceil(value) }}. szint</strong> <!-- Display 'level' -->
           </template>
         </v-progress-linear>
       </div>
@@ -243,7 +243,7 @@
         {{ link }}
       </v-btn>
       <v-col class="text-center mt-4" cols="12">
-        Copyright © {{ new Date().getFullYear() }} — Math Solve{{get_fullUser}}
+        Copyright © {{ new Date().getFullYear() }} — Math Solve{{get_fullUser.experience_point}}
       </v-col>
     </v-row>
   </v-footer>
@@ -254,6 +254,7 @@ import { useThemeStore } from '@/stores/themeStore';
 import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { get } from 'http';
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -323,13 +324,17 @@ export default defineComponent({
         }
       }
 
-      if (get_user_email.value) {
+      var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+
+      if (get_user_by_token) {
         const { mutate: ProfileGetUser } = useProfileGetUser();
         try {
-          await ProfileGetUser(get_user_email.value, {
+          await ProfileGetUser(get_user_by_token, {
             onSuccess: (get_user) => {
               get_user_name.value = get_user.user_name;
-              get_fullUser.value.push(get_user);
+              console.log(get_user)
+              get_fullUser.value = get_user;
+              console.log(get_fullUser.experience_point)
             },
           });
         } catch (error) {
@@ -360,6 +365,7 @@ export default defineComponent({
       get_user_name,
       get_user_email,
       get_fullUser,
+      percentage: Number(get_fullUser.experience_point)
     };
   },
 });
