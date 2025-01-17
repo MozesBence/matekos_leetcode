@@ -4,6 +4,8 @@ exports.getLimitedPosts = async (req, res, next) => {
     const limit = req.params["limit"]; // Path paraméterből olvasás
 
     const get_posts = await communityService.getLimitedPost(limit);
+    
+    console.log(get_posts);
 
     res.status(200).send(get_posts);
 
@@ -43,7 +45,7 @@ exports.postUpload = async (req, res, next) => {
             throw error;
         }
     
-        res.status(201).send("Sikeres volt a poszt feltöltése!");
+        res.status(201).json(post_result);
     }
     catch(error){
         next(error);

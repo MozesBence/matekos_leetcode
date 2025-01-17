@@ -100,6 +100,12 @@ module.exports = (sequelize, DataTypes) => {
     Users.hasMany(Community_posts, {
         foreignKey: "user_id",
     });
+    Users.hasMany(Community_comments, {
+        foreignKey: "user_id",
+    });
+    Community_comments.belongsTo(Users, { 
+        foreignKey: 'user_id',
+    });
 
     Users.hasMany(Alerts, {
         foreignKey: "user_id",

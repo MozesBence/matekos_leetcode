@@ -113,7 +113,7 @@
                 <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                 {{ post.dislikes }}
               </v-btn>
-              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="post.comments.length > 0">
+              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.comments != null? post.comments.length : post.Community_comments.length) > 0">
                 <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
                 {{ post.comments.length }}
               </v-btn>
@@ -637,8 +637,9 @@ onMounted(async () => {
 
   try {
     await CommunityGetLimitedPosts(posts_limit.value, {
-      onSuccess: (posts) => {
-       console.log(posts);
+      onSuccess: (posts_array) => {
+        posts_array.forEach((post) =>{ postsConvertToDisplay(post); });
+        console.log(posts_array);
       },
       onError: (error) => {
       },
@@ -1004,7 +1005,24 @@ const addPost = async () =>{
   if(get_fullUser.value.id && newPost.title && htmlContent){
     await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
       onSuccess: (response) => {
-  
+        postsConvertToDisplay({
+          id: response.id,
+          author: get_UserName.value,
+          createdAt: response.createdAt,
+          content: cleanedHtmlContent,
+          title: newPost.title,
+          likes: 0,
+          dislikes: 0,
+          userReaction: null,
+          newComment: "",
+          gotEdit: false,
+          editable: false,
+          comments: [],
+          files: newPost.files,
+          images: newPost.images,
+          commentLimit: 10,
+          showComments: false,
+        });
       },
       onError: (error) => {
   
@@ -1012,6 +1030,32 @@ const addPost = async () =>{
     });
   }
 };
+
+function postsConvertToDisplay(array){
+  console.log(array);
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = array.content;
+
+  const imgElements = tempDiv.querySelectorAll("img");
+
+  imgElements.forEach((img) => {
+    const id = Number(img.id)-1;
+    if (array.images[id]) {
+      img.setAttribute("src", (array.images[id].url != null ? array.images[id].url : array.images[id].file)); // Az `src` attribútumot beállítjuk
+    }
+  });
+
+  array.content = tempDiv.innerHTML;
+
+  posts.unshift(array);
+ 
+  newPost.files = [];
+  newPost.images = [];
+  newPost.title = "";
+
+  showCreatePost.value = false;
+}
 
 const compressingFiles = async (mergedArray) =>{
   var compressFilesArray = [];
@@ -1096,7 +1140,7 @@ const insertImage = () => {
         const img = document.createElement('img');
         img.src = newPost.images[newPost.images.length-1].url;
         img.alt = 'Uploaded ' + newPost.images.length+'. Image';
-        img.id = 'postImage'+newPost.images.length;
+        img.id = newPost.images.length;
         img.style.maxWidth = '100%';
         img.style.height = '20vh';
         img.style.display = 'block';

@@ -9,6 +9,8 @@ class communityRepository
 {
     constructor(db)
     {
+        this.Users = db.Users;
+
         this.Community_posts = db.Community_posts;
 
         this.Community_files = db.Community_files;
@@ -51,16 +53,31 @@ class communityRepository
         postObj.newComment = "";
         postObj.showComments = false;
       
+        // Létrehozzuk az images és files tömböket
+        postObj.images = [];
+        postObj.files = [];
+      
         if (postObj.Community_files && postObj.Community_files.length > 0) {
-          postObj.Community_files = postObj.Community_files.map(file => {
+          postObj.Community_files.forEach(file => {
             const fileBuffer = file.file; // Feltételezve, hogy BLOB típusú
             const mimeType = file.file_type || 'application/octet-stream'; // Alap MIME típus
       
             // BLOB fájl átalakítása Base64 formátumba
             const base64File = Buffer.from(fileBuffer).toString('base64');
-            file.file = `data:${mimeType};base64,${base64File}`;
+            const base64Data = `data:${mimeType};base64,${base64File}`;
       
-            return file;
+            // Fájl hozzáadása az images vagy files tömbhöz a MIME típus alapján
+            if (mimeType.startsWith('image/')) {
+              postObj.images.push({
+                ...file,
+                file: base64Data
+              });
+            } else {
+              postObj.files.push({
+                ...file,
+                file: base64Data
+              });
+            }
           });
         }
       
