@@ -42,7 +42,7 @@
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
               <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                 <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                <p style="font-size: .8vw;">{{ post.author }}</p>
+                <p style="font-size: .8vw;">{{ (post.author == undefined ? post.User.user_name : post.author) }}</p>
               </div>
               <p style="font-size: .6vw;">{{ post.createdAt }}</p>
             </div>
@@ -57,51 +57,28 @@
               <div v-html="post.content">
               </div>
             </v-card-text>
-
             <v-expand-transition>
-              <div v-if="post.files.length" v-for="(file, index) in post.files" :key="index">
+              <div v-if="post.files.length > 0" v-for="(file, index) in post.files" :key="index">
                 <v-card-text class="mb-3">
-                  <div class="d-flex flex-column justify-center align-start">
+                  <div class="d-inline-flex flex-column justify-center align-center">
                     <v-btn 
-                    icon 
-                    elevation="0" 
-                    class="ml-0"
-                    size="70"
-                    :href="getFileUrl(file)"
-                    :download="file.name"
+                      icon 
+                      elevation="0" 
+                      size="70"
+                      @click="downloadFile(file)"
                     >
                       <v-icon size="50">mdi-file</v-icon>
                     </v-btn>
-                    <p class="ml-2 mt-1">
-                      {{ file.name  }}
+                    <p>
+                      {{ (file.name == undefined ? file.file_name : file.name) }}
+                    </p>
+                    <p style="font-size: .5vw;">
+                      Méret: {{ formatFileSize(file.size == undefined ? file.file_size : file.size) }}
                     </p>
                   </div>
                 </v-card-text>
               </div>
             </v-expand-transition>
-
-            <v-dialog
-              v-model="dialog"
-              max-width="800px"
-              persistent
-            >
-              <v-card>
-                <v-card-text>
-                  <!-- Nagyított kép -->
-                  <v-img
-                    :src="selectedImage"
-                    max-height="600"
-                    class="mb-0"
-                    contain
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="community_primary_color" text @click="dialog = false">
-                    Bezárás
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
 
             <v-divider></v-divider>
             <v-card-actions>
@@ -638,8 +615,8 @@ onMounted(async () => {
   try {
     await CommunityGetLimitedPosts(posts_limit.value, {
       onSuccess: (posts_array) => {
+        posts_array.reverse();
         posts_array.forEach((post) =>{ postsConvertToDisplay(post); });
-        console.log(posts_array);
       },
       onError: (error) => {
       },
@@ -870,9 +847,9 @@ const handleImageUpload = async (event) => {
       // Mentés az images tömbbe
       const imageId = newPost.images.length + 1;
       newPost.images.push({
-        id: imageId,
         url: imgUrl,
         type: file.type,
+        name: file.name,
       });
 
       // Kép beszúrása a kurzor helyére
@@ -1002,13 +979,15 @@ const addPost = async () =>{
 
   const compressingFilesArray = await compressingFiles(mergedArray);
 
+  console.log(compressingFilesArray);
+
   if(get_fullUser.value.id && newPost.title && htmlContent){
     await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
       onSuccess: (response) => {
         postsConvertToDisplay({
           id: response.id,
           author: get_UserName.value,
-          createdAt: response.createdAt,
+          createdAt: formatDate(new Date()),
           content: cleanedHtmlContent,
           title: newPost.title,
           likes: 0,
@@ -1032,10 +1011,11 @@ const addPost = async () =>{
 };
 
 function postsConvertToDisplay(array){
-  console.log(array);
-
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = array.content;
+
+  var createdAt = array.createdAt;
+  array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0];
 
   const imgElements = tempDiv.querySelectorAll("img");
 
@@ -1057,48 +1037,72 @@ function postsConvertToDisplay(array){
   showCreatePost.value = false;
 }
 
-const compressingFiles = async (mergedArray) =>{
-  var compressFilesArray = [];
+const compressingFiles = async (mergedArray) => {
+  const compressFilesArray = [];
+
   for (const file of mergedArray) {
     if (file) {
+      let blob;
+
       try {
-        let blob;
-
         if (file.url) {
-          // Ha a fájlnak van URL-je (kép)
-          const response = await fetch(file.url);
-          blob = await response.blob();
-        } else if (file.name) {
-          // Ha a fájlnak van neve (feltöltött fájl)
-          blob = new Blob([file], { type: file.type });
+          // Ha a fájlnak van URL-je
+          try {
+            const response = await fetch(file.url);
+            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+            blob = await response.blob();
+          } catch (error) {
+            console.error('Fetch hiba:', error);
+            continue; // Hibás fájlt kihagyjuk
+          }
+        } else if (file.file) {
+          // Feltöltött fájl
+          if (file.file instanceof Blob) {
+            blob = file.file;
+          } else {
+            try {
+              blob = new Blob([file.file], { type: file.type || 'application/octet-stream' });
+            } catch (error) {
+              console.error('Blob inicializálási hiba:', error);
+              continue; // Hibás fájlt kihagyjuk
+            }
+          }
         }
 
-        // Ha a fájl típus képi adat, tömörítjük
-        if (file.type.startsWith('image/')) {
-          const options = {
-            maxSizeMB: 0.1,
-            useWebWorker: true,
-          };
-
-          blob = await imageCompression(blob, options);
+        if (!blob) {
+          console.warn('A blob nem inicializálható:', file);
+          continue; // Hibás fájlt kihagyjuk
         }
 
-        // Blob tárolása vagy továbbítása
-        const compressedFile = new File([blob], file.name || `image_${Date.now()}.jpg`, {
-          type: blob.type,
-        });
+        // Ha GIF fájl, ne tömörítsük, hanem egyszerűen hagyjuk úgy
+        if (file.type && file.type === 'image/gif') {
+          console.log('GIF fájl, nem tömörítjük:', file.name);
+        } else if (file.type && file.type.startsWith('image/')) {
+          // Kép tömörítése (nem GIF esetén)
+          try {
+            const options = {
+              maxSizeMB: 0.1,
+              useWebWorker: true,
+            };
+            blob = await imageCompression(blob, options);
+          } catch (error) {
+            console.error('Tömörítési hiba:', error);
+            continue; // Hibás fájlt kihagyjuk
+          }
+        }
 
-        // URL a blob fájlhoz (ha szükséges megjelenítéshez)
-        const fileUrl = URL.createObjectURL(compressedFile);
+        // Blob-ból File objektum létrehozása fájlnévvel
+        const fileWithName = new File([blob], file.name || `file_${Date.now()}`, { type: blob.type });
 
-        compressFilesArray.push(compressedFile);
+        compressFilesArray.push(fileWithName);
       } catch (error) {
         console.error('Fájl feldolgozási hiba:', error);
       }
     }
   }
+
   return compressFilesArray;
-}
+};
 
 nextTick(() => {
   const editor = document.getElementsByClassName("editor")[0];
@@ -1163,13 +1167,15 @@ function handleFileUpload(event) {
   const uploadedFiles = event.target.files;
 
   for (const file of uploadedFiles) {
-    if (file.size <= 1 * 1024 * 1024) { // 1 MB limit
+    if (file.size <= 10 * 1024 * 1024) { // 10 MB limit 
       const obj = {
         name: file.name,
         size: file.size,
         type: file.type,
+        url: URL.createObjectURL(file), // Blob URL létrehozása az azonnali használathoz
       };
 
+      // Ellenőrizzük, hogy a fájl már szerepel-e
       if (!newPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
         newPost.files.push(obj);
       }
@@ -1177,7 +1183,47 @@ function handleFileUpload(event) {
       console.warn(`A fájl mérete túl nagy: ${file.name}`);
     }
   }
-  event.target.value = ''
+  event.target.value = '';
+}
+
+function downloadFile(file) {
+  try {
+    const blob = dataURLtoBlob(file.file);
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.file_name || 'file';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Az URL-t felszabadítjuk
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Fájl letöltési hiba:', error);
+  }
+}
+
+function dataURLtoBlob(dataURL) {
+  const [header, base64] = dataURL.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(base64);
+  const array = [];
+  for (let i = 0; i < binary.length; i++) {
+    array.push(binary.charCodeAt(i));
+  }
+  return new Blob([new Uint8Array(array)], { type: mime });
+}
+
+function formatFileSize(size) {
+  if (!size) return 'Ismeretlen méret';
+  const i = Math.floor(Math.log(size) / Math.log(1024));
+  return (
+    (size / Math.pow(1024, i)).toFixed(2) * 1 +
+    ' ' +
+    ['B', 'KB', 'MB', 'GB', 'TB'][i]
+  );
 }
 
 function triggerFileInput() {

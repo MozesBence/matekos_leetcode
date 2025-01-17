@@ -20,7 +20,7 @@ class communityRepository
 
     async getLimitedPost(limit) {
       // Gondoskodj arról, hogy a limit egy szám legyen
-      const parsedLimit = parseInt(limit, 10);
+      const parsedLimit = Number(limit);
     
       if (isNaN(parsedLimit) || parsedLimit <= 0) {
         throw new Error('The limit parameter must be a positive integer.');
@@ -38,8 +38,22 @@ class communityRepository
             include: [
               {
                 model: this.Community_comments, // Gyerek kommentek kapcsolása
+                include: [
+                  {
+                    model: this.Users, // Gyerek kommentek felhasználói
+                    attributes: ['id', 'user_name'], // Csak az id és a név legyen visszaadva
+                  },
+                ],
+              },
+              {
+                model: this.Users, // Kommentek felhasználói
+                attributes: ['id', 'user_name'],
               },
             ],
+          },
+          {
+            model: this.Users, // Posztok felhasználói
+            attributes: ['id', 'user_name'],
           },
         ],
       });

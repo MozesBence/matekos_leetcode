@@ -84,27 +84,34 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "task_comments_id",
     });
 
+    // Community_posts kapcsolatai
     Community_posts.hasMany(Community_comments, {
         foreignKey: "post_id",
-        allowNull: true,
-    });
-    Community_comments.hasMany(Community_comments, {
-        foreignKey: "parent_comment_id",
         allowNull: true,
     });
     Community_posts.hasMany(Community_files, {
         foreignKey: "post_id",
         allowNull: true,
     });
+    Community_posts.belongsTo(Users, { // Hiányzott!
+        foreignKey: "user_id",
+    });
 
+    // Community_comments kapcsolatai
+    Community_comments.hasMany(Community_comments, {
+        foreignKey: "parent_comment_id",
+        allowNull: true,
+    });
+    Community_comments.belongsTo(Users, {
+        foreignKey: "user_id",
+    });
+
+    // Users kapcsolatai
     Users.hasMany(Community_posts, {
         foreignKey: "user_id",
     });
     Users.hasMany(Community_comments, {
         foreignKey: "user_id",
-    });
-    Community_comments.belongsTo(Users, { 
-        foreignKey: 'user_id',
     });
 
     Users.hasMany(Alerts, {

@@ -21,8 +21,8 @@ const CommunityPostUpload = async (data: CommunityData) => {
   });
 
   const response = await axiosClient.post('http://localhost:3000/community', formData,{
-                                                                                        headers: { 'Content-Type': 'multipart/form-data' },
-                                                                                    });
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 }
 
