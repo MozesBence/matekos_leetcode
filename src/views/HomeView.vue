@@ -278,37 +278,50 @@ export default defineComponent({
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
     const progressColor = computed(() => {
-      const percentage = progressPercentage.value;
-      if (percentage < 33) return 'green';
-      if (percentage < 66) return 'orange';
-      return 'red';
-    });
+    const percentage = progressPercentage.value;
+    if (percentage < 33) return 'green';
+    if (percentage < 66) return 'orange';
+    return 'red';
+  });
 
-    const baseXP = 100;
+  const baseXP = 100;
 
-    const experienceForNextLevel = (level: number): number => {
-      return baseXP * Math.pow(level, 2);
-    };
+const experienceForNextLevel = (level: number): number => {
+  return baseXP * Math.pow(level, 2);
+};
 
-    const currentLevel = computed(() => {
-      let level = 1;
-      let xp = get_fullUser.value.experience_point || 0;
+const totalXPForLevel = (level: number): number => {
+  let totalXP = 0;
+  for (let i = 1; i < level; i++) {
+    totalXP += experienceForNextLevel(i);
+  }
+  return totalXP;
+};
 
-      while (xp >= experienceForNextLevel(level)) {
-        xp -= experienceForNextLevel(level);
-        level++;
-      }
-      return level;
-    });
+const currentLevel = computed(() => {
+  let level = 1;
+  let xp = get_fullUser.value.experience_point || 0;
 
-    const progressPercentage = computed(() => {
-      const xp = get_fullUser.value.experience_point || 0;
-      const level = currentLevel.value;
-      const xpForCurrentLevel = experienceForNextLevel(level - 1);
-      const xpForNextLevel = experienceForNextLevel(level);
+  while (xp >= totalXPForLevel(level + 1)) {
+    level++;
+  }
+  
+  return level;
+});
 
-      return ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
-    });
+const progressPercentage = computed(() => {
+  const xp = get_fullUser.value.experience_point || 0;
+  const level = currentLevel.value;
+
+  const xpForCurrentLevel = totalXPForLevel(level);
+  const xpForNextLevel = totalXPForLevel(level + 1);
+
+  const progress = ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
+
+  return Math.min(Math.max(progress, 0), 100);
+});
+
+
 
     const chipColor = (difficulty: number) => {
       if (difficulty === 0) return 'green';
