@@ -122,15 +122,15 @@
         <h1 >Fiók szintje: </h1>
     
         <v-progress-linear
-          v-model="percentage"
-          color="green-darken-2"
-          height="25"
-          style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;" 
-        >
-          <template v-slot:default="{ value }">
-            <strong>{{ Math.ceil(value) }}. szint</strong> <!-- Display 'level' -->
-          </template>
-        </v-progress-linear>
+        v-model="progressPercentage"
+        :color="progressColor"
+        height="25"
+        style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;"
+      >
+        <template v-slot:default="{ value }">
+          <strong>{{ currentLevel }}. szint</strong>
+        </template>
+      </v-progress-linear>
       </div>
     </v-list-item>
 
@@ -249,12 +249,12 @@
   </v-footer>
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue';
+import { defineComponent, onMounted, ref, computed } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { get } from 'http';
+import { green } from 'vuetify/util/colors';
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -277,27 +277,55 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
+    const progressColor = computed(() => {
+      const percentage = progressPercentage.value;
+      if (percentage < 33) return 'green';
+      if (percentage < 66) return 'orange';
+      return 'red';
+    });
 
-    // Assigning colors based on difficulty level
+    const baseXP = 100;
+
+    const experienceForNextLevel = (level: number): number => {
+      return baseXP * Math.pow(level, 2);
+    };
+
+    const currentLevel = computed(() => {
+      let level = 1;
+      let xp = get_fullUser.value.experience_point || 0;
+
+      while (xp >= experienceForNextLevel(level)) {
+        xp -= experienceForNextLevel(level);
+        level++;
+      }
+      return level;
+    });
+
+    const progressPercentage = computed(() => {
+      const xp = get_fullUser.value.experience_point || 0;
+      const level = currentLevel.value;
+      const xpForCurrentLevel = experienceForNextLevel(level - 1);
+      const xpForNextLevel = experienceForNextLevel(level);
+
+      return ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
+    });
+
     const chipColor = (difficulty: number) => {
       if (difficulty === 0) return 'green';
       if (difficulty === 1) return 'orange';
       return 'red';
     };
 
-    // Assigning labels based on difficulty
     const difficultyLabel = (difficulty: number) => {
       if (difficulty === 0) return 'Könnyű';
       if (difficulty === 1) return 'Közepes';
       return 'Nehéz';
     };
 
-    // Getting task state based on task ID
     const getTaskStateForCard = (taskId: number) => {
       return cardsStore.task_state.find(task => task.task_id === taskId) || null;
     };
 
-    // Getting task icon based on task state
     const getTaskIcon = (taskId: number) => {
       const taskState = getTaskStateForCard(taskId);
       if (taskState) {
@@ -307,18 +335,17 @@ export default defineComponent({
       return { icon: '', color: '' };
     };
 
-    // Calculate completion rate for cards
     const cardCompRate = (CompArray: { task_id: number; completionRate: number }[], cardId: number): number | "NaN" => {
       const found = CompArray.find((c) => c.task_id === cardId);
       return found ? found.completionRate : "NaN";
     };
 
     onMounted(async () => {
-      const userCookie = getCookie('user'); // Retrieve the user token from the cookie
+      const userCookie = getCookie('user');
       if (userCookie) {
         try {
-          const userData = JSON.parse(atob(userCookie.split('.')[1])); // Decode JWT payload
-          get_user_name.value = userData.id;  // Assuming user `id` from JWT
+          const userData = JSON.parse(atob(userCookie.split('.')[1]));
+          get_user_name.value = userData.id;
         } catch (error) {
           console.error('Error parsing user cookie:', error);
         }
@@ -334,7 +361,7 @@ export default defineComponent({
               get_user_name.value = get_user.user_name;
               console.log(get_user)
               get_fullUser.value = get_user;
-              console.log(get_fullUser.experience_point)
+              console.log(get_fullUser.experience_point);
             },
           });
         } catch (error) {
@@ -342,18 +369,16 @@ export default defineComponent({
         }
       }
 
-      // Fetching data from various stores
       quoteStore.fetchQuote();
       themeStore.fetchThemes();
       cardsStore.fetchCards();
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value)); 
-
     });
 
     return {
-      
+      progressColor,
       themeStore,
       cardsStore,
       quoteStore,
@@ -365,54 +390,49 @@ export default defineComponent({
       get_user_name,
       get_user_email,
       get_fullUser,
-      percentage: Number(get_fullUser.experience_point)
+      currentLevel,
+      progressPercentage,
+      experienceForNextLevel
     };
   },
 });
 </script>
 
-
-
-
-
-
-
-
-  <style>
-    .listitem
-    {
-      background-color: black;
-      border-radius: 15px;
-    }
-    .v-layout{
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .heatmap {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 20px;
-    }
-    .heatmap-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      margin-top: 20px;
-    }
-    .heatmap-cell {
-      padding: 10px;
-      text-align: center;
-      font-weight: bold;
-      border-radius: 5px;
-      color: white;
-    }
-    .red {
-      background-color: rgb(185, 98, 98);
-    }
-    .light-blue {
-      background-color: rgba(107, 212, 234, 0.9);;
-    }
-    .dark-blue {
-      background-color: rgb(26, 26, 77);
-    }
-  </style>
+<style>
+  .listitem
+  {
+    background-color: black;
+    border-radius: 15px;
+  }
+  .v-layout{
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+  .heatmap {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 20px;
+  }
+  .heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 20px;
+  }
+  .heatmap-cell {
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 5px;
+    color: white;
+  }
+  .red {
+    background-color: rgb(185, 98, 98);
+  }
+  .light-blue {
+    background-color: rgba(107, 212, 234, 0.9);;
+  }
+  .dark-blue {
+    background-color: rgb(26, 26, 77);
+  }
+</style>
