@@ -57,7 +57,7 @@ const task_solutionRepository = {
         };
     },
     
-    //emiatt nem mukodik meg
+    
     async countByDifficulty(completedTasksArray) {
         const difficultyPromises = completedTasksArray.map(async (taskSolution) => {
             const task = await Tasks.findOne({
@@ -69,15 +69,19 @@ const task_solutionRepository = {
     
         const difficulties = await Promise.all(difficultyPromises);
     
-        const difficultyCounts = difficulties.reduce((counts, difficulty) => {
-            if (difficulty) {
-                counts[difficulty] = (counts[difficulty] || 0) + 1;
-            }
-            return counts;
-        }, {});
+        // Initialize an array to store the counts for difficulties 0, 1, and 2.
+        const difficultyCounts = [0, 0, 0];
     
-        return difficultyCounts;
+        // Count the occurrences of each difficulty.
+        difficulties.forEach((difficulty) => {
+            if (difficulty !== null && difficulty >= 0 && difficulty <= 2) {
+                difficultyCounts[difficulty]++;
+            }
+        });
+    
+        return difficultyCounts; // Returns an array like [count_for_0, count_for_1, count_for_2]
     }
+    
     
 };
 

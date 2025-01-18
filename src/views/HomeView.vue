@@ -119,18 +119,18 @@
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
       >
-        <h1 >Fiók szintje: </h1>
-    
-        <v-progress-linear
-        v-model="progressPercentage"
-        :color="progressColor"
-        height="25"
-        style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;"
+      <h1>Udvozlunk, {{get_fullUser.user_name}}!</h1>
+      <v-progress-linear
+      v-model="progressPercentage"
+      :color="progressColor"
+      height="25"
+      style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;"
       >
-        <template v-slot:default="{ value }">
-          <strong>{{ currentLevel }}. szint</strong>
-        </template>
-      </v-progress-linear>
+      <template v-slot:default="{ value }">
+        <strong>{{ currentLevel }}. szint</strong>
+      </template>
+    </v-progress-linear>
+    <h3 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">Aranyak szama: {{get_fullUser.currency_count}}<img height="20" src="../assets/coin.png"></h3>
       </div>
     </v-list-item>
 
@@ -230,31 +230,15 @@
   <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
     <v-pagination :length="6"></v-pagination>
   </v-row>
-  <v-footer class="bg-blue-darken-1">
-    <v-row justify="center" no-gutters>
-      <v-btn
-        v-for="link in links"
-        :key="link"
-        class="mx-2"
-        color="white"
-        rounded="xl"
-        variant="text"
-      >
-        {{ link }}
-      </v-btn>
-      <v-col class="text-center mt-4" cols="12">
-        Copyright © {{ new Date().getFullYear() }} — Math Solve{{get_fullUser.experience_point}}
-      </v-col>
-    </v-row>
-  </v-footer>
+  
 </template>
 <script lang="ts">
-import { defineComponent, onMounted, ref, computed } from 'vue';
+import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { green } from 'vuetify/util/colors';
+import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -273,55 +257,57 @@ const get_fullUser = ref<any[]>([]);
 
 export default defineComponent({
   name: 'ThemeComponent',
+  components: {
+    apexchart: VueApexCharts, // Register VueApexCharts as a component
+  },
   setup() {
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
+    
     const progressColor = computed(() => {
-    const percentage = progressPercentage.value;
-    if (percentage < 33) return 'green';
-    if (percentage < 66) return 'orange';
-    return 'red';
-  });
+      const percentage = progressPercentage.value;
+      if (percentage < 33) return 'green';
+      if (percentage < 66) return 'orange';
+      return 'red';
+    });
 
-  const baseXP = 100;
+    const baseXP = 100;
 
-const experienceForNextLevel = (level: number): number => {
-  return baseXP * Math.pow(level, 2);
-};
+    const experienceForNextLevel = (level: number): number => {
+      return baseXP * Math.pow(level, 2);
+    };
 
-const totalXPForLevel = (level: number): number => {
-  let totalXP = 0;
-  for (let i = 1; i < level; i++) {
-    totalXP += experienceForNextLevel(i);
-  }
-  return totalXP;
-};
+    const totalXPForLevel = (level: number): number => {
+      let totalXP = 0;
+      for (let i = 1; i < level; i++) {
+        totalXP += experienceForNextLevel(i);
+      }
+      return totalXP;
+    };
 
-const currentLevel = computed(() => {
-  let level = 1;
-  let xp = get_fullUser.value.experience_point || 0;
+    const currentLevel = computed(() => {
+      let level = 1;
+      let xp = get_fullUser.value.experience_point || 0;
 
-  while (xp >= totalXPForLevel(level + 1)) {
-    level++;
-  }
-  
-  return level;
-});
+      while (xp >= totalXPForLevel(level + 1)) {
+        level++;
+      }
 
-const progressPercentage = computed(() => {
-  const xp = get_fullUser.value.experience_point || 0;
-  const level = currentLevel.value;
+      return level;
+    });
 
-  const xpForCurrentLevel = totalXPForLevel(level);
-  const xpForNextLevel = totalXPForLevel(level + 1);
+    const progressPercentage = computed(() => {
+      const xp = get_fullUser.value.experience_point || 0;
+      const level = currentLevel.value;
 
-  const progress = ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
+      const xpForCurrentLevel = totalXPForLevel(level);
+      const xpForNextLevel = totalXPForLevel(level + 1);
 
-  return Math.min(Math.max(progress, 0), 100);
-});
+      const progress = ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
 
-
+      return Math.min(Math.max(progress, 0), 100);
+    });
 
     const chipColor = (difficulty: number) => {
       if (difficulty === 0) return 'green';
@@ -353,6 +339,55 @@ const progressPercentage = computed(() => {
       return found ? found.completionRate : "NaN";
     };
 
+    // ApexCharts Data and Chart Options
+    const series = ref([0, 0, 0]); // Initialize as an empty array to bind later
+    const chartOptions = ref({
+      chart: {
+        height: 390,
+        type: 'radialBar',
+      },
+      plotOptions: {
+        radialBar: {
+          offsetY: 0,
+          startAngle: 0,
+          endAngle: 270,
+          hollow: {
+            margin: 5,
+            size: '30%',
+            background: 'transparent',
+            image: undefined,
+          },
+          dataLabels: {
+            name: {
+              show: false,
+            },
+            value: {
+              show: false,
+            }
+          },
+          barLabels: {
+            enabled: true,
+            useSeriesColors: true,
+            offsetX: -8,
+            fontSize: '16px',
+            formatter: function (seriesName, opts) {
+              return seriesName + ":  " + opts.w.globals.series[opts.seriesIndex];
+            },
+          },
+        }
+      },
+      colors: ['#4CAF50', '#FF9800', '#F44336'],
+      labels: ['Könnyű', 'Közepes', 'Nehéz'],
+      responsive: [{
+        breakpoint: 480,
+        options: {
+          legend: {
+            show: false
+          }
+        }
+      }]
+    });
+
     onMounted(async () => {
       const userCookie = getCookie('user');
       if (userCookie) {
@@ -372,7 +407,7 @@ const progressPercentage = computed(() => {
           await ProfileGetUser(get_user_by_token, {
             onSuccess: (get_user) => {
               get_user_name.value = get_user.user_name;
-              console.log(get_user)
+              console.log(get_user);
               get_fullUser.value = get_user;
               console.log(get_fullUser.experience_point);
             },
@@ -387,7 +422,13 @@ const progressPercentage = computed(() => {
       cardsStore.fetchCards();
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
-      cardsStore.fetchTaskState(Number(get_user_name.value)); 
+      cardsStore.fetchTaskState(Number(get_user_name.value));
+      // Watch for changes in solved_task_rates and update series accordingly
+      watch(() => cardsStore.solved_task_rates, (newRates) => {
+        console.log('new',newRates.countpercenct)
+        series.value = newRates.countpercenct; // Update series with the fetched data
+      });
+
     });
 
     return {
@@ -405,11 +446,15 @@ const progressPercentage = computed(() => {
       get_fullUser,
       currentLevel,
       progressPercentage,
-      experienceForNextLevel
+      experienceForNextLevel,
+      series,
+      chartOptions // Expose the ApexCharts chartOptions
     };
   },
 });
 </script>
+
+
 
 <style>
   .listitem
