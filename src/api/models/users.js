@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: "member",
             },
             experience_point: {
-                type: DataTypes.INTEGER,
+                type: DataTypes.BIGINT,
                 defaultValue: 0,
             },
             currency_count: {
