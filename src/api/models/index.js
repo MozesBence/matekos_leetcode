@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
     const User_custom = require("../models/user_customization")(sequelize, DataTypes);
     const Vip_custom = require("../models/vip_customization")(sequelize, DataTypes);
+    const Daily_Tasks = require('../models/daily_tasks')(sequelize,DataTypes);
     
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
@@ -137,6 +138,7 @@ module.exports = (sequelize, DataTypes) => {
         Tokenz,
         User_custom,
         Vip_custom,
-        Task_solutions, // Export Task_solutions
+        Task_solutions,
+        Daily_Tasks
     };
 };
