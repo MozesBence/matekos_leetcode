@@ -5,4 +5,3 @@ const { getAllThemesController } = require('../controllers/themeControllers');
 router.get('/', getAllThemesController);
 
 module.exports = router;
-

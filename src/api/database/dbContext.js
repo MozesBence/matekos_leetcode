@@ -67,11 +67,14 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync({ force: true });
         console.log('Database connected and models synchronized.');
 
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
+
+        await db.Tasks.initializeTasks();
+        console.log('Default tasks inserted.');
 
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
         console.log("Event Scheduler is enabled.");
@@ -103,6 +106,32 @@ const initializeDatabase = async () => {
         await sequelize.query(createTriggerQuery);
         console.log('Trigger for user deletion created.');
 
+        const createDailyTaskEventQuery = `
+            CREATE EVENT IF NOT EXISTS daily_task_event
+            ON SCHEDULE EVERY 1 DAY
+            STARTS CURRENT_DATE + INTERVAL 1 DAY
+            DO
+            BEGIN
+                -- Ellenőrzés, hogy a hónap első napja van-e
+                IF DAY(CURRENT_DATE) = 1 THEN
+                    -- Tábla kiürítése
+                    DELETE FROM Daily_Tasks;
+                END IF;
+
+                -- Új random task hozzáadása
+                INSERT INTO Daily_Tasks (task_id)
+                SELECT 
+                    id AS task_id
+                FROM 
+                    Tasks
+                ORDER BY RAND()
+                LIMIT 1;
+            END;
+        `;
+
+        await sequelize.query(createDailyTaskEventQuery);
+        console.log('Daily event for tasks created.');
+
     } catch (error) {
         console.error('Error initializing database:', error);
     }
@@ -111,9 +140,3 @@ const initializeDatabase = async () => {
 initializeDatabase();
 
 module.exports = db;
-
-
-
-
-
-

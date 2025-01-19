@@ -18,25 +18,13 @@ module.exports = (sequelize, DataTypes ) => {
                     key:'id'
                 }
             },
-            user_id:{
-                type: DataTypes.INTEGER,
-                allowNull:false,
-                references:{
-                    model:'Users',
-                    key:'id',
-                }
-            },
-            expire_date:{
-                type: DataTypes.DATE,
-                allowNull: false
-            }
-            },
-            {
-                sequelize,
-                modelName: 'Daily_Tasks',
-                tableName:'daily_tasks',
-                timestamps:false,
-            }
+        },
+        {
+            sequelize,
+            modelName: 'Daily_Tasks',
+            tableName:'daily_tasks',
+            timestamps:false,
+        }
     )
     return Daily_tasks;
 }
