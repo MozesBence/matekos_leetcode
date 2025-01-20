@@ -1,9 +1,9 @@
-const { Model,Sequelize } = require('sequelize');
+const { Model, Sequelize } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class Topic_comments extends Model {}
+    class Community_posts extends Model {}
 
-    Topic_comments.init(
+    Community_posts.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -11,31 +11,37 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
             },
-            topic_id: {
+            title: {
+                type: DataTypes.STRING(255),
+                allowNull: false,
+            },
+            content: {
+                type: DataTypes.TEXT('long'),
+                allowNull: false,
+            },
+            likes: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                defaultValue: 0,
             },
-            user_id: {
+            dislikes: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
+                defaultValue: 0,
             },
-            comment_text: {
-                type: DataTypes.TEXT,
-                allowNull: false,
-            },
-            comment_date: {
+            createdAt: {
                 type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
-            },
+            }
         },
         {
             sequelize,
-            modelName: 'Topic_comments',
-            tableName: 'topic_comments',
+            modelName: 'Community_posts',
+            tableName: 'community_posts',
             timestamps: false,
         }
     );
 
-    return Topic_comments;
+    return Community_posts;
 };

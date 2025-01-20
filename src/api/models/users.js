@@ -29,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.CHAR(15),
                 defaultValue: "member",
             },
-            experience_level: {
-                type: DataTypes.INTEGER,
+            experience_point: {
+                type: DataTypes.BIGINT,
                 defaultValue: 0,
             },
             currency_count: {

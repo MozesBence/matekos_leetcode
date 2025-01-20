@@ -408,22 +408,10 @@
             </v-dialog>
           </div>
 
-          
           <RouterView></RouterView>
-
 
           <v-footer style="background: rgb(var(--v-theme-secondary)); position: absolute; bottom: 0; width: 100%;">
             <v-row justify="center" no-gutters>
-              <v-btn
-                v-for="link in links"
-                :key="link"
-                class="mx-2"
-                color="white"
-                rounded="xl"
-                variant="text"
-              >
-                {{ link }}
-              </v-btn>
               <v-col class="text-center mt-4" cols="12">
                 Copyright © {{ new Date().getFullYear() }} — Math Solve
               </v-col>
@@ -513,8 +501,6 @@ const handleProfilePic = () => {
 
   if (base64Image && base64Image != null) {
     profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
-  } else {
-    console.error("Hiba történt a képadat betöltésekor.");
   }
 };
 

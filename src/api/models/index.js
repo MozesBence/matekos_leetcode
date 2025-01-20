@@ -1,29 +1,22 @@
-module.exports = (sequelize, DataTypes) =>{
+module.exports = (sequelize, DataTypes) => {
     const Users = require("../models/users")(sequelize, DataTypes);
-
-    const Topics = require("../models/topics")(sequelize, DataTypes);
-
-    const Topics_comments = require("../models/topic_comments")(sequelize, DataTypes);
-
+    const Community_posts = require("../models/community_posts")(sequelize, DataTypes);
+    const Community_comments = require("../models/community_comments")(sequelize, DataTypes);
+    const Community_files = require("../models/community_files")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
-    
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
-    
     const Task_comments = require("../models/task_comments")(sequelize, DataTypes);
-    
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
-    
     const Competitions_types = require("../models/competition_types")(sequelize, DataTypes);
-    
     const Badges = require("../models/badges")(sequelize, DataTypes);
-    
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
-
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
-    
     const User_custom = require("../models/user_customization")(sequelize, DataTypes);
-
     const Vip_custom = require("../models/vip_customization")(sequelize, DataTypes);
+    const Daily_Tasks = require('../models/daily_tasks')(sequelize,DataTypes);
+    
+    // Import Task_solutions
+    const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
 
     const competition_submissions = sequelize.define("competition_submissions", {
         point: {
@@ -38,65 +31,91 @@ module.exports = (sequelize, DataTypes) =>{
         },
     });
 
-    Users.hasOne(Vip_custom,{
+    Users.hasOne(Vip_custom, {
         foreignKey: "user_id",
     });
 
-    Users.hasOne(User_custom,{
+    Users.hasOne(User_custom, {
         foreignKey: "user_id",
     });
 
-    Badges.belongsToMany(Users,{
+    Badges.belongsToMany(Users, {
         foreignKey: "badges_id",
         through: "badge_redemption",
     });
 
-    Task_comments.hasMany(Task_comments,{
+    Task_comments.hasMany(Task_comments, {
         foreignKey: "parent_id",
     });
 
-    Users.hasMany(Task_comments,{
+    Users.hasMany(Task_comments, {
         foreignKey: "user_id",
     });
 
-    Tasks.belongsToMany(Users,{
+    // Use Task_solutions in association
+    Tasks.belongsToMany(Users, {
         foreignKey: "task_id",
-        through: "task_solutions",
+        through: Task_solutions,
     });
 
-    Competitions.hasOne(Competitions_types,{
+    Competitions.hasOne(Competitions_types, {
         foreignKey: "competition_type_id",
     });
 
-    Competitions.belongsToMany(Users,{
+    Competitions.belongsToMany(Users, {
         foreignKey: "competetion_id",
         through: "competition_attendees",
     });
 
-    Competitions.belongsToMany(Users,{
+    Competitions.belongsToMany(Users, {
         foreignKey: "competetion_id",
         through: competition_submissions,
     });
 
-    Competitions.belongsToMany(Users,{
+    Competitions.belongsToMany(Users, {
         foreignKey: "competetion_id",
         through: "tasks_creator",
     });
 
-    Themes.hasOne(Tasks,{
+    Themes.hasOne(Tasks, {
         foreignKey: "theme_id",
     });
 
-    Task_comments.hasOne(Tasks,{
+    Task_comments.hasOne(Tasks, {
         foreignKey: "task_comments_id",
     });
 
-    Topics.belongsToMany(Topics_comments,{
-        foreignKey: "topics_comment_id",
-        through: "topics_connection",
+    // Community_posts kapcsolatai
+    Community_posts.hasMany(Community_comments, {
+        foreignKey: "post_id",
+        allowNull: true,
+    });
+    Community_posts.hasMany(Community_files, {
+        foreignKey: "post_id",
+        allowNull: true,
+    });
+    Community_posts.belongsTo(Users, { // Hiányzott!
+        foreignKey: "user_id",
     });
 
-    Users.hasMany(Alerts,{
+    // Community_comments kapcsolatai
+    Community_comments.hasMany(Community_comments, {
+        foreignKey: "parent_comment_id",
+        allowNull: true,
+    });
+    Community_comments.belongsTo(Users, {
+        foreignKey: "user_id",
+    });
+
+    // Users kapcsolatai
+    Users.hasMany(Community_posts, {
+        foreignKey: "user_id",
+    });
+    Users.hasMany(Community_comments, {
+        foreignKey: "user_id",
+    });
+
+    Users.hasMany(Alerts, {
         foreignKey: "user_id",
     });
 
@@ -104,5 +123,22 @@ module.exports = (sequelize, DataTypes) =>{
         foreignKey: "user_id",
     });
 
-    return { Users, Topics, Topics_comments, Themes, Tasks, Task_comments, Competitions, Competitions_types, Badges, Alerts, Tokenz, User_custom, Vip_custom };
-}
+    return {
+        Users,
+        Community_posts,
+        Community_comments,
+        Community_files,
+        Themes,
+        Tasks,
+        Task_comments,
+        Competitions,
+        Competitions_types,
+        Badges,
+        Alerts,
+        Tokenz,
+        User_custom,
+        Vip_custom,
+        Task_solutions,
+        Daily_Tasks
+    };
+};
