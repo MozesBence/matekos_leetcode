@@ -1,12 +1,12 @@
 <template>
   <v-app>
-      <!-- Hero Section -->
+
       <v-container class="hero">
         <v-icon icon="mdi-trophy" color="amber" size="128" class="mb-4"></v-icon>
         <h1>MathSolve kihivás</h1>
         <p>Minden héten kihívás, oldd meg és nézd meg a ranglistán elfoglalt helyezésed!</p>
       </v-container>
-      <!-- Active Contests -->
+
       <v-container>
         <v-row>
           <v-col cols="12" md="6">
@@ -40,7 +40,7 @@
       </v-container>
       <v-container>
       <v-row>
-        <!-- Left section: Contest List -->
+        <!-- bal -->
         <v-col cols="8">
           <v-card>
             <v-card-title>Előző kihívások</v-card-title>
@@ -63,7 +63,7 @@
           </v-card>
         </v-col>
 
-        <!-- Right section: Global Ranking -->
+        <!-- jobb -->
         <v-col cols="4">
           <v-card>
             <v-card-title>Leaderboard</v-card-title>
