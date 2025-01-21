@@ -142,16 +142,16 @@
       >
       <div class="heatmap">
         <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
-        <div class="heatmap-grid">
-          <div
-            v-for="(day, index) in days"
-            :key="index"
-            :style="{ backgroundColor: getClass(day.value) }"
-            class="heatmap-cell"
-          >
-            {{ day.day }}
-          </div>
-          </div>
+       <div class="heatmap-grid">
+        <div
+          v-for="(day, index) in days"
+          :key="index"
+          :style="{ backgroundColor: getClass(day.value), border: checkIfCurrent(day.day) }"
+          class="heatmap-cell"
+        >
+          {{ day.day }}
+        </div>
+      </div>
 
       </div>      
       </div>
@@ -363,11 +363,17 @@ export default defineComponent({
     };
 
     const getClass = (value: number) => {
-      if (value == -1) return 'dark-blue';       // Example logic for assigning classes
+      if (value == -1) return 'dark-blue';
       if (value == 0) return 'light-blue';
       return 'blue';
     };
-
+    
+    const checkIfCurrent = (value: any) => {
+    if (value == new Date().getDate()) {
+      return '2px solid black';
+    }
+    return ''; // Fixed the 'return' typo
+  };
     // ApexCharts Data and Chart Options
     const series = ref([0, 0, 0]);
     const chartOptions = ref({
@@ -482,7 +488,8 @@ export default defineComponent({
       chartOptions,
       currentYear,
       currentMonth,
-      days
+      days,
+      checkIfCurrent
     };
   },
 });
