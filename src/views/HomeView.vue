@@ -111,7 +111,7 @@
           <p>{{quoteStore.quote}}</p>
         </div>
       </v-list-item>
-      <v-list-item v-if="get_user_name"
+      <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-column align-center justify-center" 
       style="text-align: center; height: 10em; width:400px; margin-bottom:2em"
     >
@@ -156,7 +156,7 @@
       </div>      
       </div>
       </v-list-item>
-      <v-list-item v-if="get_user_name" class="d-flex flex-column align-center justify-center" 
+      <v-list-item v-if="get_fullUser.email" class="d-flex flex-column align-center justify-center" 
       style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
@@ -170,7 +170,7 @@
       </v-list-item>
       </v-list>
     </v-navigation-drawer>
-  
+    
     <v-main class="d-block align-center justify-center">
       <v-row style="margin: 2em; border-bottom: 1px solid #ccc;">
         <v-col class="d-flex align-center justify-center" cols="2">
