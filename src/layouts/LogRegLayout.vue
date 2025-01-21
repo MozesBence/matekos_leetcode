@@ -115,6 +115,7 @@
           block
           v-if="route.name == 'login'"
           :disabled="!LogindataRef.password || !LogindataRef.email"
+          :loading="loading"
           @click="handleLogin"
         >
           Bejelentkezés
@@ -360,6 +361,7 @@
     } else {
       setPersistentCookie('user', token);
     }
+    router.push({ name: 'home' });
   }
 
   function setCookieWithExpiry(name: string, value: string, years: number) {

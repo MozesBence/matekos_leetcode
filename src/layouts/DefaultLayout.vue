@@ -300,10 +300,10 @@
   
         <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;">
           <v-container
+              v-if="!get_fullUser"
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
-              v-if="get_user_name == null"
             >
               <v-btn
                 class="rounded-pill"
@@ -437,11 +437,11 @@ const router = useRouter()
 
 const dialog = shallowRef(false)
 
-var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
 
-var get_fullUser = ref(null);
-var get_fullUser_customs = ref(null);
-var get_user_name = ref(null);
+const get_fullUser = ref(null);
+const get_fullUser_customs = ref(null);
+const get_user_name = ref(null);
 
 const theme = useTheme();
 
@@ -450,17 +450,17 @@ const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
 const DarkmodeChange = ref(false);
 
 onMounted(async () => {
-  if (get_user_by_token != null) {
+  if(get_user_by_token){
     try {
       await ProfileGetUser(get_user_by_token, {
         onSuccess: (get_user) => {
-          get_user_name.value = get_user.user_name;
           get_fullUser.value = get_user;
+          get_user_name.value = get_user.user_name;
           get_fullUser_customs.value = get_user.User_customization;
         },
         onError: (error) => {
           if(getCookie('user') != null){
-            deleteCookie('user');
+            //deleteCookie('user');
           }
         },
       });
@@ -469,6 +469,7 @@ onMounted(async () => {
     }
   }
 });
+
 watch(get_fullUser, (newUser) => {
   if (newUser) {
     DarkmodeChange.value = newUser.User_customization.darkmode;
@@ -505,7 +506,7 @@ const handleProfilePic = () => {
 };
 
 // Cookie-k kezelése
-function getCookie(name) {
+function getCookie(name){
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
     const [key, value] = cookie.split('=');
