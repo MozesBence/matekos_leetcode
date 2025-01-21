@@ -23,15 +23,15 @@
     </v-row>
   </v-container>
 
-  <v-sheet class="mx-auto" max-width="100%">
-    <v-slide-group show-arrows>
+  <v-sheet class="mx-auto" max-width="100%" style="">
+    <v-slide-group show-arrows style="background-color: rgb(var(--v-theme-background));">
       <v-slide-group-item
         v-for="n in themeStore.themes"
         :key="n.theme"
         v-slot="{ isSelected, toggle }"
       >
         <v-btn
-          :color="isSelected ? 'blue-lighten-1' : 'white'"
+          :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
           class="ma-4"
           rounded
           width="350px"
@@ -57,7 +57,7 @@
     :items="['Könnyű', 'Közepes', 'Nehéz']"
     variant="solo"
     class="responsive-item"
-    theme="light"
+    theme="background-color: rgb(var(--v-theme-background));"
   ></v-select>
 </v-col>
 
@@ -68,7 +68,7 @@
     :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
     variant="solo"
     class="responsive-item"
-    theme="light"
+    theme="background-color: rgb(var(--v-theme-background));"
   ></v-select>
 </v-col>
 
@@ -103,8 +103,8 @@
     <v-list>
       <v-list-item>
         <div
-          style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
-          class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+          style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em background-color: rgb(var(--v-theme-background));"
+          class="d-flex flex-column align-center justify-center"
         >
           <h1>Napi idézet</h1>
           <br>
@@ -117,14 +117,14 @@
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
       >
       <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
       <v-progress-linear
       v-model="progressPercentage"
       :color="progressColor"
       height="25"
-      style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;"
+      style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: rgb(var(--v-theme-background));"
       >
       <template v-slot:default="{ value }">
         <strong>{{ currentLevel }}. szint</strong>
@@ -135,10 +135,10 @@
     </v-list-item>
 
       <v-list-item class="d-flex flex-column align-center justify-center" 
-      style="text-align: center;  width:400px; margin-top:2em margin-bottom:2em">
+      style="text-align: center;  width:400px; margin-top:2em margin-bottom:2em ">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
       >
       <div class="heatmap">
         <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
@@ -146,7 +146,7 @@
         <div
           v-for="(day, index) in days"
           :key="index"
-          :style="{ backgroundColor: getClass(day.value), border: checkIfCurrent(day.day) }"
+          :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
           class="heatmap-cell"
         >
           {{ day.day }}
@@ -160,7 +160,7 @@
       style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
       >
         <h1>Teljesítési statisztika:</h1>
         <div id="chart">
@@ -363,9 +363,9 @@ export default defineComponent({
     };
 
     const getClass = (value: number) => {
-      if (value == -1) return 'dark-blue';
-      if (value == 0) return 'light-blue';
-      return 'blue';
+      if (value == -1) return '#E57373';
+      if (value == 1) return '#A5D6A7';
+      return '#00A1FF';
     };
     
     const checkIfCurrent = (value: any) => {
