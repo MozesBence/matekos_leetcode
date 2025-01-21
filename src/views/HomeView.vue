@@ -96,14 +96,16 @@
   </v-col>
 </v-row>
 
-  <v-layout class="rounded rounded-md" height="100em">
+  <v-layout class="rounded-md" height="100em">
     <v-navigation-drawer 
     location="right" 
-    width="400"  >
+    width="400"
+    style="background-color: transparent; border: none;"
+    >
     <v-list>
-      <v-list-item>
+      <v-list-item class="rounded" style="background-color: gray;">
         <div
-          style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em background-color: rgb(var(--v-theme-background));"
+          style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
           class="d-flex flex-column align-center justify-center"
         >
           <h1>Napi idézet</h1>
@@ -112,52 +114,59 @@
         </div>
       </v-list-item>
       <v-list-item v-if="get_fullUser.email"
-      class="d-flex flex-column align-center justify-center" 
-      style="text-align: center; height: 10em; width:400px; margin-bottom:2em"
+      class="d-flex flex-colum rounded align-center justify-center mt-2" 
+      style="text-align: center; height: 10em; width:400px; background-color: gray;"
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
+        class="d-flex flex-column align-center justify-center "
       >
       <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
       <v-progress-linear
       v-model="progressPercentage"
       :color="progressColor"
       height="25"
-      style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: rgb(var(--v-theme-background));"
+      class="rounded-pill mt-2"
+      style="width: 300px; background-color: rgb(var(--v-theme-background));"
       >
-      <template v-slot:default="{ value }">
-        <strong>{{ currentLevel }}. szint</strong>
-      </template>
-    </v-progress-linear>
-    <h3 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">Aranyak szama: {{get_fullUser.currency_count}}<img height="20" src="../assets/coin.png"></h3>
+        <template v-slot:default="{ value }">
+          <strong>{{ currentLevel }}. szint</strong>
+        </template>
+      </v-progress-linear>
+        <h3 
+          style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
+          >
+          Aranyak szama: {{get_fullUser.currency_count}}
+          <img height="20" src="../assets/coin.png">
+        </h3>
       </div>
     </v-list-item>
 
-      <v-list-item class="d-flex flex-column align-center justify-center" 
-      style="text-align: center;  width:400px; margin-top:2em margin-bottom:2em ">
-      <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
-      >
-      <div class="heatmap">
-        <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
-       <div class="heatmap-grid">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
-          class="heatmap-cell"
+      <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
+      style="width:400px; background-color: gray;">
+        <div 
+          class="d-flex flex-column align-center justify-center"
         >
-          {{ day.day }}
-        </div>
-      </div>
+          <div class="heatmap">
+            <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
+          <div class="heatmap-grid">
+            <div
+              v-for="(day, index) in days"
+              :key="index"
+              :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
+              class="heatmap-cell"
+            >
+              {{ day.day }}
+            </div>
+          </div>
 
-      </div>      
-      </div>
+          </div>      
+        </div>
       </v-list-item>
-      <v-list-item v-if="get_fullUser.email" class="d-flex flex-column align-center justify-center" 
-      style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
+      <v-list-item 
+      v-if="get_fullUser.email" 
+      class="d-flex flex-column align-center justify-center rounded mt-2" 
+      style="text-align: center; width:400px; background-color: gray;">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
         class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
