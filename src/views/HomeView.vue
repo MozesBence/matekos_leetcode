@@ -151,7 +151,8 @@
           >
             {{ day.day }}
           </div>
-        </div>
+          </div>
+
       </div>      
       </div>
       </v-list-item>
@@ -250,13 +251,14 @@ function getCookie(name: string): string | null {
   }
   return null;
 }
-const currentYear = new Date().getFullYear()
+
+const currentYear = new Date().getFullYear();
 const monthsNames = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
-const currentMonth = monthsNames[Number(new Date().getMonth())];
-console.log('year',currentYear)
+const currentMonth = monthsNames[new Date().getMonth()];
+console.log('year', currentYear);
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
@@ -270,20 +272,21 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
-    
+
     const getDaysInMonth = (year: number, month: number): number => {
-      return new Date(year, month, 0).getDate();
+      return new Date(year, month + 1, 0).getDate();
     };
 
-    // Generate days for the current month
     const generateDays = (year: number, month: number) => {
       const daysInMonth = getDaysInMonth(year, month);
       const daysArray = [];
       for (let day = 1; day <= daysInMonth; day++) {
-        daysArray.push({ day, value: day }); // You can add more properties as needed
+        daysArray.push({ day, value: day });
       }
       return daysArray;
     };
+
+    const days = ref<{ day: number, value: number }[]>([]);
 
     const progressColor = computed(() => {
       const percentage = progressPercentage.value;
@@ -359,8 +362,14 @@ export default defineComponent({
       return found ? found.completionRate : "NaN";
     };
 
+    const getClass = (value: number) => {
+      if (value == -1) return 'dark-blue';       // Example logic for assigning classes
+      if (value == 0) return 'light-blue';
+      return 'blue';
+    };
+
     // ApexCharts Data and Chart Options
-    const series = ref([0, 0, 0]); // Initialize as an empty array to bind later
+    const series = ref([0, 0, 0]);
     const chartOptions = ref({
       chart: {
         height: 390,
@@ -409,8 +418,9 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      days.value = generateDays(currentYear, new Date().getMonth() + 1); // Month is 0-based in JS Date
+      days.value = generateDays(currentYear, new Date().getMonth());
     });
+
     onMounted(async () => {
       const userCookie = getCookie('user');
       if (userCookie) {
@@ -421,8 +431,8 @@ export default defineComponent({
           console.error('Error parsing user cookie:', error);
         }
       }
-      
-      var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+
+      const get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
       if (get_user_by_token) {
         const { mutate: ProfileGetUser } = useProfileGetUser();
@@ -430,7 +440,6 @@ export default defineComponent({
           await ProfileGetUser(get_user_by_token, {
             onSuccess: (get_user) => {
               get_user_name.value = get_user.user_name;
-              console.log(get_user);
               get_fullUser.value = get_user;
               console.log(get_fullUser.experience_point);
             },
@@ -446,12 +455,10 @@ export default defineComponent({
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value));
-      // Watch for changes in solved_task_rates and update series accordingly
-      watch(() => cardsStore.solved_task_rates, (newRates) => {
-        console.log('new',newRates.countpercenct)
-        series.value = newRates.countpercenct; // Update series with the fetched data
-      });
 
+      watch(() => cardsStore.solved_task_rates, (newRates) => {
+        series.value = newRates.countpercenct;
+      });
     });
 
     return {
@@ -464,6 +471,7 @@ export default defineComponent({
       getTaskStateForCard,
       getTaskIcon,
       cardCompRate,
+      getClass,
       get_user_name,
       get_user_email,
       get_fullUser,
@@ -471,11 +479,10 @@ export default defineComponent({
       progressPercentage,
       experienceForNextLevel,
       series,
-      chartOptions, 
+      chartOptions,
       currentYear,
       currentMonth,
       days
-      
     };
   },
 });
