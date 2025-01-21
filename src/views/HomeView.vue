@@ -111,7 +111,7 @@
           <p>{{quoteStore.quote}}</p>
         </div>
       </v-list-item>
-      <v-list-item 
+      <v-list-item v-if="get_user_name"
       class="d-flex flex-column align-center justify-center" 
       style="text-align: center; height: 10em; width:400px; margin-bottom:2em"
     >
@@ -119,7 +119,7 @@
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
       >
-      <h1>Udvozlunk, {{get_fullUser.user_name}}!</h1>
+      <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
       <v-progress-linear
       v-model="progressPercentage"
       :color="progressColor"
@@ -141,7 +141,7 @@
         class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
       >
       <div class="heatmap">
-        <h1>Napi feladatok - {{ currentYear }}/{{ currentMonth }}</h1>
+        <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
         <div class="heatmap-grid">
           <div
             v-for="(day, index) in days"
@@ -155,7 +155,7 @@
       </div>      
       </div>
       </v-list-item>
-      <v-list-item class="d-flex flex-column align-center justify-center" 
+      <v-list-item v-if="get_user_name" class="d-flex flex-column align-center justify-center" 
       style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
@@ -228,7 +228,7 @@
   </v-layout>
   
   <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
-    <v-pagination :length="6"></v-pagination>
+    <v-pagination :length="Number(Math.ceil((cardsStore.cards.length+ 60)/15))"></v-pagination>
   </v-row>
   
 </template>
@@ -250,7 +250,13 @@ function getCookie(name: string): string | null {
   }
   return null;
 }
-
+const currentYear = new Date().getFullYear()
+const monthsNames = [
+  'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
+  'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
+];
+const currentMonth = monthsNames[Number(new Date().getMonth())];
+console.log('year',currentYear)
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
@@ -265,6 +271,20 @@ export default defineComponent({
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
     
+    const getDaysInMonth = (year: number, month: number): number => {
+      return new Date(year, month, 0).getDate();
+    };
+
+    // Generate days for the current month
+    const generateDays = (year: number, month: number) => {
+      const daysInMonth = getDaysInMonth(year, month);
+      const daysArray = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        daysArray.push({ day, value: day }); // You can add more properties as needed
+      }
+      return daysArray;
+    };
+
     const progressColor = computed(() => {
       const percentage = progressPercentage.value;
       if (percentage < 33) return 'green';
@@ -388,6 +408,9 @@ export default defineComponent({
       }]
     });
 
+    onMounted(() => {
+      days.value = generateDays(currentYear, new Date().getMonth() + 1); // Month is 0-based in JS Date
+    });
     onMounted(async () => {
       const userCookie = getCookie('user');
       if (userCookie) {
@@ -398,7 +421,7 @@ export default defineComponent({
           console.error('Error parsing user cookie:', error);
         }
       }
-
+      
       var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
       if (get_user_by_token) {
@@ -448,7 +471,11 @@ export default defineComponent({
       progressPercentage,
       experienceForNextLevel,
       series,
-      chartOptions // Expose the ApexCharts chartOptions
+      chartOptions, 
+      currentYear,
+      currentMonth,
+      days
+      
     };
   },
 });
