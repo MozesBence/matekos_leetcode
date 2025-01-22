@@ -115,7 +115,7 @@
       </v-list-item>
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: gray;"
+      style="text-align: center; height: 10em; width:400px; background-color: gray"
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
@@ -136,7 +136,7 @@
         <h3 
           style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
           >
-          Aranyak szama: {{get_fullUser.currency_count}}
+          Aranyak száma: {{get_fullUser.currency_count}}
           <img height="20" src="../assets/coin.png">
         </h3>
       </div>
@@ -155,6 +155,7 @@
               :key="index"
               :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
               class="heatmap-cell"
+              @click="TaskView()"
             >
               {{ day.day }}
             </div>
@@ -200,6 +201,7 @@
       v-for="(card) in cardsStore.cards" 
       :key="card.id" 
       style="margin: 2em; border-bottom: 1px solid #ccc;"
+      @click="TaskView()"
     >
       <!-- Task Icon and Status -->
       <v-col class="d-flex align-center justify-center" cols="2">
@@ -214,8 +216,8 @@
       </v-col>
 
       <!-- Task Title -->
-      <v-col class="d-flex align-center justify-center" cols="6">
-        <span class="text-h7">{{ card.id }} {{ card.task_title }}</span>
+      <v-col class="d-flex align-center justify-center" cols="6"  style="text-align: left;">
+        <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
       </v-col>
       
       <!-- Completion Rate -->
@@ -249,6 +251,9 @@ import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
+import { useRouter } from 'vue-router';
+
+
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -281,6 +286,11 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
+    const router = useRouter();
+
+    const TaskView = () => {
+      router.push({ path: '/task' });
+    };
 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
@@ -498,7 +508,8 @@ export default defineComponent({
       currentYear,
       currentMonth,
       days,
-      checkIfCurrent
+      checkIfCurrent,
+      TaskView
     };
   },
 });
