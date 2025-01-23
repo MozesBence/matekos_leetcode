@@ -1,6 +1,6 @@
 <template>
-    <v-card>
-      <v-layout style="background-color: rgb(var(--v-theme-background)); position: relative; padding-bottom: 3vw;">
+    <v-card style="background-color: rgb(var(--v-theme-background)); box-shadow: none;">
+      <v-layout style="position: relative; box-shadow: none;" elevation="0">
         <v-app-bar
           color="primary"
           prominent
@@ -298,7 +298,7 @@
           </v-list>
         </v-navigation-drawer>
   
-        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;">
+        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;" elevation="0">
           <v-container
               v-if="!get_fullUser"
               fluid
@@ -410,9 +410,9 @@
 
           <RouterView></RouterView>
 
-          <v-footer style="background: rgb(var(--v-theme-secondary)); position: absolute; bottom: 0; width: 100%;">
+          <v-footer id="siteFooter" style="background: rgb(var(--v-theme-secondary)); bottom: 0; width: 100%;" class="pa-5">
             <v-row justify="center" no-gutters>
-              <v-col class="text-center mt-4" cols="12">
+              <v-col class="text-center" cols="12">
                 Copyright © {{ new Date().getFullYear() }} — Math Solve
               </v-col>
             </v-row>
@@ -423,8 +423,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref, shallowRef, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 import { useTheme } from 'vuetify';
@@ -433,7 +433,8 @@ const { mutate : ProfileGetUser} = useProfileGetUser()
 
 const { currentRoute } = useRouter()
 
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
 const dialog = shallowRef(false)
 
@@ -521,13 +522,50 @@ function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   window.location.reload();
 }
+
+function updateFooterPosition() {
+  const footer = document.getElementById('siteFooter');
+
+  const handleScroll = () => {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const pageHeight = document.documentElement.scrollHeight;
+    if (scrollPosition >= pageHeight) {
+      footer.style.position = 'fixed';
+    } else {
+      footer.style.position = 'absolute';
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  handleScroll();
+}
+
+onMounted(() => {
+  const checkFooter = () => {
+    const footer = document.getElementById('siteFooter');
+    if (footer) {
+      updateFooterPosition();
+    } else {
+      setTimeout(checkFooter, 50);
+    }
+  };
+
+  checkFooter();
+});
+
+watch(route, () => {
+  setTimeout(() => {
+    updateFooterPosition();
+  }, 50);
+});
+
 </script>
 
 <script>
 import { ref, watch } from 'vue'
 
-const drawer = ref(false)
-const group = ref(null)
+const drawer = ref(false);
+const group = ref(null);
 
 watch(group, () => {
   drawer.value = false

@@ -1,44 +1,43 @@
 <template>
-  <v-app>
+  <v-app class="mt-2">
+    <v-container class="hero">
+      <v-icon icon="mdi-trophy" color="amber" size="128" class="mb-4"></v-icon>
+      <h1>MathSolve kihivás</h1>
+      <p>Minden héten kihívás, oldd meg és nézd meg a ranglistán elfoglalt helyezésed!</p>
+    </v-container>
 
-      <v-container class="hero">
-        <v-icon icon="mdi-trophy" color="amber" size="128" class="mb-4"></v-icon>
-        <h1>MathSolve kihivás</h1>
-        <p>Minden héten kihívás, oldd meg és nézd meg a ranglistán elfoglalt helyezésed!</p>
-      </v-container>
+    <v-container>
+      <v-row>
+        <v-col cols="12" md="6">
+          <v-card class="kihivas" @click="hetiKihivasAtiranyit()">
+            <v-card-text class="pa-6">
+              
+              <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
 
-      <v-container>
-        <v-row>
-          <v-col cols="12" md="6">
-            <v-card class="kihivas" @click="hetiKihivasAtiranyit()">
-              <v-card-text class="pa-6">
-                
-                <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
+                Heti kihivás
+              </v-card-title>
+              <v-card-subtitle>
+                <!-- Visszaszámláló hogy mennyi idő van még az aktuális challengből -->
+              </v-card-subtitle>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col cols="12" md="6">
+          <v-card class="kihivas" @click="haviKihivasAtiranyit()">
+            <v-card-text class="pa-6">
+              <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
 
-                  Heti kihivás
-                </v-card-title>
-                <v-card-subtitle>
-                  <!-- Visszaszámláló hogy mennyi idő van még az aktuális challengből -->
-                </v-card-subtitle>
-              </v-card-text>
-            </v-card>
-          </v-col>
-          <v-col cols="12" md="6">
-            <v-card class="kihivas" @click="haviKihivasAtiranyit()">
-              <v-card-text class="pa-6">
-                <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
-
-                  Havi kihívás
-                </v-card-title>
-                <v-card-subtitle class="text-grey-lighten-1 pa-0">
-                  <!-- Visszaszámláló hogy mennyi idő van még a kihívásból -->
-                </v-card-subtitle>
-              </v-card-text>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-      <v-container>
+                Havi kihívás
+              </v-card-title>
+              <v-card-subtitle class="text-grey-lighten-1 pa-0">
+                <!-- Visszaszámláló hogy mennyi idő van még a kihívásból -->
+              </v-card-subtitle>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+    <v-container>
       <v-row>
         <!-- bal -->
         <v-col cols="8">
@@ -99,10 +98,10 @@ function haviKihivasAtiranyit(){
 }
 </script>
 <style>
-.v-card {
+.kihivas {
   transition: transform 0.2s;
 }
-.v-card:hover {
+.kihivas:hover {
   transform: translateY(-4px);
 }
 .hero {

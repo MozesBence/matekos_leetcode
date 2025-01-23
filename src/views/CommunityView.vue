@@ -1,5 +1,5 @@
 <template>
-  <main style="min-height: 85.4vh;" class="mt-5 d-flex justify-center">
+  <main class="mt-5 d-flex justify-center">
     <div>
       <div class="d-flex">
         <div 

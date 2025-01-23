@@ -333,36 +333,23 @@
 
   const handleLogin = () => {
     if (LogindataRef.value.email && LogindataRef.value.password) {
-      LogindataRef.value.token = route.query.token ? (route.query.token as string) : 'null';
+      LogindataRef.value.rememberMe = rememberMe.value;
       loginUser(LogindataRef.value, {
         onError: (err: any) => {
           errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
           snackbar.value = true;
         },
-        onSuccess: (user) => {
-          createJwt(user.id);
+        onSuccess: (token) => {
+          if (rememberMe) {
+            setCookieWithExpiry('user', token, 1);
+          } else {
+            setPersistentCookie('user', token);
+          }
+          router.push({ name: 'home' });
         },
       });
     }
   };
-
-  async function createJwt(id: number) {
-    const secret = new TextEncoder().encode('Titkos Kulcs 1 2 3');
-    const payload = { id: id };
-    var token = null;
-    if (rememberMe) {
-      token = await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).setExpirationTime('1d').sign(secret);
-    }else{
-      token = await new SignJWT(payload).setProtectedHeader({ alg: 'HS256' }).sign(secret);
-    }
-    
-    if (rememberMe) {
-      setCookieWithExpiry('user', token, 1);
-    } else {
-      setPersistentCookie('user', token);
-    }
-    router.push({ name: 'home' });
-  }
 
   function setCookieWithExpiry(name: string, value: string, years: number) {
     const date = new Date();
@@ -418,9 +405,9 @@
   }
 
   const LogindataRef = ref<LoginData>({
-    token: '',
     email: '',
-    password: ''
+    password: '',
+    rememberMe: false
   })
 
   const RegdataRef = ref<RegisterData>({
@@ -533,7 +520,7 @@
   }
 
   function deleteCookie(name: string): void {
-    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie += `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   }
 </script>
 
