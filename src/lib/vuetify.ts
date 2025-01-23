@@ -37,6 +37,7 @@ const vuetify = createVuetify({
           nav_btn_active: colors.blue.base,
           site_title: colors.blue.accent4,
           login_title: colors.grey.lighten5,
+          home_rightdrawer_card: colors.grey.lighten2,
 
           profile_bc: colors.grey.lighten1,
           profile_textColor: colors.grey.lighten5,
@@ -67,6 +68,7 @@ const vuetify = createVuetify({
           nav_btn_active: colors.blue.lighten3,
           site_title: colors.cyan.lighten3,
           login_title: colors.grey.lighten1,
+          home_rightdrawer_card: colors.grey.darken3,
 
           profile_bc: colors.grey.darken2,
           profile_textColor: colors.grey.lighten4,

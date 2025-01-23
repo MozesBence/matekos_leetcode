@@ -410,13 +410,6 @@
 
           <RouterView></RouterView>
 
-          <v-footer id="siteFooter" style="background: rgb(var(--v-theme-secondary)); bottom: 0; width: 100%;" class="pa-5">
-            <v-row justify="center" no-gutters>
-              <v-col class="text-center" cols="12">
-                Copyright © {{ new Date().getFullYear() }} — Math Solve
-              </v-col>
-            </v-row>
-          </v-footer>
         </v-main>
       </v-layout>
     </v-card>
@@ -522,43 +515,6 @@ function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
   window.location.reload();
 }
-
-function updateFooterPosition() {
-  const footer = document.getElementById('siteFooter');
-
-  const handleScroll = () => {
-    const scrollPosition = window.scrollY + window.innerHeight;
-    const pageHeight = document.documentElement.scrollHeight;
-    if (scrollPosition >= pageHeight) {
-      footer.style.position = 'fixed';
-    } else {
-      footer.style.position = 'absolute';
-    }
-  };
-
-  window.addEventListener('scroll', handleScroll);
-  handleScroll();
-}
-
-onMounted(() => {
-  const checkFooter = () => {
-    const footer = document.getElementById('siteFooter');
-    if (footer) {
-      updateFooterPosition();
-    } else {
-      setTimeout(checkFooter, 50);
-    }
-  };
-
-  checkFooter();
-});
-
-watch(route, () => {
-  setTimeout(() => {
-    updateFooterPosition();
-  }, 50);
-});
-
 </script>
 
 <script>
