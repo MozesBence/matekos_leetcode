@@ -454,7 +454,7 @@ onMounted(async () => {
         },
         onError: (error) => {
           if(getCookie('user') != null){
-            //deleteCookie('user');
+            deleteCookie('user');
           }
         },
       });

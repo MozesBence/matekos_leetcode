@@ -86,9 +86,25 @@
     </v-container>
   </v-app>
 </template>
-<script setup lang="ts">
+<script setup>
+import { onMounted, ref, shallowRef, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
+
+import { useLeaderboard } from '@/api/contest/contestQuery'
+
+const { mutate: leaderBoard } = useLeaderboard();
+
+onMounted(async () => {
+  await leaderBoard({
+    onSuccess: (array) => {
+      console.log(array);
+    },
+    onError: (error) => {
+      
+    },
+  });
+});
 
 function hetiKihivasAtiranyit(){
   router.push({path: '/weekly-challange'});
