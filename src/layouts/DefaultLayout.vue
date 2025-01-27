@@ -175,7 +175,7 @@
                           <img
                             :src="profileImage"
                             alt="Profil"
-                            style="width: 100%; height: 100%; object-fit: cover;"
+                            style="width: 100%; height: 100%; object-fit: cover; position: relative; top: -2rem;"
                           />
                         </template>
                         <template v-else>
