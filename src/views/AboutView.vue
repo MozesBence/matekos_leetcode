@@ -13,7 +13,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">A weboldalról</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">A weboldalról</span>
           <v-icon style="position: absolute; right: .5vw;">{{ AboutOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -35,7 +35,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">MathSolve, miért a MathSolve?</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">MathSolve, miért a MathSolve?</span>
           <v-icon style="position: absolute; right: .5vw;">{{ WhyOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -57,7 +57,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Hogyan használd a weboldalt?</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">Hogyan használd a weboldalt?</span>
           <v-icon style="position: absolute; right: .5vw;">{{ UsageOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -78,7 +78,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Az oldal funkcióiról</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">Az oldal funkcióiról</span>
           <v-icon style="position: absolute; right: .5vw;">{{ FeaturesOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -99,7 +99,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">Rólunk</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">Rólunk</span>
           <v-icon style="position: absolute; right: .5vw;">{{ AboutUsOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -152,7 +152,7 @@
           elevation="0"
           style="position: relative;"
         >
-          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.8vw'}">GYIK - Gyakran ismételt kérdések</span>
+          <span :style="{fontSize: $vuetify.display.smAndDown ? '3.6vw' : '1.6vw'}">GYIK - Gyakran ismételt kérdések</span>
           <v-icon style="position: absolute; right: .5vw;">{{ FaqOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
         </v-btn>
 
@@ -270,7 +270,7 @@ main::-webkit-scrollbar {
 }
 
 .hero h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   transition: font-family 0.5s ease, color 0.5s ease;
 }
 
