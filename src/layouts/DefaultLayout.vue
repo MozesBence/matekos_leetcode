@@ -161,7 +161,7 @@
                         icon
                         elevation="0"
                         class="elevation-2"
-                        @click="router.push({ name: 'profile'})"
+                        @click="router.push({ name: 'profile', params: { id: 0 } })"
                         :style="{
                           borderRadius: '50%',
                           width: '8vh',
@@ -446,7 +446,7 @@ const DarkmodeChange = ref(false);
 onMounted(async () => {
   if(get_user_by_token){
     try {
-      await ProfileGetUser(get_user_by_token, {
+      await ProfileGetUser({token: get_user_by_token, id: 0}, {
         onSuccess: (get_user) => {
           get_fullUser.value = get_user;
           get_user_name.value = get_user.user_name;

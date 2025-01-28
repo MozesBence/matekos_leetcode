@@ -70,11 +70,15 @@
             <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0">
               <v-list-item>
                 <div class="d-flex flex-row align-center mb-3 pa-1 px-3 rounded justify-space-between" style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
-                  <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden;">
-                    <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" style="width: 100%; position: relative;" :style="{ top: member.profil_picture === null ? '0rem' : '-1rem' }">
-                  </div>
+                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })">
+                    <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden;">
+                      <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" style="width: 100%; position: relative;" :style="{ top: member.profil_picture === null ? '0rem' : '-1rem' }">
+                    </div>
+                  </b-btn>
+                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })">
                     <h2 style="font-weight: normal;">{{ member.name }}</h2>
-                    <h2 style="font-weight: normal;">{{ member.experience_point }}xp</h2>
+                  </b-btn>
+                  <h2 style="font-weight: normal;">{{ member.experience_point }}xp</h2>
                 </div>
               </v-list-item>
             </v-list>

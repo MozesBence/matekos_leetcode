@@ -85,6 +85,52 @@ class profileRepository
         return "Felhasználónak firssült a kinézet!";
     }
 
+    async getElseUserById(id){
+        try {
+            const userWithCustomization = await this.Users.findOne({
+                where: { id: id },
+                include: [{
+                    model: this.User_customization,
+                    required: true,
+                }],
+            });
+            if (userWithCustomization && userWithCustomization.User_customization) {
+                const profileProfPicBuffer = userWithCustomization.User_customization.profil_picture;
+                const profileBackPicBuffer = userWithCustomization.User_customization.background_picture;
+            
+                const profileProfPicMimeType = userWithCustomization.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+                const profileBackPicMimeType = userWithCustomization.User_customization.background_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+
+                if (profileProfPicBuffer) {
+                    // Blob fájl átalakítása Base64 formátumba
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    userWithCustomization.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            
+                if (profileBackPicBuffer) {
+                    // Blob fájl átalakítása Base64 formátumba
+                    const base64Image = Buffer.from(profileBackPicBuffer).toString('base64');
+                    userWithCustomization.User_customization.background_picture = `data:${profileBackPicMimeType};base64,${base64Image}`;
+                }
+            }
+
+            const else_user = {
+                name: userWithCustomization.user_name,
+                experience_point: userWithCustomization.experience_point,
+                user_role: userWithCustomization.user_role,
+                join_date: userWithCustomization.join_date,
+                profil_picture: userWithCustomization.User_customization.profil_picture,
+                background_picture: userWithCustomization.User_customization.background_picture,
+                darkmode: userWithCustomization.User_customization.darkmode
+            };
+
+            return else_user;
+        } catch (error) {
+            console.error('Hiba történt a felhasználó és a testreszabás lekérése során:', error);
+            throw error;
+        }
+    }
+
 }
 
 module.exports = new profileRepository(db);

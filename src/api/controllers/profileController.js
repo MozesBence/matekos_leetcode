@@ -6,27 +6,48 @@ require('dotenv').config();
 
 exports.getFullUser = async (req, res, next) =>{
     const token = req.headers['token'];
+    const id = req.headers['id'];
 
     const secretKey = process.env.JWT_KEY;
 
     const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
 
-    const full_user = await profileService.getUserAndCustomization(decoded.id);
-
-    try{
-
-        if(full_user == null){
-            const error = new Error("A felhasználó nem található!");
-
-            error.status = 404;
-
-            throw error;
+    if(decoded.id == id || id == 0){
+        
+        const full_user = await profileService.getUserAndCustomization(decoded.id);
+    
+        try{
+    
+            if(full_user == null){
+                const error = new Error("A felhasználó nem található!");
+    
+                error.status = 404;
+    
+                throw error;
+            }
+    
+            res.status(200).send(full_user);
         }
+        catch(error){
+            next(error);
+        }
+    }else{
+        const else_user = await profileService.getElseUserById(id);
 
-        res.status(200).send(full_user);
-    }
-    catch(error){
-        next(error);
+        try{
+            if(else_user == null){
+                const error = new Error("A felhasználó nem található!");
+
+                error.status = 404;
+
+                throw error;
+            }
+
+            res.status(200).send(else_user);
+        }
+        catch(error){
+            next(error);
+        }
     }
 }
 

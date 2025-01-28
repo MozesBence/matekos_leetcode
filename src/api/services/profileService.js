@@ -16,6 +16,11 @@ class profileService
     {
         return await profileRepository.DarkmodeUpload(id, darkmode);
     }
+    
+    async getElseUserById(id)
+    {
+        return await profileRepository.getElseUserById(id);
+    }
 }
 
 module.exports = new profileService();

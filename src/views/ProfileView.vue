@@ -249,10 +249,12 @@ const get_fullUser_customs = ref<any>(null);
 
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
+const userId = route.params.id;
+
 onMounted(async () => {
   if (get_user_by_token != null) {
     try {
-      await ProfileGetUser(get_user_by_token, {
+      await ProfileGetUser({token: get_user_by_token, id: Number(userId)}, {
         onSuccess: (get_user) => {
           get_UserName.value = get_user.user_name;
           get_fullUser.value = get_user;
