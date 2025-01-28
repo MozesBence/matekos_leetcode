@@ -464,11 +464,10 @@ export default defineComponent({
       if (get_user_by_token) {
         const { mutate: ProfileGetUser } = useProfileGetUser();
         try {
-          await ProfileGetUser(get_user_by_token, {
+          await ProfileGetUser({token: get_user_by_token, id: 0}, {
             onSuccess: (get_user) => {
               get_user_name.value = get_user.user_name;
               get_fullUser.value = get_user;
-              console.log(get_fullUser.experience_point);
             },
           });
         } catch (error) {

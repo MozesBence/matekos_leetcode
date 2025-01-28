@@ -9,10 +9,13 @@ exports.getFullUser = async (req, res, next) =>{
     const id = req.headers['id'];
 
     const secretKey = process.env.JWT_KEY;
+    
+    const decoded = null;
+    if(token){
+        decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+    }
 
-    const decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
-
-    if(decoded.id == id || id == 0){
+    if(decoded && decoded.id == id || id == 0){
         
         const full_user = await profileService.getUserAndCustomization(decoded.id);
     
@@ -33,7 +36,7 @@ exports.getFullUser = async (req, res, next) =>{
         }
     }else{
         const else_user = await profileService.getElseUserById(id);
-
+        
         try{
             if(else_user == null){
                 const error = new Error("A felhasználó nem található!");

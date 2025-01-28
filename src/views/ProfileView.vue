@@ -20,17 +20,20 @@
       </v-btn>
       <div class="d-flex justify-center">
         <v-btn
-          icon
-          @click="handleDarkmodeSwitch"
-          style="position: absolute; top: .2rem; right: 4rem; z-index: 5; pointer-events: visible;"
+        v-if="settingsShow"
+        icon
+        @click="handleDarkmodeSwitch"
+        style="position: absolute; top: .2rem; z-index: 5; pointer-events: visible;"
+        :style="{right: !settingsShow ? '.4rem': '4rem'}"
         >
           <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
         </v-btn>
 
         <v-btn
-          icon
-          @click="dialog = true"
-          style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
+        v-if="settingsShow"
+        icon
+        @click="dialog = true"
+        style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
         >
           <v-icon>mdi-account-cog</v-icon>
         </v-btn>
@@ -247,25 +250,27 @@ const get_UserName = ref<string>('Betöltés...');
 
 const get_fullUser_customs = ref<any>(null);
 
+const settingsShow = ref(false);
+
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 const userId = route.params.id;
 
 onMounted(async () => {
-  if (get_user_by_token != null) {
-    try {
-      await ProfileGetUser({token: get_user_by_token, id: Number(userId)}, {
-        onSuccess: (get_user) => {
-          get_UserName.value = get_user.user_name;
-          get_fullUser.value = get_user;
-          get_fullUser_customs.value = get_user.User_customization;
-        },
-        onError: (error) => {
-        },
-      });
-    } catch (error) {
-      console.error('Hiba történt a felhasználó lekérésekor:', error);
-    }
+  try {
+    await ProfileGetUser({token: get_user_by_token, id: Number(userId)}, {
+      onSuccess: (get_user) => {
+        get_UserName.value = get_user.user_name ? get_user.user_name : get_user.name;
+        get_fullUser.value = get_user;
+        get_fullUser_customs.value = get_user.User_customization;
+        handlePtofilPicters(get_user.User_customization ? { profil_picture: get_user.User_customization.profil_picture, background_picture: get_user.User_customization.background_picture } : { profil_picture: get_user.profil_picture, background_picture: get_user.background_picture })
+        settingsShow.value = get_fullUser.value.id == userId;
+      },
+      onError: (error) => {
+      },
+    });
+  } catch (error) {
+    console.error('Hiba történt a felhasználó lekérésekor:', error);
   }
 });
 
@@ -292,18 +297,17 @@ const theme = useTheme();
 // Változó figyelése
 watch(get_fullUser, (newUser: any | null) => {
   if (newUser) {
-    DarkmodeChange.value = newUser.User_customization.darkmode;
+    DarkmodeChange.value = newUser.User_customization ? newUser.User_customization.darkmode : newUser.darkmode;
     theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
-    handlePtofilPicters();
   }
 });
 
 const profileImage = ref<string>('hibas-kep-url.jpg');
 const backImage = ref<string>('hibas-kep-url.jpg');
 
-const handlePtofilPicters = () => {
-  const base64ImageProf = get_fullUser_customs.value.profil_picture;
-  const base64ImageBack = get_fullUser_customs.value.background_picture;
+const handlePtofilPicters = (data: { profil_picture: string | null, background_picture: string | null }) => {
+  const base64ImageProf = data.profil_picture;
+  const base64ImageBack = data.background_picture;
 
   if (base64ImageProf && base64ImageProf != null) {
     profileImage.value = base64ImageProf; // Közvetlenül beállítjuk a Base64 kódolt képet

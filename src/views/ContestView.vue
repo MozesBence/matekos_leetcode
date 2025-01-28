@@ -76,9 +76,9 @@
                     </div>
                   </b-btn>
                   <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })">
-                    <h2 style="font-weight: normal;">{{ member.name }}</h2>
+                    <h3 style="font-weight: normal;">{{ member.name }}</h3>
                   </b-btn>
-                  <h2 style="font-weight: normal;">{{ member.experience_point }}xp</h2>
+                  <h3 style="font-weight: normal;">{{ member.experience_point }}xp</h3>
                 </div>
               </v-list-item>
             </v-list>

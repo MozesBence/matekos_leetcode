@@ -3,10 +3,20 @@ import { useMutation } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import type { ProfilPicdata } from "./profile"
 
-const ProfileGetUser = async (data: {token: string, id: number}) => {
-    const response = await axiosClient.get('http://localhost:3000/profile', {headers: {token: data.token, id: data.id}});
-    return response.data;
-}
+const ProfileGetUser = async (data: { token: string | null; id: number }): Promise<any> => {
+    try {
+        const response = await axiosClient.get('http://localhost:3000/profile', {
+        headers: {
+            token: data.token,
+            id: data.id,
+        },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching profile data:', error);
+        throw error; // Ha hiba van, továbbítjuk, hogy a hívó kezelhesse
+    }
+};
 
 export const useProfileGetUser = () => {
     return useMutation({
