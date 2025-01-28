@@ -71,9 +71,9 @@
               <v-list-item>
                 <div class="d-flex flex-row align-center mb-3 pa-1 px-3 rounded justify-space-between" style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
                   <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden;">
-                    <img :src="member.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.User_customization.profil_picture" alt="" style="width: 100%; position: relative; top: -1rem;">
+                    <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" style="width: 100%; position: relative;" :style="{ top: member.profil_picture === null ? '0rem' : '-1rem' }">
                   </div>
-                    <h2 style="font-weight: normal;">{{ member.user_name }}</h2>
+                    <h2 style="font-weight: normal;">{{ member.name }}</h2>
                     <h2 style="font-weight: normal;">{{ member.experience_point }}xp</h2>
                 </div>
               </v-list-item>

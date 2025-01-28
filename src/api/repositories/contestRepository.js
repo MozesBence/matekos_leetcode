@@ -24,6 +24,8 @@ class contestRepository
             }],
         });
 
+        const UsersOnLeaderboard = [];
+
         userWithCustomization.forEach(user => {
             if (user && user.User_customization) {
                 const profileProfPicBuffer = user.User_customization.profil_picture;
@@ -33,11 +35,13 @@ class contestRepository
                     user.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
                 }
             }
+
+            UsersOnLeaderboard.push({id: user.id, name: user.user_name, profil_picture: user.User_customization.profil_picture, experience_point: user.experience_point});
         });
 
-        console.log(userWithCustomization[0].User_customization);
+        
 
-        return userWithCustomization;
+        return UsersOnLeaderboard;
     }
 }
 
