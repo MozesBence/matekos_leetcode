@@ -41,12 +41,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent, ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
-import { useTaskStore } from "../stores/taskLoader";
-import router from "@/router";
-//import { UseGetTaskData } from '@/api/taskSolving/taskSolvingQuery'
-//const {mutate: GetTaskData} = UseGetTaskData();
+import { UseGetTaskData } from '@/api/taskSolving/taskSolvingQuery';
+
 export default defineComponent({
   data: () => ({
     drawer: false,
@@ -64,19 +62,33 @@ export default defineComponent({
     },
   },
   setup() {
-    const HomeVue = () => {
-      router.push('/')
-    }
+    const task = ref(null);
+    const isLoading = ref(false);
+    const error = ref(null);
     const route = useRoute();
-    const taskStore = useTaskStore();
 
-    // Watch for changes in the route and fetch the task again
+    const { mutate: GetTaskData } = UseGetTaskData();
+
+    const fetchTaskData = (taskId: number) => {
+      isLoading.value = true;
+      GetTaskData(taskId, {
+        onSuccess: (data) => {
+          task.value = data;
+          isLoading.value = false;
+        },
+        onError: (err) => {
+          error.value = err;
+          isLoading.value = false;
+        },
+      });
+    };
+
     watch(
       () => route.params.id,
       (id) => {
         const taskId = Number(id);
         if (!isNaN(taskId)) {
-          taskStore.loadTask(taskId);
+          fetchTaskData(taskId);
         }
       },
       { immediate: true }
@@ -85,26 +97,15 @@ export default defineComponent({
     onMounted(() => {
       const id = Number(route.params.id);
       if (!isNaN(id)) {
-        taskStore.loadTask(id);
+        fetchTaskData(id);
       }
     });
 
     return {
-      task: taskStore.task,
-      isLoading: taskStore.isLoading,
-      error: taskStore.error,
+      task,
+      isLoading,
+      error,
     };
   },
 });
 </script>
-
-<style scoped>
-.fill-height {
-  height: 100%;
-}
-
-v-main, v-container, v-row {
-  height: 100%;
-  overflow: hidden;
-}
-</style>
