@@ -161,7 +161,7 @@
                         icon
                         elevation="0"
                         class="elevation-2"
-                        @click="router.push({ name: 'profile', params: { id: 0 } })"
+                        @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
                         :style="{
                           borderRadius: '50%',
                           width: '8vh',
@@ -208,7 +208,7 @@
                       elevation="0" 
                       class="mb-3 rounded"
                       min-width="180" 
-                      @click="deleteCookie('user')"
+                      @click="Logout()"
                       prepend-icon="mdi-logout"
                       height="40"
                     >
@@ -511,9 +511,14 @@ function getCookie(name){
   return null;
 }
 
+function Logout(){
+  deleteCookie('user');
+  window.location.reload();
+}
+
 function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-  window.location.reload();
+
 }
 </script>
 

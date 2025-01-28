@@ -70,19 +70,21 @@
             <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0">
               <v-list-item>
                 <div class="d-flex flex-row align-center mb-3 pa-1 px-3 rounded justify-space-between" style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
-                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })">
+                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
                     <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden;">
                       <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" style="width: 100%; position: relative;" :style="{ top: member.profil_picture === null ? '0rem' : '-1rem' }">
                     </div>
                   </b-btn>
-                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })">
+                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
                     <h3 style="font-weight: normal;">{{ member.name }}</h3>
                   </b-btn>
-                  <h3 style="font-weight: normal;">{{ member.experience_point }}xp</h3>
+                  <h3 style="font-weight: normal; width: 4vw; text-align: right;">{{ member.experience_point }}xp</h3>
                 </div>
               </v-list-item>
             </v-list>
-            <h2 v-if="LeaderboardArray.length == 0">Nincs még felhasználó aki regisztrált volna!</h2>
+            <div class="d-flex justify-center my-3" v-if="LeaderboardArray.length == 0">
+              <h4 style="font-weight: normal;">Nincs még felhasználó aki regisztrált volna!</h4>
+            </div>
           </v-card>
         </v-col>
       </v-row>

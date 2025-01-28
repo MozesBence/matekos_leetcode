@@ -119,12 +119,12 @@
               </div>
               
               <div class="profile right">
-                <img src="../components/background/test_profile.jpg" alt="Profile 2" class="profile-img" />
                 <div class="profile-info">
-                  <h1>Mózes Bence</h1>
-                  <p>Rövid bemutatkozás...</p>
-                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
+                  <h1 class="text-right">Mózes Bence</h1>
+                  <p class="text-right">Rövid bemutatkozás...</p>
+                  <p class="text-right"><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
                 </div>
+                <img src="../components/background/test_profile.jpg" alt="Profile 2" class="profile-img" />
               </div>
               
               <div class="profile left">
@@ -326,7 +326,7 @@ p {
   flex-direction: column;
   gap: 3rem;
   margin: 3rem 0 3rem 0;
-  padding: 0 18rem;
+  padding: 0 6rem;
   position: relative;
 }
 

@@ -26,7 +26,7 @@
             </v-container>
           </v-form>
 
-          <v-btn icon elevation="0" @click="showCreatePost = !showCreatePost">
+          <v-btn v-if="get_fullUser != null" icon elevation="0" @click="showCreatePost = !showCreatePost">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </div>
@@ -387,7 +387,7 @@
                       :class="{'active-btn': activeBold}" 
                       @click="toggleBold"
                       >
-                        <v-icon>mdi-format-bold</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-bold</v-icon>
                       </v-btn>
                       <v-btn 
                       elevation="0"
@@ -396,7 +396,7 @@
                       :class="{'active-btn': activeItalic}" 
                       @click="toggleItalic"
                       >
-                        <v-icon>mdi-format-italic</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-italic</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -405,7 +405,7 @@
                       :class="{'active-btn': activeStrikethrough}" 
                       @click="toggleStrikethrough"
                       >
-                        <v-icon>mdi-format-strikethrough</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-strikethrough</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -414,7 +414,7 @@
                       :class="{'active-btn': activeUnderline}"
                       @click="toggleUnderline"
                       >
-                        <v-icon>mdi-format-underline</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-underline</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -423,7 +423,7 @@
                       :class="{'active-btn': activeAlignLeft}" 
                       @click="AlignActivate('left')"
                       >
-                        <v-icon>mdi-format-align-left</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-align-left</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -432,7 +432,7 @@
                       :class="{'active-btn': activeAlignCenter}" 
                       @click="AlignActivate('center')"
                       >
-                        <v-icon>mdi-format-align-center</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-align-center</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -441,7 +441,7 @@
                       :class="{'active-btn': activeAlignRight}" 
                       @click="AlignActivate('right')"
                       >
-                        <v-icon>mdi-format-align-right</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-align-right</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -450,7 +450,7 @@
                       :class="{'active-btn': activeOrderedList}" 
                       @click="toggleOrderedList"
                       >
-                        <v-icon>mdi-format-list-numbered</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-list-numbered</v-icon>
                       </v-btn>
                       <v-btn
                       elevation="0"
@@ -459,7 +459,7 @@
                       :class="{'active-btn': activeUnorderedList}" 
                       @click="toggleUnorderedList"
                       >
-                        <v-icon>mdi-format-list-bulleted</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-format-list-bulleted</v-icon>
                       </v-btn>
                       <v-btn 
                       elevation="0"
@@ -468,7 +468,7 @@
                       :class="{'active-btn': activeLink}" 
                       @click="createLink"
                       >
-                        <v-icon>mdi-link</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-link</v-icon>
                       </v-btn>
                       
                       <input
@@ -485,7 +485,7 @@
                       small  
                       @click="triggerImageInput"
                       >
-                        <v-icon>mdi-image</v-icon>
+                        <v-icon class="text-community_createpost_btn">mdi-image</v-icon>
                       </v-btn>
                     </div>
 
@@ -599,7 +599,7 @@ const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
 onMounted(async () => {
   if (get_user_by_token != null) {
     try {
-      await ProfileGetUser(get_user_by_token, {
+      await ProfileGetUser({token: get_user_by_token, id: 0}, {
         onSuccess: (get_user) => {
           get_UserName.value = get_user.user_name;
           get_fullUser.value = get_user;
@@ -720,9 +720,6 @@ const posts = reactive([
 
 const searchQuery = ref("");
 const showCreatePost = ref(false);
-const editingText = ref("");
-const dialog = ref(false);
-const selectedImage = ref(null);
 
 // Computed properties
 const filteredPosts = computed(() => {
@@ -1399,7 +1396,7 @@ function addLastCommentToComment(comment, inner_comment){
 }
 
 .editor-area .editor {
-  border: 1px solid gray;
+  border: .1vw solid rgb(180, 180, 180);
   outline: none;
   padding: 10px;
   min-height: 40vh;
@@ -1408,14 +1405,14 @@ function addLastCommentToComment(comment, inner_comment){
   overflow-y: auto;
   border-radius: 4px;
   font-size: medium;
-  transition: .3s;
+  transition: .3s all;
 }
 
 .editor-area .editor:focus {
-  border: 1px solid white;
+  border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border)) !important;
 }
 .editor-area .editor:hover {
-  border: 1px solid white;
+  border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border));
 }
 
 .editor-area button {
@@ -1425,7 +1422,7 @@ function addLastCommentToComment(comment, inner_comment){
 
 /* Active button style */
 .editor-area .active-btn {
-  background-color: #1976d2 !important;
+  background-color: rgb(var(--v-theme-community_createpost_btn_active)) !important;
   color: white;
   border-radius: 50%;
 }
@@ -1436,7 +1433,7 @@ function addLastCommentToComment(comment, inner_comment){
 }
 
 .editor-area .v-btn:hover {
-  background-color: #1976d2;
+  background-color: rgb(var(--v-theme-community_createpost_btn_hover));
 }
 
 /* Smaller button size */

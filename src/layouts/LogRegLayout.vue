@@ -340,6 +340,7 @@
           snackbar.value = true;
         },
         onSuccess: (token) => {
+          console.log(token);
           if (rememberMe) {
             setCookieWithExpiry('user', token, 1);
           } else {

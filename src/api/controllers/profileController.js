@@ -10,7 +10,8 @@ exports.getFullUser = async (req, res, next) =>{
 
     const secretKey = process.env.JWT_KEY;
     
-    const decoded = null;
+    var decoded = null;
+    
     if(token){
         decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
     }
