@@ -16,7 +16,6 @@ export const useRegisterUser = (loading: Ref<boolean, boolean>,  RegBtnValue: Re
       loading.value = true
     },
     onSuccess: (response) => {
-      // A művelet sikeres befejezéséig, beállítjuk a loading-ot false-ra
 
     },
     onError: (error) => {

@@ -1,7 +1,6 @@
 import axiosClient from '../../lib/axios'
 import { useMutation } from '@tanstack/vue-query'
 import type { LoginData } from './login'
-import { useRouter } from 'vue-router'
 
 const loginUser = async (data: LoginData) => {
   try {
@@ -23,11 +22,10 @@ const loginUser = async (data: LoginData) => {
 }
 
 export const useLoginUser = () => {
-  const { push } = useRouter()
   return useMutation({
     mutationFn: loginUser,
     onSuccess(user) {
-      push({ name: 'home' })
+      
     },
     onError: (error: any) => {
       

@@ -103,7 +103,7 @@ const router = createRouter({
       component: () => import('../views/TaskSubmitView.vue')
     },
     {
-      path: '/task',
+      path: '/task/:id',
       name: 'task',
       component: () => import('../views/TaskView.vue')
     }

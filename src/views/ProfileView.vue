@@ -12,16 +12,29 @@
   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
   >
     <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded-lg">
-      <v-btn icon @click="goBack" style="position: absolute; top: .2rem; left: .4rem; z-index: 5; pointer-events: visible;">
+      <v-btn 
+      icon
+      @click="goBack" 
+      style="position: absolute; top: .2rem; left: .4rem; z-index: 5; pointer-events: visible;">
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <v-btn
-        icon
-        @click="dialog = true"
-        style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
-      >
-        <v-icon>mdi-account-cog</v-icon>
-      </v-btn>
+      <div class="d-flex justify-center">
+        <v-btn
+          icon
+          @click="handleDarkmodeSwitch"
+          style="position: absolute; top: .2rem; right: 4rem; z-index: 5; pointer-events: visible;"
+        >
+          <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+        </v-btn>
+
+        <v-btn
+          icon
+          @click="dialog = true"
+          style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
+        >
+          <v-icon>mdi-account-cog</v-icon>
+        </v-btn>
+      </div>
       <header>
         <div class="profile-header rounded-lg" style="height: 22vh; width: 100%; position: relative; overflow: hidden;">
           <v-btn
@@ -58,7 +71,7 @@
         <div 
         class="d-flex flex-column justify-center align-center mt-4 overlay-div" 
         style="pointer-events: none;"
-        :style="{top: $vuetify.display.smAndDown ? '-11rem' : '-14.5rem'}"
+        :style="{top: $vuetify.display.smAndDown ? '-11rem' : '-12rem'}"
         >
           <v-btn 
             icon
@@ -66,9 +79,8 @@
             class="elevation-2"
             :style="{
               borderRadius: '50%',
-              width: '23vh',
-              height: '23vh',
-              padding: 0,
+              width: '13rem',
+              height: '13rem',
               overflow: 'hidden',
               position: 'relative',
               pointerEvents: 'visible'
@@ -80,6 +92,7 @@
                 :src="profileImage"
                 class="profile-image"
                 @error="handleProfImageError"
+                style="position: relative; top: -5rem;"
               />
             </template>
             <template v-else>
@@ -198,6 +211,7 @@ import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
+import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 
 const dialog = shallowRef(false)
 
@@ -223,6 +237,7 @@ const getCookie = (name: string) => {
   }
   return null;
 };
+
 
 var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
@@ -252,7 +267,24 @@ onMounted(async () => {
   }
 });
 
+const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
 const DarkmodeChange = ref(false);
+const handleDarkmodeSwitch = async () => {
+  DarkmodeChange.value = !DarkmodeChange.value;
+
+  // Téma módosítása
+  theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
+
+  // API hívás a sötét mód változtatásához
+  if(get_fullUser.value != null){
+    try {
+      await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
+    } catch (error) {
+      console.error('Hiba történt a sötét mód váltásakor:', error);
+    }
+  }
+};
+
 const theme = useTheme();
 
 // Változó figyelése

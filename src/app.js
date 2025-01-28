@@ -69,6 +69,11 @@ const community_route = require('../src/api/routes/communityRoute');
 app.use('/',community_route);
 //----------------------
 
+//contest page routes
+const contest_route = require('../src/api/routes/contestRoute');
+app.use('/',contest_route);
+//----------------------
+
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);

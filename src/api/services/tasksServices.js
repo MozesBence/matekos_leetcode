@@ -5,7 +5,14 @@ class TasksService {
     try {
       return await tasksRepository.getCardInfo();
     } catch (error) {
-      throw error; // Ensure proper propagation of errors
+      throw error;
+    }
+  }
+  async getSpecificCard(id) {
+    try{
+      return await tasksRepository.getSpecificCard(id);
+    }catch(error){
+      throw error;
     }
   }
 }

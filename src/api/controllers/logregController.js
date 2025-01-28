@@ -1,4 +1,5 @@
 const logregServices = require("../services/logregService");
+require("dotenv").config();
 
 const bcrypt = require("bcrypt");
 
@@ -6,7 +7,7 @@ const salt = 10;
 
 const jwt = require("jsonwebtoken");
 
-const nodemailer = require('nodemailer');;
+const nodemailer = require('nodemailer');
 
 exports.registerUser = async (req, res, next) =>
 {
@@ -53,7 +54,7 @@ exports.registerUser = async (req, res, next) =>
                 // token generálás
                 const token = jwt.sign(
                     { email: email },
-                    'Erős Titkos Kulcs 1 2 3',
+                    process.env.JWT_KEY,
                     { expiresIn: '1h' }
                 );
         
@@ -155,15 +156,9 @@ exports.successRegister = async (req,res,next) =>{
     
 exports.loginUser = async (req, res, next) =>
 {
-    const { token, email, password } = req.body;
-
-    const user = await logregServices.getUser(email,null);
-
-    var token_result;
+    const { email, password, rememberMe } = req.body;
     
-    if(user != null){
-        token_result = token != 'null' ? await logregServices.getToken(token, user.id) : null;
-    }
+    const user = await logregServices.getUser(email,null);
 
     try
     {
@@ -176,34 +171,8 @@ exports.loginUser = async (req, res, next) =>
             throw error;
         }
 
-        if(user != null && await bcrypt.compare(password, user.password) == true && token != 'null')
-        {
-            if(token_result == null){
-                const error = new Error("A token lejárt!");
-    
-                error.status = 400;
-    
-                throw error;
-            }
 
-            if(token_result != null && token_result.type != 0){
-                const error = new Error("Rossz token használat!");
-    
-                error.status = 400;
-    
-                throw error;
-            }
-
-            if(token_result != null && user.activated == 1){
-                const error = new Error("A profil már aktiválva van!");
-    
-                error.status = 400;
-    
-                throw error;
-            }
-        }
-
-        if(user != null && token_result == null && user.activated == 0)
+        if(user != null && user.activated == 0)
         {
             const error = new Error("A profil nincs aktiválva!");
 
@@ -214,12 +183,13 @@ exports.loginUser = async (req, res, next) =>
 
         const user_activated = await logregServices.activateUser(user.id);
 
-        if(user.activated == 0 && user_activated){
-            res.status(200).send("A felhasználó profilja aktiválva lett és be lett jelentkeztetve!");
-        }
-        else if(user.activated == 1 ){
-            res.status(200).send(user);
-        }
+        const token = jwt.sign(
+            { id: user.id },
+            process.env.JWT_KEY,
+            rememberMe ? {} : { expiresIn: '1d' }
+        ); 
+
+        res.status(200).send(token);
     }
     catch(error)
     {
@@ -244,7 +214,7 @@ exports.forgetPassword = async (req, res, next) =>{
         // token generálás
         const token = jwt.sign(
             { email: email },
-            'Erős Titkos Kulcs 1 2 3',
+            process.env.JWT_KEY,
             { expiresIn: '1h' }
         );
 

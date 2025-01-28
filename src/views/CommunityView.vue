@@ -1,5 +1,5 @@
 <template>
-  <main style="min-height: 85.4vh;" class="mt-5 d-flex justify-center">
+  <main class="mt-5 d-flex justify-center">
     <div>
       <div class="d-flex">
         <div 
@@ -37,20 +37,12 @@
             v-for="post in filteredPosts"
             :key="post.id"
             class="mb-4 pt-2"
-<<<<<<< HEAD
-            min-width="40vw"
-=======
             width="45vw"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
           >
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
               <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                 <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-<<<<<<< HEAD
-                <p style="font-size: .8vw;">{{ post.author }}</p>
-=======
                 <p style="font-size: .8vw;">{{ (post.author == undefined ? post.User.user_name : post.author) }}</p>
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
               </div>
               <p style="font-size: .6vw;">{{ post.createdAt }}</p>
             </div>
@@ -61,35 +53,6 @@
               </div>
             </v-card-title>
 
-<<<<<<< HEAD
-            <v-card-text class="mb-3">
-              <div v-html="post.content">
-              </div>
-            </v-card-text>
-
-            <v-dialog
-              v-model="dialog"
-              max-width="800px"
-              persistent
-            >
-              <v-card>
-                <v-card-text>
-                  <!-- Nagyított kép -->
-                  <v-img
-                    :src="selectedImage"
-                    max-height="600"
-                    class="mb-0"
-                    contain
-                  />
-                </v-card-text>
-                <v-card-actions>
-                  <v-btn color="community_primary_color" text @click="dialog = false">
-                    Bezárás
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-=======
             <v-card-text>
               <div v-html="post.content">
               </div>
@@ -116,7 +79,6 @@
                 </v-card-text>
               </div>
             </v-expand-transition>
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 
             <v-divider></v-divider>
             <v-card-actions>
@@ -217,15 +179,6 @@
                     <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
                       Válasz
                     </v-btn>
-<<<<<<< HEAD
-                    <v-btn v-if="comment.author == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,post.id+''+ index)">
-                      Módosítás
-                    </v-btn>
-                    <v-btn v-if="comment.author == get_UserName && comment.editable" text color="transparent" elevation="0" @click="EditConfirme(comment)">
-                      Módosít
-                    </v-btn>
-                    <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="cancelCommentEdit(comment)">
-=======
                     <v-btn v-if="comment.author == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
                       Módosítás
                     </v-btn>
@@ -233,7 +186,6 @@
                       Módosít
                     </v-btn>
                     <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       Mégse
                     </v-btn>
                   </div>
@@ -282,11 +234,7 @@
                       <v-divider class="my-2" v-if="comment.comments.length > 0"></v-divider>
                       <v-expand-transition>
                         <div>
-<<<<<<< HEAD
-                          <div v-for="(inner_comment, index) in limitedCommentsAtComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
-=======
                           <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                             <div class="d-flex flex-column pl-2">
                               <div class="d-flex ga-2 align-center">
                                 <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
@@ -317,21 +265,6 @@
                               </div>
                             </div>
                             <div class="ml-1">
-<<<<<<< HEAD
-                              <v-btn icon @click="likePost(inner_comment)" elevation="0" style="background-color: transparent;">
-                                <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                                {{ inner_comment.likes }}
-                              </v-btn>
-                              <v-btn icon @click="dislikePost(inner_comment)" elevation="0" style="background-color: transparent;">
-                                <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                                {{ inner_comment.dislikes }}
-                              </v-btn>
-                              <v-btn v-if="inner_comment.author != get_UserName" text color="transparent" elevation="0" @click="prepareReplyForComment(inner_comment)">
-                                Válasz
-                              </v-btn>
-                              <v-expand-transition>
-                                <v-btn v-if="inner_comment.author == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,post.id+''+comment.id+''+ index)">
-=======
                               <v-btn icon @click="like(inner_comment)" elevation="0" style="background-color: transparent;">
                                 <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                                 {{ inner_comment.likes }}
@@ -345,35 +278,22 @@
                               </v-btn>
                               <v-expand-transition>
                                 <v-btn v-if="inner_comment.author == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                                   Módosítás
                                 </v-btn>
                               </v-expand-transition>
-                              <v-expand-transition>
-<<<<<<< HEAD
-                                <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="EditConfirme(inner_comment)">
-=======
+                              <v-expand-transition>y
                                 <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                                   Módosít
                                 </v-btn>
                               </v-expand-transition>
                               <v-expand-transition>
-<<<<<<< HEAD
-                                <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="cancelCommentEdit(inner_comment)">
-=======
                                 <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                                   Mégse
                                 </v-btn>
                               </v-expand-transition>
                             </div>
                             <v-expand-transition>
-<<<<<<< HEAD
-                              <div class="position-relative mx-4 pa-2" v-if="inner_comment.preparingReply">
-=======
                               <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                                 <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                                   <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                   <p style="font-size: .8vw;">{{ get_UserName }}</p>
@@ -394,11 +314,7 @@
                                       color="transparent"
                                       elevation="0"
                                       small
-<<<<<<< HEAD
-                                      @click="addLastCommentToComment(comment, inner_comment, get_UserName)"
-=======
                                       @click="addLastCommentToComment(comment, inner_comment)"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                                     >
                                       Küldés
                                     </v-btn>
@@ -505,11 +421,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignLeft}" 
-<<<<<<< HEAD
-                      @click="applyAlignLeft"
-=======
                       @click="AlignActivate('left')"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       >
                         <v-icon>mdi-format-align-left</v-icon>
                       </v-btn>
@@ -518,11 +430,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignCenter}" 
-<<<<<<< HEAD
-                      @click="applyAlignCenter"
-=======
                       @click="AlignActivate('center')"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       >
                         <v-icon>mdi-format-align-center</v-icon>
                       </v-btn>
@@ -531,11 +439,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeAlignRight}" 
-<<<<<<< HEAD
-                      @click="applyAlignRight"
-=======
                       @click="AlignActivate('right')"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       >
                         <v-icon>mdi-format-align-right</v-icon>
                       </v-btn>
@@ -544,11 +448,7 @@
                       small
                       icon  
                       :class="{'active-btn': activeOrderedList}" 
-<<<<<<< HEAD
-                      @click="applyOrderedList"
-=======
                       @click="toggleOrderedList"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       >
                         <v-icon>mdi-format-list-numbered</v-icon>
                       </v-btn>
@@ -557,29 +457,13 @@
                       small
                       icon  
                       :class="{'active-btn': activeUnorderedList}" 
-<<<<<<< HEAD
-                      @click="applyUnorderedList"
-=======
                       @click="toggleUnorderedList"
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                       >
                         <v-icon>mdi-format-list-bulleted</v-icon>
                       </v-btn>
                       <v-btn 
                       elevation="0"
                       icon 
-<<<<<<< HEAD
-                      small 
-                      :class="{'active-btn': activeLink}" 
-                      @click="addLink"
-                      >
-                        <v-icon>mdi-link</v-icon>
-                      </v-btn>
-
-                    </div>
-
-                    <!-- Contenteditable div helyettesíti a textarea-t -->
-=======
                       small
                       :class="{'active-btn': activeLink}" 
                       @click="createLink"
@@ -605,7 +489,6 @@
                       </v-btn>
                     </div>
 
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
                     <div
                       ref="editor"
                       contenteditable="true"
@@ -617,16 +500,6 @@
                 </v-col>
               </v-row>
             </v-container>
-<<<<<<< HEAD
-
-            <v-file-input
-              v-model="newPost.images"
-              label="Képek feltöltése"
-              accept="image/*"
-              multiple
-              outlined
-            ></v-file-input>
-=======
             <div>
               <!-- Rejtett fájl input -->
               <div class="d-flex ml-4 mb-2 ga-2 align-center">
@@ -678,17 +551,11 @@
                 </div>
               </v-expand-transition>
             </div>
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
           </v-card-text>
 
           <v-card-actions>
-<<<<<<< HEAD
-            <v-btn color="community_primary_color" @click="addPost(get_UserName)">Poszt létrehozása</v-btn>
-            <v-btn text @click="toggleCreatePost">Mégse</v-btn>
-=======
             <v-btn color="community_primary_color" @click="addPost">Poszt létrehozása</v-btn>
             <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -697,11 +564,7 @@
 </template>
 
 <script setup>
-<<<<<<< HEAD
-import { onMounted, ref } from 'vue';
-=======
 import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
@@ -763,10 +626,6 @@ onMounted(async () => {
   }
 });
 
-<<<<<<< HEAD
-<script>
-=======
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 function formatDate(date) {
   const year = date.getFullYear();
   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // hónap, 2 számjegyre
@@ -777,205 +636,6 @@ function formatDate(date) {
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 }
 
-<<<<<<< HEAD
-export default {
-  name: "CommunityPage",
-  data() {
-    return {
-      content: "", // A textarea tartalma
-      activeBold: false,
-      activeItalic: false,
-      activeStrikethrough: false,
-      activeUnderline: false,
-      activeAlignLeft: true,
-      activeAlignCenter: false,
-      activeAlignRight: false,
-      activeOrderedList: false,
-      activeUnorderedList: false,
-      activeLink: false,
-
-      posts: [
-        {
-          id: 1,
-          author: "User123",
-          title: "Vue.js kérdés",
-          content: `<p>valami content</p>
-                    <div id="contentImages1" class="image-placeholder"></div>
-                    <p>Thank you for viewing!</p>`,
-          images: [{id: "contentImages1", src: "https://via.placeholder.com/300"}],
-          likes: 3,
-          dislikes: 0,
-          userReaction: null,
-          createdAt: "2025-01-01 18:39",
-          comments: [
-            { id: 1, author: "Helper99", createdAt: "2025-01-01 18:39", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null, newComment: "", showCommentsFromComments: false, comments: [{
-              id: 1, author: "Helper99", createdAt: "2025-01-01 18:39", text: "Segíthetek ebben!", likes: 2, dislikes: 1, userReaction: null, newComment: "", showCommentsFromComments: false, commentLimit: 10, editable: false, gotEdit: false, linkAuthor: ""
-            }], commentLimit: 10, preparingReply: false, editable: false, gotEdit: false},
-            { id: 2, author: "AnotherUser", createdAt: "2025-01-01 18:39", text: "Ugyanez a kérdésem!", likes: 1, dislikes: 0, userReaction: null, newComment: "", showCommentsFromComments: false, comments: [], commentLimit: 10, preparingReply: false, editable: false, gotEdit: false},
-          ],
-          newComment: "",
-          showCommentsFromPost: false,
-          preparingReply: false,
-          commentLimit: 10,
-        },
-      ],
-      newPost: { title: "", content: "", images: [] },
-      searchQuery: "",
-      showCreatePost: false,
-      editingText: "",
-      dialog: false,
-      selectedImage: null,
-    };
-  },
-  mounted() {
-    this.insertImages();
-  },
-  updated() {
-    this.insertImages(); // Ha a posts frissül, új képeket is beillesztünk
-  },
-  computed: {
-    filteredPosts() {
-      const query = this.searchQuery.toLowerCase();
-      return this.posts.filter(
-        (post) =>
-          post.title.toLowerCase().includes(query) ||
-          post.content.toLowerCase().includes(query)
-      );
-    },
-  },
-  methods: {
-    updateContent(event) {
-      // A kurzor pozíciójának mentése
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-      const cursorPosition = range.startOffset;
-
-      // A div tartalmának frissítése
-      this.content = event.target.innerHTML;
-
-      // A kurzor pozíciójának visszaállítása
-      this.$nextTick(() => {
-        const editor = this.$refs.editor;
-        const range = document.createRange();
-        const selection = window.getSelection();
-
-        // A kurzor visszahelyezése
-        range.setStart(editor.firstChild, cursorPosition);
-        range.setEnd(editor.firstChild, cursorPosition);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      });
-    },
-    toggleBold() {
-      this.execCommand("bold");
-      this.activeBold = !this.activeBold;
-    },
-    toggleItalic() {
-      this.execCommand("italic");
-      this.activeItalic = !this.activeItalic;
-    },
-    toggleStrikethrough() {
-      this.execCommand("strikeThrough");
-      this.activeStrikethrough = !this.activeStrikethrough;
-    },
-    toggleUnderline() {
-      this.execCommand("underline");
-      this.activeUnderline = !this.activeUnderline;
-    },
-    applyAlignLeft() {
-      this.execCommand("justifyLeft");
-      this.activeAlignLeft = true;
-      this.activeAlignCenter = false;
-      this.activeAlignRight = false;
-    },
-    applyAlignCenter() {
-      this.execCommand("justifyCenter");
-      this.activeAlignCenter = true;
-      this.activeAlignLeft = false;
-      this.activeAlignRight = false;
-    },
-    applyAlignRight() {
-      this.execCommand("justifyRight");
-      this.activeAlignRight = true;
-      this.activeAlignLeft = false;
-      this.activeAlignCenter = false;
-    },
-    applyOrderedList() {
-      this.execCommand("insertOrderedList");
-      this.activeOrderedList = !this.activeOrderedList;
-    },
-    applyUnorderedList() {
-      this.execCommand("insertUnorderedList");
-      this.activeUnorderedList = !this.activeUnorderedList;
-    },
-    addLink() {
-      const selection = window.getSelection();
-      const selectedText = selection.toString().trim();
-
-      if (selectedText && this.isValidUrl(selectedText) && !this.activeLink) {
-        // Készítsük el a <a> elemet a megfelelő href attribútummal
-        const linkNode = document.createElement("a");
-        linkNode.setAttribute("href", selectedText);
-        linkNode.setAttribute("target", "_blank"); // Új lapon kell megnyílni
-        linkNode.textContent = selectedText; // A szöveg legyen maga az URL
-
-        // A kijelölt szöveg törlése és a link beillesztése
-        const range = selection.getRangeAt(0);
-        range.deleteContents(); // Kijelölés törlése
-        range.insertNode(linkNode); // Link beszúrása
-
-        // Hozzuk létre a kattinthatóságot az új linkekhez
-        linkNode.addEventListener('click', (event) => {
-          event.preventDefault(); // Ne történjen semmi más kattintáskor
-          window.open(linkNode.href, '_blank'); // Nyissuk meg új lapon
-        });
-      }
-      else if(this.activeLink){
-        this.activeLink = false;
-      }
-    },
-    isValidUrl(url) {
-      const pattern = /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/i;
-      return pattern.test(url);
-    },
-    execCommand(command) {
-      // A kurzor pozíciójának mentése
-      const selection = window.getSelection();
-      const range = selection.getRangeAt(0);
-
-      // Parancs végrehajtása
-      document.execCommand(command);
-
-      // A kurzor pozíciójának visszaállítása
-      this.$nextTick(() => {
-        const editor = this.$refs.editor;
-        const newRange = document.createRange();
-        const newSelection = window.getSelection();
-
-        // Az új pozíció beállítása
-        newRange.setStart(editor.firstChild, range.startOffset);
-        newRange.setEnd(editor.firstChild, range.endOffset);
-        newSelection.removeAllRanges();
-        newSelection.addRange(newRange);
-      });
-    },
-
-
-    clearMessage () {
-      this.searchQuery = ''
-    },
-    toggleCreatePost() {
-      this.showCreatePost = !this.showCreatePost;
-    },
-    addPost(get_UserName) {
-      const newId = this.posts.length + 1;
-      
-      this.posts.unshift({
-        ...this.newPost,
-        id: newId,
-        author: get_UserName,
-        likes: 0,
-=======
 // Állapotok és változók
 const content = ref(""); // A textarea tartalma
 const activeBold = ref(false);
@@ -1042,84 +702,14 @@ const posts = reactive([
         createdAt: "2025-01-01 18:39",
         text: "Ugyanez a kérdésem!",
         likes: 1,
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
         dislikes: 0,
         userReaction: null,
         newComment: "",
-<<<<<<< HEAD
-        showCommentsFromPost: false,
-        preparingReply: false,
-        commentLimit: 10,
-        createdAt: formatDate(new Date()),
-        title: "",
-        content: "", 
-        images: []
-      });
-      this.newPost = { title: "", content: "", images: [] };
-      this.toggleCreatePost();
-    },
-    openPreview(image) {
-      this.selectedImage = image;
-      this.dialog = true;
-    },
-    insertImages() {
-      this.posts.forEach((post) => {
-        post.images.forEach((image) => {
-          const placeholder = document.getElementById(image.id);
-          if (placeholder) {
-            // Ellenőrizzük, hogy a kép még nincs-e beszúrva
-            if (!placeholder.querySelector(`img[src="${image.src}"]`)) {
-              const img = document.createElement("img");
-              img.src = image.src;
-              img.style.maxWidth = "100%";
-              img.style.height = "8vw";
-              img.style.cursor = "pointer";
-              //img.setAttribute.onClick(this.openPreview('this'));
-
-              img.addEventListener("click", () => {
-                this.openPreview(image);
-              });
-              placeholder.appendChild(img);
-            }
-          }
-        });
-      });
-    },
-    likePost(post) {
-      if (post.userReaction === "like") {
-        post.likes--;
-        post.userReaction = null;
-      } else {
-        if (post.userReaction === "dislike") post.dislikes--;
-        post.likes++;
-        post.userReaction = "like";
-      }
-    },
-    dislikePost(post) {
-      if (post.userReaction === "dislike") {
-        post.dislikes--;
-        post.userReaction = null;
-      } else {
-        if (post.userReaction === "like") post.likes--;
-        post.dislikes++;
-        post.userReaction = "dislike";
-      }
-    },
-    likeComment(Comment) {
-      if (Comment.userReaction === "like") {
-        Comment.likes--;
-        Comment.userReaction = null;
-      } else {
-        if (Comment.userReaction === "dislike") Comment.dislikes--;
-        Comment.likes++;
-        Comment.userReaction = "like";
-=======
         showComments: false,
         prepareReply: false,
         gotEdit: false,
         editable: false,
         comments: []
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
       }
     ],
     newComment: "",
@@ -1340,86 +930,6 @@ function checkSelection(){
           activeLink.value = false;
         }
       }
-<<<<<<< HEAD
-    },
-    toggleCommentsForPost(post) {
-      post.showCommentsFromPost = !post.showCommentsFromPost;
-      if(post.showCommentsFromPost){
-        for (let i = 0; i < post.comments.length; i++) {
-          post.comments[i].showCommentsFromComments = false;
-          for (let j = 0; j < post.comments[i].comments.length; j++) {
-            post.comments[i].comments[j].showCommentsFromComments = false;
-          }
-        }
-      }
-    },
-    toggleCommentsForComments(comment) {
-      comment.showCommentsFromComments = !comment.showCommentsFromComments;
-    },
-    prepareReplyForPost(post) {
-      post.showCommentsFromPost = true;
-      post.preparingReply = true;
-    },
-    cancelPrepareReplyForPost(post) {
-      post.preparingReply = false;
-    },
-    prepareReplyForComment(comment) {
-      comment.showCommentsFromComments = true;
-      comment.preparingReply = true;
-    },
-    cancelPrepareReplyForComment(comment) {
-      comment.preparingReply = false;
-    },
-    cancelPrepareReplyForLastComment(comment) {
-      comment.preparingReply = false;
-    },
-    limitedComments(post) {
-      return post.comments.slice(0, post.commentLimit);
-    },
-    limitedCommentsAtComments(comment) {
-      return comment.comments.slice(0, comment.commentLimit);
-    },
-    loadMoreCommentsForPost(post) {
-      post.commentLimit += 10;
-    },
-    loadMoreCommentsForComments(comment) {
-      comment.commentLimit += 10;
-    },
-    commentEdit(comment,id){
-      comment.editable = true;
-      this.editingText = comment.text;
-
-      this.$nextTick(() => {
-        const inputElement = document.getElementById("commentId" + id);
-        if (inputElement) {
-          inputElement.focus();
-        } else {
-          console.error("Input element not found for id: " + id);
-        }
-      });
-    },
-    cancelCommentEdit(comment){
-      comment.editable = false;
-      comment.text = this.editingText;
-      this.editingText = null;
-    },
-    EditConfirme(comment){
-      comment.editable = false;
-      if(this.editingText != comment.text){
-        comment.gotEdit = true;
-      }
-    },
-    addCommentToPost(post,get_UserName) {
-      if (post.newComment.trim()) {
-        const commentId = post.comments.length + 1;
-        post.comments.push({
-          id: commentId,
-          author: get_UserName,
-          createdAt: formatDate(new Date()),
-          text: post.newComment.trim(),
-          likes: 0, 
-          dislikes: 0, 
-=======
     }
   }
 }
@@ -1482,22 +992,15 @@ const addPost = async () =>{
           title: newPost.title,
           likes: 0,
           dislikes: 0,
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
           userReaction: null,
           newComment: "",
           gotEdit: false,
           editable: false,
           comments: [],
-<<<<<<< HEAD
-          showCommentsFromComments: false,
-          commentLimit: 10,
-          editable: false
-=======
           files: newPost.files,
           images: newPost.images,
           commentLimit: 10,
           showComments: false,
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
         });
       },
       onError: (error) => {
@@ -1595,49 +1098,6 @@ const compressingFiles = async (mergedArray) => {
       } catch (error) {
         console.error('Fájl feldolgozási hiba:', error);
       }
-<<<<<<< HEAD
-    },
-    addCommentToComment(Comment,get_UserName) {
-      if (Comment.newComment.trim()) {
-        const commentId = Comment.comments.length + 1;
-        Comment.comments.push({
-          id: commentId,
-          author: get_UserName,
-          createdAt: formatDate(new Date()),
-          text: Comment.newComment.trim(),
-          likes: 0, 
-          dislikes: 0, 
-          userReaction: null,
-          showCommentsFromComments: false,
-          commentLimit: 10,
-          editable: false,
-          gotEdit: false,
-        });
-        Comment.newComment = "";
-        Comment.preparingReply = false; // Visszazárja az írást
-      }
-    },
-    addLastCommentToComment(Comment, inner_comment, get_UserName) {
-      const commentId = Comment.comments.length + 1;
-      Comment.comments.push({
-        id: commentId,
-        author: get_UserName,
-        createdAt: formatDate(new Date()),
-        text: inner_comment.newComment.trim(),
-        likes: 0, 
-        dislikes: 0, 
-        userReaction: null,
-        showCommentsFromComments: false,
-        commentLimit: 10,
-        editable: false,
-        gotEdit: false,
-        linkAuthor: "@"+inner_comment.author+ " ",
-      });
-      inner_comment.newComment = "";
-      inner_comment.preparingReply = false; // Visszazárja az írást
-    },
-  },
-=======
     }
   }
 
@@ -1701,7 +1161,6 @@ const insertImage = () => {
   } else {
     console.error('Editor div nem található.');
   }
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 };
 
 function handleFileUpload(event) {
@@ -1893,19 +1352,11 @@ function addLastCommentToComment(comment, inner_comment){
 
 <style>
 .v-img {
-<<<<<<< HEAD
-  cursor: pointer; /* Mutatja, hogy a kép kattintható */
-  transition: transform 0.2s ease; /* Finom animáció */
-}
-.v-img:hover {
-  transform: scale(1.05); /* Kisebb nagyítás az egérrel való áthúzáskor */
-=======
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 .v-img:hover {
   transform: scale(1.05);
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 }
 
 .PostsMargin:last-child{
@@ -1941,32 +1392,13 @@ function addLastCommentToComment(comment, inner_comment){
 
 /* ---- editor-area ----*/
 .editor-area .editor-container {
-<<<<<<< HEAD
-  width: 100%;
-  max-width: 800px;
-=======
   max-width: 60vw;
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
   margin: auto;
   display: flex;
   flex-direction: column;
 }
 
 .editor-area .editor {
-<<<<<<< HEAD
-  border: 1px solid #ccc;
-  outline: none;
-  padding: 10px;
-  min-height: 150px;
-  font-size: 16px;
-  font-family: Arial, sans-serif;
-  white-space: pre-wrap;
-  overflow-y: auto;
-  border-radius: 8px;
-}
-
-.editor-area  button {
-=======
   border: 1px solid gray;
   outline: none;
   padding: 10px;
@@ -1987,7 +1419,6 @@ function addLastCommentToComment(comment, inner_comment){
 }
 
 .editor-area button {
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
   padding: 5px 10px;
   cursor: pointer;
 }
@@ -2025,8 +1456,6 @@ function addLastCommentToComment(comment, inner_comment){
   color: #1565c0;
 }
 
-<<<<<<< HEAD
-=======
 .editor ol li {
   list-style-type: decimal;
   margin-left: 1.5rem;
@@ -2042,5 +1471,4 @@ function addLastCommentToComment(comment, inner_comment){
   pointer-events: auto;
   color: red;
 }
->>>>>>> 3ae6ebf29a9fea2259e104a0b1cb26718c18fab1
 </style>

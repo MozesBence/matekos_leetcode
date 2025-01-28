@@ -23,15 +23,15 @@
     </v-row>
   </v-container>
 
-  <v-sheet class="mx-auto" max-width="100%">
-    <v-slide-group show-arrows>
+  <v-sheet class="mx-auto" max-width="100%" style="">
+    <v-slide-group show-arrows style="background-color: rgb(var(--v-theme-background));">
       <v-slide-group-item
         v-for="n in themeStore.themes"
         :key="n.theme"
         v-slot="{ isSelected, toggle }"
       >
         <v-btn
-          :color="isSelected ? 'blue-lighten-1' : 'white'"
+          :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
           class="ma-4"
           rounded
           width="350px"
@@ -57,7 +57,7 @@
     :items="['Könnyű', 'Közepes', 'Nehéz']"
     variant="solo"
     class="responsive-item"
-    theme="light"
+    theme="background-color: rgb(var(--v-theme-background));"
   ></v-select>
 </v-col>
 
@@ -68,7 +68,7 @@
     :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
     variant="solo"
     class="responsive-item"
-    theme="light"
+    theme="background-color: rgb(var(--v-theme-background));"
   ></v-select>
 </v-col>
 
@@ -96,15 +96,17 @@
   </v-col>
 </v-row>
 
-  <v-layout class="rounded rounded-md" height="100em">
+  <v-layout class="rounded-md" height="100em">
     <v-navigation-drawer 
     location="right" 
-    width="400"  >
+    width="400"
+    style="background-color: transparent; border: none;"
+    >
     <v-list>
-      <v-list-item>
+      <v-list-item class="rounded" style="background-color: gray;">
         <div
           style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
-          class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+          class="d-flex flex-column align-center justify-center"
         >
           <h1>Napi idézet</h1>
           <br>
@@ -112,55 +114,63 @@
         </div>
       </v-list-item>
       <v-list-item v-if="get_fullUser.email"
-      class="d-flex flex-column align-center justify-center" 
-      style="text-align: center; height: 10em; width:400px; margin-bottom:2em"
+      class="d-flex flex-colum rounded align-center justify-center mt-2" 
+      style="text-align: center; height: 10em; width:400px; background-color: gray"
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        class="d-flex flex-column align-center justify-center "
       >
       <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
       <v-progress-linear
       v-model="progressPercentage"
       :color="progressColor"
       height="25"
-      style="width: 300px; border-radius: 15px; margin-top: 10px; background-color: lightgray;"
+      class="rounded-pill mt-2"
+      style="width: 300px; background-color: rgb(var(--v-theme-background));"
       >
-      <template v-slot:default="{ value }">
-        <strong>{{ currentLevel }}. szint</strong>
-      </template>
-    </v-progress-linear>
-    <h3 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">Aranyak szama: {{get_fullUser.currency_count}}<img height="20" src="../assets/coin.png"></h3>
+        <template v-slot:default="{ value }">
+          <strong>{{ currentLevel }}. szint</strong>
+        </template>
+      </v-progress-linear>
+        <h3 
+          style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
+          >
+          Aranyak száma: {{get_fullUser.currency_count}}
+          <img height="20" src="../assets/coin.png">
+        </h3>
       </div>
     </v-list-item>
 
-      <v-list-item class="d-flex flex-column align-center justify-center" 
-      style="text-align: center;  width:400px; margin-top:2em margin-bottom:2em">
-      <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
-      >
-      <div class="heatmap">
-        <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
-       <div class="heatmap-grid">
-        <div
-          v-for="(day, index) in days"
-          :key="index"
-          :style="{ backgroundColor: getClass(day.value), border: checkIfCurrent(day.day) }"
-          class="heatmap-cell"
+      <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
+      style="width:400px; background-color: gray;">
+        <div 
+          class="d-flex flex-column align-center justify-center"
         >
-          {{ day.day }}
-        </div>
-      </div>
+          <div class="heatmap">
+            <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
+          <div class="heatmap-grid">
+            <div
+              v-for="(day, index) in days"
+              :key="index"
+              :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
+              class="heatmap-cell"
+              @click="TaskView()"
+            >
+              {{ day.day }}
+            </div>
+          </div>
 
-      </div>      
-      </div>
+          </div>      
+        </div>
       </v-list-item>
-      <v-list-item v-if="get_fullUser.email" class="d-flex flex-column align-center justify-center" 
-      style="text-align: center; width:400px; margin-top:2em; margin-bottom:2em">
+      <v-list-item 
+      v-if="get_fullUser.email" 
+      class="d-flex flex-column align-center justify-center rounded mt-2" 
+      style="text-align: center; width:400px; background-color: gray;">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center bg-grey-lighten-4"
+        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
       >
         <h1>Teljesítési statisztika:</h1>
         <div id="chart">
@@ -188,9 +198,11 @@
       </v-row>
   
       <v-row 
+      class="task_card"
       v-for="(card) in cardsStore.cards" 
       :key="card.id" 
       style="margin: 2em; border-bottom: 1px solid #ccc;"
+      @click="TaskView(card.id)"
     >
       <!-- Task Icon and Status -->
       <v-col class="d-flex align-center justify-center" cols="2">
@@ -201,12 +213,12 @@
         >
           {{ getTaskStateForCard(card.id).state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
         </v-icon>
-        <span v-else>&nbsp;</span> <!-- Space when no task state found -->
+        <span v-else>&nbsp;</span>
       </v-col>
 
       <!-- Task Title -->
-      <v-col class="d-flex align-center justify-center" cols="6">
-        <span class="text-h7">{{ card.id }} {{ card.task_title }}</span>
+      <v-col class="d-flex align-center justify-center" cols="6"  style="text-align: left;">
+        <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
       </v-col>
       
       <!-- Completion Rate -->
@@ -240,6 +252,9 @@ import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
+import { useRouter } from 'vue-router';
+
+
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
@@ -272,6 +287,12 @@ export default defineComponent({
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
+    const router = useRouter();
+
+    const TaskView = (id: number) => {
+      router.push({ name: 'task', params: { id } });
+    };
+
 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
@@ -363,9 +384,9 @@ export default defineComponent({
     };
 
     const getClass = (value: number) => {
-      if (value == -1) return 'dark-blue';
-      if (value == 0) return 'light-blue';
-      return 'blue';
+      if (value == -1) return '#E57373';
+      if (value == 1) return '#A5D6A7';
+      return '#00A1FF';
     };
     
     const checkIfCurrent = (value: any) => {
@@ -489,7 +510,8 @@ export default defineComponent({
       currentYear,
       currentMonth,
       days,
-      checkIfCurrent
+      checkIfCurrent,
+      TaskView
     };
   },
 });
@@ -533,5 +555,9 @@ export default defineComponent({
   }
   .dark-blue {
     background-color: rgb(26, 26, 77);
+  }
+
+  .task_card:hover{
+    background-color: rgb(203, 203, 203);
   }
 </style>

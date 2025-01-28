@@ -5,13 +5,24 @@ const getCardInfo = async (req, res) => {
     const cards = await tasksService.getCardInfo();
     res.status(200).json(cards);
   } catch (error) {
-    console.error('Error in controller:', error.message);
+    console.error('Error in tasks controller:', error.message);
     res.status(500).json({ message: error.message });
   }
 };
 
+const getSpecificCard = async (req,res,next) =>{
+  try{
+    const { id } = req.params;
+    const card = await tasksService.getSpecificCard(id);
+    res.status(200).json(card);
+  }catch(error){
+    console.error('Error in tasks controller:', error.message);
+    res.status(500).json({ message: error.message });
+  }
+}
 module.exports = {
   getCardInfo,
+  getSpecificCard
 };
 
 

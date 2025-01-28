@@ -1,6 +1,6 @@
 <template>
-    <v-card>
-      <v-layout style="background-color: rgb(var(--v-theme-background)); position: relative; padding-bottom: 3vw;">
+    <v-card style="background-color: rgb(var(--v-theme-background)); box-shadow: none;">
+      <v-layout style="position: relative; box-shadow: none;" elevation="0">
         <v-app-bar
           color="primary"
           prominent
@@ -175,7 +175,7 @@
                           <img
                             :src="profileImage"
                             alt="Profil"
-                            style="width: 100%; height: 100%; object-fit: cover;"
+                            style="width: 100%; height: 100%; object-fit: cover; position: relative; top: -2rem;"
                           />
                         </template>
                         <template v-else>
@@ -298,12 +298,12 @@
           </v-list>
         </v-navigation-drawer>
   
-        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;">
+        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;" elevation="0">
           <v-container
+              v-if="!get_fullUser"
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
-              v-if="get_user_name == null"
             >
               <v-btn
                 class="rounded-pill"
@@ -410,21 +410,14 @@
 
           <RouterView></RouterView>
 
-          <v-footer style="background: rgb(var(--v-theme-secondary)); position: absolute; bottom: 0; width: 100%;">
-            <v-row justify="center" no-gutters>
-              <v-col class="text-center mt-4" cols="12">
-                Copyright © {{ new Date().getFullYear() }} — Math Solve
-              </v-col>
-            </v-row>
-          </v-footer>
         </v-main>
       </v-layout>
     </v-card>
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef } from 'vue';
-import { useRouter } from 'vue-router';
+import { onMounted, ref, shallowRef, nextTick } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 import { useTheme } from 'vuetify';
@@ -433,15 +426,16 @@ const { mutate : ProfileGetUser} = useProfileGetUser()
 
 const { currentRoute } = useRouter()
 
-const router = useRouter()
+const router = useRouter();
+const route = useRoute();
 
 const dialog = shallowRef(false)
 
-var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
 
-var get_fullUser = ref(null);
-var get_fullUser_customs = ref(null);
-var get_user_name = ref(null);
+const get_fullUser = ref(null);
+const get_fullUser_customs = ref(null);
+const get_user_name = ref(null);
 
 const theme = useTheme();
 
@@ -450,12 +444,12 @@ const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
 const DarkmodeChange = ref(false);
 
 onMounted(async () => {
-  if (get_user_by_token != null) {
+  if(get_user_by_token){
     try {
       await ProfileGetUser(get_user_by_token, {
         onSuccess: (get_user) => {
-          get_user_name.value = get_user.user_name;
           get_fullUser.value = get_user;
+          get_user_name.value = get_user.user_name;
           get_fullUser_customs.value = get_user.User_customization;
         },
         onError: (error) => {
@@ -469,6 +463,7 @@ onMounted(async () => {
     }
   }
 });
+
 watch(get_fullUser, (newUser) => {
   if (newUser) {
     DarkmodeChange.value = newUser.User_customization.darkmode;
@@ -505,7 +500,7 @@ const handleProfilePic = () => {
 };
 
 // Cookie-k kezelése
-function getCookie(name) {
+function getCookie(name){
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
     const [key, value] = cookie.split('=');
@@ -525,8 +520,8 @@ function deleteCookie(name) {
 <script>
 import { ref, watch } from 'vue'
 
-const drawer = ref(false)
-const group = ref(null)
+const drawer = ref(false);
+const group = ref(null);
 
 watch(group, () => {
   drawer.value = false
