@@ -45,7 +45,8 @@ import { defineComponent, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useTaskStore } from "../stores/taskLoader";
 import router from "@/router";
-
+//import { UseGetTaskData } from '@/api/taskSolving/taskSolvingQuery'
+//const {mutate: GetTaskData} = UseGetTaskData();
 export default defineComponent({
   data: () => ({
     drawer: false,
