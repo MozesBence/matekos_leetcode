@@ -18,6 +18,19 @@ const tasksRepository = {
       throw error;
     }
   },
+  async getSpecificCard(id) {
+    try {
+      return await Tasks.findOne({
+        where: {
+          id: id
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching specific card:', error);
+      throw error;
+    }
+  }
+  
 };
 
 module.exports = tasksRepository;

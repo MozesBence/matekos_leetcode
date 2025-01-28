@@ -103,9 +103,7 @@
     style="background-color: transparent; border: none;"
     >
     <v-list>
-      <v-list-item  
-      class="rounded" 
-      style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+      <v-list-item class="rounded" style="background-color: gray;">
         <div
           style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
           class="d-flex flex-column align-center justify-center"
@@ -115,10 +113,9 @@
           <p>{{quoteStore.quote}}</p>
         </div>
       </v-list-item>
-      <v-list-item 
-      v-if="get_fullUser.email"
+      <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
+      style="text-align: center; height: 10em; width:400px; background-color: gray"
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
@@ -145,9 +142,8 @@
       </div>
     </v-list-item>
 
-      <v-list-item 
-      class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+      <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
+      style="width:400px; background-color: gray;">
         <div 
           class="d-flex flex-column align-center justify-center"
         >
@@ -169,9 +165,9 @@
         </div>
       </v-list-item>
       <v-list-item 
-      v-if="get_fullUser.email"
+      v-if="get_fullUser.email" 
       class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="text-align: center; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+      style="text-align: center; width:400px; background-color: gray;">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
         class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
@@ -202,10 +198,11 @@
       </v-row>
   
       <v-row 
+      class="task_card"
       v-for="(card) in cardsStore.cards" 
       :key="card.id" 
       style="margin: 2em; border-bottom: 1px solid #ccc;"
-      @click="TaskView()"
+      @click="TaskView(card.id)"
     >
       <!-- Task Icon and Status -->
       <v-col class="d-flex align-center justify-center" cols="2">
@@ -216,7 +213,7 @@
         >
           {{ getTaskStateForCard(card.id).state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
         </v-icon>
-        <span v-else>&nbsp;</span> <!-- Space when no task state found -->
+        <span v-else>&nbsp;</span>
       </v-col>
 
       <!-- Task Title -->
@@ -257,6 +254,8 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
 import { useRouter } from 'vue-router';
 
+
+
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -290,9 +289,10 @@ export default defineComponent({
     const quoteStore = useQuoteStore();
     const router = useRouter();
 
-    const TaskView = () => {
-      router.push({ path: '/task' });
+    const TaskView = (id: number) => {
+      router.push({ name: 'task', params: { id } });
     };
+
 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
@@ -555,5 +555,9 @@ export default defineComponent({
   }
   .dark-blue {
     background-color: rgb(26, 26, 77);
+  }
+
+  .task_card:hover{
+    background-color: rgb(203, 203, 203);
   }
 </style>
