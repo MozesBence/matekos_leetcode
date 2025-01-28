@@ -9,7 +9,7 @@ const GetTaskData = async (id: number) => {
 
 export const UseGetTaskData = () => {
     return useMutation({
-        mutationFn: (id: number) => GetTaskData(id), // Ensure the id is passed here
+        mutationFn: (id: number) => GetTaskData(id),
         onSuccess: (data) => {
             console.log('Task data:', data);
         },
