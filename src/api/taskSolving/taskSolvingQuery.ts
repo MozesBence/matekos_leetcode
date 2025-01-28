@@ -1,21 +1,20 @@
-import axiosClient from '../../lib/axios'
-import { useMutation } from '@tanstack/vue-query'
-import type { Ref } from 'vue'
+import axiosClient from '../../lib/axios';
+import { useMutation } from '@tanstack/vue-query';
+import type { Ref } from 'vue';
 
-const ProfileGetUser = async (id: number) => {
-    const response = await axiosClient.get('http://localhost:3000/task/', {headers: {id: id}});
+const GetTaskData = async (id: number) => {
+    const response = await axiosClient.get(`http://localhost:5173/api/tasks/get-one-card/${id}`);
     return response.data;
 }
 
-export const useProfileGetUser = () => {
+export const UseGetTaskData = () => {
     return useMutation({
-        mutationFn: ProfileGetUser,
-        onSuccess: (user) => {
-
+        mutationFn: (id: number) => GetTaskData(id), // Ensure the id is passed here
+        onSuccess: (data) => {
+            console.log('Task data:', data);
         },
         onError: (error: any) => {
-            console.error('Hiba történt a felhasználó lekérésekor:', error);
+            console.error('Error occurred while fetching task data:', error);
         },
-        }
-    );
+    });
 }
