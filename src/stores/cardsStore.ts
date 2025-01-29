@@ -12,7 +12,7 @@ export const useCardsStore = defineStore('cardsStore',{
     actions:{
         async fetchCards(){
             try{
-                const response = await axios.get('/api/tasks/get-cards-info');
+                const response = await axios.get(`/api/tasks/get-cards-info/${sessionStorage.getItem('offset')}`);
                 this.cards = response.data;
             }catch(error){
                 console.log(`Error in cards store (cards)! Error: ${error}`)

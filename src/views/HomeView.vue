@@ -240,9 +240,9 @@
     </v-main>
   </v-layout>
   
-  <v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
-    <v-pagination :length="Number(Math.ceil((cardsStore.cards.length+ 60)/15))"></v-pagination>
-  </v-row>
+<v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
+  <v-pagination :length="Number(Math.ceil((cardsStore.cards.length+ 60)/15))" onclick="UpdatePage"></v-pagination>
+</v-row>
   
 </template>
 <script lang="ts">
@@ -253,7 +253,6 @@ import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
 import { useRouter } from 'vue-router';
-
 
 
 function getCookie(name: string): string | null {
@@ -284,10 +283,16 @@ export default defineComponent({
     apexchart: VueApexCharts, // Register VueApexCharts as a component
   },
   setup() {
+    sessionStorage.setItem('offset',0);
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
     const router = useRouter();
+
+    const UpdatePage = () => {
+      sessionStorage.setItem('offset',sessionStorage.getItem('offset')+15);
+      console.log(sessionStorage)
+    }
 
     const TaskView = (id: number) => {
       router.push({ name: 'task', params: { id } });
@@ -510,7 +515,8 @@ export default defineComponent({
       currentMonth,
       days,
       checkIfCurrent,
-      TaskView
+      TaskView,
+      UpdatePage
     };
   },
 });
