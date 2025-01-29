@@ -26,6 +26,28 @@ class contestRepository
 
         const UsersOnLeaderboard = [];
 
+        var baseXP = 100;
+
+        const experienceForNextLevel = (level) => {
+            return baseXP * Math.pow(level, 2);
+        };
+        
+        const totalXPForLevel = (level) => {
+            let totalXP = 0;
+            for (let i = 1; i < level; i++) {
+                totalXP += experienceForNextLevel(i);
+            }
+            return totalXP;
+        };
+        
+        const calculateLevel = (xp) => {
+            let level = 1;
+            while (xp >= totalXPForLevel(level + 1)) {
+                level++;
+            }
+            return level;
+        };
+        
         userWithCustomization.forEach(user => {
             if (user && user.User_customization) {
                 const profileProfPicBuffer = user.User_customization.profil_picture;
@@ -35,11 +57,17 @@ class contestRepository
                     user.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
                 }
             }
-
-            UsersOnLeaderboard.push({id: user.id, name: user.user_name, profil_picture: user.User_customization.profil_picture, experience_point: user.experience_point});
-        });
-
         
+            // Szint kiszámítása experience_point alapján
+            const userLevel = calculateLevel(user.experience_point || 0);
+        
+            UsersOnLeaderboard.push({
+                id: user.id,
+                name: user.user_name,
+                profil_picture: user.User_customization.profil_picture,
+                level: userLevel // Itt az experience_point helyett a szintet adjuk meg
+            });
+        });        
 
         return UsersOnLeaderboard;
     }
