@@ -168,6 +168,7 @@
                           height: '8vh',
                           padding: 0,
                           overflow: 'hidden',
+                          position: 'relativ',
                         }"
                       >
                         <!-- Ha van kép az src-ben, azt mutatja -->
@@ -175,7 +176,7 @@
                           <img
                             :src="profileImage"
                             alt="Profil"
-                            style="width: 100%; height: 100%; object-fit: cover; position: relative; top: -2rem;"
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
                           />
                         </template>
                         <template v-else>

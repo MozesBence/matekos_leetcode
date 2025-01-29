@@ -71,8 +71,13 @@
               <v-list-item>
                 <div class="d-flex flex-row align-center mb-3 pa-1 px-3 rounded justify-space-between" style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
                   <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
-                    <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden;">
-                      <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" style="width: 100%; position: relative;" :style="{ top: member.profil_picture === null ? '0rem' : '-1rem' }">
+                    <div 
+                    style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden; position: relative;"
+                    >
+                      <img
+                       :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" alt="" 
+                       style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
+                      >
                     </div>
                   </b-btn>
                   <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
