@@ -5,7 +5,6 @@ module.exports = (sequelize, DataTypes) => {
     const Community_files = require("../models/community_files")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
-    const Task_comments = require("../models/task_comments")(sequelize, DataTypes);
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
     const Competitions_types = require("../models/competition_types")(sequelize, DataTypes);
     const Badges = require("../models/badges")(sequelize, DataTypes);
@@ -44,14 +43,6 @@ module.exports = (sequelize, DataTypes) => {
         through: "badge_redemption",
     });
 
-    Task_comments.hasMany(Task_comments, {
-        foreignKey: "parent_id",
-    });
-
-    Users.hasMany(Task_comments, {
-        foreignKey: "user_id",
-    });
-
     // Use Task_solutions in association
     Tasks.belongsToMany(Users, {
         foreignKey: "task_id",
@@ -79,10 +70,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Themes.hasOne(Tasks, {
         foreignKey: "theme_id",
-    });
-
-    Task_comments.hasOne(Tasks, {
-        foreignKey: "task_comments_id",
     });
 
     // Community_posts kapcsolatai
@@ -130,7 +117,6 @@ module.exports = (sequelize, DataTypes) => {
         Community_files,
         Themes,
         Tasks,
-        Task_comments,
         Competitions,
         Competitions_types,
         Badges,

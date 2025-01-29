@@ -25,7 +25,6 @@ const {
     Community_files, 
     Themes, 
     Tasks, 
-    Task_comments, 
     Competitions, 
     Competitions_types, 
     Badges, 
@@ -43,7 +42,6 @@ db.Community_posts = Community_posts;
 db.Community_files = Community_files;
 db.Themes = Themes;
 db.Tasks = Tasks;
-db.Task_comments = Task_comments;
 db.Competitions = Competitions;
 db.Competitions_types = Competitions_types;
 db.Badges = Badges;
