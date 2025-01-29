@@ -301,9 +301,9 @@ main::-webkit-scrollbar {
 
 .hero {
   text-align: center;
-  background: linear-gradient(120deg, #6a11cb, #2575fc, #00d2ff, #8e44ad, #c42ecc, #6a11cb);
+  background: linear-gradient(120deg, #6a11cb, #2575fc, #00d2ff, #6a11cb, #2575fc, #00d2ff);
   background-size: 400% 400%;
-  animation: gradient-animation 15s ease-in-out infinite;
+  animation: gradient-animation 8s ease-in-out infinite;
   color: rgb(var(--v-theme-about_main_text_color));
   padding: 50px 20px;
   border-radius: 12px;
@@ -315,7 +315,7 @@ main::-webkit-scrollbar {
     background-position: 0% 50%;
   }
   100% {
-    background-position: 100% 50%;
+    background-position: 84% 50%;
   }
 }
 
@@ -323,7 +323,6 @@ main::-webkit-scrollbar {
   font-size: 2.5rem;
   transition: font-family 0.5s ease, color 0.5s ease;
 }
-
 
 .content {
   max-width: 100%;
