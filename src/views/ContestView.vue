@@ -60,7 +60,7 @@
                   <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
                     <h3 style="font-weight: normal;">{{ member.name }}</h3>
                   </b-btn>
-                  <h3 style="font-weight: normal; width: 4em; text-align: right;">{{ member.level }}.szint</h3>
+                  <h3 style="font-weight: normal; width: 5rem; text-align: right;">{{ member.level }}.szint</h3>
                 </div>
               </v-list-item>
             </v-list>

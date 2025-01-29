@@ -185,7 +185,7 @@
     </v-navigation-drawer>
     
     <v-main class="d-block align-center justify-center" style="height: auto;">
-      <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;">
+      <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3">
         <v-col class="d-flex align-center justify-center" cols="2">
           <span>Státusz</span>
         </v-col>
@@ -235,8 +235,10 @@
           :color="chipColor(card.difficulty)" 
           outlined 
           small
+          style="width: 5rem;"
+          class="d-flex align-center justify-center"
         >
-          {{ difficultyLabel(card.difficulty) }}
+          <p class="ma-0">{{ difficultyLabel(card.difficulty) }}</p>
         </v-chip>
       </v-col>
     </v-row>
