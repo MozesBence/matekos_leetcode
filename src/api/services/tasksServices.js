@@ -1,9 +1,9 @@
 const tasksRepository = require('../repositories/tasksRepository');
 
 class TasksService {
-  async getCardInfo() {
+  async getCardInfo(id) {
     try {
-      return await tasksRepository.getCardInfo();
+      return await tasksRepository.getCardInfo(id);
     } catch (error) {
       throw error;
     }
