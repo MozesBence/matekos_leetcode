@@ -1,5 +1,5 @@
 <template>
-  <main style="min-height: 88vh;">
+  <main>
     <div class="hero">
       <h1 ref="rotatingText">{{ currentText }}</h1>
     </div>
@@ -20,7 +20,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="AboutOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
+            <p>2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
               hogy vigyük tovább szakmai vizsgának, amit 2024 szeptemberében kezdtünk el megcsinálni. Itt a már meglévő beadandónkat
               kellett átírni.</p>
           </div>
@@ -42,7 +42,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="WhyOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
+            <p>Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
               és innen jött a matek-infó közötti kapocs, amit próbálunk a leghatékonyabban diáktársaink részére átadni mint gyakorlófelület.
               Ezért lett a név MathSolve.</p>
           </div>
@@ -64,7 +64,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="UsageOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
+            <p>Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
               megkönnyíteni dolgukat, hogy a lehető legszűkebben tudják tudásukat bővíteni vagy tesztelni.</p>
           </div>
         </v-expand-transition>
@@ -85,7 +85,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="FeaturesOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
+            <p>Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
               emellett vannak challengek, amik speciálisabb módon, de beleszámítanak a ranglistába.</p>
           </div>
         </v-expand-transition>
@@ -106,38 +106,77 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="AboutUsOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
-
+            <p>Ez a projekt célja, hogy segítse a tanulókat matek- és infófeladatok megoldásában egy gyakorló környezetben.</p>
             <div class="team-section">
-              <div class="profile left">
-                <img src="../components/background/test_profile.jpg" alt="Profile 1" class="profile-img" />
-                <div class="profile-info">
-                  <h1>Bujdosó Bálint</h1>
-                  <p>Rövid bemutatkozás...</p>
-                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, JavaScript</p>
-                </div>
-              </div>
-              
-              <div class="profile right">
-                <div class="profile-info">
-                  <h1 class="text-right">Mózes Bence</h1>
-                  <p class="text-right">Rövid bemutatkozás...</p>
-                  <p class="text-right"><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
-                </div>
-                <img src="../components/background/test_profile.jpg" alt="Profile 2" class="profile-img" />
-              </div>
-              
-              <div class="profile left">
-                <img src="../components/background/test_profile.jpg" alt="Profile 3" class="profile-img"/>
-                <div class="profile-info">
-                  <h1>Pintea Dániel</h1>
-                  <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum diákja vagyok. Az elmúlt években számos projektben és versenyen vettem részt, amelyek során folyamatosan bővítettem tudásomat és fejlesztettem készségeimet.
-                    <br>
-                    <br>
-                    A programozás nemcsak a munkám, hanem a hobbim is – szenvedélyesen szeretek új dolgokat alkotni és problémákat megoldani.</p>
-                  <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, TypeScript, JavaScript, Lua, C#, C++, Python, Rust</p>
-                </div>
-              </div>
+              <v-row>
+                <v-col cols="12">
+                  <div class="profile left">
+                    <v-row class="d-flex align-center flex-column flex-md-row">
+                      <div class="profile-img mr-md-8 mb-4 mb-md-0">
+                        <img 
+                        src="../components/background/test_profile.jpg" 
+                        alt="Profile 1" 
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"/>
+                      </div>
+                      <div class="profile-info text-center" :style="{maxWidth: $vuetify.display.smAndDown ? '80vw': '40vw'}">
+                        <h1>Bujdosó Bálint</h1>
+                        <p>Rövid bemutatkozás...</p>
+                        <br></br>
+                        <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, JavaScript</p>
+                      </div>
+                    </v-row>
+                  </div>
+                </v-col>
+
+
+                <v-col cols="12" :style="{marginTop: $vuetify.display.smAndDown ? '5vw': '3vw'}">
+                  <div class="profile right">
+                    <v-row class="d-flex align-center flex-column flex-md-row">
+                      <!-- Kép mobilon felül, nagyobb képernyőn jobb oldalon -->
+                      <div class="profile-img order-first order-md-last mr-md-8 mb-4 mb-md-0" :style="{marginLeft: $vuetify.display.smAndDown ? '0vw': '2vw'}">
+                        <img 
+                          src="../components/background/test_profile.jpg"
+                          alt="Profile 2"
+                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
+                        />
+                      </div>
+
+                      <!-- Tartalom jobbra igazítása -->
+                      <div class="profile-info text-center text-md-right ml-md-auto" :style="{ maxWidth: $vuetify.display.smAndDown ? '80vw' : '40vw' }">
+                        <h1>Mózes Bence</h1>
+                        <p>Rövid bemutatkozás...</p>
+                        <br></br>
+                        <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
+                      </div>
+                    </v-row>
+                  </div>   
+                </v-col>
+
+
+                <v-col cols="12" :style="{marginTop: $vuetify.display.smAndDown ? '5vw': '3vw'}">
+                  <div class="profile left">
+                    <v-row class="d-flex align-center flex-column flex-md-row">
+                      <div class="profile-img mr-md-8 mb-4 mb-md-0">
+                        <img 
+                          src="../components/background/test_profile.jpg"
+                          alt="Profile 3"
+                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
+                        />
+                      </div>
+                      <div class="profile-info text-center text-md-left" :style="{maxWidth: $vuetify.display.smAndDown ? '80vw': '40vw'}">
+                        <h1>Pintea Dániel</h1>
+                        <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum diákja vagyok. Az elmúlt években számos projektben és versenyen vettem részt, amelyek során folyamatosan bővítettem tudásomat és fejlesztettem készségeimet.
+                        <br>
+                        <br>
+                          A programozás nemcsak a munkám, hanem a hobbim is – szenvedélyesen szeretek új dolgokat alkotni és problémákat megoldani.
+                        </p>
+                        <br></br>
+                        <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, TypeScript, JavaScript, Lua, C#, C++, Python, Rust</p>
+                      </div>
+                    </v-row>
+                  </div>
+                </v-col>
+              </v-row>
             </div>
 
           </div>
@@ -262,17 +301,38 @@ main::-webkit-scrollbar {
 
 .hero {
   text-align: center;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #6a11cb, #2575fc, #ff6a00, #00d2ff, #8e44ad, #2ecc71);
   color: rgb(var(--v-theme-about_main_text_color));
   padding: 50px 20px;
   border-radius: 12px;
   margin-bottom: 30px;
+  background-size: 300% 300%; /* Nagyobb terület a folyamatos színátmenethez */
+  animation: gradient-animation 35s ease infinite; /* Animáció */
+}
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%; /* Kezdő pozíció */
+  }
+  25% {
+    background-position: 100% 50%; /* Első változás */
+  }
+  50% {
+    background-position: 200% 50%; /* Második változás */
+  }
+  75% {
+    background-position: 300% 50%; /* Harmadik változás */
+  }
+  100% {
+    background-position: 0% 50%; /* Vissza az eredeti pozícióba */
+  }
 }
 
 .hero h1 {
   font-size: 2.5rem;
   transition: font-family 0.5s ease, color 0.5s ease;
 }
+
 
 .content {
   max-width: 100%;
@@ -322,11 +382,8 @@ p {
 }
 
 .team-section {
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
   margin: 3rem 0 3rem 0;
-  padding: 0 6rem;
+  padding: 0 5vw;
   position: relative;
 }
 
@@ -335,6 +392,7 @@ p {
   align-items: center;
   gap: 20px;
   position: relative;
+  width: 100%;
 }
 
 .profile.left {
@@ -346,14 +404,15 @@ p {
 }
 
 .profile-img {
-  width: 10rem;
-  height: 10rem;
+  width: 10em;
+  height: 10em;
   border-radius: 50%;
   position: relative;
+  overflow: hidden;
 }
 
 .profile-info {
-  max-width: 40rem;
+  max-width: 80vw;
 }
 
 .profile-info h1 {

@@ -135,18 +135,49 @@ function haviKihivasAtiranyit(){
 .kihivas:hover {
   transform: translateY(-4px);
 }
+
 .hero {
   text-align: center;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #6a11cb, #2575fc, #ff6a00, #00d2ff, #8e44ad, #2ecc71);
   color: rgb(var(--v-theme-about_main_text_color));
   padding: 50px 20px;
   border-radius: 12px;
   margin-bottom: 30px;
+  background-size: 600% 600%; /* Még nagyobb terület a folyamatos színátmenethez */
+  animation: gradient-animation 35s ease infinite; /* Animáció */
 }
+
+@keyframes gradient-animation {
+  0% {
+    background-position: 0% 50%; /* Kezdő pozíció */
+  }
+  16% {
+    background-position: 20% 50%; /* Az első szín változása */
+  }
+  33% {
+    background-position: 40% 50%; /* További színek eltolása */
+  }
+  50% {
+    background-position: 60% 50%; /* Középső színváltozás */
+  }
+  66% {
+    background-position: 80% 50%; /* Szín áramlása tovább */
+  }
+  83% {
+    background-position: 100% 50%; /* Majdnem a végén */
+  }
+  100% {
+    background-position: 0% 50%; /* Visszatérés az elejére */
+  }
+}
+
 .hero h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
   transition: font-family 0.5s ease, color 0.5s ease;
 }
+
+
+
 .kihivas{
   background-color: rgb(var(--v-theme-contest_cards_background));
   cursor: pointer;
