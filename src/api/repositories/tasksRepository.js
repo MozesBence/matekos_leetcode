@@ -1,9 +1,11 @@
+const { number } = require('zod');
 const db = require('../database/dbContext');
 const { Tasks } = db;
 
 const tasksRepository = {
   
-  async getCardInfo() {
+  async getCardInfo(offset) {
+    
     if(!Tasks){
         return 'nem task'
     }
@@ -11,6 +13,7 @@ const tasksRepository = {
       return await Tasks.findAll({
         distinct: true,
         order: [['id', 'ASC']],
+        offset: number().int().parse(offset),
         limit: 15,
       });
     } catch (error) {

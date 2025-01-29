@@ -2,7 +2,8 @@ const tasksService = require('../services/tasksServices');
 
 const getCardInfo = async (req, res) => {
   try {
-    const cards = await tasksService.getCardInfo();
+    const {offset} = req.params;
+    const cards = await tasksService.getCardInfo(offset);
     res.status(200).json(cards);
   } catch (error) {
     console.error('Error in tasks controller:', error.message);
