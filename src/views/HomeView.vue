@@ -99,7 +99,7 @@
     </v-col>
   </v-row>
 
-  <v-layout class="rounded-md" height="max-content">
+  <v-layout class="rounded-md" height="min-content">
     <v-navigation-drawer 
     location="right" 
     width="400"
@@ -116,75 +116,75 @@
           <p>{{quoteStore.quote}}</p>
         </div>
       </v-list-item>
-      <v-list-item v-if="get_fullUser.email"
-      class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
-    >
-      <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-        class="d-flex flex-column align-center justify-center "
-      >
-      <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
-      <v-progress-linear
-      v-model="progressPercentage"
-      :color="progressColor"
-      height="25"
-      class="rounded-pill mt-2"
-      style="width: 300px; background-color: rgb(var(--v-theme-background));"
-      >
-        <template v-slot:default="{ value }">
-          <strong>{{ currentLevel }}. szint</strong>
-        </template>
-      </v-progress-linear>
-        <h3 
-          style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
-          >
-          Aranyak száma: {{get_fullUser.currency_count}}
-          <img height="20" src="../assets/coin.png">
-        </h3>
-      </div>
-    </v-list-item>
-
-      <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
-        <div 
-          class="d-flex flex-column align-center justify-center"
+        <v-list-item v-if="get_fullUser.email"
+        class="d-flex flex-colum rounded align-center justify-center mt-2" 
+        style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
         >
-          <div class="heatmap">
-            <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
-          <div class="heatmap-grid">
-            <div
-              v-for="(day, index) in days"
-              :key="index"
-              :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
-              class="heatmap-cell"
-              @click="TaskView()"
-            >
-              {{ day.day }}
-            </div>
+          <div 
+            style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
+            class="d-flex flex-column align-center justify-center "
+          >
+          <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
+          <v-progress-linear
+          v-model="progressPercentage"
+          :color="progressColor"
+          height="25"
+          class="rounded-pill mt-2"
+          style="width: 300px; background-color: rgb(var(--v-theme-background));"
+          >
+            <template v-slot:default="{ value }">
+              <strong>{{ currentLevel }}. szint</strong>
+            </template>
+          </v-progress-linear>
+            <h3 
+              style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
+              >
+              Aranyak száma: {{get_fullUser.currency_count}}
+              <img height="20" src="../assets/coin.png">
+            </h3>
           </div>
+        </v-list-item>
 
-          </div>      
+        <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
+        style="width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+          <div 
+            class="d-flex flex-column align-center justify-center"
+          >
+            <div class="heatmap">
+              <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
+            <div class="heatmap-grid">
+              <div
+                v-for="(day, index) in days"
+                :key="index"
+                :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
+                class="heatmap-cell"
+                @click="TaskView()"
+              >
+                {{ day.day }}
+              </div>
+            </div>
+
+            </div>      
+          </div>
+        </v-list-item>
+        <v-list-item 
+        v-if="get_fullUser.email" 
+        class="d-flex flex-column align-center justify-center rounded mt-2" 
+        style="text-align: center; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+        <div 
+          style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
+          class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
+        >
+          <h1>Teljesítési statisztika:</h1>
+          <div id="chart">
+            <apexchart type="radialBar" height="390" :options="chartOptions" :series="series"></apexchart>
+          </div>
         </div>
-      </v-list-item>
-      <v-list-item 
-      v-if="get_fullUser.email" 
-      class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="text-align: center; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
-      <div 
-        style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
-        class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
-      >
-        <h1>Teljesítési statisztika:</h1>
-        <div id="chart">
-          <apexchart type="radialBar" height="390" :options="chartOptions" :series="series"></apexchart>
-        </div>
-      </div>
-      </v-list-item>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
     
-    <v-main class="d-block align-center justify-center">
+    <v-main class="d-block align-center justify-center" style="height: auto;">
       <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;">
         <v-col class="d-flex align-center justify-center" cols="2">
           <span>Státusz</span>

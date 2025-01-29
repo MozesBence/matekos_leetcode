@@ -55,6 +55,8 @@ const vuetify = createVuetify({
           community_createpost_btn_active: colors.blue.lighten2,
           community_createpost_btn_hover: colors.blue.base,
           community_createpost_editor_area_border: colors.grey.darken4,
+
+          contest_cards_background: colors.grey.lighten2,
         },
       },
       darkTheme: {
@@ -91,6 +93,8 @@ const vuetify = createVuetify({
           community_createpost_btn_active: colors.blue.lighten2,
           community_createpost_btn_hover: colors.blue.base,
           community_createpost_editor_area_border: colors.grey.lighten5,
+
+          contest_cards_background: colors.grey.darken2,
         },
       },
     },

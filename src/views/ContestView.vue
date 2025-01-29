@@ -1,5 +1,5 @@
 <template>
-  <v-app class="mt-2">
+  <div class="mt-2">
     <v-container class="hero">
       <v-icon icon="mdi-trophy" color="amber" size="128" class="mb-4"></v-icon>
       <h1>MathSolve kihivás</h1>
@@ -12,7 +12,8 @@
           <v-card class="kihivas" @click="hetiKihivasAtiranyit()">
             <v-card-text class="pa-6">
               
-              <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
+              <v-card-title>
+                <v-icon icon="mdi-calendar" color="community_createpost_btn" class="mb-2"></v-icon>
 
                 Heti kihivás
               </v-card-title>
@@ -25,7 +26,8 @@
         <v-col cols="12" md="6">
           <v-card class="kihivas" @click="haviKihivasAtiranyit()">
             <v-card-text class="pa-6">
-              <v-card-title><v-icon icon="mdi-calendar" color="white" class="mb-2"></v-icon>
+              <v-card-title>
+                <v-icon icon="mdi-calendar" color="community_createpost_btn" class="mb-2"></v-icon>
 
                 Havi kihívás
               </v-card-title>
@@ -94,7 +96,7 @@
         </v-col>
       </v-row>
     </v-container>
-  </v-app>
+  </div>
 </template>
 
 <script setup>
@@ -127,7 +129,8 @@ function haviKihivasAtiranyit(){
   router.push({path: '/monthly-challange'});
 }
 </script>
-<style>
+
+<style scoped>
 .kihivas {
   transition: transform 0.2s;
 }
@@ -147,7 +150,7 @@ function haviKihivasAtiranyit(){
   transition: font-family 0.5s ease, color 0.5s ease;
 }
 .kihivas{
-  background-color: gray;
+  background-color: rgb(var(--v-theme-contest_cards_background));
   cursor: pointer;
 }
 </style>
