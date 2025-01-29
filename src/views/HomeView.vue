@@ -242,19 +242,22 @@
     </v-row>
     </v-main>
   </v-layout>
-  
-<v-row style="display: flex; justify-content:center; vertical-align:middle;margin:1em;">
-  <v-pagination :length="Number(Math.ceil((cardsStore.cards.length+ 60)/15))" onclick="UpdatePage"></v-pagination>
-</v-row>
-  
-</template>
+
+  <v-pagination 
+  v-model="pageNumber" 
+  :length="Math.ceil(cardsStore.cards.length / 15)+1" 
+  @update:modelValue="UpdatePage">
+</v-pagination>
+
+
+</template> 
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { useThemeStore } from '@/stores/themeStore';
 import { useCardsStore } from '@/stores/cardsStore';
 import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import VueApexCharts from 'vue3-apexcharts'; // Import VueApexCharts
+import VueApexCharts from 'vue3-apexcharts';
 import { useRouter } from 'vue-router';
 
 
@@ -283,19 +286,28 @@ const get_fullUser = ref<any[]>([]);
 export default defineComponent({
   name: 'ThemeComponent',
   components: {
-    apexchart: VueApexCharts, // Register VueApexCharts as a component
+    apexchart: VueApexCharts,
   },
   setup() {
-    sessionStorage.setItem('offset',0);
+    sessionStorage.setItem('offset','0');
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
     const router = useRouter();
+    const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
 
-    const UpdatePage = () => {
-      sessionStorage.setItem('offset',sessionStorage.getItem('offset')+15);
-      console.log(sessionStorage)
-    }
+
+    const UpdatePage = (newPage: number) => {
+  pageNumber.value = newPage;
+  const offset = (newPage - 1) * 15;
+  sessionStorage.setItem('pageNumber', newPage.toString());
+  sessionStorage.setItem('offset', offset.toString());
+  console.log(`Page: ${newPage}, Offset: ${offset}`);
+
+  cardsStore.fetchCards();
+};
+
+
 
     const TaskView = (id: number) => {
       router.push({ name: 'task', params: { id } });
@@ -493,6 +505,15 @@ export default defineComponent({
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;
       });
+      watch(pageNumber, (newPage) => {
+      const offset = calculateOffset(newPage);
+      console.log(`Offset for page ${newPage}:`, offset);
+      // Use the offset for further logic (e.g., updating the card display)
+    });
+    const calculateOffset = (page: number) => {
+      return 15 * (page - 1);
+    };
+
     });
 
     return {
