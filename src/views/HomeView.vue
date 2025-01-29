@@ -103,7 +103,7 @@
     style="background-color: transparent; border: none;"
     >
     <v-list>
-      <v-list-item class="rounded" style="background-color: gray;">
+      <v-list-item class="rounded" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
         <div
           style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
           class="d-flex flex-column align-center justify-center"
@@ -115,7 +115,7 @@
       </v-list-item>
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: gray"
+      style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
     >
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
@@ -143,7 +143,7 @@
     </v-list-item>
 
       <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="width:400px; background-color: gray;">
+      style="width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
         <div 
           class="d-flex flex-column align-center justify-center"
         >
@@ -167,7 +167,7 @@
       <v-list-item 
       v-if="get_fullUser.email" 
       class="d-flex flex-column align-center justify-center rounded mt-2" 
-      style="text-align: center; width:400px; background-color: gray;">
+      style="text-align: center; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
       <div 
         style="border-radius: 15px; padding: 10px; width: 380px; height: 100%;" 
         class="d-flex flex-column align-center justify-center background-color: rgb(var(--v-theme-background));"
