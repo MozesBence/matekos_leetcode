@@ -22,7 +22,9 @@
       </v-col>
     </v-row>
   </v-container>
+  <div>
 
+  </div>
   <v-sheet class="mx-auto" max-width="100%" style="">
     <v-slide-group show-arrows style="background-color: rgb(var(--v-theme-background));">
       <v-slide-group-item
@@ -47,56 +49,57 @@
   
 
   <v-row 
-  class="d-flex align-center justify-center" 
-  style="padding: 10px; gap: 16px;"
->
-<v-col cols="2" class="d-flex align-center justify-center">
-  <v-select
-    clearable
-    label="Nehézség"
-    :items="['Könnyű', 'Közepes', 'Nehéz']"
-    variant="solo"
-    class="responsive-item"
-    theme="background-color: rgb(var(--v-theme-background));"
-  ></v-select>
-</v-col>
-
-<v-col cols="2" class="d-flex align-center justify-center">
-  <v-select
-    clearable
-    label="Állapot"
-    :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
-    variant="solo"
-    class="responsive-item"
-    theme="background-color: rgb(var(--v-theme-background));"
-  ></v-select>
-</v-col>
-
-
-<v-col cols="3" class="d-flex align-center justify-start search-bar" style="vertical-align:middle">
- 
-      <v-text-field
-        style="height: 4.5em;text-align:center; vertical-align:middle;"
-        :loading="loading"
-        append-inner-icon="mdi-magnify"
-        density="compact"
-        label="Feladat neve..."
+  class="d-flex align-center justify-center my-1 ga-4"
+  style="width: initial; height: min-content;"
+  >
+    <v-col cols="2">
+      <v-select
+        clearable
+        label="Nehézség"
+        :items="['Könnyű', 'Közepes', 'Nehéz']"
         variant="solo"
+        class="responsive-item"
+        theme="background-color: rgb(var(--v-theme-background));"
         hide-details
-        single-line
-        @click:append-inner="onClick"
+      ></v-select>
+    </v-col>
+
+    <v-col cols="2">
+      <v-select
+        clearable
+        label="Állapot"
+        :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
+        variant="solo"
+        class="responsive-item"
+        theme="background-color: rgb(var(--v-theme-background));"
+        hide-details
+      ></v-select>
+    </v-col>
+
+    <v-col cols="3">
+      <v-text-field
+        v-model="searchQuery"
+        prepend-inner-icon="mdi-magnify"
+        clear-icon="mdi-close"
+        hide-details
+        label="Feladat neve"
+        type="text"
+        variant="outlined"
+        clearable
+        @click:clear="searchQuery = ''"
+        style="min-width: 14vw;"
       ></v-text-field>
-</v-col>
+    </v-col>
 
+    <v-col cols="2">
+      <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content;">
+        <p style="font-size: .8dvw; margin-right: .5rem;">Random Feladat</p>
+        <v-icon color="white">mdi-shuffle-variant</v-icon>
+      </v-btn>
+    </v-col>
+  </v-row>
 
-  <v-col cols="2" class="d-flex align-center justify-center" style="align-items: center; vertical-align:middle">
-    <v-btn class="responsive-item bg-green" style="width: 100%; height:4em">
-      Random feladat  <v-icon color="white">mdi-shuffle-variant</v-icon>
-    </v-btn>
-  </v-col>
-</v-row>
-
-  <v-layout class="rounded-md" height="100em">
+  <v-layout class="rounded-md" height="max-content">
     <v-navigation-drawer 
     location="right" 
     width="400"
@@ -182,7 +185,7 @@
     </v-navigation-drawer>
     
     <v-main class="d-block align-center justify-center">
-      <v-row style="margin: 2em; border-bottom: 1px solid #ccc;">
+      <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;">
         <v-col class="d-flex align-center justify-center" cols="2">
           <span>Státusz</span>
         </v-col>
@@ -198,10 +201,10 @@
       </v-row>
   
       <v-row 
-      class="task_card"
+      class="task_card mx-8 pa-3"
       v-for="(card) in cardsStore.cards" 
       :key="card.id" 
-      style="margin: 2em; border-bottom: 1px solid #ccc;"
+      style="border-bottom: 1px solid #ccc;"
       @click="TaskView(card.id)"
     >
       <!-- Task Icon and Status -->
@@ -555,8 +558,12 @@ export default defineComponent({
   .dark-blue {
     background-color: rgb(26, 26, 77);
   }
-
+  
+  .task_card{
+    cursor: pointer;
+    transition: .3s;
+  }
   .task_card:hover{
-    background-color: rgb(203, 203, 203);
+    background-color: rgb(var(--v-theme-home_task_card_hover));
   }
 </style>
