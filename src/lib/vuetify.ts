@@ -26,7 +26,7 @@ const vuetify = createVuetify({
           error: colors.red.base,
           info: colors.blue.accent4,
           warning: colors.yellow.accent3,
-          success: colors.lime.accent1,
+          success: colors.green.accent3,
           surface: colors.grey.lighten5,
           primary: colors.grey.lighten2,
           secondary: colors.indigo.accent1,
