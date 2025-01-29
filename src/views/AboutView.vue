@@ -301,30 +301,21 @@ main::-webkit-scrollbar {
 
 .hero {
   text-align: center;
-  background: linear-gradient(135deg, #6a11cb, #2575fc, #ff6a00, #00d2ff, #8e44ad, #2ecc71);
+  background: linear-gradient(120deg, #6a11cb, #2575fc, #00d2ff, #8e44ad, #c42ecc, #6a11cb);
+  background-size: 400% 400%;
+  animation: gradient-animation 15s ease-in-out infinite;
   color: rgb(var(--v-theme-about_main_text_color));
   padding: 50px 20px;
   border-radius: 12px;
   margin-bottom: 30px;
-  background-size: 300% 300%; /* Nagyobb terület a folyamatos színátmenethez */
-  animation: gradient-animation 35s ease infinite; /* Animáció */
 }
 
 @keyframes gradient-animation {
   0% {
-    background-position: 0% 50%; /* Kezdő pozíció */
-  }
-  25% {
-    background-position: 100% 50%; /* Első változás */
-  }
-  50% {
-    background-position: 200% 50%; /* Második változás */
-  }
-  75% {
-    background-position: 300% 50%; /* Harmadik változás */
+    background-position: 0% 50%;
   }
   100% {
-    background-position: 0% 50%; /* Vissza az eredeti pozícióba */
+    background-position: 100% 50%;
   }
 }
 
