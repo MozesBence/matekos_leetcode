@@ -152,7 +152,7 @@ function haviKihivasAtiranyit(){
     background-position: 0% 50%;
   }
   100% {
-    background-position: 84% 50%;
+    background-position: 93% 50%;
   }
 }
 
@@ -163,6 +163,6 @@ function haviKihivasAtiranyit(){
 
 .kihivas{
   background-color: rgb(var(--v-theme-contest_cards_background));
-  cursor: pointer;
+  cursor: pointer;g
 }
 </style>
