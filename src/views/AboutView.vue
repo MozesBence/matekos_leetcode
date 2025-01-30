@@ -119,10 +119,10 @@
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"/>
                       </div>
                       <div class="profile-info text-center" :style="{maxWidth: $vuetify.display.smAndDown ? '80vw': '40vw'}">
-                        <h1>Bujdosó Bálint</h1>
+                        <h1 style="text-align: left;">Bujdosó Bálint</h1>
                         <p>Rövid bemutatkozás...</p>
-                        <br></br>
-                        <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> HTML, CSS, JavaScript</p>
+                        <br>
+                        <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum tanulója vagyok, ahol az elmúlt évek során számos projektben és versenyen vettem részt. Ezek révén gyakorlati tapasztalatokat szereztem és folyamatosan fejlesztettem a programozási készségeimet.<br> A programozás számomra több mint szakma – lehetőséget ad arra, hogy kreatívan oldjak meg problémákat és új dolgokat hozzak létre.<br><strong>Nyelvek, amelyekben jártas vagyok: HTML, CSS, JavaScript, TypeScript, Python, C#.</strong></p>
                       </div>
                     </v-row>
                   </div>

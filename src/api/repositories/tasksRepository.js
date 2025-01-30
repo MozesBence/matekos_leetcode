@@ -1,6 +1,8 @@
 const { number } = require('zod');
+const { Sequelize } = require('sequelize');
 const db = require('../database/dbContext');
 const { Tasks } = db;
+const { Op } = require('sequelize');
 
 const tasksRepository = {
   
@@ -41,7 +43,27 @@ const tasksRepository = {
       console.error('Error fetching specific card count:', error);
       throw error;
     }
+  },
+  async getRandomTask() {
+    return await Tasks.findOne({
+      attributes: ['id'],
+      order: [Sequelize.fn('RAND')],
+      limit: 1
+    });
+  },
+
+  async getTaskWithSearch (characters){
+    return await Tasks.findAll({
+      where: {
+        task_title: {
+          [Op.like]: `${characters.toLowerCase()}%`
+        }
+      },
+      order: [['id', 'ASC']],
+      limit: 15
+    });
   }
+  
   
 };
 
