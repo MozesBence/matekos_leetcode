@@ -163,6 +163,6 @@ function haviKihivasAtiranyit(){
 
 .kihivas{
   background-color: rgb(var(--v-theme-contest_cards_background));
-  cursor: pointer;g
+  cursor: pointer;
 }
 </style>
