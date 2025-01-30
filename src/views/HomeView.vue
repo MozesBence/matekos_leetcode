@@ -280,7 +280,6 @@ const monthsNames = [
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-console.log('year', currentYear);
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);

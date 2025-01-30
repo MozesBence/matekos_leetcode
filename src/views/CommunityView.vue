@@ -554,7 +554,9 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="community_primary_color" @click="addPost">Poszt létrehozása</v-btn>
+            <v-btn color="community_primary_color" @click="addPost" :loading="loading.value">
+              Poszt létrehozása
+            </v-btn>
             <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
           </v-card-actions>
         </v-card>
@@ -616,7 +618,7 @@ onMounted(async () => {
     await CommunityGetLimitedPosts(posts_limit.value, {
       onSuccess: (posts_array) => {
         posts_array.reverse();
-        posts_array.forEach((post) =>{ postsConvertToDisplay(post); });
+        posts_array.forEach((post) =>{ postsConvertToDisplay(post,true); },);
       },
       onError: (error) => {
       },
@@ -954,7 +956,8 @@ watch(showCreatePost, (newValue) => {
   }
 });
 
-const { mutate: CommunityPostUpload } = useCommunityPost();
+const loading = ref(false);
+const { mutate: CommunityPostUpload } = useCommunityPost(loading);
 const addPost = async () =>{
   const editor = document.getElementsByClassName("editor")[0];
   let htmlContent = editor.innerHTML;
@@ -976,11 +979,11 @@ const addPost = async () =>{
 
   const compressingFilesArray = await compressingFiles(mergedArray);
 
-  console.log(compressingFilesArray);
-
   if(get_fullUser.value.id && newPost.title && htmlContent){
+    loading.value = true;
     await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
       onSuccess: (response) => {
+        loading.value = false;
         postsConvertToDisplay({
           id: response.id,
           author: get_UserName.value,
@@ -998,39 +1001,44 @@ const addPost = async () =>{
           images: newPost.images,
           commentLimit: 10,
           showComments: false,
-        });
+        }, false);
       },
       onError: (error) => {
   
       },
     });
+    loading.value = false;
   }
 };
 
-function postsConvertToDisplay(array){
+function postsConvertToDisplay(array,igaze){
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = array.content;
 
   var createdAt = array.createdAt;
-  array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0];
+  if(igaze){
+    array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0];
+  }
 
   const imgElements = tempDiv.querySelectorAll("img");
 
-  imgElements.forEach((img) => {
-    const id = Number(img.id)-1;
-    if (array.images[id]) {
-      img.setAttribute("src", (array.images[id].url != null ? array.images[id].url : array.images[id].file)); // Az `src` attribútumot beállítjuk
-    }
-  });
-
+  if(imgElements){
+    imgElements.forEach((img) => {
+      const id = Number(img.id)-1;
+      if (array.images[id]) {
+        img.setAttribute("src", (array.images[id].url != null ? array.images[id].url : array.images[id].file)); // Az `src` attribútumot beállítjuk
+      }
+    });
+  }
+  
   array.content = tempDiv.innerHTML;
-
+  
   posts.unshift(array);
- 
+  
   newPost.files = [];
   newPost.images = [];
   newPost.title = "";
-
+  
   showCreatePost.value = false;
 }
 
