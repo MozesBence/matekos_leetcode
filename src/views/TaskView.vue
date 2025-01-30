@@ -1,5 +1,9 @@
 <template>
-  <!-- Taskbar -->
+  <h3>{{ task?.task_title }}</h3>
+  <p>Nehezseg: {{task?.difficulty}}</p>
+  <p>Tapasztalati pontok: {{task?.experience_points}}</p>
+  <p>{{ task?.task }}</p>
+  <!-- 
   <v-layout>
     <v-app-bar color="primary" prominent>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
@@ -9,7 +13,7 @@
         <v-btn icon="mdi-magnify" variant="text"></v-btn>
         <v-btn icon="mdi-filter" variant="text"></v-btn>
       </template>
-      <v-btn icon="mdi-dots-vertical" variant="text" @click="back"></v-btn>
+      <v-btn icon="mdi-dots-vertical" variant="text" @click="back()"></v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -38,6 +42,7 @@
       </v-container>
     </v-main>
   </v-layout>
+-->
 </template>
 
 <script lang="ts">

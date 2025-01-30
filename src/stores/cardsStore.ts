@@ -7,7 +7,9 @@ export const useCardsStore = defineStore('cardsStore',{
         cards: [] as any[],
         completion_rates: [] as any[],
         task_state: [] as any[],
-        solved_task_rates: [] as any[]
+        solved_task_rates: [] as any[],
+        allTaskCount: 0 as number,
+        randomTaskId: 0 as number,
     }),
     actions:{
         async fetchCards(){
@@ -42,6 +44,30 @@ export const useCardsStore = defineStore('cardsStore',{
 
             }catch(error){
                 console.log(`Error fetching  solved task rates! Error: ${error}`)
+            }
+        },
+        async getAllTaskCount(){
+            try{
+                const response = await axios.get(`/api/tasks/taskCount`);
+                this.allTaskCount = response.data;
+            }catch(error){
+                console.log(`Error fetching all task count! Error: ${error}`)
+            }
+        },
+        async fetchRandomTask(){
+            try{
+                const response = await axios.get(`/api/tasks/random-task`);
+                this.randomTaskId = response.data;
+            }catch(error){
+                console.log(`Error fetching a random task! Error: ${error}`)
+            }
+        },
+        async fetchTaskWithSearch(characters:string){
+            try{
+                const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
+                this.cards = response.data;
+            }catch(error){
+                console.log(`Error fetching a random task! Error: ${error}`)
             }
         }        
     },

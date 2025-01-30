@@ -1,6 +1,7 @@
 import axiosClient from '../../lib/axios'
 import { useMutation } from '@tanstack/vue-query'
 import type { CommunityData } from './community'
+import type { Ref } from 'vue'
 
 const CommunityPostUpload = async (data: CommunityData) => {
   const formData = new FormData();
@@ -26,14 +27,17 @@ const CommunityPostUpload = async (data: CommunityData) => {
   return response.data;
 }
 
-export const useCommunityPost = () => {
+export const useCommunityPost = (loading: Ref<boolean, boolean>) => {
   return useMutation({
     mutationFn: CommunityPostUpload,
+    onMutate: () => {
+      loading.value = true
+    },
     onSuccess(response) {
-      
+      loading.value = false;
     },
     onError: (error: any) => {
-      
+      loading.value = false;
     },
   })
 }

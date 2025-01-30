@@ -86,13 +86,14 @@
         type="text"
         variant="outlined"
         clearable
-        @click:clear="searchQuery = ''"
+        @click:clear="clearSearch"
+        @input="fetchTaskWithSearch"
         style="min-width: 14vw;"
       ></v-text-field>
     </v-col>
 
     <v-col cols="2">
-      <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content;">
+      <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content;" @click="LoadRandomTask()">
         <p style="font-size: .8dvw; margin-right: .5rem;">Random Feladat</p>
         <v-icon color="white">mdi-shuffle-variant</v-icon>
       </v-btn>
@@ -244,10 +245,10 @@
     </v-row>
     </v-main>
   </v-layout>
-
+  <!--javitani kell!-->
   <v-pagination 
   v-model="pageNumber" 
-  :length="Math.ceil(cardsStore.cards.length / 15)+1" 
+  :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
   @update:modelValue="UpdatePage">
 </v-pagination>
 
@@ -261,6 +262,7 @@ import { useQuoteStore } from '@/stores/quoteStore';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts';
 import { useRouter } from 'vue-router';
+import { number } from 'zod';
 
 
 function getCookie(name: string): string | null {
@@ -280,7 +282,6 @@ const monthsNames = [
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-console.log('year', currentYear);
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
@@ -297,24 +298,34 @@ export default defineComponent({
     const quoteStore = useQuoteStore();
     const router = useRouter();
     const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
-
+    
 
     const UpdatePage = (newPage: number) => {
-  pageNumber.value = newPage;
-  const offset = (newPage - 1) * 15;
-  sessionStorage.setItem('pageNumber', newPage.toString());
-  sessionStorage.setItem('offset', offset.toString());
-  console.log(`Page: ${newPage}, Offset: ${offset}`);
-
-  cardsStore.fetchCards();
+        console.log(newPage)
+        pageNumber.value = newPage;
+        console.log(pageNumber)
+        const offset = (newPage - 1) * 15;
+        console.log(offset)
+        sessionStorage.setItem('pageNumber', newPage.toString());
+        sessionStorage.setItem('offset', offset.toString());
+        console.log(sessionStorage)
+        console.log(`Page: ${newPage}, Offset: ${offset}`);
+        cardsStore.fetchCards();
+        console.log('cards got fetched')
 };
 
 
 
-    const TaskView = (id: number) => {
-      router.push({ name: 'task', params: { id } });
-    };
+const TaskView = (id: any) => {
+  console.log(id)
+  router.push({ name: 'task', params: { id } });
+};
 
+const LoadRandomTask = async () => {
+    cardsStore.fetchRandomTask();
+    console.log(cardsStore.randomTaskId)
+    TaskView(cardsStore.randomTaskId.id);
+};
 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
@@ -497,24 +508,19 @@ export default defineComponent({
         }
       }
 
+      cardsStore.getAllTaskCount();
       quoteStore.fetchQuote();
       themeStore.fetchThemes();
       cardsStore.fetchCards();
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value));
-
+      cardsStore.fetchCards();
+      cardsStore.fetchRandomTask();
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;
       });
-      watch(pageNumber, (newPage) => {
-      const offset = calculateOffset(newPage);
-      console.log(`Offset for page ${newPage}:`, offset);
-      // Use the offset for further logic (e.g., updating the card display)
-    });
-    const calculateOffset = (page: number) => {
-      return 15 * (page - 1);
-    };
+      
 
     });
 
@@ -542,7 +548,8 @@ export default defineComponent({
       days,
       checkIfCurrent,
       TaskView,
-      UpdatePage
+      UpdatePage,
+      LoadRandomTask
     };
   },
 });

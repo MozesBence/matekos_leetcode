@@ -31,7 +31,7 @@
                         <template v-slot:prepend>
                           <v-icon color="info"></v-icon>
                         </template>
-                        Home
+                        Főoldal
                       </v-btn>
                     </v-card>
                   </v-col>
@@ -54,7 +54,7 @@
                       <template v-slot:prepend>
                         <v-icon color="info"></v-icon>
                       </template>
-                      About
+                      Rólunk
                     </v-btn>
                   </v-card>
                 </v-col>
@@ -77,7 +77,7 @@
                       <template v-slot:prepend>
                         <v-icon color="info"></v-icon>
                       </template>
-                      Contest
+                      Versenyek
                     </v-btn>
                   </v-card>
                 </v-col>
@@ -100,7 +100,7 @@
                         <template v-slot:prepend>
                           <v-icon color="info"></v-icon>
                         </template>
-                        Community
+                        Közösség
                       </v-btn>
                     </v-card>
                   </v-col>

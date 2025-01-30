@@ -15,6 +15,27 @@ class TasksService {
       throw error;
     }
   }
+  async getTaskCount(){
+    try{
+      return await tasksRepository.getTaskCount();
+    }catch(error){
+      throw error;
+    }
+  }
+  async getRandomTask(){
+    try{
+      return await tasksRepository.getRandomTask();
+    }catch(error){
+      throw error;
+    }
+  }
+  async getTaskWithSearch(characters){
+    try{
+      return await tasksRepository.getTaskWithSearch(characters);
+    }catch(error){
+      throw error;
+    }
+  }
 }
 
 module.exports = new TasksService();
