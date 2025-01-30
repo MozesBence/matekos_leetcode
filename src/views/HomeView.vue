@@ -247,10 +247,9 @@
 
   <v-pagination 
   v-model="pageNumber" 
-  :length="Math.ceil(cardsStore.cards.length / 15)+1" 
+  :length="Math.ceil(cardsStore.allTaskCount / 15)" 
   @update:modelValue="UpdatePage">
 </v-pagination>
-
 
 </template> 
 <script lang="ts">
@@ -502,6 +501,7 @@ export default defineComponent({
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value));
+      cardsStore.getAllTaskCount();
 
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;

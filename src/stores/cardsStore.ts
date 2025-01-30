@@ -7,7 +7,8 @@ export const useCardsStore = defineStore('cardsStore',{
         cards: [] as any[],
         completion_rates: [] as any[],
         task_state: [] as any[],
-        solved_task_rates: [] as any[]
+        solved_task_rates: [] as any[],
+        allTaskCount: 0 as number
     }),
     actions:{
         async fetchCards(){
@@ -42,6 +43,14 @@ export const useCardsStore = defineStore('cardsStore',{
 
             }catch(error){
                 console.log(`Error fetching  solved task rates! Error: ${error}`)
+            }
+        },
+        async getAllTaskCount(){
+            try{
+                const response = await axios.get(`api/tasks/taskCount`);
+                this.allTaskCount = Number(response.data);
+            }catch(error){
+                console.log(`Error fetching all task count! Error: ${error}`)
             }
         }        
     },
