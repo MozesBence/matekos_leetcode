@@ -23,9 +23,21 @@ const getSpecificCard = async (req,res,next) =>{
     res.status(500).json({ message: error.message });
   }
 }
+
+const getTaskCount = async (req,res,next) => {
+  try{
+    const taskCount = await tasksService.getTaskCount();
+    res.status(200).json(taskCount);
+  }catch(error)
+  {
+    console.log(`Error in tasks controller: ${error.message}`);
+    res.status(500).json({ message: error.message });
+  }
+}
 module.exports = {
   getCardInfo,
-  getSpecificCard
+  getSpecificCard,
+  getTaskCount
 };
 
 
