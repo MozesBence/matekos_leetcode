@@ -1,6 +1,5 @@
 const { number } = require('zod');
 const db = require('../database/dbContext');
-const { tr } = require('vuetify/locale');
 const { Tasks } = db;
 
 const tasksRepository = {
