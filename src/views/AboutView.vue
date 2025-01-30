@@ -120,9 +120,8 @@
                       </div>
                       <div class="profile-info text-center" :style="{maxWidth: $vuetify.display.smAndDown ? '80vw': '40vw'}">
                         <h1 style="text-align: left;">Bujdosó Bálint</h1>
-                        <p>Rövid bemutatkozás...</p>
                         <br>
-                        <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum tanulója vagyok, ahol az elmúlt évek során számos projektben és versenyen vettem részt. Ezek révén gyakorlati tapasztalatokat szereztem és folyamatosan fejlesztettem a programozási készségeimet.<br> A programozás számomra több mint szakma – lehetőséget ad arra, hogy kreatívan oldjak meg problémákat és új dolgokat hozzak létre.<br><strong>Nyelvek, amelyekben jártas vagyok: HTML, CSS, JavaScript, TypeScript, Python, C#.</strong></p>
+                        <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum tanulója vagyok, ahol az elmúlt évek során számos projektben és versenyen vettem részt. Ezek révén gyakorlati tapasztalatokat szereztem és folyamatosan fejlesztettem a programozási készségeimet.<br> A programozás számomra több mint szakma – lehetőséget ad arra, hogy kreatívan oldjak meg problémákat és új dolgokat hozzak létre.<br><br><strong>Nyelvek, amelyekben jártas vagyok: HTML, CSS, JavaScript, TypeScript, Python, C#.</strong></p>
                       </div>
                     </v-row>
                   </div>
@@ -144,9 +143,10 @@
                       <!-- Tartalom jobbra igazítása -->
                       <div class="profile-info text-center text-md-right ml-md-auto" :style="{ maxWidth: $vuetify.display.smAndDown ? '80vw' : '40vw' }">
                         <h1>Mózes Bence</h1>
-                        <p>Rövid bemutatkozás...</p>
-                        <br></br>
-                        <p><strong>Nyelvek, amelyekben jártas vagyok:</strong> Python, C#, Vue.js</p>
+                        <br>
+                        <p>2020 óta a Ceglédi SZC Közgazdasági és Informatikai Technikum tanulója vagyok, ahol a programozás iránti szenvedélyem új lehetőségeket nyitott meg számomra. Számomra a programozás nemcsak munka, hanem egy eszköz arra, hogy problémákat fordítsak megoldássá és gondolatokat formáljak kézzelfogható eredményekké. A projektjeim során a kódolás segítségével valósítom meg ötleteimet, és mindig keresem az új kihívásokat, hogy még tovább fejlődjek.<br><br>
+
+                          <strong>Nyelvek, amelyekben jártas vagyok: HTML, CSS, JavaScript, C#, Python.</strong></p>
                       </div>
                     </v-row>
                   </div>   
