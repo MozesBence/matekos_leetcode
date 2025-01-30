@@ -15,6 +15,13 @@ class TasksService {
       throw error;
     }
   }
+  async getTaskCount(){
+    try{
+      return await tasksRepository.getTaskCount();
+    }catch(error){
+      throw error;
+    }
+  }
 }
 
 module.exports = new TasksService();
