@@ -10,6 +10,7 @@ export const useCardsStore = defineStore('cardsStore',{
         solved_task_rates: [] as any[],
         allTaskCount: 0 as number,
         randomTaskId: 0 as number,
+        specificTask: [] as any[]
     }),
     actions:{
         async fetchCards(){
@@ -65,6 +66,14 @@ export const useCardsStore = defineStore('cardsStore',{
         async fetchTaskWithSearch(characters:string){
             try{
                 const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
+                this.cards = response.data;
+            }catch(error){
+                console.log(`Error fetching a random task! Error: ${error}`)
+            }
+        },
+        async fetchSpecificTask(id: any){
+            try{
+                const response = await axios.get(`/api/tasks/get-one-card/${id}`);
                 this.cards = response.data;
             }catch(error){
                 console.log(`Error fetching a random task! Error: ${error}`)
