@@ -159,7 +159,7 @@
                 :key="index"
                 :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
                 class="heatmap-cell"
-                @click="TaskView()"
+                @click="LoadDailyTask(day.day)"
               >
                 {{ day.day }}
               </div>
@@ -246,6 +246,7 @@
     </v-main>
   </v-layout>
   <!--javitani kell!-->
+  <v-btn @click="LoadDailyTask(3)">aaaa</v-btn>
   <v-pagination 
   v-model="pageNumber" 
   :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
@@ -327,6 +328,11 @@ const LoadRandomTask = async () => {
     TaskView(cardsStore.randomTaskId.id);
 };
 
+    const LoadDailyTask = async (id: any) => {
+      cardsStore.fetchSpecificTask(id)
+      console.log(cardsStore.specificTask.id)
+      TaskView(id)
+    } 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
     };
@@ -549,7 +555,8 @@ const LoadRandomTask = async () => {
       checkIfCurrent,
       TaskView,
       UpdatePage,
-      LoadRandomTask
+      LoadRandomTask,
+      LoadDailyTask
     };
   },
 });
