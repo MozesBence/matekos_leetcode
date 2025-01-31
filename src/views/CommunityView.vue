@@ -281,7 +281,7 @@
                                   Módosítás
                                 </v-btn>
                               </v-expand-transition>
-                              <v-expand-transition>y
+                              <v-expand-transition>
                                 <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
                                   Módosít
                                 </v-btn>
