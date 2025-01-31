@@ -554,7 +554,7 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="community_primary_color" @click="addPost" :loading="loading.value">
+            <v-btn color="community_primary_color" @click="addPost" :loading="loading">
               Poszt létrehozása
             </v-btn>
             <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
