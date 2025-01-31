@@ -246,7 +246,7 @@
     </v-main>
   </v-layout>
   <!--javitani kell!-->
-  <v-btn @click="LoadDailyTask(3)">aaaa</v-btn>
+  <!--<v-btn @click="LoadDailyTask(3)">aaaa</v-btn>-->
   <v-pagination 
   v-model="pageNumber" 
   :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
