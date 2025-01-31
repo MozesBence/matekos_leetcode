@@ -246,7 +246,7 @@
     </v-main>
   </v-layout>
   <!--javitani kell!-->
-  <!--<v-btn @click="LoadDailyTask(3)">aaaa</v-btn>-->
+ 
   <v-pagination 
   v-model="pageNumber" 
   :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
@@ -324,14 +324,13 @@ const TaskView = (id: any) => {
 
 const LoadRandomTask = async () => {
     cardsStore.fetchRandomTask();
-    console.log(cardsStore.randomTaskId)
+    //console.log(cardsStore.randomTaskId)
     TaskView(cardsStore.randomTaskId.id);
 };
 
-    const LoadDailyTask = async (id: any) => {
-      cardsStore.fetchSpecificTask(id)
-      console.log(cardsStore.specificTask.id)
-      TaskView(id)
+    const LoadDailyTask = async (day: any) => {
+      await cardsStore.fetchSpecificTask(day);
+      TaskView(cardsStore.specificTask.task_id)
     } 
     const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
