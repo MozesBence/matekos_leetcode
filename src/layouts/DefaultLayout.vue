@@ -130,95 +130,45 @@
                 </v-btn>
               </v-card>
             </v-hover>
-            <v-hover v-slot="{ isHovering, props }">
-              <v-card
-                elevation="0"
-                :color="isHovering ? 'nav_btn_hover' : 'transparent'"
-                v-bind="props"
-                class="rounded-circle nav-right-btn"
-                v-if="get_user_name != null"
-              >
-                <v-menu
-                  activator="parent" 
-                  transition="scale-transition"
-                  v-if="get_user_name != null"
-                  offset-y
+            <v-speed-dial
+              location="bottom center"
+              transition="slide-y-transition"
+            >
+              <template v-slot:activator="{ props: activatorProps }" class="nav-right-btn">
+                <v-btn
+                  v-bind="activatorProps"
+                  color="info"
+                  class="rounded-circle"
+                  size="large"
+                  height="50"
+                  width="50"
+                  icon
                 >
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      color="info"
-                      icon="mdi-account"
-                      class="rounded-circle"
-                      size="large"
-                      height="50"
-                      width="50"
-                    ></v-btn>
-                  </template>
-                  <v-card class="pa-4 d-flex flex-column justify-center align-center" elevation="1" width="auto">
-                    <div style="position: relative; display: inline-block;">
-                      <v-btn
-                        icon
-                        elevation="0"
-                        class="elevation-2"
-                        @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
-                        :style="{
-                          borderRadius: '50%',
-                          width: '8vh',
-                          height: '8vh',
-                          padding: 0,
-                          overflow: 'hidden',
-                          position: 'relativ',
-                        }"
-                      >
-                        <!-- Ha van kép az src-ben, azt mutatja -->
-                        <template v-if="profileImage">
-                          <img
-                            :src="profileImage"
-                            alt="Profil"
-                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
-                          />
-                        </template>
-                        <template v-else>
-                          <v-icon size="48">mdi-account</v-icon>
-                        </template>
-                      </v-btn>
-                      <v-tooltip bottom>
-                        Profil
-                      </v-tooltip>
-                    </div>
+                  <v-avatar size="40">
+                    <template v-if="ProfImage">
+                      <img
+                        :src="ProfImage"
+                        class="profile-image"
+                        style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
+                      />
+                    </template>
+                    <template v-else>
+                      <v-icon size="25" color="info">mdi-account</v-icon>
+                    </template>
+                  </v-avatar>
+                </v-btn>
+              </template>
 
-                    <h2 class="mb-3"> {{ get_user_name }}</h2>
-
-                    <v-btn 
-                      block 
-                      color="secondary" 
-                      elevation="0" 
-                      class="mb-3 rounded"
-                      min-width="180" 
-                      @click="dialog = true"
-                      prepend-icon="mdi-account-cog"
-                      height="40"
-                    >
-                      Beállítások
-                    </v-btn>
-
-                    <v-btn 
-                      block 
-                      color="error" 
-                      elevation="0" 
-                      class="mb-3 rounded"
-                      min-width="180" 
-                      @click="Logout()"
-                      prepend-icon="mdi-logout"
-                      height="40"
-                    >
-                      Kijelentkezés
-                    </v-btn>
-                  </v-card>
-                </v-menu>
-              </v-card>
-            </v-hover>
+              <v-btn key="1" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })" icon>
+                <v-icon color="default_btn_bc">mdi-account</v-icon>
+              </v-btn>
+              <v-btn key="2" @click="dialog = true" icon>
+                <v-icon color="default_btn_bc">mdi-account-cog  </v-icon>
+              </v-btn>
+              <v-btn key="1" @click="Logout()" icon style="background-color: red;">
+                <v-icon color="white">mdi-logout</v-icon>
+              </v-btn>
+            </v-speed-dial>
           </div>
         </v-app-bar>
 
@@ -437,6 +387,7 @@ var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'unde
 const get_fullUser = ref(null);
 const get_fullUser_customs = ref(null);
 const get_user_name = ref(null);
+const ProfImage = ref(null);
 
 const theme = useTheme();
 
@@ -452,6 +403,9 @@ onMounted(async () => {
           get_fullUser.value = get_user;
           get_user_name.value = get_user.user_name;
           get_fullUser_customs.value = get_user.User_customization;
+          if(get_fullUser_customs.value.profil_picture != null){
+            ProfImage.value = get_fullUser_customs.value.profil_picture;
+          }
         },
         onError: (error) => {
           if(getCookie('user') != null){
