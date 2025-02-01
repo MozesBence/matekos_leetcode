@@ -329,14 +329,16 @@ export default defineComponent({
     const filterByDifficulty = (difficulty: any) => {
       switch (difficulty) {
         case 'Könnyű':
-          console.log(1)
+        cardsStore.fetchTaskByDifficulty(0);
           break
         case 'Közepes':
-          console.log(2)
+        cardsStore.fetchTaskByDifficulty(1);
           break
         case 'Nehéz':
-          console.log(3)
+        cardsStore.fetchTaskByDifficulty(2);
           break
+        default:
+          cardsStore.fetchCards();
     }  
   }
   watch(difficulty_Query, (newVal) => {

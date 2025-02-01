@@ -5,6 +5,6 @@ const { getTaskState,getCompletionRate,getSolvedTasksRate,getTasksByCompletionRa
 router.get('/taskState/:id', getTaskState);
 router.get('/tasks/task-completion-rates', getCompletionRate);
 router.get('/solved-tasks-rate/:id', getSolvedTasksRate);
-//router.get('/task-by-completion-rate/:state',getTasksByCompletionRate)
+//router.get('/task-by-completion-state/:state',getTasksByCompletionRate)
 
 module.exports = router;

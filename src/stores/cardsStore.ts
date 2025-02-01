@@ -68,7 +68,7 @@ export const useCardsStore = defineStore('cardsStore',{
                 const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
                 this.cards = response.data;
             }catch(error){
-                console.log(`Error fetching a random task! Error: ${error}`)
+                console.log(`Error fetching a task with these character! Error: ${error}`)
             }
         },
         async fetchSpecificTask(day: any){
@@ -78,6 +78,14 @@ export const useCardsStore = defineStore('cardsStore',{
             }catch(error){
                 console.log(`Error fetching a random task! Error: ${error}`)
             }
-        }        
+        },
+        async fetchTaskByDifficulty(difficulty_value: number){
+            try{
+                const response = await axios.get(`http://localhost:5173/api/tasks/task-with-difficulty/${difficulty_value}`);
+                this.cards = response.data;
+            }catch(error){
+                console.log(`Error fetching a task with this difficulty! Error: ${error}`)
+            }
+        }    
     },
 });
