@@ -54,6 +54,8 @@
   >
     <v-col cols="2">
       <v-select
+
+        v-model="difficulty_Query"
         clearable
         label="Nehézség"
         :items="['Könnyű', 'Közepes', 'Nehéz']"
@@ -87,7 +89,7 @@
         variant="outlined"
         clearable
         @click:clear="clearSearch"
-        @input="getTasksByCharacters(searchQuery)"
+        @input="filterTasksByCharacters(searchQuery)"
         style="min-width: 14vw;"
       ></v-text-field>
     </v-col>
@@ -232,6 +234,7 @@
 
       <!-- Difficulty -->
       <v-col class="d-flex align-center justify-center" cols="2">
+        {{typeof card.difficulty}}
         <v-chip 
           :color="chipColor(card.difficulty)" 
           outlined 
@@ -299,7 +302,7 @@ export default defineComponent({
     const quoteStore = useQuoteStore();
     const router = useRouter();
     const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
-
+    const difficulty_Query = ref<string | null>(null)
 
     const UpdatePage = (newPage: number) => {
         console.log(newPage)
@@ -314,8 +317,8 @@ export default defineComponent({
         cardsStore.fetchCards();
         console.log('cards got fetched')
 };
-
-    const getTasksByCharacters = (characters: any) => {
+    /*Szuresesk*/
+    const filterTasksByCharacters = (characters: any) => {
       if(characters.length == 0){
         cardsStore.fetchCards();
       }else{
@@ -323,6 +326,21 @@ export default defineComponent({
       }
     }
 
+    const filterByDifficulty = (difficulty: any) => {
+      switch (difficulty) {
+        case 'Könnyű':
+          console.log(1)
+          break
+        case 'Közepes':
+          console.log(2)
+          break
+        case 'Nehéz':
+          console.log(3)
+          break
+    }
+}
+
+    /*--------------------------------------*/
     const TaskView = (id: any) => {
       console.log(id)
       router.push({ name: 'task', params: { id } });
@@ -530,7 +548,9 @@ export default defineComponent({
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;
       });
-      
+      watch(difficulty_Query, (newVal) => {
+          filterByDifficulty(newVal)
+      })
 
     });
 
@@ -561,7 +581,9 @@ export default defineComponent({
       UpdatePage,
       LoadRandomTask,
       LoadDailyTask,
-      getTasksByCharacters
+      filterTasksByCharacters,
+      filterByDifficulty,
+      difficulty_Query
     };
   },
 });
