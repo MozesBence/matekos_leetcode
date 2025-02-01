@@ -4,6 +4,7 @@ import { defineStore } from "pinia";
 
 export const useCardsStore = defineStore('cardsStore',{
     state: () => ({
+        diagarm_data: [] as [],
         cards: [] as any[],
         completion_rates: [] as any[],
         task_state: [] as any[],
@@ -17,6 +18,7 @@ export const useCardsStore = defineStore('cardsStore',{
             try{
                 const response = await axios.get(`/api/tasks/get-cards-info/${sessionStorage.getItem('offset')}`);
                 this.cards = response.data;
+                this.diagarm_data = response.data;
             }catch(error){
                 console.log(`Error in cards store (cards)! Error: ${error}`)
             }

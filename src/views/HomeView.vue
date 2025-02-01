@@ -25,8 +25,12 @@
   <div>
 
   </div>
-  <v-sheet class="mx-auto" max-width="100%" style="">
-    <v-slide-group show-arrows style="background-color: rgb(var(--v-theme-background));">
+  <v-sheet class="mx-auto" max-width="100%">
+    <v-slide-group 
+      show-arrows 
+      multiple
+      style="background-color: rgb(var(--v-theme-background));"
+    >
       <v-slide-group-item
         v-for="n in themeStore.themes"
         :key="n.theme"
@@ -47,7 +51,6 @@
     </v-slide-group>
   </v-sheet>
   
-
   <v-row 
   class="d-flex align-center justify-center my-1 ga-4"
   style="width: initial; height: min-content;"
@@ -356,7 +359,7 @@ export default defineComponent({
         cardsStore.fetchTaskByState(1,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         default:
-          cardsStore.fetchCards()
+          cardsStore.fetchCards();
     }  
    }
    watch(state_Query, (newVal) =>{
