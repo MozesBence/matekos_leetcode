@@ -45,4 +45,6 @@ route.post("/community", upload.array('files', 10), communityControllers.postUpl
 
 route.post("/community/post-like", communityControllers.postLike);
 
+route.post("/community/post-comment", communityControllers.postComment);
+
 module.exports = route;

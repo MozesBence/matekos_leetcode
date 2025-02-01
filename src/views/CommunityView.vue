@@ -82,11 +82,11 @@
 
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn icon @click="likeForPost(post)">
+              <v-btn icon @click="like(post,'post')">
                 <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                 {{ post.like > 0 ? post.like : null }}
               </v-btn>
-              <v-btn icon @click="dislikeForPost(post)">
+              <v-btn icon @click="dislike(post,'post')">
                 <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                 {{ post.dislike > 0 ? post.dislike : null }}
               </v-btn>
@@ -138,14 +138,14 @@
                     <div class="d-flex ga-2 align-center">
                       <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
                         <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                        <p style="font-size: .8vw;">{{ comment.author }}</p>
+                        <p style="font-size: .8vw;">{{ comment.User.user_name != null ? comment.User.user_name : inner_comment.author  }}</p>
                       </div>
                       <p style="font-size: .7vw; position: relative;">{{ comment.createdAt }}</p>
                     </div>
                     <div class="mt-2">
                       <div v-if="!comment.editable" class="d-flex align-center">
                         <p class="pa-2 pl-4 mr-2" style="font-size: .9vw;">
-                          {{ comment.linkAuthor }} {{ comment.text }}
+                          {{ comment.linkAuthor }} {{ comment.content != null ? comment.content : comment.text }}
                         </p>
                         <v-expand-transition>
                           <p v-if="comment.gotEdit" style="font-size: .6vw; position: relative;">[Módosított]</p>
@@ -164,13 +164,13 @@
                     </div>
                   </div>
                   <div class="ml-1">
-                    <v-btn icon @click="like(comment)" elevation="0" style="background-color: transparent;">
+                    <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
                       <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                      {{ comment.likes }}
+                      {{ comment.like > 0 ? comment.like : null }}
                     </v-btn>
-                    <v-btn icon @click="dislike(comment)" elevation="0" style="background-color: transparent;">
+                    <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
                       <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                      {{ comment.dislikes }}
+                      {{ comment.dislike > 0 ? comment.dislike : null }}
                     </v-btn>
                     <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.comments.length > 0">
                       <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
@@ -239,7 +239,7 @@
                               <div class="d-flex ga-2 align-center">
                                 <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
                                   <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                  <p style="font-size: .8vw;">{{ inner_comment.author }}</p>
+                                  <p style="font-size: .8vw;">{{ comment.User.user_name == null ? comment.User.user_name : inner_comment.author }}</p>
                                 </div>
                                 <p style="font-size: .7vw; position: relative;">{{ inner_comment.createdAt }}</p>
                               </div>
@@ -571,6 +571,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
 import { useLikeDislikeForPost } from '@/api/community/communityQuery';
+import { useCommentForPost } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
@@ -1049,6 +1050,10 @@ function postsConvertToDisplay(array,igaze){
     array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0];
   }
 
+  array.comments.forEach(comment =>{
+    comment.createdAt = comment.createdAt.split('T')[0] + " " + comment.createdAt.split('T')[1].split('.')[0];
+  });
+
   const imgElements = tempDiv.querySelectorAll("img");
 
   if(imgElements){
@@ -1272,61 +1277,35 @@ function fileDelete(index){
 
 const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
 
-const likeForPost = async(post) =>{
+const like = async(post, upload_type) =>{
   if(post.userReaction != 'like'){
     if(post.userReaction == 'dislike'){
       post.dislike = post.dislike - 1;
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
     }
     post.like = post.like + 1;
     post.userReaction = 'like';
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
   }else{
     post.like = post.like - 1;
     post.userReaction = null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
   }
 }
 
-const dislikeForPost = async(post) =>{
+const dislike = async(post,upload_type) =>{
   if(post.userReaction != 'dislike'){
     if(post.userReaction == 'like'){
       post.like = post.like - 1;
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
     }
     post.dislike = post.dislike + 1;
     post.userReaction = 'dislike';
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
   }else{
     post.dislike = post.dislike - 1;
     post.userReaction = null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
-  }
-}
-
-function like(array){
-  if(array.userReaction != 'like'){
-    if(array.userReaction == 'dislike'){
-      array.dislikes = array.dislikes - 1;
-    }
-    array.likes = array.likes + 1;
-    array.userReaction = 'like'
-  }else{
-    array.likes = array.likes - 1;
-    array.userReaction = null
-  }
-}
-
-function dislike(array){
-  if(array.userReaction != 'dislike'){
-    if(array.userReaction == 'like'){
-      array.likes = array.likes - 1;
-    }
-    array.dislikes = array.dislikes + 1;
-    array.userReaction = 'dislike'
-  }else{
-    array.dislikes = array.dislikes - 1;
-    array.userReaction = null
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
   }
 }
 
@@ -1349,8 +1328,12 @@ function commentEdit(comment,id){
   });
 }
 
-function addCommentToPost(post){
+const { mutate: CommunityCommentForPost } = useCommentForPost();
+
+const addCommentToPost = async (post) =>{
   if(post.newComment != ""){
+    console.log(post.newComment);
+    await CommunityCommentForPost({content: String(post.newComment), linked_id: post.id, user_id: get_fullUser.value.id, type: 0});
     post.comments.push({
       id: post.comments.length+1,
       author: get_UserName,
