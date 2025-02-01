@@ -34,9 +34,20 @@ const getSolvedTasksRate = async (req, res, next) => {
     }
 };
 
-// Module Exports
+const getTasksByCompletionState = async (req,res,next) =>{
+    const{state,userId} = req.params;
+    try{
+        const filteredTasks = await task_solutionsService.getTasksByCompletionState(state,userId)
+        res.status(200).json(filteredTasks);
+    }catch(error){
+        res.status(500).json({ message: 'Error fetching tasks by completion state', error });
+    }
+
+}
+
 module.exports = {
     getTaskState,
     getCompletionRate,
     getSolvedTasksRate,
+    getTasksByCompletionState
 };

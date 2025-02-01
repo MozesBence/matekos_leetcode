@@ -303,7 +303,6 @@ export default defineComponent({
     const difficulty_Query = ref<string | null>(null)
     const state_Query = ref<string | null>(null)
 
-
     const UpdatePage = (newPage: number) => {
         console.log(newPage)
         pageNumber.value = newPage;
@@ -345,16 +344,19 @@ export default defineComponent({
         filterByDifficulty(newVal)
   })
    const filterByState = (state: any) => {
+    const userCookie = getCookie('user');
     switch (state) {
         case 'Megkezdetlen':
-          console.log(1)
+       cardsStore.fetchTaskByState(2,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         case 'Függőben lévő':
-          console.log(2)
+        cardsStore.fetchTaskByState(0,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         case 'Kész':
-          console.log(3)
+        cardsStore.fetchTaskByState(1,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
+        default:
+          cardsStore.fetchCards()
     }  
    }
    watch(state_Query, (newVal) =>{
@@ -602,7 +604,8 @@ export default defineComponent({
       filterTasksByCharacters,
       filterByDifficulty,
       difficulty_Query,
-      state_Query
+      state_Query,
+      filterByState
     };
   },
 });

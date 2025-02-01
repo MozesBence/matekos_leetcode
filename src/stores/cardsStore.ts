@@ -86,6 +86,14 @@ export const useCardsStore = defineStore('cardsStore',{
             }catch(error){
                 console.log(`Error fetching a task with this difficulty! Error: ${error}`)
             }
+        },
+        async fetchTaskByState(state: number, user_id: any){
+            try{
+                const response = await axios.get(`http://localhost:5173/api/task_solution/task-by-completion-state/${state}/${user_id}`);
+                this.cards = response.data;
+            }catch(error){
+                console.log(`Error fetching a task with this difficulty! Error: ${error}`)
+            }
         }    
     },
 });
