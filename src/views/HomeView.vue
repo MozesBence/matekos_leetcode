@@ -87,7 +87,7 @@
         variant="outlined"
         clearable
         @click:clear="clearSearch"
-        @input="fetchTaskWithSearch"
+        @input="getTasksByCharacters(searchQuery)"
         style="min-width: 14vw;"
       ></v-text-field>
     </v-col>
@@ -299,7 +299,7 @@ export default defineComponent({
     const quoteStore = useQuoteStore();
     const router = useRouter();
     const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
-    
+
 
     const UpdatePage = (newPage: number) => {
         console.log(newPage)
@@ -315,18 +315,23 @@ export default defineComponent({
         console.log('cards got fetched')
 };
 
+    const getTasksByCharacters = (characters: any) => {
+      if(characters.length == 0){
+        cardsStore.fetchCards();
+      }else{
+        cardsStore.fetchTaskWithSearch(characters);
+      }
+    }
 
+    const TaskView = (id: any) => {
+      console.log(id)
+      router.push({ name: 'task', params: { id } });
+    };
 
-const TaskView = (id: any) => {
-  console.log(id)
-  router.push({ name: 'task', params: { id } });
-};
-
-const LoadRandomTask = async () => {
-    cardsStore.fetchRandomTask();
-    //console.log(cardsStore.randomTaskId)
-    TaskView(cardsStore.randomTaskId.id);
-};
+    const LoadRandomTask = async () => {
+        cardsStore.fetchRandomTask();
+        TaskView(cardsStore.randomTaskId.id);
+    };
 
     const LoadDailyTask = async (day: any) => {
       await cardsStore.fetchSpecificTask(day);
@@ -555,7 +560,8 @@ const LoadRandomTask = async () => {
       TaskView,
       UpdatePage,
       LoadRandomTask,
-      LoadDailyTask
+      LoadDailyTask,
+      getTasksByCharacters
     };
   },
 });

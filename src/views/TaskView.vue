@@ -1,19 +1,16 @@
 <template>
-  <h3>{{ task?.task_title }}</h3>
-  <p>Nehezseg: {{task?.difficulty}}</p>
-  <p>Tapasztalati pontok: {{task?.experience_points}}</p>
-  <p>{{ task?.task }}</p>
-  <!-- 
+  <v-app>
   <v-layout>
-    <v-app-bar color="primary" prominent>
-      <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title>Hasonlo feladat</v-toolbar-title>
+    <!-- Remove fixed positioning from v-app-bar -->
+    <v-app-bar color="primary" :absolute="false">
+      <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title>Hasonlo feladatok</v-toolbar-title>
       <v-spacer></v-spacer>
       <template v-if="$vuetify.display.mdAndUp">
         <v-btn icon="mdi-magnify" variant="text"></v-btn>
         <v-btn icon="mdi-filter" variant="text"></v-btn>
       </template>
-      <v-btn icon="mdi-dots-vertical" variant="text" @click="back()"></v-btn>
+      <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -24,31 +21,59 @@
       <v-list :items="items"></v-list>
     </v-navigation-drawer>
 
-    <v-main class="fill-height">
-      <v-container fluid>
-        <v-row>
-          <v-col cols="5" style="border-right: 1px solid black;">
-            <h3>{{ task?.task_title }}</h3>
-            <v-row>
-              <p>Nehezseg: {{task?.difficulty}}</p>
-              <p>Tapasztalati pontok: {{task?.experience_points}}</p>
+    <!-- Add padding-top to v-main to account for the app bar height -->
+    <v-main style="padding-top: 64px;">
+        <v-row style="height: 100vh; padding: 1em">
+          <v-col cols="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+            <h1 style="">{{ task?.id }}. {{ task?.task_title }}</h1>
+            <v-row style="padding: 1em; gap: 1em">
+              <v-chip
+                :color="chipColor(task?.difficulty)"
+                outlined
+                small
+                style="width: 5rem;"
+                class="d-flex align-center justify-center"
+              >
+                <p class="ma-0">{{ difficultyLabel(task?.difficulty) }}</p>
+              </v-chip>
+
+              <v-chip
+                :color="blue"
+                outlined
+                small
+                style="width: auto;"
+                class="d-flex align-center justify-center"
+              >
+                <p class="ma-0">Exponenciális és logaritmusos feladatok</p>
+              </v-chip>
+
+              <v-chip
+                outlined
+                small
+                style="width: auto; background-color: #95cdfc; color:blue"
+                class="d-flex align-center justify-center"
+              >
+                <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
+              </v-chip>
             </v-row>
-            <p>{{ task?.task }}</p>
-          </v-col>
-          <v-col cols="7">
-            <h3>Megoldas</h3>
-          </v-col>
+            <div style="margin-top: 2em;">
+              <h3>A feladat leirasa:</h3>
+              <p>{{ task?.task }}</p>
+            </div>
+        </v-col>
+        <v-col cols="6"></v-col>
         </v-row>
-      </v-container>
     </v-main>
   </v-layout>
--->
+</v-app>
 </template>
+
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import { UseGetTaskData } from '@/api/taskSolving/taskSolvingQuery';
+import { blue } from "vuetify/util/colors";
 
 export default defineComponent({
   data: () => ({
@@ -88,6 +113,18 @@ export default defineComponent({
       });
     };
 
+    const chipColor = (difficulty: number) => {
+      if (difficulty === 0) return 'green';
+      if (difficulty === 1) return 'orange';
+      return 'red';
+    };
+
+    const difficultyLabel = (difficulty: number) => {
+      if (difficulty === 0) return 'Könnyű';
+      if (difficulty === 1) return 'Közepes';
+      return 'Nehéz';
+    };
+
     watch(
       () => route.params.id,
       (id) => {
@@ -110,6 +147,8 @@ export default defineComponent({
       task,
       isLoading,
       error,
+      chipColor,
+      difficultyLabel
     };
   },
 });
