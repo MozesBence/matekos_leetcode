@@ -75,3 +75,44 @@ exports.postLike = async (req,res,next)=>{
         next(error);
     }
 }
+
+exports.postComment = async (req,res,next)=>{
+    const {content, linked_id, user_id, type } = req.body;
+
+    var comment = null;
+    if(type == 0){
+        comment = {
+            id: null,
+            content: content,
+            post_id: linked_id,
+            parent_comment_id: null,
+            user_id: user_id
+        }
+    }
+    else if(type == 1){
+        comment = {
+            id: null,
+            content: content,
+            post_id: null,
+            parent_comment_id: linked_id,
+            user_id: user_id
+        }
+    }
+    console.log(comment);
+
+    const comment_result = await communityService.postComment(comment);
+    try{
+        if(comment_result == null){
+            const error = new Error("Sikertelen volt a comment feltöltés!");
+
+            error.status(400);
+
+            throw error;
+        }
+
+        res.status(200).send(comment_result);
+    }
+    catch(error){
+        next(error);
+    }
+}

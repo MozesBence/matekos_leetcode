@@ -78,3 +78,21 @@ export const useLikeDislikeForPost = () => {
     },
   })
 }
+
+const CommunityCommentForPost = async (data: {content: string, linked_id: number, user_id: number, type: number}) => {
+  console.log(data);
+  const response = await axiosClient.post(`http://localhost:3000/community/post-comment`, data);
+  return response.data;
+}
+
+export const useCommentForPost = () => {
+  return useMutation({
+    mutationFn: CommunityCommentForPost,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}

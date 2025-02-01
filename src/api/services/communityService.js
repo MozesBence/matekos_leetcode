@@ -25,6 +25,11 @@ class communityService
     {
         return await communityRepository.postDislike(post_id, upload_type, user_id);
     }
+
+    async postComment(comment)
+    {
+        return await communityRepository.postComment(comment);
+    }
 }
 
 module.exports = new communityService();

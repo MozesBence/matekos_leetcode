@@ -56,12 +56,25 @@ class communityRepository
                 required: false,
                 where: { entity_type: 'comment' },
                 attributes: [
+                  'id',
                   [
-                    Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'like' THEN 1 ELSE 0 END")),
+                    Sequelize.literal(`(
+                      SELECT COUNT(*) 
+                      FROM Community_likes 
+                      WHERE Community_likes.entity_id = Community_comments.id 
+                      AND Community_likes.entity_type = 'comment' 
+                      AND Community_likes.like_type = 'like'
+                    )`),
                     'total_likes',
                   ],
                   [
-                    Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'dislike' THEN 1 ELSE 0 END")),
+                    Sequelize.literal(`(
+                      SELECT COUNT(*) 
+                      FROM Community_likes 
+                      WHERE Community_likes.entity_id = Community_comments.id 
+                      AND Community_likes.entity_type = 'comment' 
+                      AND Community_likes.like_type = 'dislike'
+                    )`),
                     'total_dislikes',
                   ],
                   ...(userId
@@ -75,7 +88,7 @@ class communityRepository
                             AND Community_likes.user_id = ${userId}
                             LIMIT 1
                           )`),
-                          'user_reacted', // Alias használata
+                          'user_reacted',
                         ],
                       ]
                     : []),
@@ -119,7 +132,6 @@ class communityRepository
           },
         ],
       });
-      
 
       const postsWithBase64Files = posts.map(post => {
         // Átalakítjuk az instanciát sima objektummá
@@ -164,6 +176,35 @@ class communityRepository
           const userLike = postObj.Community_likes[0].user_reacted;
           userReaction = userLike ? userLike : null;
         }
+
+        var Comments = [];
+
+        postObj.Community_comments.forEach(comment =>{
+
+          let userReactionForComment = null;
+
+          console.log(comment.Community_likes);
+
+          if (comment.Community_likes && comment.Community_likes.length > 0) {
+            const userLike = comment.Community_likes[0].user_reacted;
+            userReactionForComment = userLike ? userLike : null;
+          }
+
+          Comments.push({
+            id: comment.id,
+            User: comment.User,
+            content: comment.content,
+            user_id: comment.user_id,
+            post_id: comment.post_id,
+            parent_comment_id: comment.parent_comment_id,
+            like: Number(comment.Community_likes[0]?.total_likes) ?? null,
+            dislike: Number(comment.Community_likes[0]?.total_dislikes) ?? null,
+            userReaction: userReactionForComment,
+            limitedComments: 10,
+            comments: comment.Community_comments,
+            createdAt: comment.createdAt,
+          });
+        });
       
         const FinalPost = {
           id: postObj.id,
@@ -172,7 +213,7 @@ class communityRepository
           createdAt: postObj.createdAt,
           user_id: postObj.user_id,
           files: postObj.Community_files,
-          comments: postObj.Community_comments,
+          comments: Comments,
           User: postObj.User,
           like: Number(postObj.Community_likes[0]?.total_likes) ?? null,
           dislike: Number(postObj.Community_likes[0]?.total_dislikes) ?? null,
@@ -302,6 +343,14 @@ class communityRepository
       });
       return newDislike;
     }
+  }
+
+  async postComment(comment) {
+    const newComment = await this.Community_comments.build(comment);
+      
+    await newComment.save();
+    
+    return newComment;
   }  
 }
 
