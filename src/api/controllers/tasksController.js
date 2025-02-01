@@ -1,3 +1,4 @@
+const { Tasks } = require('../database/dbContext');
 const tasksService = require('../services/tasksServices');
 
 const getCardInfo = async (req, res) => {
@@ -55,6 +56,16 @@ const getTaskWithSearch = async (req, res, next) => {
     console.log(`Error in tasks controller: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
+}
+const getTasksByDifficult = async (req,res,next) =>{
+  try{
+    const {difficulty} = req.params;
+    const filteredTasks = await tasksService.getTasksByDifficult(difficulty)
+    res.status(200).json(filteredTasks);
+  }catch(error){
+    console.log(`Error in tasks controller: ${error.message}`);
+    res.status(500).json({ message: error.message });
+  }
 };
 module.exports = {
   getCardInfo,
@@ -62,5 +73,6 @@ module.exports = {
   getTaskCount,
   getTaskWithSearch,
   getRandomTask,
+  getTasksByDifficult
 };
 

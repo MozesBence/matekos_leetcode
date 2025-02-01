@@ -62,6 +62,15 @@ const tasksRepository = {
       order: [['id', 'ASC']],
       limit: 15
     });
+  },
+
+  async getTasksByDifficult(difficulty_value){
+    return await Tasks.findAll({
+      order:[['id','ASC']],
+      where:{
+        difficulty: difficulty_value
+      }
+    })
   }
   
   

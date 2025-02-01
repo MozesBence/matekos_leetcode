@@ -88,7 +88,6 @@
         type="text"
         variant="outlined"
         clearable
-        @click:clear="clearSearch"
         @input="filterTasksByCharacters(searchQuery)"
         style="min-width: 14vw;"
       ></v-text-field>

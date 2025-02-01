@@ -36,6 +36,13 @@ class TasksService {
       throw error;
     }
   }
+  async getTasksByDifficult(difficulty_value){
+    try{
+      return await tasksRepository.getTasksByDifficult(difficulty_value)
+    }catch(error){
+      throw error;
+    }
+  }
 }
 
 module.exports = new TasksService();
