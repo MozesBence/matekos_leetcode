@@ -54,7 +54,6 @@
   >
     <v-col cols="2">
       <v-select
-
         v-model="difficulty_Query"
         clearable
         label="Nehézség"
@@ -68,6 +67,7 @@
 
     <v-col cols="2">
       <v-select
+      v-model="state_Query"
         clearable
         label="Állapot"
         :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
@@ -234,7 +234,6 @@
 
       <!-- Difficulty -->
       <v-col class="d-flex align-center justify-center" cols="2">
-        {{typeof card.difficulty}}
         <v-chip 
           :color="chipColor(card.difficulty)" 
           outlined 
@@ -303,6 +302,8 @@ export default defineComponent({
     const router = useRouter();
     const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
     const difficulty_Query = ref<string | null>(null)
+    const state_Query = ref<string | null>(null)
+
 
     const UpdatePage = (newPage: number) => {
         console.log(newPage)
@@ -337,8 +338,27 @@ export default defineComponent({
         case 'Nehéz':
           console.log(3)
           break
-    }
-}
+    }  
+  }
+  watch(difficulty_Query, (newVal) => {
+        filterByDifficulty(newVal)
+  })
+   const filterByState = (state: any) => {
+    switch (state) {
+        case 'Megkezdetlen':
+          console.log(1)
+          break
+        case 'Függőben lévő':
+          console.log(2)
+          break
+        case 'Kész':
+          console.log(3)
+          break
+    }  
+   }
+   watch(state_Query, (newVal) =>{
+      filterByState(newVal);
+   })
 
     /*--------------------------------------*/
     const TaskView = (id: any) => {
@@ -439,9 +459,9 @@ export default defineComponent({
       return { icon: '', color: '' };
     };
 
-    const cardCompRate = (CompArray: { task_id: number; completionRate: number }[], cardId: number): number | "NaN" => {
+    const cardCompRate = (CompArray: { task_id: number; completionRate: number }[], cardId: number): number | "Na" => {
       const found = CompArray.find((c) => c.task_id === cardId);
-      return found ? found.completionRate : "NaN";
+      return found ? found.completionRate : "Na";
     };
 
     const getClass = (value: number) => {
@@ -548,10 +568,7 @@ export default defineComponent({
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;
       });
-      watch(difficulty_Query, (newVal) => {
-          filterByDifficulty(newVal)
-      })
-
+      
     });
 
     return {
@@ -583,7 +600,8 @@ export default defineComponent({
       LoadDailyTask,
       filterTasksByCharacters,
       filterByDifficulty,
-      difficulty_Query
+      difficulty_Query,
+      state_Query
     };
   },
 });
