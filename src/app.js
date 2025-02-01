@@ -74,6 +74,9 @@ const contest_route = require('../src/api/routes/contestRoute');
 app.use('/',contest_route);
 //----------------------
 
+const daily_tasks_route = require('../src/api/routes/daily_taskRoute');
+app.use('/api/daily_tasks',daily_tasks_route);
+
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);
