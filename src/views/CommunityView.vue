@@ -82,13 +82,13 @@
 
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn icon @click="like(post)">
+              <v-btn icon @click="likeForPost(post)">
                 <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                {{ post.likes }}
+                {{ post.like > 0 ? post.like : null }}
               </v-btn>
-              <v-btn icon @click="dislike(post)">
+              <v-btn icon @click="dislikeForPost(post)">
                 <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                {{ post.dislikes }}
+                {{ post.dislike > 0 ? post.dislike : null }}
               </v-btn>
               <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.comments != null? post.comments.length : post.Community_comments.length) > 0">
                 <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
@@ -570,6 +570,7 @@ import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
+import { useLikeDislikeForPost } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
@@ -599,10 +600,12 @@ const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
 
 
 onMounted(async () => {
+  var user_id = null;
   if (get_user_by_token != null) {
     try {
       await ProfileGetUser({token: get_user_by_token, id: 0}, {
         onSuccess: (get_user) => {
+          user_id = get_user.id
           get_UserName.value = get_user.user_name;
           get_fullUser.value = get_user;
         },
@@ -614,13 +617,39 @@ onMounted(async () => {
     }
   }
 
-  try {
-    await CommunityGetLimitedPosts(posts_limit.value, {
+  if(get_user_by_token == null){
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: null,
+    }, {
       onSuccess: (posts_array) => {
         posts_array.reverse();
-        posts_array.forEach((post) =>{ postsConvertToDisplay(post,true); },);
+        console.log(posts_array);
+        posts_array.forEach((post) => {
+          postsConvertToDisplay(post, true);
+        });
       },
       onError: (error) => {
+        console.error('Hiba történt a posztok lekérésekor:', error);
+      },
+    });
+  }
+});
+watch(get_fullUser, async (User) => {
+  try {
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: User.id == null ? null : User.id,
+    }, {
+      onSuccess: (posts_array) => {
+        posts_array.reverse();
+        console.log(posts_array);
+        posts_array.forEach((post) => {
+          postsConvertToDisplay(post, true);
+        });
+      },
+      onError: (error) => {
+        console.error('Hiba történt a posztok lekérésekor:', error);
       },
     });
   } catch (error) {
@@ -665,8 +694,8 @@ const posts = reactive([
               <p>Thank you for viewing!</p>`,
     images: [{id: "contentImages1", src: "https://via.placeholder.com/300"}],
     files: [],
-    likes: 3,
-    dislikes: 0,
+    like: 3,
+    dislike: 0,
     userReaction: null,
     createdAt: "2025-01-01 18:39",
     comments: [
@@ -1239,6 +1268,40 @@ function triggerFileInput() {
 
 function fileDelete(index){
   newPost.files.splice(index,1);
+}
+
+const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
+
+const likeForPost = async(post) =>{
+  if(post.userReaction != 'like'){
+    if(post.userReaction == 'dislike'){
+      post.dislike = post.dislike - 1;
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+    }
+    post.like = post.like + 1;
+    post.userReaction = 'like';
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+  }else{
+    post.like = post.like - 1;
+    post.userReaction = null;
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 0});
+  }
+}
+
+const dislikeForPost = async(post) =>{
+  if(post.userReaction != 'dislike'){
+    if(post.userReaction == 'like'){
+      post.like = post.like - 1;
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
+    }
+    post.dislike = post.dislike + 1;
+    post.userReaction = 'dislike';
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
+  }else{
+    post.dislike = post.dislike - 1;
+    post.userReaction = null;
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: 'post', type: 1});
+  }
 }
 
 function like(array){

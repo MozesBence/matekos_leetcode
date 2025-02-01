@@ -133,6 +133,7 @@
             <v-speed-dial
               location="bottom center"
               transition="slide-y-transition"
+              v-if="get_user_name"
             >
               <template v-slot:activator="{ props: activatorProps }" class="nav-right-btn">
                 <v-btn

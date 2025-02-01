@@ -3,6 +3,7 @@ module.exports = (sequelize, DataTypes) => {
     const Community_posts = require("../models/community_posts")(sequelize, DataTypes);
     const Community_comments = require("../models/community_comments")(sequelize, DataTypes);
     const Community_files = require("../models/community_files")(sequelize, DataTypes);
+    const Community_likes = require("../models/community_likes")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
@@ -102,6 +103,34 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
     });
 
+    Community_likes.belongsTo(Users, {
+        foreignKey: "user_id",
+    });
+    Users.hasMany(Community_likes, {
+        foreignKey: "user_id",
+    });
+
+    // Like kapcsolat posztokkal
+    Community_likes.belongsTo(Community_posts, {
+        foreignKey: "entity_id",
+        constraints: false, // Polimorf kapcsolat miatt
+    });
+    // Like kapcsolat kommentekkel
+    Community_likes.belongsTo(Community_comments, {
+        foreignKey: "entity_id",
+        constraints: false,
+    });
+    // Posztokhoz tartozó like-ok
+    Community_posts.hasMany(Community_likes, {
+        foreignKey: "entity_id",
+        constraints: false,
+    });
+    // Kommentekhez tartozó like-ok
+    Community_comments.hasMany(Community_likes, {
+        foreignKey: "entity_id",
+        constraints: false,
+    });
+
     Users.hasMany(Alerts, {
         foreignKey: "user_id",
     });
@@ -115,6 +144,7 @@ module.exports = (sequelize, DataTypes) => {
         Community_posts,
         Community_comments,
         Community_files,
+        Community_likes,
         Themes,
         Tasks,
         Competitions,

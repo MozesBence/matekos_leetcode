@@ -2,32 +2,34 @@ const db = require("../database/dbContext");
 
 const { Op } = require('sequelize');
 
-const { Sequelize, DataTypes } = require('sequelize');
+const { Sequelize, DataTypes, fn, literal } = require('sequelize');
 
 
 class communityRepository
 {
     constructor(db)
-    {
-        this.Users = db.Users;
+  {
+      this.Users = db.Users;
 
-        this.Community_posts = db.Community_posts;
+      this.Community_posts = db.Community_posts;
 
-        this.Community_files = db.Community_files;
+      this.Community_files = db.Community_files;
 
-        this.Community_comments = db.Community_comments;
+      this.Community_comments = db.Community_comments;
+
+      this.Community_likes = db.Community_likes;
     }
 
-    async getLimitedPost(limit) {
+    async getLimitedPost(limit, userId) {
       // Gondoskodj arról, hogy a limit egy szám legyen
       const parsedLimit = Number(limit);
     
       if (isNaN(parsedLimit) || parsedLimit <= 0) {
         throw new Error('The limit parameter must be a positive integer.');
       }
-    
+
       const posts = await this.Community_posts.findAll({
-        limit: parsedLimit, // A limit értéke most már helyesen szám
+        limit: parsedLimit,
         order: [['createdAt', 'DESC']],
         include: [
           {
@@ -41,7 +43,7 @@ class communityRepository
                 include: [
                   {
                     model: this.Users, // Gyerek kommentek felhasználói
-                    attributes: ['id', 'user_name'], // Csak az id és a név legyen visszaadva
+                    attributes: ['id', 'user_name'],
                   },
                 ],
               },
@@ -49,14 +51,75 @@ class communityRepository
                 model: this.Users, // Kommentek felhasználói
                 attributes: ['id', 'user_name'],
               },
+              {
+                model: this.Community_likes, // Kommentek like-jai
+                required: false,
+                where: { entity_type: 'comment' },
+                attributes: [
+                  [
+                    Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'like' THEN 1 ELSE 0 END")),
+                    'total_likes',
+                  ],
+                  [
+                    Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'dislike' THEN 1 ELSE 0 END")),
+                    'total_dislikes',
+                  ],
+                  ...(userId
+                    ? [
+                        [
+                          Sequelize.literal(`(
+                            SELECT like_type
+                            FROM Community_likes
+                            WHERE Community_likes.entity_id = Community_comments.id
+                            AND Community_likes.entity_type = 'comment'
+                            AND Community_likes.user_id = ${userId}
+                            LIMIT 1
+                          )`),
+                          'user_reacted', // Alias használata
+                        ],
+                      ]
+                    : []),
+                ],
+              },
             ],
           },
           {
             model: this.Users, // Posztok felhasználói
             attributes: ['id', 'user_name'],
           },
+          {
+            model: this.Community_likes, // Posztok like-jai
+            required: false,
+            where: { entity_type: 'post' },
+            attributes: [
+              [
+                Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'like' THEN 1 ELSE 0 END")),
+                'total_likes',
+              ],
+              [
+                Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'dislike' THEN 1 ELSE 0 END")),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((
+                        SELECT like_type
+                        FROM Community_likes
+                        WHERE Community_likes.entity_id = Community_posts.id
+                        AND Community_likes.entity_type = 'post'
+                        AND Community_likes.user_id = ${userId}
+                        LIMIT 1
+                      ), 'no_reaction')`),
+                      'user_reacted',                    
+                    ],
+                  ]
+                : []),
+            ],
+          },
         ],
       });
+      
 
       const postsWithBase64Files = posts.map(post => {
         // Átalakítjuk az instanciát sima objektummá
@@ -80,7 +143,7 @@ class communityRepository
             const base64File = Buffer.from(fileBuffer).toString('base64');
             const base64Data = `data:${mimeType};base64,${base64File}`;
       
-            // Fájl hozzáadása az images vagy files tömbhöz a MIME típus alapján
+            // Fájl hozzáadása az images vagy files tömbökhöz a MIME típus alapján
             if (mimeType.startsWith('image/')) {
               postObj.images.push({
                 ...file,
@@ -95,18 +158,44 @@ class communityRepository
           });
         }
       
-        return postObj;
+        let userReaction = null;
+
+        if (postObj.Community_likes && postObj.Community_likes.length > 0) {
+          const userLike = postObj.Community_likes[0].user_reacted;
+          userReaction = userLike ? userLike : null;
+        }
+      
+        const FinalPost = {
+          id: postObj.id,
+          title: postObj.title,
+          content: postObj.content,
+          createdAt: postObj.createdAt,
+          user_id: postObj.user_id,
+          files: postObj.Community_files,
+          comments: postObj.Community_comments,
+          User: postObj.User,
+          like: Number(postObj.Community_likes[0]?.total_likes) ?? null,
+          dislike: Number(postObj.Community_likes[0]?.total_dislikes) ?? null,
+          userReaction: userReaction,
+          newComment: '',
+          showComments: false,
+          images: postObj.images,
+          files: postObj.files,
+          limitedComments: 10
+        }
+      
+        return FinalPost;
       });
       
       return postsWithBase64Files;
     }
 
     async postUpload(post) {
-        const newPost = await this.Community_posts.build(post);
-        
-        await newPost.save();
-        
-        return newPost;
+      const newPost = await this.Community_posts.build(post);
+      
+      await newPost.save();
+      
+      return newPost;
     }
 
     async postFilesUpload(files, postId) {
@@ -127,6 +216,93 @@ class communityRepository
         
         return saveFiles;
     }
+
+    async postFilesUpload(files, postId) {
+      const saveFiles = [];
+      for (let file of files) {
+          const newFiles = await this.Community_files.build({
+              id: null,
+              file_name: file.originalname,
+              file_size: file.size,
+              file_type: file.mimetype,
+              file: file.buffer,
+              post_id: postId,
+          });
+
+          await newFiles.save();
+          saveFiles.push(newFiles);
+      }
+      
+      return saveFiles;
+  }
+  
+  async postLike(post_id, upload_type, user_id) {
+    // Először keresd meg, hogy van-e már reakciója a felhasználónak a poszthoz
+    const existingReaction = await this.Community_likes.findOne({
+      where: {
+        entity_id: post_id,
+        entity_type: upload_type,
+        user_id: user_id
+      }
+    });
+  
+    if (existingReaction) {
+      // Ha már van reakció
+      if (existingReaction.like_type === 'like') {
+        // Ha a reakció 'like', töröljük
+        await existingReaction.destroy();
+        return { message: 'Like törölve' };
+      } else if (existingReaction.like_type === 'dislike') {
+        // Ha a reakció 'dislike', módosítjuk 'like'-ra
+        existingReaction.like_type = 'like';
+        await existingReaction.save();
+        return existingReaction; // Visszaadjuk a módosított reakciót
+      }
+    }  else {
+      // Ha nincs reakció, hozz létre egy újat
+      const newLike = await this.Community_likes.create({
+        user_id: user_id,
+        entity_id: post_id,
+        entity_type: upload_type,
+        like_type: 'like'
+      });
+      return newLike;
+    }
+  }
+
+  async postDislike(post_id, upload_type, user_id) {
+    // Először keresd meg, hogy van-e már reakciója a felhasználónak a poszthoz
+    const existingReaction = await this.Community_likes.findOne({
+      where: {
+        entity_id: post_id,
+        entity_type: upload_type,
+        user_id: user_id
+      }
+    });
+  
+    if (existingReaction) {
+      // Ha már van reakció
+      if (existingReaction.like_type === 'dislike') {
+        // Ha a reakció 'dislike', töröljük
+        await existingReaction.destroy();
+        return { message: 'Dislike törölve' };
+      } else if (existingReaction.like_type === 'like') {
+        // Ha a reakció 'like', módosítjuk 'dislike'-ra
+        existingReaction.like_type = 'dislike';
+        await existingReaction.save();
+        return existingReaction;
+      }
+    } else {
+      // Ha nincs reakció, hozz létre egy újat 'dislike' típusúval
+      const newDislike = await this.Community_likes.create({
+        user_id: user_id,
+        entity_id: post_id,
+        entity_type: upload_type,
+        like_type: 'dislike'
+      });
+      return newDislike;
+    }
+  }  
 }
 
 module.exports = new communityRepository(db);

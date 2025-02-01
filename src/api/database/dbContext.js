@@ -10,7 +10,7 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         dialect: process.env.DB_DIALECT || 'mysql',
         logging: false,
-    }
+    },
 );
 
 const db = {};
@@ -22,7 +22,8 @@ const {
     Users, 
     Community_comments, 
     Community_posts,
-    Community_files, 
+    Community_files,
+    Community_likes,
     Themes, 
     Tasks, 
     Competitions, 
@@ -40,6 +41,7 @@ db.Users = Users;
 db.Community_comments = Community_comments;
 db.Community_posts = Community_posts;
 db.Community_files = Community_files;
+db.Community_likes = Community_likes;
 db.Themes = Themes;
 db.Tasks = Tasks;
 db.Competitions = Competitions;

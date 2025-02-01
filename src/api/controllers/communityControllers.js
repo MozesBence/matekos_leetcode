@@ -1,9 +1,9 @@
 const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
-    const limit = req.params["limit"]; // Path paraméterből olvasás
+    const { limit, id } = req.query;
 
-    const get_posts = await communityService.getLimitedPost(limit);
+    const get_posts = await communityService.getLimitedPost(limit,id);
 
     res.status(200).send(get_posts);
 };
@@ -48,3 +48,30 @@ exports.postUpload = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.postLike = async (req,res,next)=>{
+    const {post_id, user_id, upload_type, type} = req.body;
+
+    var like_result = null;
+
+    if(type == 0){
+        like_result = await communityService.postLike(post_id, upload_type, user_id);
+    }
+    else if(type == 1){
+        like_result = await communityService.postDislike(post_id, upload_type, user_id);
+    }
+    try{
+        if(like_result == null){
+            const error = new Error("Sikertelen volt a reakció feltöltés!");
+
+            error.status(400);
+
+            throw error;
+        }
+
+        res.status(200).send(like_result);
+    }
+    catch(error){
+        next(error);
+    }
+}

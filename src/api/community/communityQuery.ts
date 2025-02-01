@@ -42,14 +42,34 @@ export const useCommunityPost = (loading: Ref<boolean, boolean>) => {
   })
 }
 
-const CommunityGetLimitedPosts = async (limit: number) => {
-  const response = await axiosClient.get(`http://localhost:3000/community/${limit}`)
+const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null}) => {
+  const response = await axiosClient.get('http://localhost:3000/community', {
+    params: data,
+  });
+
   return response.data;
 }
 
 export const useGetCommunityPost = () => {
   return useMutation({
     mutationFn: CommunityGetLimitedPosts,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}
+
+const CommunityLikeDislikeForPost = async (data: {post_id: number, user_id: number, upload_type: string, type: number}) => {
+  const response = await axiosClient.post(`http://localhost:3000/community/post-like`, data);
+  return response.data;
+}
+
+export const useLikeDislikeForPost = () => {
+  return useMutation({
+    mutationFn: CommunityLikeDislikeForPost,
     onSuccess(response) {
       
     },

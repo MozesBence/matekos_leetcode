@@ -4,7 +4,7 @@ const route = express.Router();
 
 const communityControllers = require("../controllers/communityControllers");
 
-route.get("/community/:limit", communityControllers.getLimitedPosts);
+route.get("/community", communityControllers.getLimitedPosts);
 
 const multer = require('multer');
 const path = require('path');
@@ -42,5 +42,7 @@ const upload = multer({
 });
 
 route.post("/community", upload.array('files', 10), communityControllers.postUpload);
+
+route.post("/community/post-like", communityControllers.postLike);
 
 module.exports = route;
