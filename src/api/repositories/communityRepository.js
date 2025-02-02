@@ -183,8 +183,6 @@ class communityRepository
 
           let userReactionForComment = null;
 
-          console.log(comment.Community_likes);
-
           if (comment.Community_likes && comment.Community_likes.length > 0) {
             const userLike = comment.Community_likes[0].user_reacted;
             userReactionForComment = userLike ? userLike : null;
