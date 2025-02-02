@@ -42,7 +42,7 @@
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
               <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                 <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                <p style="font-size: .8vw;">{{ (post.author == undefined ? post.User.user_name : post.author) }}</p>
+                <p style="font-size: .8vw;">{{ post.user_name }}</p>
               </div>
               <p style="font-size: .6vw;">{{ post.createdAt }}</p>
             </div>
@@ -90,7 +90,7 @@
                 <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                 {{ post.dislike > 0 ? post.dislike : null }}
               </v-btn>
-              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.comments != null? post.comments.length : post.Community_comments.length) > 0">
+              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
                 <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
                 {{ post.comments.length }}
               </v-btn>
@@ -138,7 +138,7 @@
                     <div class="d-flex ga-2 align-center">
                       <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
                         <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                        <p style="font-size: .8vw;">{{ comment.User.user_name != null ? comment.User.user_name : inner_comment.author  }}</p>
+                        <p style="font-size: .8vw;">{{ comment.user_name }}</p>
                       </div>
                       <p style="font-size: .7vw; position: relative;">{{ comment.createdAt }}</p>
                     </div>
@@ -239,14 +239,14 @@
                               <div class="d-flex ga-2 align-center">
                                 <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
                                   <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                  <p style="font-size: .8vw;">{{ comment.User.user_name == null ? comment.User.user_name : inner_comment.author }}</p>
+                                  <p style="font-size: .8vw;">{{ inner_comment.user_name }}</p>
                                 </div>
                                 <p style="font-size: .7vw; position: relative;">{{ inner_comment.createdAt }}</p>
                               </div>
                               <div class="mt-2">
                                 <div v-if="!inner_comment.editable" class="d-flex align-center">
                                   <p class="pa-2 pl-4" style="font-size: .9vw; width: max-content;">
-                                    {{ inner_comment.linkAuthor }} {{ inner_comment.text }}
+                                    {{ inner_comment.linkAuthor }} {{ inner_comment.content }}
                                   </p>
                                   <v-expand-transition>
                                     <p v-if="inner_comment.gotEdit" style="font-size: .6vw; position: relative;">[Módosított]</p>
@@ -265,13 +265,13 @@
                               </div>
                             </div>
                             <div class="ml-1">
-                              <v-btn icon @click="like(inner_comment)" elevation="0" style="background-color: transparent;">
+                              <v-btn icon @click="like(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
                                 <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                                {{ inner_comment.likes }}
+                                {{ inner_comment.like }}
                               </v-btn>
-                              <v-btn icon @click="dislike(inner_comment)" elevation="0" style="background-color: transparent;">
+                              <v-btn icon @click="dislike(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
                                 <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                                {{ inner_comment.dislikes }}
+                                {{ inner_comment.dislike }}
                               </v-btn>
                               <v-btn v-if="inner_comment.author != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                 Válasz
@@ -624,11 +624,12 @@ onMounted(async () => {
       id: null,
     }, {
       onSuccess: (posts_array) => {
-        posts_array.reverse();
-        console.log(posts_array);
-        posts_array.forEach((post) => {
-          postsConvertToDisplay(post, true);
-        });
+        if(posts_array != null){
+          posts_array.reverse();
+          posts_array.forEach((post) => {
+            postsConvertToDisplay(post, true);
+          });
+        }
       },
       onError: (error) => {
         console.error('Hiba történt a posztok lekérésekor:', error);
@@ -643,11 +644,14 @@ watch(get_fullUser, async (User) => {
       id: User.id == null ? null : User.id,
     }, {
       onSuccess: (posts_array) => {
-        posts_array.reverse();
-        console.log(posts_array);
-        posts_array.forEach((post) => {
-          postsConvertToDisplay(post, true);
-        });
+        if(posts_array != null){
+
+          console.log(posts_array);
+          posts_array.reverse();
+          posts_array.forEach((post) => {
+            postsConvertToDisplay(post, true);
+          });
+        }
       },
       onError: (error) => {
         console.error('Hiba történt a posztok lekérésekor:', error);
@@ -688,7 +692,7 @@ const newPost = reactive({ title: "", content: "", images: reactive([]), files: 
 const posts = reactive([
   {
     id: 1,
-    author: "User123",
+    user_name: "User123",
     title: "Vue.js kérdés",
     content: `<p>valami content</p>
               <div id="contentImages1" class="image-placeholder"></div>
@@ -702,7 +706,7 @@ const posts = reactive([
     comments: [
       {
         id: 1,
-        author: "Helper99",
+        user_name: "Helper99",
         createdAt: "2025-01-01 18:39",
         text: "Segíthetek ebben!",
         likes: 2,
@@ -730,7 +734,7 @@ const posts = reactive([
       },
       {
         id: 2,
-        author: "AnotherUser",
+        user_name: "AnotherUser",
         createdAt: "2025-01-01 18:39",
         text: "Ugyanez a kérdésem!",
         likes: 1,
@@ -1052,6 +1056,9 @@ function postsConvertToDisplay(array,igaze){
 
   array.comments.forEach(comment =>{
     comment.createdAt = comment.createdAt.split('T')[0] + " " + comment.createdAt.split('T')[1].split('.')[0];
+
+    comment.comments.forEach(inner_comment =>{
+      inner_comment.createdAt = inner_comment.createdAt.split('T')[0] + " " + inner_comment.createdAt.split('T')[1].split('.')[0];});
   });
 
   const imgElements = tempDiv.querySelectorAll("img");
@@ -1332,11 +1339,10 @@ const { mutate: CommunityCommentForPost } = useCommentForPost();
 
 const addCommentToPost = async (post) =>{
   if(post.newComment != ""){
-    console.log(post.newComment);
-    await CommunityCommentForPost({content: String(post.newComment), linked_id: post.id, user_id: get_fullUser.value.id, type: 0});
+    await CommunityCommentForPost({content: String(post.newComment), linkAuthor: null, linked_id: post.id, user_id: get_fullUser.value.id, type: 0});
     post.comments.push({
       id: post.comments.length+1,
-      author: get_UserName,
+      user_name: get_UserName,
       createdAt: formatDate(new Date()),
       text: post.newComment,
       likes: 0,
@@ -1354,11 +1360,12 @@ const addCommentToPost = async (post) =>{
   }
 }
 
-function addCommentToComment(comment){
+const addCommentToComment = async (comment) =>{
   if(comment.newComment != ""){
+    await CommunityCommentForPost({content: String(comment.newComment), linkAuthor: null, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1});
     comment.comments.push({
       id: comment.comments.length+1,
-      author: get_UserName,
+      user_name: get_UserName,
       createdAt: formatDate(new Date()),
       text: comment.newComment,
       likes: 0,
@@ -1376,13 +1383,14 @@ function addCommentToComment(comment){
   }
 }
 
-function addLastCommentToComment(comment, inner_comment){
+const addLastCommentToComment = async (comment, inner_comment) => {
   if(inner_comment.newComment != ""){
+    await CommunityCommentForPost({content: String(inner_comment.newComment), linkAuthor: "@"+comment.user_name, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1});
     comment.comments.push({
       id: comment.comments.length+1,
-      author: get_UserName,
+      user_name: get_UserName,
       createdAt: formatDate(new Date()),
-      text: inner_comment.newComment,
+      content: inner_comment.newComment,
       likes: 0,
       dislikes: 0,
       userReaction: null,
@@ -1391,7 +1399,7 @@ function addLastCommentToComment(comment, inner_comment){
       prepareReply: false,
       gotEdit: false,
       editable: false,
-      linkAuthor: "@"+comment.author,
+      linkAuthor: "@"+comment.user_name,
       comments: []
     });
     inner_comment.prepareReply = false;

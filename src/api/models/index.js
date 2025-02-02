@@ -89,6 +89,7 @@ module.exports = (sequelize, DataTypes) => {
     // Community_comments kapcsolatai
     Community_comments.hasMany(Community_comments, {
         foreignKey: "parent_comment_id",
+        as: 'replies',
         allowNull: true,
     });
     Community_comments.belongsTo(Users, {

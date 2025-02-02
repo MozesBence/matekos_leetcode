@@ -79,8 +79,7 @@ export const useLikeDislikeForPost = () => {
   })
 }
 
-const CommunityCommentForPost = async (data: {content: string, linked_id: number, user_id: number, type: number}) => {
-  console.log(data);
+const CommunityCommentForPost = async (data: {content: string, linkAuthor: string | null, linked_id: number, user_id: number, type: number}) => {
   const response = await axiosClient.post(`http://localhost:3000/community/post-comment`, data);
   return response.data;
 }

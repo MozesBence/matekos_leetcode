@@ -5,7 +5,7 @@ exports.getLimitedPosts = async (req, res, next) => {
 
     const get_posts = await communityService.getLimitedPost(limit,id);
 
-    res.status(200).send(get_posts);
+    res.status(200).send(get_posts == null ? 'null' : get_posts);
 };
 
 exports.postUpload = async (req, res, next) => {
@@ -77,13 +77,14 @@ exports.postLike = async (req,res,next)=>{
 }
 
 exports.postComment = async (req,res,next)=>{
-    const {content, linked_id, user_id, type } = req.body;
+    const {content, linkAuthor, linked_id, user_id, type } = req.body;
 
     var comment = null;
     if(type == 0){
         comment = {
             id: null,
             content: content,
+            linkAuthor: linkAuthor,
             post_id: linked_id,
             parent_comment_id: null,
             user_id: user_id
@@ -93,12 +94,12 @@ exports.postComment = async (req,res,next)=>{
         comment = {
             id: null,
             content: content,
+            linkAuthor: linkAuthor,
             post_id: null,
             parent_comment_id: linked_id,
             user_id: user_id
         }
     }
-    console.log(comment);
 
     const comment_result = await communityService.postComment(comment);
     try{

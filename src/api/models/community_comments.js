@@ -15,6 +15,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.TEXT('long'),
                 allowNull: false,
             },
+            linkAuthor: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
             createdAt: {
                 type: DataTypes.DATE,
                 allowNull: false,

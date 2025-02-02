@@ -11,6 +11,8 @@ class communityRepository
   {
       this.Users = db.Users;
 
+      this.User_customization = db.User_customization;
+
       this.Community_posts = db.Community_posts;
 
       this.Community_files = db.Community_files;
@@ -30,33 +32,145 @@ class communityRepository
 
       const posts = await this.Community_posts.findAll({
         limit: parsedLimit,
+        order: [['createdAt', 'DESC']],  // Esetleg használj id-t, ha nincs createdAt oszlop
+        include: [
+          { model: this.Community_files },
+          {
+            model: this.Users, 
+            attributes: ['id', 'user_name'],
+            include: [
+              {
+                model: this.User_customization,  // User_customization tábla
+                attributes: ['profil_picture'],  // Csak a profilkép oszlopot húzzuk le
+              },
+            ],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'post' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_posts.id 
+                  AND Community_likes.entity_type = 'post' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_posts.id 
+                  AND Community_likes.entity_type = 'post' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_posts.id  
+                        AND Community_likes.entity_type = 'post'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
+          },
+        ],
+      });
+      
+      const postIds = posts.map(post => post.id);
+      
+      // Kommentek számának lekérdezése külön:
+      const comments = await this.Community_comments.findAll({
+        where: {
+          post_id: postIds,
+        },
+        limit: 10,
         order: [['createdAt', 'DESC']],
         include: [
           {
-            model: this.Community_files,
-          },
-          {
-            model: this.Community_comments,
+            model: this.Users,
+            attributes: ['id', 'user_name'],
             include: [
               {
-                model: this.Community_comments, // Gyerek kommentek kapcsolása
+                model: this.User_customization,
+                attributes: ['profil_picture'],
+              },
+            ],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'comment' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_comments.id  
+                        AND Community_likes.entity_type = 'comment'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
+          },
+          {
+            model: this.Community_comments, // Belső kommentek (válaszok)
+            as: 'replies',
+            required: false,
+            where: { parent_comment_id: Sequelize.col('Community_comments.id') },
+            include: [
+              {
+                model: this.Users,
+                attributes: ['id', 'user_name'],
                 include: [
                   {
-                    model: this.Users, // Gyerek kommentek felhasználói
-                    attributes: ['id', 'user_name'],
+                    model: this.User_customization,
+                    attributes: ['profil_picture'],
                   },
                 ],
               },
               {
-                model: this.Users, // Kommentek felhasználói
-                attributes: ['id', 'user_name'],
-              },
-              {
-                model: this.Community_likes, // Kommentek like-jai
+                model: this.Community_likes,
                 required: false,
                 where: { entity_type: 'comment' },
                 attributes: [
-                  'id',
                   [
                     Sequelize.literal(`(
                       SELECT COUNT(*) 
@@ -80,14 +194,14 @@ class communityRepository
                   ...(userId
                     ? [
                         [
-                          Sequelize.literal(`(
-                            SELECT like_type
-                            FROM Community_likes
-                            WHERE Community_likes.entity_id = Community_comments.id
-                            AND Community_likes.entity_type = 'comment'
-                            AND Community_likes.user_id = ${userId}
-                            LIMIT 1
-                          )`),
+                          Sequelize.literal(`COALESCE((  
+                            SELECT like_type  
+                            FROM Community_likes  
+                            WHERE Community_likes.entity_id = Community_comments.id  
+                            AND Community_likes.entity_type = 'comment'  
+                            AND Community_likes.user_id = ${userId}  
+                            LIMIT 1  
+                          ), 'no_reaction')`),
                           'user_reacted',
                         ],
                       ]
@@ -95,47 +209,28 @@ class communityRepository
                 ],
               },
             ],
-          },
-          {
-            model: this.Users, // Posztok felhasználói
-            attributes: ['id', 'user_name'],
-          },
-          {
-            model: this.Community_likes, // Posztok like-jai
-            required: false,
-            where: { entity_type: 'post' },
-            attributes: [
-              [
-                Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'like' THEN 1 ELSE 0 END")),
-                'total_likes',
-              ],
-              [
-                Sequelize.fn('SUM', Sequelize.literal("CASE WHEN `Community_likes`.`like_type` = 'dislike' THEN 1 ELSE 0 END")),
-                'total_dislikes',
-              ],
-              ...(userId
-                ? [
-                    [
-                      Sequelize.literal(`COALESCE((
-                        SELECT like_type
-                        FROM Community_likes
-                        WHERE Community_likes.entity_id = Community_posts.id
-                        AND Community_likes.entity_type = 'post'
-                        AND Community_likes.user_id = ${userId}
-                        LIMIT 1
-                      ), 'no_reaction')`),
-                      'user_reacted',                    
-                    ],
-                  ]
-                : []),
-            ],
+            attributes: { exclude: [] }, // Minden mezőt lekérdezünk
+            defaultValue: [],
           },
         ],
+      });      
+
+      // Összefűzés
+      const postsWithComments = posts.map(post => {
+        // A poszt adatainak másolása
+        const postJSON = post.toJSON();
+      
+        // Kézi módosítás: total_comments hozzárendelése
+        const commentCount = comments.filter(comment => comment.post_id === post.id).length;
+        postJSON.total_comments = commentCount;
+      
+        // Kommentek hozzáadása
+        postJSON.Community_comments = comments.filter(comment => comment.post_id === post.id);
+      
+        return postJSON;
       });
 
-      const postsWithBase64Files = posts.map(post => {
-        // Átalakítjuk az instanciát sima objektummá
-        const postObj = post.get({ plain: true });
+      const postsWithBase64Files = postsWithComments.map(postObj => {
       
         // Hozzáadjuk a kívánt mezőket az objektumhoz, alapértelmezett értékekkel
         postObj.userReaction = null;
@@ -169,6 +264,18 @@ class communityRepository
             }
           });
         }
+
+        if (postObj.User.User_customization.profil_picture != null) {
+          const profileProfPicBuffer = postObj.User.User_customization.profil_picture;
+          
+          const profileProfPicMimeType = postObj.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+          
+          if (profileProfPicBuffer) {
+            // Blob fájl átalakítása Base64 formátumba
+            const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+            postObj.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+          }
+        }
       
         let userReaction = null;
 
@@ -182,24 +289,52 @@ class communityRepository
         postObj.Community_comments.forEach(comment =>{
 
           let userReactionForComment = null;
-
+          
           if (comment.Community_likes && comment.Community_likes.length > 0) {
-            const userLike = comment.Community_likes[0].user_reacted;
+            const userLike = comment.Community_likes[0].dataValues.user_reacted;
             userReactionForComment = userLike ? userLike : null;
           }
+
+          console.log(comment.replies[0].content);
 
           Comments.push({
             id: comment.id,
             User: comment.User,
+            user_name: comment.User.user_name,
             content: comment.content,
             user_id: comment.user_id,
             post_id: comment.post_id,
             parent_comment_id: comment.parent_comment_id,
-            like: Number(comment.Community_likes[0]?.total_likes) ?? null,
-            dislike: Number(comment.Community_likes[0]?.total_dislikes) ?? null,
+            total_comments: comment.dataValues.total_comments,
+            like: Number(comment.Community_likes[0]?.dataValues.total_likes) ?? null,
+            dislike: Number(comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
             userReaction: userReactionForComment,
             limitedComments: 10,
-            comments: comment.Community_comments,
+            prepareReply: false,
+            comments: comment.replies == undefined ? [] : comment.replies.map(inner_comment => {
+              let inner_userReactionForComment = null;
+
+              if (inner_comment.Community_likes && inner_comment.Community_likes.length > 0) {
+                const userLike = inner_comment.Community_likes[0].dataValues.user_reacted;
+                inner_userReactionForComment = userLike ? userLike : null;
+              }
+
+              return {
+                id: inner_comment.id,
+                User: inner_comment.User,
+                user_name: inner_comment.User.user_name,
+                content: inner_comment.content,
+                user_id: inner_comment.user_id,
+                post_id: inner_comment.post_id,
+                linkAuthor: inner_comment.linkAuthor,
+                parent_comment_id: inner_comment.parent_comment_id,
+                like: Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null,
+                dislike: Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
+                prepareReply: false,
+                userReaction: inner_userReactionForComment,
+                createdAt: inner_comment.createdAt,
+              };
+            }),            
             createdAt: comment.createdAt,
           });
         });
@@ -210,8 +345,10 @@ class communityRepository
           content: postObj.content,
           createdAt: postObj.createdAt,
           user_id: postObj.user_id,
+          user_name: postObj.User.user_name,
           files: postObj.Community_files,
           comments: Comments,
+          total_comments: postObj.total_comments,
           User: postObj.User,
           like: Number(postObj.Community_likes[0]?.total_likes) ?? null,
           dislike: Number(postObj.Community_likes[0]?.total_dislikes) ?? null,
