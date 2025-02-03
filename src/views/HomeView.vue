@@ -51,58 +51,61 @@
     </v-slide-group>
   </v-sheet>
   
-  <v-row 
-  class="d-flex align-center justify-center my-1 ga-4"
-  style="width: initial; height: min-content;"
-  >
-    <v-col cols="2">
-      <v-select
-        v-model="difficulty_Query"
-        clearable
-        label="Nehézség"
-        :items="['Könnyű', 'Közepes', 'Nehéz']"
-        variant="solo"
-        class="responsive-item"
-        theme="background-color: rgb(var(--v-theme-background));"
-        hide-details
-      ></v-select>
-    </v-col>
+    <v-row 
+  class="d-flex flex-wrap align-center justify-start my-1 ga-4"
+  style="min-width: 100%; height: min-content; white-space: nowrap;"
+>
+  <!-- Nehézség (Difficulty) Select -->
+  <v-col cols="5" md="3">
+    <v-select 
+      v-model="difficulty_Query"
+      clearable
+      label="Nehézség"
+      :items="['Könnyű', 'Közepes', 'Nehéz']"
+      variant="solo"
+      class="responsive-item"
+      theme="background-color: rgb(var(--v-theme-background));"
+      hide-details
+    ></v-select>
+  </v-col>
 
-    <v-col cols="2">
-      <v-select
+  <!-- Állapot (State) Select -->
+  <v-col cols="5" md="3">
+    <v-select
       v-model="state_Query"
-        clearable
-        label="Állapot"
-        :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
-        variant="solo"
-        class="responsive-item"
-        theme="background-color: rgb(var(--v-theme-background));"
-        hide-details
-      ></v-select>
-    </v-col>
+      clearable
+      label="Állapot"
+      :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
+      variant="solo"
+      class="responsive-item"
+      theme="background-color: rgb(var(--v-theme-background));"
+      hide-details
+    ></v-select>
+  </v-col>
 
-    <v-col cols="3">
-      <v-text-field
-        v-model="searchQuery"
-        prepend-inner-icon="mdi-magnify"
-        clear-icon="mdi-close"
-        hide-details
-        label="Feladat neve"
-        type="text"
-        variant="outlined"
-        clearable
-        @input="filterTasksByCharacters(searchQuery)"
-        style="min-width: 14vw;"
-      ></v-text-field>
-    </v-col>
+  <!-- Search Input -->
+  <v-col cols="8" md="3">
+    <v-text-field
+      v-model="searchQuery"
+      prepend-inner-icon="mdi-magnify"
+      clear-icon="mdi-close"
+      hide-details
+      label="Feladat neve"
+      type="text"
+      variant="outlined"
+      clearable
+      @input="filterTasksByCharacters(searchQuery)"
 
-    <v-col cols="2">
-      <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content;" @click="LoadRandomTask()">
-        <p style="font-size: .8dvw; margin-right: .5rem;">Random Feladat</p>
-        <v-icon color="white">mdi-shuffle-variant</v-icon>
-      </v-btn>
-    </v-col>
-  </v-row>
+    ></v-text-field>
+  </v-col>
+
+  <!-- Random Button (Only Icon) -->
+  <v-col cols="3" sm="2">
+    <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content; " @click="LoadRandomTask">
+      <v-icon color="white">mdi-shuffle-variant</v-icon>
+    </v-btn>
+  </v-col>
+</v-row>
 
   <v-layout class="rounded-md" height="min-content">
     <v-navigation-drawer 
@@ -250,7 +253,12 @@
     </v-main>
   </v-layout>
   <!--javitani kell!-->
- 
+   <!--
+Pagination a lapozashoz, tanstackel chacebe tarolas
+https://laravel.com/docs/11.x/pagination#main-content
+https://laravel-news.com/laravel-pagination
+
+-->
   <v-pagination 
   v-model="pageNumber" 
   :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
