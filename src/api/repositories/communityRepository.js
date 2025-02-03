@@ -150,70 +150,73 @@ class communityRepository
                 : []),
             ],
           },
+        ],
+      });
+      
+      const replies = await this.Community_comments.findAll({
+        where: {
+          parent_comment_id: Sequelize.col('Community_comments.id'),
+        },
+        include: [
           {
-            model: this.Community_comments, // Belső kommentek (válaszok)
-            as: 'replies',
-            required: false,
-            where: { parent_comment_id: Sequelize.col('Community_comments.id') },
+            model: this.Users,
+            attributes: ['id', 'user_name'],
             include: [
               {
-                model: this.Users,
-                attributes: ['id', 'user_name'],
-                include: [
-                  {
-                    model: this.User_customization,
-                    attributes: ['profil_picture'],
-                  },
-                ],
-              },
-              {
-                model: this.Community_likes,
-                required: false,
-                where: { entity_type: 'comment' },
-                attributes: [
-                  [
-                    Sequelize.literal(`(
-                      SELECT COUNT(*) 
-                      FROM Community_likes 
-                      WHERE Community_likes.entity_id = Community_comments.id 
-                      AND Community_likes.entity_type = 'comment' 
-                      AND Community_likes.like_type = 'like'
-                    )`),
-                    'total_likes',
-                  ],
-                  [
-                    Sequelize.literal(`(
-                      SELECT COUNT(*) 
-                      FROM Community_likes 
-                      WHERE Community_likes.entity_id = Community_comments.id 
-                      AND Community_likes.entity_type = 'comment' 
-                      AND Community_likes.like_type = 'dislike'
-                    )`),
-                    'total_dislikes',
-                  ],
-                  ...(userId
-                    ? [
-                        [
-                          Sequelize.literal(`COALESCE((  
-                            SELECT like_type  
-                            FROM Community_likes  
-                            WHERE Community_likes.entity_id = Community_comments.id  
-                            AND Community_likes.entity_type = 'comment'  
-                            AND Community_likes.user_id = ${userId}  
-                            LIMIT 1  
-                          ), 'no_reaction')`),
-                          'user_reacted',
-                        ],
-                      ]
-                    : []),
-                ],
+                model: this.User_customization,
+                attributes: ['profil_picture'],
               },
             ],
-            attributes: { exclude: [] }, // Minden mezőt lekérdezünk
-            defaultValue: [],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'comment' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_comments.id  
+                        AND Community_likes.entity_type = 'comment'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
           },
         ],
-      });      
+      });
+      
+      for (let comment of comments) {
+        // Az adott kommenthez tartozó válaszok hozzáadása
+        comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
+      }
 
       // Összefűzés
       const postsWithComments = posts.map(post => {
@@ -294,8 +297,6 @@ class communityRepository
             const userLike = comment.Community_likes[0].dataValues.user_reacted;
             userReactionForComment = userLike ? userLike : null;
           }
-
-          console.log(comment.replies[0].content);
 
           Comments.push({
             id: comment.id,
@@ -421,6 +422,8 @@ class communityRepository
         user_id: user_id
       }
     });
+
+    console.log(existingReaction);
   
     if (existingReaction) {
       // Ha már van reakció

@@ -54,6 +54,8 @@ exports.postLike = async (req,res,next)=>{
 
     var like_result = null;
 
+    console.log(post_id, user_id, upload_type, type);
+
     if(type == 0){
         like_result = await communityService.postLike(post_id, upload_type, user_id);
     }

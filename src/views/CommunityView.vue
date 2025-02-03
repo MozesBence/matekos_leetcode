@@ -645,8 +645,6 @@ watch(get_fullUser, async (User) => {
     }, {
       onSuccess: (posts_array) => {
         if(posts_array != null){
-
-          console.log(posts_array);
           posts_array.reverse();
           posts_array.forEach((post) => {
             postsConvertToDisplay(post, true);
