@@ -90,6 +90,9 @@
             <v-btn width="100%" style="background-color: #0091EA; color: white">
               Beadás
             </v-btn>
+            <v-btn width="100%" style="margin-top: 1em;" @click="back">
+              Vissza a fooldalra
+            </v-btn>
           </v-col>
         </v-row>
       </v-main>
@@ -99,7 +102,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, watch, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router"; // Import useRouter
 import { UseGetTaskData } from "@/api/taskSolving/taskSolvingQuery";
 
 const mathjaxDirective = {
@@ -146,6 +149,7 @@ export default defineComponent({
     const isLoading = ref(false);
     const error = ref(null);
     const route = useRoute();
+    const router = useRouter(); 
 
     const { mutate: GetTaskData } = UseGetTaskData();
 
@@ -193,12 +197,17 @@ export default defineComponent({
       return "Nehéz";
     };
 
+    const back = () => {
+      router.go(-1);
+    };
+
     return {
       task,
       isLoading,
       error,
       chipColor,
-      difficultyLabel
+      difficultyLabel,
+      back
     };
   }
 });
