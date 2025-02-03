@@ -41,7 +41,7 @@
           >
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
               <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                 <p style="font-size: .8vw;">{{ post.user_name }}</p>
               </div>
               <p style="font-size: .6vw;">{{ post.createdAt }}</p>
@@ -104,7 +104,7 @@
                 <!-- Új komment -->
                 <div class="position-relative mx-4 pa-2">
                   <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                    <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                    <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                     <p style="font-size: .8vw;">{{ get_UserName }}</p>
                   </div>
                   <div>
@@ -137,7 +137,7 @@
                   <div class="d-flex flex-column pl-2">
                     <div class="d-flex ga-2 align-center">
                       <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
-                        <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                        <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                         <p style="font-size: .8vw;">{{ comment.user_name }}</p>
                       </div>
                       <p style="font-size: .7vw; position: relative;">{{ comment.createdAt }}</p>
@@ -145,7 +145,7 @@
                     <div class="mt-2">
                       <div v-if="!comment.editable" class="d-flex align-center">
                         <p class="pa-2 pl-4 mr-2" style="font-size: .9vw;">
-                          {{ comment.linkAuthor }} {{ comment.content != null ? comment.content : comment.text }}
+                          {{ comment.linkAuthor }} {{ comment.content}}
                         </p>
                         <v-expand-transition>
                           <p v-if="comment.gotEdit" style="font-size: .6vw; position: relative;">[Módosított]</p>
@@ -157,7 +157,7 @@
                         elevation="0"
                         hide-details
                         variant="solo-inverted" 
-                        v-model="comment.text"
+                        v-model="comment.content"
                         class="custom-solo-inverted mr-2"
                         :id="'commentId' + post.id+''+ index"
                       ></v-text-field>
@@ -179,10 +179,10 @@
                     <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
                       Válasz
                     </v-btn>
-                    <v-btn v-if="comment.author == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
+                    <v-btn v-if="comment.user_name == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
                       Módosítás
                     </v-btn>
-                    <v-btn v-if="comment.author == get_UserName && comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
+                    <v-btn v-if="comment.user_name == get_UserName && comment.editable" text color="transparent" elevation="0" @click="commentEditConf(comment,'commentId'+post.id+''+ index)">
                       Módosít
                     </v-btn>
                     <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
@@ -195,7 +195,7 @@
                       <v-expand-transition>
                         <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply">
                           <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                            <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                            <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                             <p style="font-size: .8vw;">{{ get_UserName }}</p>
                           </div>
                           <div>
@@ -238,7 +238,7 @@
                             <div class="d-flex flex-column pl-2">
                               <div class="d-flex ga-2 align-center">
                                 <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
-                                  <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                  <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                   <p style="font-size: .8vw;">{{ inner_comment.user_name }}</p>
                                 </div>
                                 <p style="font-size: .7vw; position: relative;">{{ inner_comment.createdAt }}</p>
@@ -258,7 +258,7 @@
                                   elevation="0"
                                   hide-details
                                   variant="solo-inverted" 
-                                  v-model="inner_comment.text"
+                                  v-model="inner_comment.content"
                                   class="custom-solo-inverted"
                                   :id="'commentId' + post.id+''+comment.id+''+ index"
                                 ></v-text-field>
@@ -273,16 +273,16 @@
                                 <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                                 {{ inner_comment.dislike }}
                               </v-btn>
-                              <v-btn v-if="inner_comment.author != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
+                              <v-btn v-if="inner_comment.user_name != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                 Válasz
                               </v-btn>
                               <v-expand-transition>
-                                <v-btn v-if="inner_comment.author == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
+                                <v-btn v-if="inner_comment.user_name == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
                                   Módosítás
                                 </v-btn>
                               </v-expand-transition>
                               <v-expand-transition>
-                                <v-btn v-if="inner_comment.author == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
+                                <v-btn v-if="inner_comment.user_name == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="commentEditConf(inner_comment,'commentId' + post.id+''+comment.id+''+ index)">
                                   Módosít
                                 </v-btn>
                               </v-expand-transition>
@@ -295,7 +295,7 @@
                             <v-expand-transition>
                               <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
                                 <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                                  <img src="../components/background/test_profile.jpg" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                  <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                   <p style="font-size: .8vw;">{{ get_UserName }}</p>
                                 </div>
                                 <div>
@@ -572,6 +572,7 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
 import { useLikeDislikeForPost } from '@/api/community/communityQuery';
 import { useCommentForPost } from '@/api/community/communityQuery';
+import { useCommentEdit } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
@@ -598,7 +599,6 @@ const posts_limit = ref(10);
 
 const { mutate: ProfileGetUser } = useProfileGetUser();
 const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
-
 
 onMounted(async () => {
   var user_id = null;
@@ -683,74 +683,14 @@ const activeOrderedList = ref(false);
 const activeUnorderedList = ref(false);
 const activeLink = ref(false);
 const fileInput = ref(null);
+const editingComment = ref(null);
+const editingID = ref(null);
+const editingContent = ref(null);
 
 const newPost = reactive({ title: "", content: "", images: reactive([]), files: ref([]) });
 
 // Posts tömb
-const posts = reactive([
-  {
-    id: 1,
-    user_name: "User123",
-    title: "Vue.js kérdés",
-    content: `<p>valami content</p>
-              <div id="contentImages1" class="image-placeholder"></div>
-              <p>Thank you for viewing!</p>`,
-    images: [{id: "contentImages1", src: "https://via.placeholder.com/300"}],
-    files: [],
-    like: 3,
-    dislike: 0,
-    userReaction: null,
-    createdAt: "2025-01-01 18:39",
-    comments: [
-      {
-        id: 1,
-        user_name: "Helper99",
-        createdAt: "2025-01-01 18:39",
-        text: "Segíthetek ebben!",
-        likes: 2,
-        dislikes: 1,
-        userReaction: null,
-        newComment: "",
-        showComments: false,
-        prepareReply: false,
-        gotEdit: false,
-        editable: false,
-        comments: [{
-            id: 1,
-            author: "Helper99",
-            createdAt: "2025-01-01 18:39",
-            text: "Segíthetek ebben!",
-            likes: 2,
-            dislikes: 1,
-            userReaction: null,
-            newComment: "",
-            showComments: false,
-            prepareReply: false,
-            gotEdit: false,
-            editable: false,
-          },]
-      },
-      {
-        id: 2,
-        user_name: "AnotherUser",
-        createdAt: "2025-01-01 18:39",
-        text: "Ugyanez a kérdésem!",
-        likes: 1,
-        dislikes: 0,
-        userReaction: null,
-        newComment: "",
-        showComments: false,
-        prepareReply: false,
-        gotEdit: false,
-        editable: false,
-        comments: []
-      }
-    ],
-    newComment: "",
-    showComments: false,
-    commentLimit: 10,
-  }
-]);
+const posts = reactive([]);
 
 const searchQuery = ref("");
 const showCreatePost = ref(false);
@@ -1018,12 +958,13 @@ const addPost = async () =>{
         loading.value = false;
         postsConvertToDisplay({
           id: response.id,
-          author: get_UserName.value,
+          user_name: get_UserName.value,
+          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
           createdAt: formatDate(new Date()),
           content: cleanedHtmlContent,
           title: newPost.title,
-          likes: 0,
-          dislikes: 0,
+          like: 0,
+          dislike: 0,
           userReaction: null,
           newComment: "",
           gotEdit: false,
@@ -1323,8 +1264,21 @@ function limitedComments(array){
   return array.comments.slice(0,array.limitedComments);
 }
 
+const { mutate: CommunityCommentEdit } = useCommentEdit();
+
 function commentEdit(comment,id){
   comment.editable = true;
+
+  if(editingComment.value != null){
+    editingComment.value.editable = null;
+    document.getElementById(editingID.value).value = editingContent.value;
+    editingComment.value.content = editingContent.value;
+  }
+  
+  editingComment.value = comment;
+  editingID.value = id;
+  editingContent.value = comment.content;
+
   nextTick(() => {
     const element = document.getElementById(id);
     if (element) {
@@ -1333,75 +1287,105 @@ function commentEdit(comment,id){
   });
 }
 
+const commentEditConf = async (comment,id) =>{
+  var edited_content = document.getElementById(id).value;
+
+  if(edited_content.value != ''){
+    console.log({content: String(edited_content), comment_id: comment.id});
+    await CommunityCommentEdit({content: String(edited_content), comment_id: comment.id});
+    comment.gotEdit = true;
+  }
+
+  editingID.value = null,
+  editingComment.value = null,
+  editingContent.value = null;
+  comment.editable = false;
+}
+
 const { mutate: CommunityCommentForPost } = useCommentForPost();
 
 const addCommentToPost = async (post) =>{
   if(post.newComment != ""){
-    await CommunityCommentForPost({content: String(post.newComment), linkAuthor: null, linked_id: post.id, user_id: get_fullUser.value.id, type: 0});
-    post.comments.push({
-      id: post.comments.length+1,
-      user_name: get_UserName,
-      createdAt: formatDate(new Date()),
-      text: post.newComment,
-      likes: 0,
-      dislikes: 0,
-      userReaction: null,
-      newComment: "",
-      showComments: false,
-      prepareReply: false,
-      gotEdit: false,
-      editable: false,
-      comments: []
-    });
-    
-    post.newComment = "";
+    await CommunityCommentForPost({content: String(post.newComment), linkAuthor: null, linked_id: post.id, user_id: get_fullUser.value.id, type: 0}, {
+        onSuccess: (comment) => {
+          post.comments.unshift({
+            id: comment.id,
+            User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
+            user_name: get_UserName,
+            createdAt: formatDate(new Date()),
+            content: post.newComment,
+            like: 0,
+            dislike: 0,
+            userReaction: null,
+            newComment: "",
+            showComments: false,
+            prepareReply: false,
+            gotEdit: false,
+            editable: false,
+            comments: []
+          });
+
+          post.newComment = "";
+        },
+        onError: (error) => {
+
+        },
+      });
   }
 }
 
 const addCommentToComment = async (comment) =>{
   if(comment.newComment != ""){
-    await CommunityCommentForPost({content: String(comment.newComment), linkAuthor: null, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1});
-    comment.comments.push({
-      id: comment.comments.length+1,
-      user_name: get_UserName,
-      createdAt: formatDate(new Date()),
-      text: comment.newComment,
-      likes: 0,
-      dislikes: 0,
-      userReaction: null,
-      newComment: "",
-      showComments: false,
-      prepareReply: false,
-      gotEdit: false,
-      editable: false,
-      comments: []
+    await CommunityCommentForPost({content: String(comment.newComment), linkAuthor: null, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
+      onSuccess: (comment) => {
+        comment.comments.unshift({
+          id: comment.id,
+          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
+          user_name: get_UserName,
+          createdAt: formatDate(new Date()),
+          content: comment.newComment,
+          like: 0,
+          dislike: 0,
+          userReaction: null,
+          newComment: "",
+          showComments: false,
+          prepareReply: false,
+          gotEdit: false,
+          editable: false,
+          comments: []
+        });
+        comment.prepareReply = false;
+        comment.newComment = "";
+      }
     });
-    comment.prepareReply = false;
-    comment.newComment = "";
   }
 }
 
 const addLastCommentToComment = async (comment, inner_comment) => {
   if(inner_comment.newComment != ""){
-    await CommunityCommentForPost({content: String(inner_comment.newComment), linkAuthor: "@"+comment.user_name, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1});
-    comment.comments.push({
-      id: comment.comments.length+1,
-      user_name: get_UserName,
-      createdAt: formatDate(new Date()),
-      content: inner_comment.newComment,
-      likes: 0,
-      dislikes: 0,
-      userReaction: null,
-      newComment: "",
-      showComments: false,
-      prepareReply: false,
-      gotEdit: false,
-      editable: false,
-      linkAuthor: "@"+comment.user_name,
-      comments: []
+    await CommunityCommentForPost({content: String(inner_comment.newComment), linkAuthor: "@"+comment.user_name, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
+      onSuccess: (comment) => {
+        comment.comments.unshift({
+          id: comment.id,
+          user_name: get_UserName,
+          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
+          createdAt: formatDate(new Date()),
+          content: inner_comment.newComment,
+          like: 0,
+          dislike: 0,
+          userReaction: null,
+          newComment: "",
+          showComments: false,
+          prepareReply: false,
+          gotEdit: false,
+          editable: false,
+          linkAuthor: "@"+comment.user_name,
+          comments: []
+        });
+        inner_comment.prepareReply = false;
+        inner_comment.newComment = "";
+      }
     });
-    inner_comment.prepareReply = false;
-    inner_comment.newComment = "";
   }
 }
 

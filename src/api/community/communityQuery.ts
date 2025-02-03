@@ -95,3 +95,21 @@ export const useCommentForPost = () => {
     },
   })
 }
+
+const CommunityCommentEdit = async (data: {content: string, comment_id: number}) => {
+  console.log(data);
+  const response = await axiosClient.patch(`http://localhost:3000/community/comment-edit`, data);
+  return response.data;
+}
+
+export const useCommentEdit = () => {
+  return useMutation({
+    mutationFn: CommunityCommentEdit,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}

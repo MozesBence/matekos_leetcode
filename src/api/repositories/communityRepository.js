@@ -298,6 +298,18 @@ class communityRepository
             userReactionForComment = userLike ? userLike : null;
           }
 
+          if (comment.User.User_customization.profil_picture != null) {
+            const profileProfPicBuffer = comment.User.User_customization.profil_picture;
+            
+            const profileProfPicMimeType = comment.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+            
+            if (profileProfPicBuffer) {
+              // Blob fájl átalakítása Base64 formátumba
+              const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+              comment.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+            }
+          }
+
           Comments.push({
             id: comment.id,
             User: comment.User,
@@ -312,17 +324,38 @@ class communityRepository
             userReaction: userReactionForComment,
             limitedComments: 10,
             prepareReply: false,
+            gotEdit: comment.gotEdit,
+            editable: false,
             comments: comment.replies == undefined ? [] : comment.replies.map(inner_comment => {
               let inner_userReactionForComment = null;
+
+              let inner_User = {};
 
               if (inner_comment.Community_likes && inner_comment.Community_likes.length > 0) {
                 const userLike = inner_comment.Community_likes[0].dataValues.user_reacted;
                 inner_userReactionForComment = userLike ? userLike : null;
               }
 
+              let inner_prof = null;
+
+              if (inner_comment.User.User_customization.profil_picture != null) {
+                const profileProfPicBuffer = inner_comment.User.User_customization.profil_picture;
+                
+                const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+
+                
+                if (profileProfPicBuffer) {
+                  // Blob fájl átalakítása Base64 formátumba
+                  const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                  inner_prof = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+              }
+
+              inner_User = {id: inner_comment.User.id, user_name: inner_comment.User.user_name, User_customization : {profil_picture: inner_prof}};
+
               return {
                 id: inner_comment.id,
-                User: inner_comment.User,
+                User: inner_User,
                 user_name: inner_comment.User.user_name,
                 content: inner_comment.content,
                 user_id: inner_comment.user_id,
@@ -332,10 +365,12 @@ class communityRepository
                 like: Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null,
                 dislike: Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
                 prepareReply: false,
+                gotEdit: inner_comment.gotEdit,
+                editable: false,
                 userReaction: inner_userReactionForComment,
                 createdAt: inner_comment.createdAt,
               };
-            }),            
+            }),
             createdAt: comment.createdAt,
           });
         });
@@ -357,6 +392,8 @@ class communityRepository
           newComment: '',
           showComments: false,
           images: postObj.images,
+          gotEdit: postObj.gotEdit,
+          editable: false,
           files: postObj.files,
           limitedComments: 10
         }
@@ -489,6 +526,23 @@ class communityRepository
     await newComment.save();
     
     return newComment;
+  }
+
+  async commentEdit(content, comment_id) {
+    const comment = await this.Community_comments.findOne({
+      where: { id: comment_id },
+    });
+
+    if (!comment) {
+      throw new Error("A komment nem található!");
+    }
+
+    comment.content = content;
+    comment.gotEdit = true;
+  
+    await comment.save();
+
+    return comment;
   }  
 }
 

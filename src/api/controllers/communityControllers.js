@@ -54,8 +54,6 @@ exports.postLike = async (req,res,next)=>{
 
     var like_result = null;
 
-    console.log(post_id, user_id, upload_type, type);
-
     if(type == 0){
         like_result = await communityService.postLike(post_id, upload_type, user_id);
     }
@@ -114,6 +112,30 @@ exports.postComment = async (req,res,next)=>{
         }
 
         res.status(200).send(comment_result);
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+exports.commentEdit = async (req,res,next)=>{
+    const {content, comment_id} = req.body;
+
+    console.log(content, comment_id);
+
+    const comment_result = await communityService.commentEdit(content, comment_id);
+
+    console.log(comment_result);
+    try{
+        if(comment_result == null){
+            const error = new Error("Sikertelen volt a comment szekeztésének mentése közben!");
+
+            error.status(400);
+
+            throw error;
+        }
+
+        res.status(200).send("Sikeres volt a szerkeztés!");
     }
     catch(error){
         next(error);

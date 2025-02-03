@@ -30,6 +30,11 @@ class communityService
     {
         return await communityRepository.postComment(comment);
     }
+
+    async commentEdit(content, comment_id)
+    {
+        return await communityRepository.commentEdit(content, comment_id);
+    }
 }
 
 module.exports = new communityService();
