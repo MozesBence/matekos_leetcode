@@ -92,7 +92,7 @@
               </v-btn>
               <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
                 <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
-                {{ post.comments.length }}
+                {{ post.total_comments }}
               </v-btn>
               <v-btn text color="community_primary_color" @click="post.showComments = true">
                 Válasz
@@ -172,9 +172,9 @@
                       <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                       {{ comment.dislike > 0 ? comment.dislike : null }}
                     </v-btn>
-                    <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.comments.length > 0">
+                    <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
                       <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
-                      {{ comment.comments.length }}
+                      {{ comment.total_comments }}
                     </v-btn>
                     <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
                       Válasz
@@ -1326,6 +1326,7 @@ const addCommentToPost = async (post) =>{
           });
 
           post.newComment = "";
+          post.total_comments = post.total_comments == undefined ? 1 : post.total_comment + 1;
         },
         onError: (error) => {
 
@@ -1337,9 +1338,9 @@ const addCommentToPost = async (post) =>{
 const addCommentToComment = async (comment) =>{
   if(comment.newComment != ""){
     await CommunityCommentForPost({content: String(comment.newComment), linkAuthor: null, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
-      onSuccess: (comment) => {
+      onSuccess: (res_comment) => {
         comment.comments.unshift({
-          id: comment.id,
+          id: res_comment.id,
           User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
           user_name: get_UserName,
           createdAt: formatDate(new Date()),
@@ -1356,6 +1357,7 @@ const addCommentToComment = async (comment) =>{
         });
         comment.prepareReply = false;
         comment.newComment = "";
+        comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
       },
       onError: (error) => {
 
@@ -1367,9 +1369,9 @@ const addCommentToComment = async (comment) =>{
 const addLastCommentToComment = async (comment, inner_comment) => {
   if(inner_comment.newComment != ""){
     await CommunityCommentForPost({content: String(inner_comment.newComment), linkAuthor: "@"+comment.user_name, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
-      onSuccess: (comment) => {
+      onSuccess: (res_comment) => {
         comment.comments.unshift({
-          id: comment.id,
+          id: res_comment.id,
           user_name: get_UserName,
           User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
           createdAt: formatDate(new Date()),
@@ -1387,6 +1389,7 @@ const addLastCommentToComment = async (comment, inner_comment) => {
         });
         inner_comment.prepareReply = false;
         inner_comment.newComment = "";
+        comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
       },
       onError: (error) => {
 

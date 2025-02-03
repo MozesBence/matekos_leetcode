@@ -92,6 +92,11 @@ module.exports = (sequelize, DataTypes) => {
         as: 'replies',
         allowNull: true,
     });
+    Community_comments.belongsTo(Community_comments, {
+        as: 'parent',
+        foreignKey: 'parent_comment_id'
+    });
+
     Community_comments.belongsTo(Users, {
         foreignKey: "user_id",
     });

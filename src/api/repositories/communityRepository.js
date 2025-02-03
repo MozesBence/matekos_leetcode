@@ -32,7 +32,19 @@ class communityRepository
 
       const posts = await this.Community_posts.findAll({
         limit: parsedLimit,
-        order: [['createdAt', 'DESC']],  // Esetleg használj id-t, ha nincs createdAt oszlop
+        order: [['createdAt', 'DESC']],
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) 
+                FROM Community_comments 
+                WHERE Community_comments.post_id = Community_posts.id
+              )`),
+              'total_comments'
+            ]
+          ]
+        },
         include: [
           { model: this.Community_files },
           {
@@ -40,8 +52,8 @@ class communityRepository
             attributes: ['id', 'user_name'],
             include: [
               {
-                model: this.User_customization,  // User_customization tábla
-                attributes: ['profil_picture'],  // Csak a profilkép oszlopot húzzuk le
+                model: this.User_customization,
+                attributes: ['profil_picture'],
               },
             ],
           },
@@ -85,8 +97,12 @@ class communityRepository
                 : []),
             ],
           },
+          {
+            model: this.Community_comments,
+            required: false
+          },
         ],
-      });
+      });      
       
       const postIds = posts.map(post => post.id);
       
@@ -97,6 +113,18 @@ class communityRepository
         },
         limit: 10,
         order: [['createdAt', 'DESC']],
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) 
+                FROM Community_comments AS replies
+                WHERE replies.parent_comment_id = Community_comments.id
+              )`),
+              'total_replies',
+            ],
+          ],
+        },
         include: [
           {
             model: this.Users,
@@ -150,8 +178,12 @@ class communityRepository
                 : []),
             ],
           },
+          {
+            model: this.Community_comments,
+            as: 'replies',
+          },
         ],
-      });
+      });      
       
       const replies = await this.Community_comments.findAll({
         where: {
@@ -212,7 +244,7 @@ class communityRepository
           },
         ],
       });
-      
+
       for (let comment of comments) {
         // Az adott kommenthez tartozó válaszok hozzáadása
         comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
@@ -222,10 +254,6 @@ class communityRepository
       const postsWithComments = posts.map(post => {
         // A poszt adatainak másolása
         const postJSON = post.toJSON();
-      
-        // Kézi módosítás: total_comments hozzárendelése
-        const commentCount = comments.filter(comment => comment.post_id === post.id).length;
-        postJSON.total_comments = commentCount;
       
         // Kommentek hozzáadása
         postJSON.Community_comments = comments.filter(comment => comment.post_id === post.id);
@@ -318,7 +346,7 @@ class communityRepository
             user_id: comment.user_id,
             post_id: comment.post_id,
             parent_comment_id: comment.parent_comment_id,
-            total_comments: comment.dataValues.total_comments,
+            total_comments: comment.dataValues.total_replies,
             like: Number(comment.Community_likes[0]?.dataValues.total_likes) ?? null,
             dislike: Number(comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
             userReaction: userReactionForComment,
