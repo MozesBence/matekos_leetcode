@@ -67,7 +67,7 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await db.sequelize.sync({ alter: true });
+        await db.sequelize.sync({ force: true });
         console.log('Database connected and models synchronized.');
 
         await db.Themes.initializeThemes();

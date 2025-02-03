@@ -1356,7 +1356,10 @@ const addCommentToComment = async (comment) =>{
         });
         comment.prepareReply = false;
         comment.newComment = "";
-      }
+      },
+      onError: (error) => {
+
+      },
     });
   }
 }
@@ -1384,7 +1387,10 @@ const addLastCommentToComment = async (comment, inner_comment) => {
         });
         inner_comment.prepareReply = false;
         inner_comment.newComment = "";
-      }
+      },
+      onError: (error) => {
+
+      },
     });
   }
 }
