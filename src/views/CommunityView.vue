@@ -231,7 +231,7 @@
                         </div>
                       </v-expand-transition>
                       <!-- Kommentek listája -->
-                      <v-divider class="my-2" v-if="comment.comments.length > 0"></v-divider>
+                      <v-divider class="my-2" v-if="comment.total_comments > 0"></v-divider>
                       <v-expand-transition>
                         <div>
                           <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
@@ -333,28 +333,42 @@
                           </div>
                         </div>
                       </v-expand-transition>
-  
-                      <!-- Több komment betöltése -->
-                      <v-btn
-                        v-if="comment.comments.length > comment.commentLimit"
-                        text small @click="loadMoreCommentsForComments(comment)"
-                        class="pl-4"
-                      >
-                        Több komment megjelenítése
-                      </v-btn>
+
+                      <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit">
+                        <v-divider class=""></v-divider>
+                        <v-btn
+                          elevation="0"
+                          icon
+                          small
+                          @click="loadMoreCommentsForPost(post)"
+                          class="align-center d-flex justify-center position-absolute"
+                          v-tooltip="'Több komment megjelenítése'"
+                          style="
+                          left: 50%; 
+                          transform: translate(-50%,0);
+                          background-color: rgb(var(--v-theme-community_comment_bc));"
+                        >
+                          <v-icon>mdi-comment-plus-outline</v-icon>
+                        </v-btn>
+                      </div>
                     </div>
                   </v-expand-transition>
                 </div>
 
-
-                <!-- Több komment betöltése -->
-                <v-btn
-                  v-if="post.comments.length > post.commentLimit"
-                  text small @click="loadMoreCommentsForPost(post)"
-                  class="pl-4"
-                >
-                  Több komment megjelenítése
-                </v-btn>
+                <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit">
+                  <v-divider class=""></v-divider>
+                  <v-btn
+                    elevation="0"
+                    icon
+                    small
+                    @click="loadMoreCommentsForPost(post)"
+                    class="align-center d-flex justify-center position-absolute"
+                    v-tooltip="'Több komment megjelenítése'"
+                    style="left: 50%; transform: translate(-50%,0);"
+                  >
+                    <v-icon>mdi-comment-plus-outline</v-icon>
+                  </v-btn>
+                </div>
               </div>
             </v-expand-transition>
           </v-card>
@@ -974,6 +988,7 @@ const addPost = async () =>{
           images: newPost.images,
           commentLimit: 10,
           showComments: false,
+          total_comments: 0,
         }, false);
       },
       onError: (error) => {
@@ -990,14 +1005,14 @@ function postsConvertToDisplay(array,igaze){
 
   var createdAt = array.createdAt;
   if(igaze){
-    array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0];
+    array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
   }
 
   array.comments.forEach(comment =>{
-    comment.createdAt = comment.createdAt.split('T')[0] + " " + comment.createdAt.split('T')[1].split('.')[0];
+    comment.createdAt = comment.createdAt.split('T')[0] + " " + comment.createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+comment.createdAt.split('T')[1].split('.')[0].split(':')[1];
 
     comment.comments.forEach(inner_comment =>{
-      inner_comment.createdAt = inner_comment.createdAt.split('T')[0] + " " + inner_comment.createdAt.split('T')[1].split('.')[0];});
+      inner_comment.createdAt = inner_comment.createdAt.split('T')[0] + " " + inner_comment.createdAt.split('T')[1].split('.')[0].split(':')[0] +':'+inner_comment.createdAt.split('T')[1].split('.')[0].split(':')[1];});
   });
 
   const imgElements = tempDiv.querySelectorAll("img");
@@ -1314,8 +1329,8 @@ const addCommentToPost = async (post) =>{
             user_name: get_UserName,
             createdAt: formatDate(new Date()),
             content: post.newComment,
-            like: 0,
-            dislike: 0,
+            like: null,
+            dislike: null,
             userReaction: null,
             newComment: "",
             showComments: false,
@@ -1326,7 +1341,7 @@ const addCommentToPost = async (post) =>{
           });
 
           post.newComment = "";
-          post.total_comments = post.total_comments == undefined ? 1 : post.total_comment + 1;
+          post.total_comments = post.total_comments == undefined ? 1 : post.total_comments + 1;
         },
         onError: (error) => {
 
@@ -1345,8 +1360,8 @@ const addCommentToComment = async (comment) =>{
           user_name: get_UserName,
           createdAt: formatDate(new Date()),
           content: comment.newComment,
-          like: 0,
-          dislike: 0,
+          like: null,
+          dislike: null,
           userReaction: null,
           newComment: "",
           showComments: false,
@@ -1376,8 +1391,8 @@ const addLastCommentToComment = async (comment, inner_comment) => {
           User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
           createdAt: formatDate(new Date()),
           content: inner_comment.newComment,
-          like: 0,
-          dislike: 0,
+          like: null,
+          dislike: null,
           userReaction: null,
           newComment: "",
           showComments: false,

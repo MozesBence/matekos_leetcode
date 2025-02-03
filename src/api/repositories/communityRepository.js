@@ -183,12 +183,15 @@ class communityRepository
             as: 'replies',
           },
         ],
-      });      
+      });
+
+      const commentIds = comments.map(comment => comment.id);
       
       const replies = await this.Community_comments.findAll({
         where: {
-          parent_comment_id: Sequelize.col('Community_comments.id'),
+          parent_comment_id: commentIds,
         },
+        limit: 11,
         include: [
           {
             model: this.Users,
@@ -244,44 +247,36 @@ class communityRepository
           },
         ],
       });
-
+      
       for (let comment of comments) {
-        // Az adott kommenthez tartozó válaszok hozzáadása
         comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
       }
 
-      // Összefűzés
       const postsWithComments = posts.map(post => {
-        // A poszt adatainak másolása
         const postJSON = post.toJSON();
-      
-        // Kommentek hozzáadása
+        
         postJSON.Community_comments = comments.filter(comment => comment.post_id === post.id);
       
         return postJSON;
       });
 
       const postsWithBase64Files = postsWithComments.map(postObj => {
-      
-        // Hozzáadjuk a kívánt mezőket az objektumhoz, alapértelmezett értékekkel
+
         postObj.userReaction = null;
         postObj.newComment = "";
         postObj.showComments = false;
       
-        // Létrehozzuk az images és files tömböket
         postObj.images = [];
         postObj.files = [];
       
         if (postObj.Community_files && postObj.Community_files.length > 0) {
           postObj.Community_files.forEach(file => {
-            const fileBuffer = file.file; // Feltételezve, hogy BLOB típusú
-            const mimeType = file.file_type || 'application/octet-stream'; // Alap MIME típus
+            const fileBuffer = file.file;
+            const mimeType = file.file_type || 'application/octet-stream';
       
-            // BLOB fájl átalakítása Base64 formátumba
             const base64File = Buffer.from(fileBuffer).toString('base64');
             const base64Data = `data:${mimeType};base64,${base64File}`;
       
-            // Fájl hozzáadása az images vagy files tömbökhöz a MIME típus alapján
             if (mimeType.startsWith('image/')) {
               postObj.images.push({
                 ...file,
@@ -299,10 +294,9 @@ class communityRepository
         if (postObj.User.User_customization.profil_picture != null) {
           const profileProfPicBuffer = postObj.User.User_customization.profil_picture;
           
-          const profileProfPicMimeType = postObj.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+          const profileProfPicMimeType = postObj.User.User_customization.profil_picture_type || 'image/jpeg';
           
           if (profileProfPicBuffer) {
-            // Blob fájl átalakítása Base64 formátumba
             const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
             postObj.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
           }
@@ -329,10 +323,9 @@ class communityRepository
           if (comment.User.User_customization.profil_picture != null) {
             const profileProfPicBuffer = comment.User.User_customization.profil_picture;
             
-            const profileProfPicMimeType = comment.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+            const profileProfPicMimeType = comment.User.User_customization.profil_picture_type || 'image/jpeg';
             
             if (profileProfPicBuffer) {
-              // Blob fájl átalakítása Base64 formátumba
               const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
               comment.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
             }
@@ -369,11 +362,10 @@ class communityRepository
               if (inner_comment.User.User_customization.profil_picture != null) {
                 const profileProfPicBuffer = inner_comment.User.User_customization.profil_picture;
                 
-                const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg'; // Alapértelmezett MIME típus
+                const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg';
 
                 
                 if (profileProfPicBuffer) {
-                  // Blob fájl átalakítása Base64 formátumba
                   const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
                   inner_prof = `data:${profileProfPicMimeType};base64,${base64Image}`;
                 }
@@ -400,6 +392,7 @@ class communityRepository
               };
             }),
             createdAt: comment.createdAt,
+            commentLimit: 10
           });
         });
       
@@ -423,7 +416,8 @@ class communityRepository
           gotEdit: postObj.gotEdit,
           editable: false,
           files: postObj.files,
-          limitedComments: 10
+          limitedComments: 10,
+          commentLimit: 10
         }
       
         return FinalPost;
@@ -479,7 +473,6 @@ class communityRepository
   }
   
   async postLike(post_id, upload_type, user_id) {
-    // Először keresd meg, hogy van-e már reakciója a felhasználónak a poszthoz
     const existingReaction = await this.Community_likes.findOne({
       where: {
         entity_id: post_id,
@@ -487,23 +480,17 @@ class communityRepository
         user_id: user_id
       }
     });
-
-    console.log(existingReaction);
   
     if (existingReaction) {
-      // Ha már van reakció
       if (existingReaction.like_type === 'like') {
-        // Ha a reakció 'like', töröljük
         await existingReaction.destroy();
         return { message: 'Like törölve' };
       } else if (existingReaction.like_type === 'dislike') {
-        // Ha a reakció 'dislike', módosítjuk 'like'-ra
         existingReaction.like_type = 'like';
         await existingReaction.save();
-        return existingReaction; // Visszaadjuk a módosított reakciót
+        return existingReaction;
       }
     }  else {
-      // Ha nincs reakció, hozz létre egy újat
       const newLike = await this.Community_likes.create({
         user_id: user_id,
         entity_id: post_id,
@@ -515,7 +502,6 @@ class communityRepository
   }
 
   async postDislike(post_id, upload_type, user_id) {
-    // Először keresd meg, hogy van-e már reakciója a felhasználónak a poszthoz
     const existingReaction = await this.Community_likes.findOne({
       where: {
         entity_id: post_id,
@@ -525,19 +511,15 @@ class communityRepository
     });
   
     if (existingReaction) {
-      // Ha már van reakció
       if (existingReaction.like_type === 'dislike') {
-        // Ha a reakció 'dislike', töröljük
         await existingReaction.destroy();
         return { message: 'Dislike törölve' };
       } else if (existingReaction.like_type === 'like') {
-        // Ha a reakció 'like', módosítjuk 'dislike'-ra
         existingReaction.like_type = 'dislike';
         await existingReaction.save();
         return existingReaction;
       }
     } else {
-      // Ha nincs reakció, hozz létre egy újat 'dislike' típusúval
       const newDislike = await this.Community_likes.create({
         user_id: user_id,
         entity_id: post_id,
