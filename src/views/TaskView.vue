@@ -23,45 +23,71 @@
 
     <!-- Add padding-top to v-main to account for the app bar height -->
     <v-main style="padding-top: 64px;">
-        <v-row style="height: 100vh; padding: 1em">
-          <v-col cols="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
-            <h1 style="">{{ task?.id }}. {{ task?.task_title }}</h1>
-            <v-row style="padding: 1em; gap: 1em">
-              <v-chip
-                :color="chipColor(task?.difficulty)"
-                outlined
-                small
-                style="width: 5rem;"
-                class="d-flex align-center justify-center"
-              >
-                <p class="ma-0">{{ difficultyLabel(task?.difficulty) }}</p>
-              </v-chip>
+        <v-row style="height: 100vh; padding: 0.5em;">
+          <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+            <h1 style="text-align: left; width: 100%;">{{ task?.id }}. {{ task?.task_title }}</h1>
+      <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap;">
+  
+      <!-- Chip 1 -->
+      <v-chip
+        :color="chipColor(task?.difficulty)"
+        outlined
+        small
+        style="min-width: 10rem; flex-shrink: 0;"
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0">{{ difficultyLabel(task?.difficulty) }}</p>
+      </v-chip>
 
-              <v-chip
-                :color="blue"
-                outlined
-                small
-                style="width: auto;"
-                class="d-flex align-center justify-center"
-              >
-                <p class="ma-0">Exponenciális és logaritmusos feladatok</p>
-              </v-chip>
+      <!-- Chip 2 -->
+      <v-chip
+        :color="'blue'"
+        outlined
+        small
+        style="min-width: 10rem; flex-shrink: 0;" 
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0">Exponenciális és logaritmusos feladatok</p>
+      </v-chip>
 
-              <v-chip
-                outlined
-                small
-                style="width: auto; background-color: #95cdfc; color:blue"
-                class="d-flex align-center justify-center"
-              >
-                <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
-              </v-chip>
-            </v-row>
+      <!-- Chip 3 -->
+      <v-chip
+        outlined
+        small
+        style="min-width: 10rem; flex-shrink: 0; background-color: #95cdfc; color:blue"
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
+      </v-chip>
+
+      <!-- Chip 4 -->
+      <v-chip
+        outlined
+        small
+        style="min-width: 10rem; flex-shrink: 0; background-color: #FFE082; color:#FF6F00"
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0">👑 Creator: @Jozsi</p>
+      </v-chip>
+    </v-row>
+
             <div style="margin-top: 2em;">
-              <h3>A feladat leirasa:</h3>
+              <h3>A feladat leírása:</h3>
               <p>{{ task?.task }}</p>
             </div>
+            <h3>A releváns communty postok</h3>
+            <v-row>
+              
+            </v-row>
         </v-col>
-        <v-col cols="6"></v-col>
+        <v-col cols="12" md="6">
+          <h1>Megoldás:</h1>
+          <input type="file" name="" id="">
+          <textarea name="" id=""></textarea>
+          <v-btn>
+            Beadás
+          </v-btn>
+        </v-col>
         </v-row>
     </v-main>
   </v-layout>
