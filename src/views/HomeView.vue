@@ -35,12 +35,12 @@
         v-for="n in themeStore.themes"
         :key="n.theme"
         v-slot="{ isSelected, toggle }"
-      >
+        >
         <v-btn
           :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
           class="ma-4"
           rounded
-          width="350px"
+          width="auto"
           height="3em"
           style="font-size: small;"
           @click="toggle"
@@ -52,11 +52,11 @@
   </v-sheet>
   
     <v-row 
-  class="d-flex flex-wrap align-center justify-start my-1 ga-4"
-  style="min-width: 100%; height: min-content; white-space: nowrap;"
+  class="d-flex flex-wrap align-center justify-start my-1"
+  style="min-width: 100%; height: min-content; white-space: nowrap; padding: 1em;"
 >
   <!-- Nehézség (Difficulty) Select -->
-  <v-col cols="5" md="3">
+  <v-col cols="6" md="3">
     <v-select 
       v-model="difficulty_Query"
       clearable
@@ -70,7 +70,7 @@
   </v-col>
 
   <!-- Állapot (State) Select -->
-  <v-col cols="5" md="3">
+  <v-col cols="6" md="3">
     <v-select
       v-model="state_Query"
       clearable
@@ -84,7 +84,7 @@
   </v-col>
 
   <!-- Search Input -->
-  <v-col cols="8" md="3">
+  <v-col cols="9" md="3">
     <v-text-field
       v-model="searchQuery"
       prepend-inner-icon="mdi-magnify"
@@ -100,8 +100,8 @@
   </v-col>
 
   <!-- Random Button (Only Icon) -->
-  <v-col cols="3" sm="2">
-    <v-btn class="responsive-item bg-green" style="height: 5.8vh; width: fit-content; " @click="LoadRandomTask">
+  <v-col cols="3" md="3">
+    <v-btn class="responsive-item bg-green" style="height: 5.8vh; width:max-content;" @click="LoadRandomTask">
       <v-icon color="white">mdi-shuffle-variant</v-icon>
     </v-btn>
   </v-col>
@@ -194,16 +194,16 @@
     
     <v-main class="d-block align-center justify-center" style="height: auto;">
       <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3">
-        <v-col class="d-flex align-center justify-center" cols="2">
+        <v-col class="d-flex align-center justify-center" cols="1">
           <span>Státusz</span>
         </v-col>
         <v-col class="d-flex align-center justify-center" cols="6">
           <span>Cím</span>
         </v-col>
-        <v-col class="d-flex align-center justify-center" cols="2">
+        <v-col class="d-flex align-center justify-center" cols="4">
           <span>Teljesítési arány</span>
         </v-col>
-        <v-col class="d-flex align-center justify-center" cols="2">
+        <v-col class="d-flex align-center justify-center" cols="1">
           <span>Nehézség</span>
         </v-col>
       </v-row>
@@ -305,6 +305,7 @@ export default defineComponent({
     apexchart: VueApexCharts,
   },
   setup() {
+    
     sessionStorage.setItem('offset','0');
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
