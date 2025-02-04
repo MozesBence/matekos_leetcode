@@ -26,7 +26,7 @@
             </v-container>
           </v-form>
 
-          <v-btn v-if="get_fullUser != null" icon elevation="0" @click="showCreatePost = !showCreatePost">
+          <v-btn v-if="get_fullUser != null" icon elevation="0" @click="CreatePostOpen()">
             <v-icon>mdi-pencil</v-icon>
           </v-btn>
         </div>
@@ -96,6 +96,9 @@
               </v-btn>
               <v-btn text color="community_primary_color" @click="post.showComments = true">
                 Válasz
+              </v-btn>
+              <v-btn v-if="post.user_name == get_UserName && !post.editable" text elevation="0" @click="EditPostOpen(post)">
+                Módosítás
               </v-btn>
             </v-card-actions>
             <!-- Komment szekció -->
@@ -376,12 +379,22 @@
       </div>
 
       <!-- Új poszt létrehozása modal -->
-      <v-dialog v-model="showCreatePost" max-width="600px">
+      <v-dialog v-model="showPostDial" max-width="600px">
         <v-card>
           <v-card-title>Új poszt létrehozása</v-card-title>
           <v-card-text class="mb-2">
             <v-text-field
+              v-if="showCreatePost"
               v-model="newPost.title"
+              label="Cím"
+              variant="outlined"
+              class="mx-4"
+              hide-details
+            ></v-text-field>
+
+            <v-text-field
+              v-if="showEditPost"
+              v-model="editingPost.title"
               label="Cím"
               variant="outlined"
               class="mx-4"
@@ -514,7 +527,7 @@
                 </v-col>
               </v-row>
             </v-container>
-            <div>
+            <div v-if="showCreatePost">
               <!-- Rejtett fájl input -->
               <div class="d-flex ml-4 mb-2 ga-2 align-center">
                 <h3
@@ -565,13 +578,68 @@
                 </div>
               </v-expand-transition>
             </div>
+
+            <div v-if="showEditPost">
+              <!-- Rejtett fájl input -->
+              <div class="d-flex ml-4 mb-2 ga-2 align-center">
+                <h3
+                @click="triggerFileInput"
+                style="cursor: pointer;"
+                >Fájl feltöltése</h3>
+                <v-btn 
+                  elevation="0" 
+                  icon 
+                  small 
+                  @click="triggerFileInput"
+                >
+                  <v-icon>mdi-file-upload</v-icon>
+                </v-btn>
+              </div>
+              <input
+                type="file"
+                ref="fileInput"
+                style="display: none"
+                @change="handleFileUpload"
+                accept=".js, .ts, .vue, .cs, .css, .lua, .txt"
+                multiple
+              />
+
+              <!-- Kiválasztott fájlok listája -->
+              <v-expand-transition>
+                <div v-if="editingPost.files.length > 0">
+                  <p class="mx-4">
+                    Kiválasztott fájlok:
+                  </p>
+                  <v-expand-transition>
+                    <ul class="mx-12">
+                      <li v-for="(file, index) in editingPost.files" :key="index">
+                        {{ file.name == undefined ? file.file_name : file.name }} ({{ ((file.size == undefined ? file.file_size : file.size) / 1024).toFixed(2) }} KB)
+
+                        <v-btn 
+                          elevation="0" 
+                          icon 
+                          small 
+                          @click="fileDelete(index)"
+                        >
+                          <v-icon>mdi-delete</v-icon>
+                        </v-btn>
+
+                      </li>
+                    </ul>
+                  </v-expand-transition>
+                </div>
+              </v-expand-transition>
+            </div>
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="community_primary_color" @click="addPost" :loading="loading">
+            <v-btn v-if="showCreatePost" color="community_primary_color" @click="addPost" :loading="loading">
               Poszt létrehozása
             </v-btn>
-            <v-btn text @click="showCreatePost = !showCreatePost">Mégse</v-btn>
+            <v-btn v-if="showEditPost" color="community_primary_color" @click="EditPostConf()" :loading="loading">
+              Poszt szerkeztése
+            </v-btn>
+            <v-btn text @click="ShowPostClose()">Mégse</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -615,12 +683,10 @@ const { mutate: ProfileGetUser } = useProfileGetUser();
 const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
 
 onMounted(async () => {
-  var user_id = null;
   if (get_user_by_token != null) {
     try {
       await ProfileGetUser({token: get_user_by_token, id: 0}, {
         onSuccess: (get_user) => {
-          user_id = get_user.id
           get_UserName.value = get_user.user_name;
           get_fullUser.value = get_user;
         },
@@ -700,8 +766,12 @@ const fileInput = ref(null);
 const editingComment = ref(null);
 const editingID = ref(null);
 const editingContent = ref(null);
+const showEditPost = ref(false);
+const showPostDial = ref(false);
+const defaultPostSave = ref(null);
 
-const newPost = reactive({ title: "", content: "", images: reactive([]), files: ref([]) });
+const newPost = reactive({ title: "", files: ref([]) });
+const editingPost = reactive({ title: "", images: ref([]), files: ref([]), content: "" });
 
 // Posts tömb
 const posts = reactive([]);
@@ -718,6 +788,64 @@ const filteredPosts = computed(() => {
       post.content.toLowerCase().includes(query)
   );
 });
+
+
+function CreatePostOpen(){
+  showEditPost.value = false;
+  showPostDial.value = true;
+  showCreatePost.value = true;
+}
+
+function EditPostOpen(post){
+  editingPost.title = post.title;
+  editingPost.content = post.content;
+  editingPost.files = [...post.files];
+  editingPost.images = [...post.images];
+  defaultPostSave.value = post;
+  showCreatePost.value = false;
+  showPostDial.value = true;
+  showEditPost.value = true;
+}
+
+watch(showEditPost, async (newVal) => {
+  if (newVal) {
+    await nextTick();
+    var editor = document.getElementsByClassName("editor")[0];
+    if (editor) {
+      editor.innerHTML = editingPost.content;
+    }
+  }
+});
+
+const EditPostConf = async () =>{
+  var editor = document.getElementsByClassName("editor")[0];
+  let htmlContent = editor.innerHTML;
+
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = htmlContent;
+
+  const imgElements = tempDiv.querySelectorAll("img");
+  imgElements.forEach(img => {
+    img.removeAttribute("src");
+  });
+
+  const cleanedHtmlContent = tempDiv.innerHTML;
+
+  const mergedArray = [...editingPost.images, ...editingPost.files];
+
+  const compressingFilesArray = await compressingFiles(mergedArray);
+
+  if(defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images){
+    console.log("változott a post egyik értéke");
+  }
+}
+
+function ShowPostClose(){
+  showPostDial.value = false;
+  showCreatePost.value = false;
+  showEditPost.value = false;
+  defaultPostSave.value = false;
+}
 
 // Methods
 function toggleBold() {
@@ -829,16 +957,21 @@ const handleImageUpload = async (event) => {
     reader.onload = () => {
       const imgUrl = reader.result;
 
-      // Mentés az images tömbbe
-      const imageId = newPost.images.length + 1;
-      newPost.images.push({
+      const imgObj = {
         url: imgUrl,
         type: file.type,
         name: file.name,
-      });
+      };
+
+      if(showCreatePost.value){
+        newPost.images.push(imgObj);
+        insertImage();
+      }else if(showEditPost.value){
+        editingPost.images.push(imgObj);
+        insertImage();
+      }
 
       // Kép beszúrása a kurzor helyére
-      insertImage();
     };
     
     reader.readAsDataURL(file);
@@ -942,6 +1075,14 @@ watch(showCreatePost, (newValue) => {
   }
 });
 
+watch(showEditPost, (newValue) => {
+  if (newValue) {
+    startMonitoring(); 
+  } else {
+    stopMonitoring(); 
+  }
+});
+
 const loading = ref(false);
 const { mutate: CommunityPostUpload } = useCommunityPost(loading);
 const addPost = async () =>{
@@ -1034,7 +1175,7 @@ function postsConvertToDisplay(array,igaze){
   newPost.images = [];
   newPost.title = "";
   
-  showCreatePost.value = false;
+  ShowPostClose();
 }
 
 const compressingFiles = async (mergedArray) => {
@@ -1090,11 +1231,14 @@ const compressingFiles = async (mergedArray) => {
             continue; // Hibás fájlt kihagyjuk
           }
         }
-
+        
         // Blob-ból File objektum létrehozása fájlnévvel
-        const fileWithName = new File([blob], file.name || `file_${Date.now()}`, { type: blob.type });
+        const fileWithMetadata = {
+          file: new File([blob], file.name || `file_${Date.now()}`, { type: blob.type }),
+          id: file.id !== undefined ? file.id : null,
+        };
 
-        compressFilesArray.push(fileWithName);
+        compressFilesArray.push(fileWithMetadata);
       } catch (error) {
         console.error('Fájl feldolgozási hiba:', error);
       }
@@ -1140,11 +1284,29 @@ const insertImage = () => {
       const range = selection.getRangeAt(0);
       
       // Ellenőrizzük, hogy a kurzor az editor-ban van
-      if (editor.contains(range.startContainer)) {
+      if(showCreatePost.value){
+        if (editor.contains(range.startContainer)) {
+          const img = document.createElement('img');
+          img.src = newPost.images[newPost.images.length-1].url;
+          img.alt = 'Uploaded ' + newPost.images.length+'. Image';
+          img.id = newPost.images.length;
+          img.style.maxWidth = '100%';
+          img.style.height = '20vh';
+          img.style.display = 'block';
+  
+          range.deleteContents();
+          range.insertNode(img);
+  
+          range.setStartAfter(img);
+          range.setEndAfter(img);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }else if(showEditPost){
         const img = document.createElement('img');
-        img.src = newPost.images[newPost.images.length-1].url;
-        img.alt = 'Uploaded ' + newPost.images.length+'. Image';
-        img.id = newPost.images.length;
+        img.src = editingPost.images[editingPost.images.length-1].url;
+        img.alt = 'Uploaded ' + editingPost.images.length+'. Image';
+        img.id = editingPost.images.length;
         img.style.maxWidth = '100%';
         img.style.height = '20vh';
         img.style.display = 'block';
@@ -1176,8 +1338,14 @@ function handleFileUpload(event) {
       };
 
       // Ellenőrizzük, hogy a fájl már szerepel-e
-      if (!newPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
-        newPost.files.push(obj);
+      if(showCreatePost.value){
+        if (!newPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+          newPost.files.push(obj);
+        }
+      }else if(showEditPost.value){
+        if (!editingPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+          editingPost.files.push(obj);
+        }
       }
     } else {
       console.warn(`A fájl mérete túl nagy: ${file.name}`);
@@ -1233,7 +1401,11 @@ function triggerFileInput() {
 }
 
 function fileDelete(index){
-  newPost.files.splice(index,1);
+  if(showCreatePost.value){
+    newPost.files.splice(index,1);
+  }else if(showEditPost.value){
+    editingPost.files.splice(index,1);
+  }
 }
 
 const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
