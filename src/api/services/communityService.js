@@ -35,6 +35,15 @@ class communityService
     {
         return await communityRepository.commentEdit(content, comment_id);
     }
+
+    async postEdit(id, title, content, files, none_files)
+    {
+        return await communityRepository.postEdit(id, title, content, files, none_files);
+    }
+
+    async filesDelete(none_files){
+        return await communityRepository.filesDelete(none_files);
+    }
 }
 
 module.exports = new communityService();

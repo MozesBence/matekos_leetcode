@@ -276,16 +276,20 @@ class communityRepository
       
             const base64File = Buffer.from(fileBuffer).toString('base64');
             const base64Data = `data:${mimeType};base64,${base64File}`;
-      
+
             if (mimeType.startsWith('image/')) {
               postObj.images.push({
                 ...file,
-                file: base64Data
+                file: base64Data,
+                name: file.file_name,
+                id: file.id
               });
             } else {
               postObj.files.push({
                 ...file,
-                file: base64Data
+                file: base64Data,
+                name: file.file_name,
+                id: file.id
               });
             }
           });
@@ -403,7 +407,7 @@ class communityRepository
           createdAt: postObj.createdAt,
           user_id: postObj.user_id,
           user_name: postObj.User.user_name,
-          files: postObj.Community_files,
+          files: postObj.files,
           comments: Comments,
           total_comments: postObj.total_comments,
           User: postObj.User,
@@ -553,6 +557,37 @@ class communityRepository
     await comment.save();
 
     return comment;
+  }
+
+  async postEdit(id, title, content){
+    const post = await this.Community_posts.findOne({
+      where: { id: id },
+    });
+
+    if (!post) {
+      throw new Error("A post nem található!");
+    }
+
+    post.content = title;
+    post.content = content;
+    post.gotEdit = true;
+  
+    await post.save();
+
+    return post;
+  }
+
+  async filesDelete(none_files) {
+    try {
+      for (const id of none_files) {
+        await CommunityFile.destroy({
+          where: { id: id }
+        });
+      }
+      console.log("Sikeres törlés:", none_files);
+    } catch (error) {
+      console.error("Hiba a fájlok törlése közben:", error);
+    }
   }  
 }
 

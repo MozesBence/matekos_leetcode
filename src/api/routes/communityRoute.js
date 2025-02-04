@@ -48,5 +48,7 @@ route.post("/community/post-like", communityControllers.postLike);
 route.post("/community/post-comment", communityControllers.postComment);
 
 route.patch("/community/comment-edit", communityControllers.commentEdit);
+  
+route.patch("/community/post-edit",upload.array("files", 10), communityControllers.postEditUpload);
 
 module.exports = route;

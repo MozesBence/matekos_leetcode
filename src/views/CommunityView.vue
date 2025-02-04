@@ -651,10 +651,7 @@
 import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { useCommunityPost, useGetCommunityPost } from '@/api/community/communityQuery';
-import { useLikeDislikeForPost } from '@/api/community/communityQuery';
-import { useCommentForPost } from '@/api/community/communityQuery';
-import { useCommentEdit } from '@/api/community/communityQuery';
+import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 
 const router = useRouter();
@@ -817,6 +814,8 @@ watch(showEditPost, async (newVal) => {
   }
 });
 
+const { mutate: CommunityEditPostUpload } = useCommunityEditPost();
+
 const EditPostConf = async () =>{
   var editor = document.getElementsByClassName("editor")[0];
   let htmlContent = editor.innerHTML;
@@ -824,19 +823,52 @@ const EditPostConf = async () =>{
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = htmlContent;
 
-  const imgElements = tempDiv.querySelectorAll("img");
+  const imgElements = Array.from(tempDiv.querySelectorAll("img")); // Átalakítjuk tömbbé
+
   imgElements.forEach(img => {
     img.removeAttribute("src");
   });
 
+  for (let i = 0; i < editingPost.images.length; i++) {
+    const found = imgElements.some(img => img.id === (i + 1).toString());
+    if(!found){
+      editingPost.images.splice(i,1);
+    }
+  }
+
   const cleanedHtmlContent = tempDiv.innerHTML;
 
-  const mergedArray = [...editingPost.images, ...editingPost.files];
+  const changed_mergedArray = [...editingPost.images, ...editingPost.files];
+  const def_mergedArray = [...defaultPostSave.value.images, ...defaultPostSave.value.files];
 
-  const compressingFilesArray = await compressingFiles(mergedArray);
+  const changed_compressingFilesArray = await compressingFiles(changed_mergedArray);
+  const def_compressingFilesArray = await compressingFiles(def_mergedArray);
+
+  var new_files = [];
+
+  changed_compressingFilesArray.filter(changedFile => {
+    if(typeof changedFile != 'number' && changedFile != undefined){
+      if (!def_compressingFilesArray.some(f => f != undefined && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
+        new_files.push(changedFile);
+      }
+    }
+  });
+
+  var none_existingFiles = [];
+
+  def_compressingFilesArray.filter(changedFile => {
+    if(typeof changedFile != 'number' && changedFile != undefined){
+      if (!changed_compressingFilesArray.some(f => f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
+        none_existingFiles.push(def_compressingFilesArray[def_compressingFilesArray.indexOf(changedFile)+1]);
+      }
+    }
+  });
 
   if(defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images){
-    console.log("változott a post egyik értéke");
+    //await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles});
+    
+    console.log(posts[defaultPostSave.value.id-1]);
+    ShowPostClose();
   }
 }
 
@@ -1233,12 +1265,12 @@ const compressingFiles = async (mergedArray) => {
         }
         
         // Blob-ból File objektum létrehozása fájlnévvel
-        const fileWithMetadata = {
-          file: new File([blob], file.name || `file_${Date.now()}`, { type: blob.type }),
-          id: file.id !== undefined ? file.id : null,
-        };
+        var fileWithMetadata = new File([blob], file.name || `file_${Date.now()}`, { type: blob.type });
 
         compressFilesArray.push(fileWithMetadata);
+        if(showEditPost){
+          compressFilesArray.push(file.id);
+        }
       } catch (error) {
         console.error('Fájl feldolgozási hiba:', error);
       }
@@ -1339,11 +1371,11 @@ function handleFileUpload(event) {
 
       // Ellenőrizzük, hogy a fájl már szerepel-e
       if(showCreatePost.value){
-        if (!newPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+        if (!newPost.files.some(f => f.name === obj.name && f.file_size === obj.size && f.file_type === obj.type)) {
           newPost.files.push(obj);
         }
       }else if(showEditPost.value){
-        if (!editingPost.files.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+        if (!editingPost.files.some(f => f.name === obj.name && f.file_size === obj.size && f.file_type === obj.type)) {
           editingPost.files.push(obj);
         }
       }

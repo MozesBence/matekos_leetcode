@@ -1,6 +1,6 @@
 import axiosClient from '../../lib/axios'
 import { useMutation } from '@tanstack/vue-query'
-import type { CommunityData } from './community'
+import type { CommunityData, CommunityEditData } from './community'
 import type { Ref } from 'vue'
 
 const CommunityPostUpload = async (data: CommunityData) => {
@@ -41,6 +41,47 @@ export const useCommunityPost = (loading: Ref<boolean, boolean>) => {
     },
   })
 }
+
+const CommunityEditPostUpload = async (data: CommunityEditData) => {
+  const formData = new FormData();
+  formData.append('id', data.id.toString());
+  formData.append('title', data.title);
+  formData.append('content', data.content);
+  formData.append('none_files', JSON.stringify(data.none_files));
+   // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
+  Object.keys(data.files).forEach(key => {
+    const file = data.files[key];
+
+    // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
+    if (file instanceof File || file instanceof Blob) {
+      formData.append('files', file); // Hozzáadjuk a fájlt a FormData-hoz
+    } else {
+      // Ha nem fájl, logold az objektumot
+      console.error("Nem fájl objektum:", file);
+    }
+  });
+
+  const response = await axiosClient.patch('http://localhost:3000/community/post-edit', formData,{
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return response.data;
+}
+
+export const useCommunityEditPost = () => {
+  return useMutation({
+    mutationFn: CommunityEditPostUpload,
+    onMutate: () => {
+
+    },
+    onSuccess(response) {
+
+    },
+    onError: (error: any) => {
+
+    },
+  })
+}
+
 
 const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null}) => {
   const response = await axiosClient.get('http://localhost:3000/community', {

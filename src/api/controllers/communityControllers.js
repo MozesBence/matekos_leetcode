@@ -49,6 +49,45 @@ exports.postUpload = async (req, res, next) => {
     }
 };
 
+exports.postEditUpload = async (req, res, next) => {
+    const {id, title, content, none_files} = req.body;
+    const files = req.files;
+
+    try{
+        const postEdit_result = communityService.postEdit(id, title, content);
+    
+        if(none_files != []){
+            const fileDelete_result = communityService.filesDelete(none_files);
+    
+            if(fileDelete_result == null){
+                const error = new Error("A fájl(ok) törlésében valami hiba lépett fel!");
+        
+                error.status(500);
+        
+                throw error;
+            }
+        }
+    
+        if(files != []){
+            const postFiles_result = await communityService.postFilesUpload(files, id);
+        
+            if(postFiles_result == null){
+                const error = new Error("A poszt feltöltése megtörtént de sikertelen volt a fájl(ok) feltöltése(i)!");
+        
+                error.status(400);
+        
+                throw error;
+            }
+        }
+    
+        res.status(200).send(postEdit_result);
+    }
+    catch(error){
+        next(error);
+    }
+
+};
+
 exports.postLike = async (req,res,next)=>{
     const {post_id, user_id, upload_type, type} = req.body;
 
