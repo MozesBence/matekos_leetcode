@@ -315,6 +315,12 @@ export default defineComponent({
     const state_Query = ref<string | null>(null)
 
     const UpdatePage = (newPage: number) => {
+      window.scroll({
+  top: 0,
+  left: 0,
+  behavior: 'smooth'
+});
+
         console.log(newPage)
         pageNumber.value = newPage;
         console.log(pageNumber)
