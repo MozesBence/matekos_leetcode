@@ -15,9 +15,6 @@ const CommunityPostUpload = async (data: CommunityData) => {
     // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
     if (file instanceof File || file instanceof Blob) {
       formData.append('files', file); // Hozzáadjuk a fájlt a FormData-hoz
-    } else {
-      // Ha nem fájl, logold az objektumot
-      console.error("Nem fájl objektum:", file);
     }
   });
 
@@ -55,9 +52,6 @@ const CommunityEditPostUpload = async (data: CommunityEditData) => {
     // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
     if (file instanceof File || file instanceof Blob) {
       formData.append('files', file); // Hozzáadjuk a fájlt a FormData-hoz
-    } else {
-      // Ha nem fájl, logold az objektumot
-      console.error("Nem fájl objektum:", file);
     }
   });
 

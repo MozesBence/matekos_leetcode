@@ -57,7 +57,7 @@
               <div v-html="post.content">
               </div>
             </v-card-text>
-            <v-expand-transition>
+            <transition-group name="expand-transition" tag="div" class="d-flex ga-2">
               <div v-if="post.files.length > 0" v-for="(file, index) in post.files" :key="index">
                 <v-card-text class="mb-3">
                   <div class="d-inline-flex flex-column justify-center align-center">
@@ -78,7 +78,8 @@
                   </div>
                 </v-card-text>
               </div>
-            </v-expand-transition>
+            </transition-group>
+
 
             <v-divider></v-divider>
             <v-card-actions>
@@ -648,7 +649,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, computed, nextTick, watch } from 'vue';
+import { onMounted, ref, reactive, computed, nextTick, watch, toRef  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit } from '@/api/community/communityQuery';
@@ -858,7 +859,7 @@ const EditPostConf = async () =>{
 
   def_compressingFilesArray.filter(changedFile => {
     if(typeof changedFile != 'number' && changedFile != undefined){
-      if (!changed_compressingFilesArray.some(f => f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
+      if (!changed_compressingFilesArray.some(f => f != undefined && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
         none_existingFiles.push(def_compressingFilesArray[def_compressingFilesArray.indexOf(changedFile)+1]);
       }
     }
@@ -867,10 +868,44 @@ const EditPostConf = async () =>{
   if(defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images){
     //await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles});
     
-    console.log(posts[defaultPostSave.value.id-1]);
+    const post = posts.find(c => c.id === Number(defaultPostSave.value.id));
+
+    for (let i = 0; i < editingPost.files.length; i++) {
+      if(typeof editingPost.files[i].file == 'object'){
+        const file_res = await fileToBase64(editingPost.files[i].file);
+        const obj = reactive({
+          file: file_res,
+          file_name: editingPost.files[i].name,
+          file_size: editingPost.files[i].size,
+          file_type: editingPost.files[i].type,
+          id: null,
+          name:  editingPost.files[i].name,
+          post_id: Number(defaultPostSave.value.id)
+        });
+        post.files = [...post.files, obj];
+      }
+    }
+
+    console.log(post.images);
+
+    post.title = editingPost.title;
+    post.content = htmlContent;
+
     ShowPostClose();
   }
 }
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+
+    reader.readAsDataURL(file);
+  });
+}
+
 
 function ShowPostClose(){
   showPostDial.value = false;
@@ -1248,9 +1283,7 @@ const compressingFiles = async (mergedArray) => {
         }
 
         // Ha GIF fájl, ne tömörítsük, hanem egyszerűen hagyjuk úgy
-        if (file.type && file.type === 'image/gif') {
-          console.log('GIF fájl, nem tömörítjük:', file.name);
-        } else if (file.type && file.type.startsWith('image/')) {
+        if (file.type && file.type.startsWith('image/')) {
           // Kép tömörítése (nem GIF esetén)
           try {
             const options = {
@@ -1366,7 +1399,8 @@ function handleFileUpload(event) {
         name: file.name,
         size: file.size,
         type: file.type,
-        url: URL.createObjectURL(file), // Blob URL létrehozása az azonnali használathoz
+        url: URL.createObjectURL(file),
+        file: file // Blob URL létrehozása az azonnali használathoz
       };
 
       // Ellenőrizzük, hogy a fájl már szerepel-e
