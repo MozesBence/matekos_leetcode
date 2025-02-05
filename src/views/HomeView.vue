@@ -52,11 +52,11 @@
   </v-sheet>
   
   <v-row 
-  class="d-flex flex-wrap align-center justify-start my-1"
-  style="min-width: 100%; height: min-content; white-space: nowrap; padding: 1em;"
->
+  class="d-flex align-center my-1"
+  style="min-width: 100%; height: min-content; white-space: nowrap; padding: 1em; justify-content: center;">
+  
   <!-- Nehézség (Difficulty) Select -->
-  <v-col cols="6" md="3">
+  <v-col cols="6" md="3" class="d-flex align-center justify-center">
     <v-select 
       v-model="difficulty_Query"
       clearable
@@ -70,7 +70,7 @@
   </v-col>
 
   <!-- Állapot (State) Select -->
-  <v-col cols="6" md="3">
+  <v-col cols="6" md="3" class="d-flex align-center justify-center">
     <v-select
       v-model="state_Query"
       clearable
@@ -84,7 +84,7 @@
   </v-col>
 
   <!-- Search Input -->
-  <v-col cols="9" md="3">
+  <v-col cols="9" md="3" class="d-flex align-center justify-center">
     <v-text-field
       v-model="searchQuery"
       prepend-inner-icon="mdi-magnify"
@@ -100,12 +100,13 @@
   </v-col>
 
   <!-- Random Button (Only Icon) -->
-  <v-col cols="3" md="3">
-    <v-btn class="responsive-item bg-green" style="height: 56px; width: max-content;" @click="LoadRandomTask">
+  <v-col cols="3" md="1" class="d-flex align-center justify-center">
+    <v-btn class="responsive-item bg-green" style="height: 56px; width: 10em;" @click="LoadRandomTask">
       <v-icon color="white">mdi-shuffle-variant</v-icon>
     </v-btn>
   </v-col>
 </v-row>
+
 
   <v-layout class="rounded-md" height="min-content">
     <v-navigation-drawer 
@@ -229,17 +230,17 @@
 
 
       <!-- Task Title -->
-      <v-col class="d-flex align-center justify-center" cols="10" md="6"  style="text-align: left;">
+      <v-col class="d-flex align-center justify-center" cols="10" sm="6"  style="text-align: left;">
         <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
       </v-col>
       
       <!-- Completion Rate -->
-      <v-col class="d-flex align-center justify-center" cols="6" md="2">
+      <v-col class="d-flex align-center justify-center" cols="6" sm="2">
         {{ cardCompRate(cardsStore.completion_rates, card.id) }}%
       </v-col>
 
       <!-- Difficulty -->
-      <v-col class="d-flex align-center justify-center" cols="6" md="2">
+      <v-col class="d-flex align-center justify-center" cols="6" sm="2">
         <v-chip 
           :color="chipColor(card.difficulty)" 
           outlined 
