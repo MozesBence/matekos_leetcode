@@ -826,6 +826,8 @@ const EditPostConf = async () =>{
 
   const imgElements = Array.from(tempDiv.querySelectorAll("img")); // Átalakítjuk tömbbé
 
+  var none_existingFiles = [];
+
   imgElements.forEach(img => {
     img.removeAttribute("src");
   });
@@ -854,9 +856,7 @@ const EditPostConf = async () =>{
       }
     }
   });
-
-  var none_existingFiles = [];
-
+  
   def_compressingFilesArray.filter(changedFile => {
     if(typeof changedFile != 'number' && changedFile != undefined){
       if (!changed_compressingFilesArray.some(f => f != undefined && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
@@ -865,31 +865,60 @@ const EditPostConf = async () =>{
     }
   });
 
+  const def_postId =  Number(defaultPostSave.value.id);
+  
   if(defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images){
-    //await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles});
-    
-    const post = posts.find(c => c.id === Number(defaultPostSave.value.id));
+    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles}, {
+      onSuccess : async (response) =>{
+        const post = posts.find(c => c.id == def_postId);
 
-    for (let i = 0; i < editingPost.files.length; i++) {
-      if(typeof editingPost.files[i].file == 'object'){
-        const file_res = await fileToBase64(editingPost.files[i].file);
-        const obj = reactive({
-          file: file_res,
-          file_name: editingPost.files[i].name,
-          file_size: editingPost.files[i].size,
-          file_type: editingPost.files[i].type,
-          id: null,
-          name:  editingPost.files[i].name,
-          post_id: Number(defaultPostSave.value.id)
-        });
-        post.files = [...post.files, obj];
+        for (let i = 0; i < editingPost.files.length; i++) {
+          if(typeof editingPost.files[i].file == 'object'){
+            const file_res = await fileToBase64(editingPost.files[i].file);
+            const obj = reactive({
+              file: file_res,
+              file_name: editingPost.files[i].name,
+              file_size: editingPost.files[i].size,
+              file_type: editingPost.files[i].type,
+              id: null,
+              name:  editingPost.files[i].name,
+              post_id: Number(defaultPostSave.value.id)
+            });
+            post.files = [...post.files, obj];
+          }
+        }
+
+        for (let i = 0; i < editingPost.images.length; i++) {
+          const image = post.images.find(c=> c.file_name == editingPost.images[i].name && c.id != null);
+          if(image == undefined){
+            const obj = reactive({
+              file: editingPost.images[i].url,
+              file_name: editingPost.images[i].name,
+              file_size: editingPost.images[i].size,
+              file_type: editingPost.images[i].type,
+              id: null,
+              name: editingPost.images[i].name,
+              post_id: Number(defaultPostSave.value.id)
+            });
+            post.images = [...post.images, obj];
+          }
+        }
+
+        for (let i = 0; i < none_existingFiles.length; i++) {
+          const image = post.images.find(c=> c.id == none_existingFiles[i]);
+          const file = post.files.find(c=> c.id == none_existingFiles[i]);
+          if(image != undefined){
+            post.images.splice(post.images.indexOf(image),1);
+          }
+          if(file != undefined){
+            post.files.splice(post.files.indexOf(file),1);
+          }
+        }
+
+        post.title = editingPost.title;
+        post.content = htmlContent;
       }
-    }
-
-    console.log(post.images);
-
-    post.title = editingPost.title;
-    post.content = htmlContent;
+    });
 
     ShowPostClose();
   }
@@ -1027,6 +1056,7 @@ const handleImageUpload = async (event) => {
       const imgObj = {
         url: imgUrl,
         type: file.type,
+        size: file.size,
         name: file.name,
       };
 
@@ -1169,9 +1199,13 @@ const addPost = async () =>{
   // A módosított HTML tartalom
   const cleanedHtmlContent = tempDiv.innerHTML;
 
+  console.log(newPost.images);
+
   const mergedArray = [...newPost.images, ...newPost.files];
 
   const compressingFilesArray = await compressingFiles(mergedArray);
+
+  console.log(compressingFilesArray);
 
   if(get_fullUser.value.id && newPost.title && htmlContent){
     loading.value = true;
@@ -1282,27 +1316,33 @@ const compressingFiles = async (mergedArray) => {
           continue; // Hibás fájlt kihagyjuk
         }
 
-        // Ha GIF fájl, ne tömörítsük, hanem egyszerűen hagyjuk úgy
         if (file.type && file.type.startsWith('image/')) {
-          // Kép tömörítése (nem GIF esetén)
-          try {
-            const options = {
-              maxSizeMB: 0.1,
-              useWebWorker: true,
-            };
-            blob = await imageCompression(blob, options);
-          } catch (error) {
-            console.error('Tömörítési hiba:', error);
-            continue; // Hibás fájlt kihagyjuk
+          // Ha nem GIF, akkor tömörítés
+          if (file.type !== 'image/gif') {
+            try {
+              const options = {
+                maxSizeMB: 0.1,
+                useWebWorker: true,
+              };
+              blob = await imageCompression(blob, options);
+            } catch (error) {
+              console.error('Tömörítési hiba:', error);
+              continue; // Hibás fájlt kihagyjuk
+            }
           }
         }
         
+        // Ha GIF, állítsuk be kifejezetten image/gif típusra
+        const fileType = file.name.split('.').pop() === 'gif' ? 'image/gif' : blob.type;
+        
         // Blob-ból File objektum létrehozása fájlnévvel
-        var fileWithMetadata = new File([blob], file.name || `file_${Date.now()}`, { type: blob.type });
+        const fileWithMetadata = new File([blob], file.name || `file_${Date.now()}`, { type: fileType });
 
         compressFilesArray.push(fileWithMetadata);
-        if(showEditPost){
+        if(showEditPost.value){
           compressFilesArray.push(file.id);
+          compressFilesArray.push(file.type);
+          compressFilesArray.push(file.size);
         }
       } catch (error) {
         console.error('Fájl feldolgozási hiba:', error);

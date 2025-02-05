@@ -25,7 +25,7 @@
                       <v-btn
                         prepend-icon="mdi-home"
                         size="large"
-                        @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
+                        @click="currentRoute.name !== 'home' && router.push({ name: 'home', params: {id: 1} })"
                         :class="{'btn-active': currentRoute.name === 'home'}"
                       >
                         <template v-slot:prepend>
@@ -188,13 +188,13 @@
                     elevation="0"
                     class="d-flex justify-space-between align-center rounded-lg"
                     style="width: 100%;"
-                    @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
+                    @click="currentRoute.name !== 'home' && router.push({ name: 'home', params: {id: 1} })"
                     :class="{'btn-active': currentRoute.name === 'home'}"
                   >
                     <template v-slot:prepend>
                       <v-icon color="info"></v-icon>
                     </template>
-                    <p style="width: 20vw;">Home</p>
+                    <p style="width: 20vw;">Főoldal</p>
                   </v-btn>
                 </div>
                 <div class="text-center">
@@ -210,7 +210,7 @@
                     <template v-slot:prepend>
                       <v-icon color="info"></v-icon>
                     </template>
-                    <p style="width: 20vw;">About</p>
+                    <p style="width: 20vw;">Rólunk</p>
                   </v-btn>
                 </div>
                 <div class="text-center">
@@ -226,7 +226,7 @@
                     <template v-slot:prepend>
                       <v-icon color="info"></v-icon>
                     </template>
-                    <p style="width: 20vw;">Contest</p>
+                    <p style="width: 20vw;">Versenyek</p>
                   </v-btn>
                 </div>
                 <div class="text-center">
@@ -242,7 +242,7 @@
                     <template v-slot:prepend>
                       <v-icon color="info"></v-icon>
                     </template>
-                    <p style="width: 20vw;">Community</p>
+                    <p style="width: 20vw;">Közösségi</p>
                   </v-btn>
                 </div>
               </v-col>

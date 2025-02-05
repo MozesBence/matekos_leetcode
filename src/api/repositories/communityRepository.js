@@ -277,6 +277,11 @@ class communityRepository
             const base64File = Buffer.from(fileBuffer).toString('base64');
             const base64Data = `data:${mimeType};base64,${base64File}`;
 
+            if (mimeType === 'image/gif' && !base64File.startsWith('R0lGOD')) {
+              console.error(`Hibás GIF fájl:`, file);
+              return; // Hibás GIF kihagyása
+            }
+
             if (mimeType.startsWith('image/')) {
               postObj.images.push({
                 ...file,
@@ -439,22 +444,22 @@ class communityRepository
     }
 
     async postFilesUpload(files, postId) {
-        const saveFiles = [];
-        for (let file of files) {
-            const newFiles = await this.Community_files.build({
-                id: null,
-                file_name: file.originalname,
-                file_size: file.size,
-                file_type: file.mimetype,
-                file: file.buffer,
-                post_id: postId,
-            });
+      const saveFiles = [];
+      for (let file of files) {
+          const newFiles = await this.Community_files.build({
+              id: null,
+              file_name: file.originalname,
+              file_size: file.size,
+              file_type: file.mimetype,
+              file: file.buffer,
+              post_id: postId,
+          });
 
-            await newFiles.save();
-            saveFiles.push(newFiles);
-        }
-        
-        return saveFiles;
+          await newFiles.save();
+          saveFiles.push(newFiles);
+      }
+      
+      return saveFiles;
     }
 
     async postFilesUpload(files, postId) {
