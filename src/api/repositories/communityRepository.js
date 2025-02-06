@@ -278,7 +278,6 @@ class communityRepository
             const base64Data = `data:${mimeType};base64,${base64File}`;
 
             if (mimeType === 'image/gif' && !base64File.startsWith('R0lGOD')) {
-              console.error(`Hibás GIF fájl:`, file);
               return; // Hibás GIF kihagyása
             }
 

@@ -1,44 +1,109 @@
 <template>
   <main>
-      <v-navigation-drawer style="height: max-content; max-width: 35%; width: 100%;" class="ma-2 mt-4 rounded" v-if="!$vuetify.display.smAndDown">
+      <v-navigation-drawer style="height: max-content; max-width: 35%; width: 100%;" class="ma-2 ml-3 mt-4 rounded" v-if="!isMobile">
         <v-list>
           <v-list-item>
-            <div class="pa-1 d-flex align-item justify-center ga-3">
-              <v-text-field 
-              v-model="searchQuery" 
-              variant="outlined"
-              hide-details
-              label="Keresés"></v-text-field>
+            <div class="d-flex align-center justify-center ga-2 pa-2">
+              <v-text-field
+                v-model="searchQuery"
+                label="Keresés"
+                clearable
+                @keyup.enter="search"
+                icon="mdi-magnify"
+                variant="outlined"
+                hide-details
+              >
+              </v-text-field>
               <v-btn v-if="get_fullUser != null" icon elevation="0" @click="CreatePostOpen()">
                 <v-icon size="30">mdi-pencil</v-icon>
               </v-btn>
+            </div>
+            <div>
+              <v-card
+                class="mx-2 rounded custom_searchCard"
+                elevation="0"
+                style="transition: .3s;"
+                :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+              >
+                <v-card-text>
+                  <h2 class="text-h6 mb-2">Szűrési opció</h2>
+                  <v-chip-group
+                    v-model="FilterOpt"
+                    multiple
+                    column
+                  >
+                    <v-chip
+                      v-for="chip in FilterChips"
+                      :key="chip"
+                      :text="chip"
+                      variant="outlined"
+                      filter
+                      class="mr-2 chip"
+                      :class="{'selected-chip': FilterOpt.includes(FilterChips.indexOf(chip))}"
+                    ></v-chip>
+                  </v-chip-group>
+                </v-card-text>
+              </v-card>
             </div>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
 
-      <v-container fluid class="d-flex justify-end" style="margin-right: 0; max-width: 75%;" :style="{maxWidth: isMobile ? '100%' : '75%'}">
+      <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%;" :style="{maxWidth: isMobile ? '100%' : '75%'}">
         <v-row>
           <v-col
-          v-if="$vuetify.display.smAndDown"
-          :cols="$vuetify.display.smAndDown ? 12 : 0"
+          v-if="isMobile"
+          :cols="isMobile ? 12 : 0"
           class="order-0 order-md-0"
           >
-            <v-expansion-panels v-if="$vuetify.display.smAndDown">
+            <v-expansion-panels v-if="isMobile">
               <v-expansion-panel>
                 <v-expansion-panel-title>Keresési lehetőségek</v-expansion-panel-title>
                 <v-expansion-panel-text>
                   <v-list>
                     <v-list-item>
-                      <div class="pa-1 d-flex align-item justify-center ga-3">
-                        <v-text-field 
-                        v-model="searchQuery" 
-                        variant="outlined"
-                        hide-details
-                        label="Keresés"></v-text-field>
+                      <div class="pa-2 d-flex align-center justify-center ga-3">
+                        <v-text-field
+                          v-model="searchQuery"
+                          label="Keresés"
+                          clearable
+                          @keyup.enter="search"
+                          icon="mdi-magnify"
+                          variant="outlined"
+                          hide-details
+                        >
+                        </v-text-field>
                         <v-btn v-if="get_fullUser != null" icon elevation="0" @click="CreatePostOpen()">
                           <v-icon size="30">mdi-pencil</v-icon>
                         </v-btn>
+                      </div>
+                      <div>
+                        <v-card
+                          class="mx-2 rounded"
+                          elevation="0"
+                          style="transition: .3s;"
+                          :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+                        >
+                          <v-card-text>
+                            <h2 class="text-h6 mb-2">Szűrési opció</h2>
+                            <v-chip-group
+                              v-model="FilterOpt"
+                              multiple
+                              column
+                            >
+                              <v-chip
+                                v-for="chip in FilterChips"
+                                :key="chip"
+                                :text="chip"
+                                variant="outlined"
+                                filter
+                                class="mr-2"
+                                style="border: .1vw solid gray; color: gray; transition: .3s;"
+                                :class="{'selected-chip': FilterOpt.includes(FilterChips.indexOf(chip))}"
+                              ></v-chip>
+                            </v-chip-group>
+                          </v-card-text>
+                        </v-card>
                       </div>
                     </v-list-item>
                   </v-list>
@@ -50,7 +115,7 @@
           <!-- Középső rész: Posztok -->
           
           <v-col
-          :cols="!$vuetify.display.smAndDown ? 12 : 12"
+          cols="12"
           class="order-1 order-md-1"
           >
             <transition-group 
@@ -59,7 +124,7 @@
             appear
             >
             <v-card
-              v-for="post in filteredPosts"
+              v-for="post in posts"
               :key="post.id"
               class="mb-4 pt-2"
               fade
@@ -846,19 +911,25 @@ const editingPost = reactive({ title: "", images: ref([]), files: ref([]), conte
 // Posts tömb
 const posts = reactive([]);
 
-const searchQuery = ref("");
 const showCreatePost = ref(false);
 
-// Computed properties
-const filteredPosts = computed(() => {
-  const query = searchQuery.value.toLowerCase();
-  return posts.filter(
-    (post) =>
-      post.title.toLowerCase().includes(query) ||
-      post.content.toLowerCase().includes(query)
-  );
-});
+const searchQuery = ref('');
+const results = ref([]);
 
+function search() {
+  // Itt implementáld a keresést, például API hívás vagy adatbázis lekérdezés
+  console.log('Keresés:', searchQuery.value);
+  // Példa eredmények:
+  results.value = [
+    { id: 1, title: 'Eredmény 1', description: 'Leírás 1' },
+    { id: 2, title: 'Eredmény 2', description: 'Leírás 2' },
+    { id: 3, title: 'Eredmény 3', description: 'Leírás 3' }
+  ];
+}
+
+const FilterChips = ["Megoldások", "Programozás", "Segítség", "Probléma", "Bejelentés"];
+
+const FilterOpt = ref([]);
 
 function CreatePostOpen(){
   showEditPost.value = false;
@@ -1892,6 +1963,19 @@ const addLastCommentToComment = async (comment, inner_comment) => {
 }
 .fade {
   transition: opacity 0.5s !important;
+}
+
+.chip{
+  border: .1vw solid gray; 
+  color: gray;
+  transition: .3s;
+}
+.chip:hover, .selected-chip{
+  border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border)) !important; 
+  color: rgb(var(--v-theme-community_primary_color)) !important;
+}
+.custom_searchCard:hover{
+  border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border)) !important; 
 }
 
 </style>
