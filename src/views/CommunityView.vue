@@ -33,18 +33,28 @@
 
         <!-- Középső rész: Posztok -->
         <div class="PostsMargin">
+          <transition-group 
+          name="fade" 
+          tag="div" 
+          appear
+          >
           <v-card
             v-for="post in filteredPosts"
             :key="post.id"
             class="mb-4 pt-2"
             width="45vw"
+            fade
           >
             <div class="d-flex flex-row ga-2 pl-3 align-center" color="community_primary_color">
-              <div class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
+              <div 
+              class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
+              style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc)); cursor: pointer;" 
+              @click="router.push({ name: 'profile', params: { id: post.User.id } })">
                 <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                <p style="font-size: .8vw;">{{ post.user_name }}</p>
+                <h4 style="font-weight: normal;">{{ post.user_name }}</h4>
               </div>
-              <p style="font-size: .6vw;">{{ post.createdAt }}</p>
+              <h5 style="font-weight: normal;">{{ post.createdAt }}</h5>
+              <h5 v-if="post.gotEdit" style="font-weight: normal;">[Szerkeztve]</h5>
             </div>
 
             <v-card-title>
@@ -57,325 +67,352 @@
               <div v-html="post.content">
               </div>
             </v-card-text>
-            <transition-group name="expand-transition" tag="div" class="d-flex ga-2">
-              <div v-if="post.files.length > 0" v-for="(file, index) in post.files" :key="index">
-                <v-card-text class="mb-3">
-                  <div class="d-inline-flex flex-column justify-center align-center">
-                    <v-btn 
-                      icon 
-                      elevation="0" 
-                      size="70"
-                      @click="downloadFile(file)"
-                    >
-                      <v-icon size="50">mdi-file</v-icon>
-                    </v-btn>
-                    <p>
-                      {{ (file.name == undefined ? file.file_name : file.name) }}
-                    </p>
-                    <p style="font-size: .5vw;">
-                      Méret: {{ formatFileSize(file.size == undefined ? file.file_size : file.size) }}
-                    </p>
-                  </div>
-                </v-card-text>
-              </div>
-            </transition-group>
-
-
-            <v-divider></v-divider>
-            <v-card-actions>
-              <v-btn icon @click="like(post,'post')">
-                <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                {{ post.like > 0 ? post.like : null }}
-              </v-btn>
-              <v-btn icon @click="dislike(post,'post')">
-                <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                {{ post.dislike > 0 ? post.dislike : null }}
-              </v-btn>
-              <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
-                <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
-                {{ post.total_comments }}
-              </v-btn>
-              <v-btn text color="community_primary_color" @click="post.showComments = true">
-                Válasz
-              </v-btn>
-              <v-btn v-if="post.user_name == get_UserName && !post.editable" text elevation="0" @click="EditPostOpen(post)">
-                Módosítás
-              </v-btn>
-            </v-card-actions>
-            <!-- Komment szekció -->
-            <v-expand-transition>
-              <div v-if="post.showComments">
-                <!-- Új komment -->
-                <div class="position-relative mx-4 pa-2">
-                  <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                    <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                    <p style="font-size: .8vw;">{{ get_UserName }}</p>
-                  </div>
-                  <div>
-                    <v-textarea
-                      v-model="post.newComment"
-                      label="Válaszod"
-                      hide-details
-                      variant="outlined"
-                      rows="1"
-                      style="min-height: min-content; width: 100%;"
-                    ></v-textarea>
-                    <div class="d-flex pa-2 pl-0 ga-2">
-                      <v-btn
-                        :disabled="post.newComment == ''" 
-                        :style="post.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
-                        color="transparent"
-                        elevation="0"
-                        small
-                        @click="addCommentToPost(post)"
+              <transition-group name="expand-transition" tag="div" class="d-flex ga-2">
+                <div v-if="post.files.length > 0" v-for="(file, index) in post.files" :key="index">
+                  <v-card-text class="mb-3">
+                    <div class="d-inline-flex flex-column justify-center align-center">
+                      <v-btn 
+                        icon 
+                        elevation="0" 
+                        size="70"
+                        @click="downloadFile(file)"
                       >
-                        Küldés
+                        <v-icon size="50">mdi-file</v-icon>
                       </v-btn>
+                      <p>
+                        {{ (file.name == undefined ? file.file_name : file.name) }}
+                      </p>
+                      <p style="font-size: .5vw;">
+                        Méret: {{ formatFileSize(file.size == undefined ? file.file_size : file.size) }}
+                      </p>
                     </div>
-                  </div>
+                  </v-card-text>
                 </div>
-                
-                <v-divider class="my-2"></v-divider>
-                <!-- Kommentek listája -->
-                <div v-for="(comment, index) in limitedComments(post)" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
-                  <div class="d-flex flex-column pl-2">
-                    <div class="d-flex ga-2 align-center">
-                      <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
-                        <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                        <p style="font-size: .8vw;">{{ comment.user_name }}</p>
-                      </div>
-                      <p style="font-size: .7vw; position: relative;">{{ comment.createdAt }}</p>
-                    </div>
-                    <div class="mt-2">
-                      <div v-if="!comment.editable" class="d-flex align-center">
-                        <p class="pa-2 pl-4 mr-2" style="font-size: .9vw;">
-                          {{ comment.linkAuthor }} {{ comment.content}}
-                        </p>
-                        <v-expand-transition>
-                          <p v-if="comment.gotEdit" style="font-size: .6vw; position: relative;">[Módosított]</p>
-                        </v-expand-transition>
-                      </div>
-                      <v-text-field
-                        v-if="comment.editable"
-                        type="text"
-                        elevation="0"
-                        hide-details
-                        variant="solo-inverted" 
-                        v-model="comment.content"
-                        class="custom-solo-inverted mr-2"
-                        :id="'commentId' + post.id+''+ index"
-                      ></v-text-field>
-                    </div>
-                  </div>
-                  <div class="ml-1">
-                    <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
-                      <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                      {{ comment.like > 0 ? comment.like : null }}
-                    </v-btn>
-                    <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
-                      <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                      {{ comment.dislike > 0 ? comment.dislike : null }}
-                    </v-btn>
-                    <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
-                      <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
-                      {{ comment.total_comments }}
-                    </v-btn>
-                    <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
-                      Válasz
-                    </v-btn>
-                    <v-btn v-if="comment.user_name == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
-                      Módosítás
-                    </v-btn>
-                    <v-btn v-if="comment.user_name == get_UserName && comment.editable" text color="transparent" elevation="0" @click="commentEditConf(comment,'commentId'+post.id+''+ index)">
-                      Módosít
-                    </v-btn>
-                    <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
-                      Mégse
-                    </v-btn>
-                  </div>
-                  <v-expand-transition>
-                    <div v-if="comment.showComments">
-                      <!-- Új komment -->
-                      <v-expand-transition>
-                        <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply">
-                          <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                            <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                            <p style="font-size: .8vw;">{{ get_UserName }}</p>
-                          </div>
-                          <div>
-                            <v-textarea
-                              v-model="comment.newComment"
-                              label="Válaszod"
-                              hide-details
-                              variant="outlined"
-                              rows="1"
-                              style="min-height: min-content; width: 100%;"
-                            ></v-textarea>
-                            <div class="d-flex pa-2 pl-0 ga-2">
-                              <v-btn
-                                :disabled="comment.newComment == ''"
-                                :style="comment.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
-                                color="transparent"
-                                elevation="0"
-                                small
-                                @click="addCommentToComment(comment)"
-                              >
-                                Küldés
-                              </v-btn>
-                              <v-btn
-                                color="transparent"
-                                elevation="0"
-                                small
-                                @click="comment.prepareReply = false"
-                              >
-                                Mégse
-                              </v-btn>
-                            </div>
-                          </div>
-                        </div>
-                      </v-expand-transition>
-                      <!-- Kommentek listája -->
-                      <v-divider class="my-2" v-if="comment.total_comments > 0"></v-divider>
-                      <v-expand-transition>
-                        <div>
-                          <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
-                            <div class="d-flex flex-column pl-2">
-                              <div class="d-flex ga-2 align-center">
-                                <div class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc));">
-                                  <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                  <p style="font-size: .8vw;">{{ inner_comment.user_name }}</p>
-                                </div>
-                                <p style="font-size: .7vw; position: relative;">{{ inner_comment.createdAt }}</p>
-                              </div>
-                              <div class="mt-2">
-                                <div v-if="!inner_comment.editable" class="d-flex align-center">
-                                  <p class="pa-2 pl-4" style="font-size: .9vw; width: max-content;">
-                                    {{ inner_comment.linkAuthor }} {{ inner_comment.content }}
-                                  </p>
-                                  <v-expand-transition>
-                                    <p v-if="inner_comment.gotEdit" style="font-size: .6vw; position: relative;">[Módosított]</p>
-                                  </v-expand-transition>
-                                </div>
-                                <v-text-field
-                                  v-if="inner_comment.editable"
-                                  type="text"
-                                  elevation="0"
-                                  hide-details
-                                  variant="solo-inverted" 
-                                  v-model="inner_comment.content"
-                                  class="custom-solo-inverted"
-                                  :id="'commentId' + post.id+''+comment.id+''+ index"
-                                ></v-text-field>
-                              </div>
-                            </div>
-                            <div class="ml-1">
-                              <v-btn icon @click="like(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                                {{ inner_comment.like }}
-                              </v-btn>
-                              <v-btn icon @click="dislike(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                                {{ inner_comment.dislike }}
-                              </v-btn>
-                              <v-btn v-if="inner_comment.user_name != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
-                                Válasz
-                              </v-btn>
-                              <v-expand-transition>
-                                <v-btn v-if="inner_comment.user_name == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
-                                  Módosítás
-                                </v-btn>
-                              </v-expand-transition>
-                              <v-expand-transition>
-                                <v-btn v-if="inner_comment.user_name == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="commentEditConf(inner_comment,'commentId' + post.id+''+comment.id+''+ index)">
-                                  Módosít
-                                </v-btn>
-                              </v-expand-transition>
-                              <v-expand-transition>
-                                <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
-                                  Mégse
-                                </v-btn>
-                              </v-expand-transition>
-                            </div>
-                            <v-expand-transition>
-                              <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
-                                <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                                  <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                  <p style="font-size: .8vw;">{{ get_UserName }}</p>
-                                </div>
-                                <div>
-                                  <v-textarea
-                                    v-model="inner_comment.newComment"
-                                    label="Válaszod"
-                                    hide-details
-                                    variant="outlined"
-                                    rows="1"
-                                    style="min-height: min-content; width: 100%;"
-                                  ></v-textarea>
-                                  <div class="d-flex pa-2 pl-0 ga-2">
-                                    <v-btn
-                                      :disabled="inner_comment.newComment == ''"
-                                      :style="inner_comment.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
-                                      color="transparent"
-                                      elevation="0"
-                                      small
-                                      @click="addLastCommentToComment(comment, inner_comment)"
-                                    >
-                                      Küldés
-                                    </v-btn>
-                                    <v-btn
-                                      color="transparent"
-                                      elevation="0"
-                                      small
-                                      @click="cancelPrepareReplyForComment(inner_comment)"
-                                    >
-                                      Mégse
-                                    </v-btn>
-                                  </div>
-                                </div>
-                              </div>
-                            </v-expand-transition>
-                          </div>
-                        </div>
-                      </v-expand-transition>
+              </transition-group>
 
-                      <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit">
-                        <v-divider class=""></v-divider>
+
+              <v-divider></v-divider>
+              <v-card-actions>
+                <v-btn icon @click="like(post,'post')">
+                  <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                  {{ post.like > 0 ? post.like : null }}
+                </v-btn>
+                <v-btn icon @click="dislike(post,'post')">
+                  <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                  {{ post.dislike > 0 ? post.dislike : null }}
+                </v-btn>
+                <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
+                  <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
+                  {{ post.total_comments }}
+                </v-btn>
+                <v-btn text color="community_primary_color" @click="post.showComments = true">
+                  Válasz
+                </v-btn>
+                <v-btn v-if="post.user_name == get_UserName && !post.editable" text elevation="0" @click="EditPostOpen(post)">
+                  Módosítás
+                </v-btn>
+              </v-card-actions>
+              <!-- Komment szekció -->
+              <v-expand-transition>
+                <div v-if="post.showComments">
+                  <!-- Új komment -->
+                  <div class="position-relative mx-4 pa-2">
+                    <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
+                      <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                      <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
+                    </div>
+                    <div>
+                      <v-textarea
+                        v-model="post.newComment"
+                        label="Válaszod"
+                        hide-details
+                        variant="outlined"
+                        rows="1"
+                        style="min-height: min-content; width: 100%;"
+                      ></v-textarea>
+                      <div class="d-flex pa-2 pl-0 ga-2">
                         <v-btn
+                          :disabled="post.newComment == ''" 
+                          :style="post.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
+                          color="transparent"
                           elevation="0"
-                          icon
                           small
-                          @click="loadMoreCommentsForPost(post)"
-                          class="align-center d-flex justify-center position-absolute"
-                          v-tooltip="'Több komment megjelenítése'"
-                          style="
-                          left: 50%; 
-                          transform: translate(-50%,0);
-                          background-color: rgb(var(--v-theme-community_comment_bc));"
+                          @click="addCommentToPost(post)"
                         >
-                          <v-icon>mdi-comment-plus-outline</v-icon>
+                          Küldés
                         </v-btn>
                       </div>
                     </div>
-                  </v-expand-transition>
-                </div>
+                  </div>
+                  
+                  <v-divider class="my-2"></v-divider>
+                  <!-- Kommentek listája -->
+                  <div v-for="(comment, index) in limitedComments(post)" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
+                    <transition-group name="expand-transition" tag="div">
+                      <div class="d-flex flex-column pl-2 position-relative">
+                        <div class="d-flex ga-2 align-center">
+                          <div 
+                            class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" 
+                            style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;"
+                            @click="router.push({ name: 'profile', params: { id: comment.User.id } })"
+                          >
+                            <img 
+                              :src="comment.User.User_customization.profil_picture == null 
+                                ? '/src/components/background/test_profile.jpg' 
+                                : comment.User.User_customization.profil_picture" 
+                              alt="" 
+                              style="height: 2rem; width: 2rem; border-radius: 50%;" 
+                              class="mr-3"
+                            >
+                            <h4 style="font-weight: normal;">{{ comment.user_name }}</h4>
+                          </div>
+                          <h5 style="font-weight: normal;">{{ comment.createdAt }}</h5>
+                        </div>
 
-                <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit">
-                  <v-divider class=""></v-divider>
-                  <v-btn
-                    elevation="0"
-                    icon
-                    small
-                    @click="loadMoreCommentsForPost(post)"
-                    class="align-center d-flex justify-center position-absolute"
-                    v-tooltip="'Több komment megjelenítése'"
-                    style="left: 50%; transform: translate(-50%,0);"
-                  >
-                    <v-icon>mdi-comment-plus-outline</v-icon>
-                  </v-btn>
+                        <div class="mt-2">
+                          <v-expand-transition>
+                            <div v-if="!comment.editable" class="d-flex align-center">
+                              <p class="pa-2 pl-4 mr-2" style="font-weight: normal;">
+                                {{ comment.linkAuthor }} {{ comment.content }}
+                              </p>
+                              <h5 v-if="comment.gotEdit" style="font-weight: normal;">[Szerkesztve]</h5>
+                            </div>
+                          </v-expand-transition>
+
+                          <v-expand-transition>
+                            <v-text-field
+                              v-if="comment.editable"
+                              type="text"
+                              elevation="0"
+                              hide-details
+                              variant="solo-inverted" 
+                              v-model="comment.content"
+                              class="custom-solo-inverted mr-2"
+                              :id="'commentId' + post.id+''+ index"
+                            ></v-text-field>
+                          </v-expand-transition>
+                        </div>
+                      </div>
+                    </transition-group>
+                    <div class="ml-1">
+                      <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
+                        <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                        {{ comment.like > 0 ? comment.like : null }}
+                      </v-btn>
+                      <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
+                        <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                        {{ comment.dislike > 0 ? comment.dislike : null }}
+                      </v-btn>
+                      <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
+                        <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
+                        {{ comment.total_comments }}
+                      </v-btn>
+                      <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
+                        Válasz
+                      </v-btn>
+                      <v-btn v-if="comment.user_name == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
+                        Módosítás
+                      </v-btn>
+                      <v-btn v-if="comment.user_name == get_UserName && comment.editable" text color="transparent" elevation="0" @click="commentEditConf(comment,'commentId'+post.id+''+ index)">
+                        Módosít
+                      </v-btn>
+                      <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
+                        Mégse
+                      </v-btn>
+                    </div>
+                    <v-expand-transition>
+                      <div v-if="comment.showComments">
+                        <!-- Új komment -->
+                        <v-expand-transition>
+                          <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply">
+                            <div 
+                            class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" 
+                            style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));"
+                            >
+                              <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                              <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
+                            </div>
+                            <div>
+                              <v-textarea
+                                v-model="comment.newComment"
+                                label="Válaszod"
+                                hide-details
+                                variant="outlined"
+                                rows="1"
+                                style="min-height: min-content; width: 100%;"
+                              ></v-textarea>
+                              <div class="d-flex pa-2 pl-0 ga-2">
+                                <v-btn
+                                  :disabled="comment.newComment == ''"
+                                  :style="comment.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
+                                  color="transparent"
+                                  elevation="0"
+                                  small
+                                  @click="addCommentToComment(comment)"
+                                >
+                                  Küldés
+                                </v-btn>
+                                <v-btn
+                                  color="transparent"
+                                  elevation="0"
+                                  small
+                                  @click="comment.prepareReply = false"
+                                >
+                                  Mégse
+                                </v-btn>
+                              </div>
+                            </div>
+                          </div>
+                        </v-expand-transition>
+                        <!-- Kommentek listája -->
+                        <v-divider class="my-2" v-if="comment.total_comments > 0"></v-divider>
+                        <v-expand-transition>
+                          <div>
+                            <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
+                              <transition-group name="expand-transition" tag="div">
+                                <div class="d-flex flex-column pl-2">
+                                  <div class="d-flex ga-2 align-center">
+                                    <div 
+                                    class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" 
+                                    style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;"
+                                    @click="router.push({ name: 'profile', params: { id: inner_comment.User.id } })"
+                                    >
+                                      <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                      <h4 style="font-weight: normal;">{{ inner_comment.user_name }}</h4>
+                                    </div>
+                                    <h5 style="font-weight: normal;">{{ inner_comment.createdAt }}</h5>
+                                  </div>
+                                  <div class="mt-2">
+                                    <div v-if="!inner_comment.editable" class="d-flex align-center">
+                                      <p class="pa-2 pl-4" style="font-weight: normal; width: max-content;">
+                                        {{ inner_comment.linkAuthor }} {{ inner_comment.content }}
+                                      </p>
+                                      <v-expand-transition>
+                                        <h5 v-if="inner_comment.gotEdit" style="font-weight: normal;">[Szerkeztve]</h5>
+                                      </v-expand-transition>
+                                    </div>
+                                    <v-text-field
+                                      v-if="inner_comment.editable"
+                                      type="text"
+                                      elevation="0"
+                                      hide-details
+                                      variant="solo-inverted" 
+                                      v-model="inner_comment.content"
+                                      class="custom-solo-inverted"
+                                      :id="'commentId' + post.id+''+comment.id+''+ index"
+                                    ></v-text-field>
+                                  </div>
+                                </div>
+                              </transition-group>
+                              <div class="ml-1">
+                                <v-btn icon @click="like(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
+                                  <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                                  {{ inner_comment.like }}
+                                </v-btn>
+                                <v-btn icon @click="dislike(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
+                                  <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                                  {{ inner_comment.dislike }}
+                                </v-btn>
+                                <v-btn v-if="inner_comment.user_name != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
+                                  Válasz
+                                </v-btn>
+                                <v-expand-transition>
+                                  <v-btn v-if="inner_comment.user_name == get_UserName && !inner_comment.editable" class="expand-edit-btn-first" text color="transparent" elevation="0" @click="commentEdit(inner_comment,'commentId'+post.id+''+comment.id+''+ index)">
+                                    Módosítás
+                                  </v-btn>
+                                </v-expand-transition>
+                                <v-expand-transition>
+                                  <v-btn v-if="inner_comment.user_name == get_UserName && inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="commentEditConf(inner_comment,'commentId' + post.id+''+comment.id+''+ index)">
+                                    Módosít
+                                  </v-btn>
+                                </v-expand-transition>
+                                <v-expand-transition>
+                                  <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
+                                    Mégse
+                                  </v-btn>
+                                </v-expand-transition>
+                              </div>
+                              <v-expand-transition>
+                                <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
+                                  <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
+                                    <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                    <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
+                                  </div>
+                                  <div>
+                                    <v-textarea
+                                      v-model="inner_comment.newComment"
+                                      label="Válaszod"
+                                      hide-details
+                                      variant="outlined"
+                                      rows="1"
+                                      style="min-height: min-content; width: 100%;"
+                                    ></v-textarea>
+                                    <div class="d-flex pa-2 pl-0 ga-2">
+                                      <v-btn
+                                        :disabled="inner_comment.newComment == ''"
+                                        :style="inner_comment.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
+                                        color="transparent"
+                                        elevation="0"
+                                        small
+                                        @click="addLastCommentToComment(comment, inner_comment)"
+                                      >
+                                        Küldés
+                                      </v-btn>
+                                      <v-btn
+                                        color="transparent"
+                                        elevation="0"
+                                        small
+                                        @click="cancelPrepareReplyForComment(inner_comment)"
+                                      >
+                                        Mégse
+                                      </v-btn>
+                                    </div>
+                                  </div>
+                                </div>
+                              </v-expand-transition>
+                            </div>
+                          </div>
+                        </v-expand-transition>
+
+                        <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit">
+                          <v-divider class=""></v-divider>
+                          <v-btn
+                            elevation="0"
+                            icon
+                            small
+                            @click="loadMoreCommentsForPost(post)"
+                            class="align-center d-flex justify-center position-absolute"
+                            v-tooltip="'Több komment megjelenítése'"
+                            style="
+                            left: 50%; 
+                            transform: translate(-50%,0);
+                            background-color: rgb(var(--v-theme-community_comment_bc));"
+                          >
+                            <v-icon>mdi-comment-plus-outline</v-icon>
+                          </v-btn>
+                        </div>
+                      </div>
+                    </v-expand-transition>
+                  </div>
+
+                  <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit">
+                    <v-divider class=""></v-divider>
+                    <v-btn
+                      elevation="0"
+                      icon
+                      small
+                      @click="loadMoreCommentsForPost(post)"
+                      class="align-center d-flex justify-center position-absolute"
+                      v-tooltip="'Több komment megjelenítése'"
+                      style="left: 50%; transform: translate(-50%,0);"
+                    >
+                      <v-icon>mdi-comment-plus-outline</v-icon>
+                    </v-btn>
+                  </div>
                 </div>
-              </div>
-            </v-expand-transition>
-          </v-card>
+              </v-expand-transition>
+            </v-card>
+          </transition-group>
         </div>
       </div>
 
@@ -644,6 +681,11 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+      <v-expand-transition>
+        <div class="d-flex justify-center" v-if="PostLoading">
+          <v-progress-circular indeterminate></v-progress-circular>
+        </div>
+      </v-expand-transition>
     </div>
   </main>
 </template>
@@ -676,6 +718,7 @@ const get_fullUser = ref(null);
 const get_UserName = ref('Betöltés...');
 
 const posts_limit = ref(10);
+const PostLoading = ref(true);
 
 const { mutate: ProfileGetUser } = useProfileGetUser();
 const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
@@ -702,6 +745,7 @@ onMounted(async () => {
       id: null,
     }, {
       onSuccess: (posts_array) => {
+        PostLoading.value = false;
         if(posts_array != null){
           posts_array.reverse();
           posts_array.forEach((post) => {
@@ -722,10 +766,13 @@ watch(get_fullUser, async (User) => {
       id: User.id == null ? null : User.id,
     }, {
       onSuccess: (posts_array) => {
-        if(posts_array != null){
+        PostLoading.value = false;
+        if (posts_array != null) {
           posts_array.reverse();
-          posts_array.forEach((post) => {
-            postsConvertToDisplay(post, true);
+          posts_array.forEach((post, index) => {
+            setTimeout(() => {
+              postsConvertToDisplay(post, true);
+            });
           });
         }
       },
@@ -737,6 +784,7 @@ watch(get_fullUser, async (User) => {
     console.error('Hiba történt a posztok lekérésekor:', error);
   }
 });
+
 
 function formatDate(date) {
   const year = date.getFullYear();
@@ -840,8 +888,6 @@ const EditPostConf = async () =>{
   }
 
   const cleanedHtmlContent = tempDiv.innerHTML;
-
-  console.log(editingPost.images);
 
   const changed_mergedArray = [...editingPost.images, ...editingPost.files];
   const def_mergedArray = [...defaultPostSave.value.images, ...defaultPostSave.value.files];
@@ -1813,4 +1859,15 @@ const addLastCommentToComment = async (comment, inner_comment) => {
   pointer-events: auto;
   color: red;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+.fade {
+  transition: opacity 0.5s !important;
+}
+
 </style>

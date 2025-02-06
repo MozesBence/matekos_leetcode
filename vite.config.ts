@@ -14,15 +14,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
     proxy: {
       '/api': {
         target: 'http://localhost:3000', // Express API portja
-        changeOrigin: true
-      }
-    }
-  }
+        changeOrigin: true,
+      },
+    },
+    open: '/1', // Automatikusan a /1 oldalra navigál, amikor elindítod a szervert
+  },
 })
