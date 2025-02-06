@@ -27,7 +27,7 @@ exports.postUpload = async (req, res, next) => {
         if(post_result == null){
             const error = new Error("Sikertelen volt a poszt feltöltés!");
 
-            error.status(400);
+            error.status = 400;
 
             throw error;
         }
@@ -37,7 +37,7 @@ exports.postUpload = async (req, res, next) => {
         if(postFiles_result == null){
             const error = new Error("A poszt feltöltése megtörtént de sikertelen volt a fájl(ok) feltöltése(i)!");
 
-            error.status(400);
+            error.status = 400;
 
             throw error;
         }
@@ -52,29 +52,30 @@ exports.postUpload = async (req, res, next) => {
 exports.postEditUpload = async (req, res, next) => {
     const {id, title, content, none_files} = req.body;
     const files = req.files;
+    const none_existingFiles = JSON.parse(none_files);
 
     try{
-        const postEdit_result = communityService.postEdit(id, title, content);
-    
-        if(none_files != []){
-            const fileDelete_result = communityService.filesDelete(none_files);
-    
+        const postEdit_result = await communityService.postEdit(id, title, content);
+
+        if(none_existingFiles[0] != undefined){
+            const fileDelete_result = await communityService.filesDelete(none_existingFiles);
+
             if(fileDelete_result == null){
                 const error = new Error("A fájl(ok) törlésében valami hiba lépett fel!");
         
-                error.status(500);
+                error.status = 400;
         
                 throw error;
             }
         }
-    
+
         if(files != []){
             const postFiles_result = await communityService.postFilesUpload(files, id);
         
             if(postFiles_result == null){
                 const error = new Error("A poszt feltöltése megtörtént de sikertelen volt a fájl(ok) feltöltése(i)!");
         
-                error.status(400);
+                error.status = 400;
         
                 throw error;
             }
@@ -85,7 +86,6 @@ exports.postEditUpload = async (req, res, next) => {
     catch(error){
         next(error);
     }
-
 };
 
 exports.postLike = async (req,res,next)=>{
@@ -103,7 +103,7 @@ exports.postLike = async (req,res,next)=>{
         if(like_result == null){
             const error = new Error("Sikertelen volt a reakció feltöltés!");
 
-            error.status(400);
+            error.status = 400;
 
             throw error;
         }
@@ -141,11 +141,12 @@ exports.postComment = async (req,res,next)=>{
     }
 
     const comment_result = await communityService.postComment(comment);
+
     try{
         if(comment_result == null){
             const error = new Error("Sikertelen volt a comment feltöltés!");
 
-            error.status(400);
+            error.status = 400;
 
             throw error;
         }
@@ -160,16 +161,13 @@ exports.postComment = async (req,res,next)=>{
 exports.commentEdit = async (req,res,next)=>{
     const {content, comment_id} = req.body;
 
-    console.log(content, comment_id);
-
     const comment_result = await communityService.commentEdit(content, comment_id);
 
-    console.log(comment_result);
     try{
         if(comment_result == null){
             const error = new Error("Sikertelen volt a comment szekeztésének mentése közben!");
 
-            error.status(400);
+            error.status = 400;
 
             throw error;
         }

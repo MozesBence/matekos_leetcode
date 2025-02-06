@@ -585,13 +585,13 @@ class communityRepository
   async filesDelete(none_files) {
     try {
       for (const id of none_files) {
-        await CommunityFile.destroy({
+        await this.Community_files.destroy({
           where: { id: id }
         });
       }
-      console.log("Sikeres törlés:", none_files);
+      return "Fájlok törlése sikeres volt!";
     } catch (error) {
-      console.error("Hiba a fájlok törlése közben:", error);
+      console.log("Hiba a fájlok törlése közben:", error);
     }
   }  
 }

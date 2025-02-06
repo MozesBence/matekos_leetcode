@@ -841,6 +841,8 @@ const EditPostConf = async () =>{
 
   const cleanedHtmlContent = tempDiv.innerHTML;
 
+  console.log(editingPost.images);
+
   const changed_mergedArray = [...editingPost.images, ...editingPost.files];
   const def_mergedArray = [...defaultPostSave.value.images, ...defaultPostSave.value.files];
 
@@ -866,8 +868,8 @@ const EditPostConf = async () =>{
   });
 
   const def_postId =  Number(defaultPostSave.value.id);
-  
-  if(defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images){
+
+  if(editor.innerHTML != "" && editor.innerHTML != "<br>" && (defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images)){
     await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles}, {
       onSuccess : async (response) =>{
         const post = posts.find(c => c.id == def_postId);
@@ -881,7 +883,7 @@ const EditPostConf = async () =>{
               file_size: editingPost.files[i].size,
               file_type: editingPost.files[i].type,
               id: null,
-              name:  editingPost.files[i].name,
+              name: editingPost.files[i].name,
               post_id: Number(defaultPostSave.value.id)
             });
             post.files = [...post.files, obj];
@@ -1046,7 +1048,6 @@ const triggerImageInput = () => {
 
 const handleImageUpload = async (event) => {
   const file = event.target.files[0];
-  
   if (file && file.type.startsWith('image') && file.size <= 1048576) {
     const reader = new FileReader();
     
@@ -1064,8 +1065,10 @@ const handleImageUpload = async (event) => {
         newPost.images.push(imgObj);
         insertImage();
       }else if(showEditPost.value){
-        editingPost.images.push(imgObj);
-        insertImage();
+        if (!editingPost.images.some(f => f != undefined && f.file_name === imgObj.name && f.file_size === imgObj.size && f.file_type === imgObj.type)) {
+          editingPost.images.push(imgObj);
+          insertImage();
+        }
       }
 
       // Kép beszúrása a kurzor helyére
@@ -1199,13 +1202,9 @@ const addPost = async () =>{
   // A módosított HTML tartalom
   const cleanedHtmlContent = tempDiv.innerHTML;
 
-  console.log(newPost.images);
-
   const mergedArray = [...newPost.images, ...newPost.files];
 
   const compressingFilesArray = await compressingFiles(mergedArray);
-
-  console.log(compressingFilesArray);
 
   if(get_fullUser.value.id && newPost.title && htmlContent){
     loading.value = true;
