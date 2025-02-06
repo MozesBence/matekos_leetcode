@@ -1,5 +1,6 @@
 <template>
   <main>
+    <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%;" :style="{maxWidth: isMobile ? '100%' : '75%'}">
       <v-navigation-drawer style="height: max-content; max-width: 35%; width: 100%;" class="ma-2 ml-3 mt-4 rounded" v-if="!isMobile">
         <v-list>
           <v-list-item>
@@ -26,11 +27,12 @@
                 :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
               >
                 <v-card-text>
-                  <h2 class="text-h6 mb-2">Szűrési opció</h2>
+                  <h2 class="text-h6 mb-2">Szűrési opciók</h2>
                   <v-chip-group
                     v-model="FilterOpt"
                     multiple
                     column
+                    style="transition: .3s;"
                   >
                     <v-chip
                       v-for="chip in FilterChips"
@@ -45,11 +47,71 @@
                 </v-card-text>
               </v-card>
             </div>
+            <div 
+            class="mt-2 mx-2 d-flex pa-2 flex-column justify-center rounded PopDate"
+            style="transition: .3s;"
+            :style="{border: sortOptions.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+            >
+              <div>
+                <v-btn-toggle
+                  style="width: 100%;"
+                  elevation="0"
+                >
+                  <v-btn 
+                    :value="'popularity'" 
+                    style="width: 50%; transition: .3s;"
+                    :style="{backgroundColor: sortOptions.includes('popularity') ? 'rgb(var(--v-theme-community_filter_bc))' : 'transparent'}"
+                    variant="flat"
+                    @click="toggleOption('popularity')"
+                    elevation="0"
+                  >
+                    <v-icon class="mr-1">mdi-fire</v-icon>
+                    <h4 style="font-weight: normal;">Népszerűség</h4>
+                  </v-btn>
+                  <v-btn 
+                    :value="'date'" 
+                    style="width: 50%; transition: .3s;"
+                    :style="{backgroundColor: sortOptions.includes('date') ? 'rgb(var(--v-theme-community_filter_bc))' : 'transparent'}"
+                    variant="flat"
+                    @click="toggleOption('date')"
+                    elevation="0"
+                  >
+                    <v-icon class="mr-1">mdi-calendar-clock</v-icon>
+                    <h4 style="font-weight: normal;">Feltöltés dátuma</h4>
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+
+              <div>
+                <v-expand-transition class="mt-1">
+                  <div v-if="sortOptions.includes('date') || sortOptions.includes('popularity')">
+                    <v-btn-toggle
+                      v-model="sortOptionForPop" 
+                      style="width: 100%; height: fit-content;"
+                    >
+                      <v-btn value="popularity"
+                      style="width: 50%; height: max-content;"
+                      class="py-2"
+                      >
+                        <v-icon class="mr-1">mdi-sort-descending</v-icon>
+                        <h5>Növekvő</h5>
+                      </v-btn>
+                      <v-btn 
+                      value="date" 
+                      style="width: 50%; height: max-content;"
+                      class="py-2"
+                      >
+                        <v-icon class="mr-1">mdi-sort-ascending</v-icon>
+                        <h5>Csökkenő</h5>
+                      </v-btn>
+                    </v-btn-toggle>
+                  </div>
+                </v-expand-transition>
+              </div>
+            </div>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
-
-      <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%;" :style="{maxWidth: isMobile ? '100%' : '75%'}">
         <v-row>
           <v-col
           v-if="isMobile"
@@ -59,7 +121,7 @@
             <v-expansion-panels v-if="isMobile">
               <v-expansion-panel>
                 <v-expansion-panel-title>Keresési lehetőségek</v-expansion-panel-title>
-                <v-expansion-panel-text>
+                <v-expansion-panel-text class="mobilExpensionText">
                   <v-list>
                     <v-list-item>
                       <div class="pa-2 d-flex align-center justify-center ga-3">
@@ -85,7 +147,7 @@
                           :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
                         >
                           <v-card-text>
-                            <h2 class="text-h6 mb-2">Szűrési opció</h2>
+                            <h2 class="text-h6 mb-2">Szűrési opciók</h2>
                             <v-chip-group
                               v-model="FilterOpt"
                               multiple
@@ -104,6 +166,67 @@
                             </v-chip-group>
                           </v-card-text>
                         </v-card>
+                      </div>
+                      <div 
+                      class="mt-2 mx-2 d-flex pa-2 flex-column justify-center rounded" 
+                      :style="{border: sortOptions.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+                      >
+                        <div>
+                          <v-btn-toggle
+                            style="width: 100%;"
+                            elevation="0"
+                          >
+                            <v-btn 
+                              :value="'popularity'" 
+                              style="width: 50%; transition: .3s;"
+                              :style="{backgroundColor: sortOptions.includes('popularity') ? 'rgb(var(--v-theme-community_filter_bc))' : 'transparent'}"
+                              variant="flat"
+                              @click="toggleOption('popularity')"
+                              elevation="0"
+                            >
+                              <v-icon class="mr-1">mdi-fire</v-icon>
+                              <h5 style="font-weight: normal;">Népszerűség</h5>
+                            </v-btn>
+                            <v-btn 
+                              :value="'date'" 
+                              style="width: 50%; transition: .3s;"
+                              :style="{backgroundColor: sortOptions.includes('date') ? 'rgb(var(--v-theme-community_filter_bc))' : 'transparent'}"
+                              variant="flat"
+                              @click="toggleOption('date')"
+                              elevation="0"
+                            >
+                              <v-icon class="mr-1">mdi-calendar-clock</v-icon>
+                              <h5 style="font-weight: normal;">Feltöltés dátuma</h5>
+                            </v-btn>
+                          </v-btn-toggle>
+                        </div>
+
+                        <div>
+                          <v-expand-transition class="mt-1">
+                            <div v-if="sortOptions.includes('date') || sortOptions.includes('popularity')">
+                              <v-btn-toggle
+                                v-model="sortOptionForPop" 
+                                style="width: 100%; height: fit-content;"
+                              >
+                                <v-btn value="popularity"
+                                style="width: 50%; height: max-content;"
+                                class="py-2"
+                                >
+                                  <v-icon class="mr-1">mdi-sort-descending</v-icon>
+                                  <h5>Növekvő</h5>
+                                </v-btn>
+                                <v-btn 
+                                value="date" 
+                                style="width: 50%; height: max-content;"
+                                class="py-2"
+                                >
+                                  <v-icon class="mr-1">mdi-sort-ascending</v-icon>
+                                  <h5>Csökkenő</h5>
+                                </v-btn>
+                              </v-btn-toggle>
+                            </div>
+                          </v-expand-transition>
+                        </div>
                       </div>
                     </v-list-item>
                   </v-list>
@@ -930,6 +1053,20 @@ function search() {
 const FilterChips = ["Megoldások", "Programozás", "Segítség", "Probléma", "Bejelentés"];
 
 const FilterOpt = ref([]);
+
+const sortOptions = ref([]); // Tömb, amely tartalmazza a kiválasztott értékeket
+const sortOptionForPop = ref([]);
+
+const toggleOption = (option) => {
+  if(sortOptions.value == option){
+    sortOptions.value = [];
+  }
+  else if (sortOptions.value.length > 0) {
+    sortOptions.value = option;
+  } else {
+    sortOptions.value.push(option);
+  }
+};
 
 function CreatePostOpen(){
   showEditPost.value = false;
@@ -1970,12 +2107,14 @@ const addLastCommentToComment = async (comment, inner_comment) => {
   color: gray;
   transition: .3s;
 }
-.chip:hover, .selected-chip{
+.chip:hover, .selected-chip, .PopDate:hover{
   border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border)) !important; 
   color: rgb(var(--v-theme-community_primary_color)) !important;
 }
 .custom_searchCard:hover{
   border: .1vw solid rgb(var(--v-theme-community_createpost_editor_area_border)) !important; 
 }
-
+.mobilExpensionText .v-expansion-panel-text__wrapper{
+  padding: 0;
+}
 </style>
