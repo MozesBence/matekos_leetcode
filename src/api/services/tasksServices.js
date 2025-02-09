@@ -43,6 +43,13 @@ class TasksService {
       throw error;
     }
   }
+  async getTaskByThemes(themes){
+    try{
+      return await tasksRepository.getTaskByThemes(themes);
+    }catch(error){
+      throw error;
+    }
+  }
 }
 
 module.exports = new TasksService();
