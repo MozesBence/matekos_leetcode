@@ -166,7 +166,7 @@
               <v-btn key="2" @click="dialog = true" icon>
                 <v-icon color="default_btn_bc">mdi-account-cog  </v-icon>
               </v-btn>
-              <v-btn key="1" @click="Logout()" icon style="background-color: red;">
+              <v-btn key="3" @click="Logout()" icon style="background-color: red;">
                 <v-icon color="white">mdi-logout</v-icon>
               </v-btn>
             </v-speed-dial>

@@ -20,9 +20,11 @@ class communityRepository
       this.Community_comments = db.Community_comments;
 
       this.Community_likes = db.Community_likes;
+
+      this.Community_tags = db.Community_tags;
     }
 
-    async getLimitedPost(limit, userId) {
+    async getLimitedPost(limit, userId, filter) {
       // Gondoskodj arról, hogy a limit egy szám legyen
       const parsedLimit = Number(limit);
     
@@ -32,7 +34,18 @@ class communityRepository
 
       const posts = await this.Community_posts.findAll({
         limit: parsedLimit,
-        order: [['createdAt', 'DESC']],
+        order: filter && filter[0][0] == 'date'
+          ? [['createdAt', filter[0][1]]]
+          : filter && filter[0][0] == 'popularity'
+          ? [
+              [Sequelize.literal(`(
+                SELECT COUNT(*) FROM Community_likes 
+                WHERE Community_likes.entity_id = Community_posts.id 
+                AND Community_likes.entity_type = 'post' 
+                AND Community_likes.like_type = 'like'
+              )`), filter[0][1]] // total_likes alapján rendezés
+            ]
+          : undefined,
         attributes: {
           include: [
             [
@@ -42,6 +55,15 @@ class communityRepository
                 WHERE Community_comments.post_id = Community_posts.id
               )`),
               'total_comments'
+            ],
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) FROM Community_likes 
+                WHERE Community_likes.entity_id = Community_posts.id 
+                AND Community_likes.entity_type = 'post' 
+                AND Community_likes.like_type = 'like'
+              )`),
+              'total_likes'
             ]
           ]
         },
@@ -102,7 +124,7 @@ class communityRepository
             required: false
           },
         ],
-      });      
+      });
       
       const postIds = posts.map(post => post.id);
       
@@ -433,6 +455,12 @@ class communityRepository
       
       return postsWithBase64Files;
     }
+    
+    async getPostCount() {
+      const postCount = await this.Community_posts.count();
+      
+      return postCount;
+    }
 
     async postUpload(post) {
       const newPost = await this.Community_posts.build(post);
@@ -592,7 +620,13 @@ class communityRepository
     } catch (error) {
       console.log("Hiba a fájlok törlése közben:", error);
     }
-  }  
+  }
+
+  async getTags(){
+    const tags = await this.Community_tags.findAll();
+
+    return tags;
+  }
 }
 
 module.exports = new communityRepository(db);

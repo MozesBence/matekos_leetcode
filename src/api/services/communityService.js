@@ -2,8 +2,12 @@ const communityRepository  = require("../repositories/communityRepository");
 
 class communityService
 {
-    async getLimitedPost(limit, id){
-        return await communityRepository.getLimitedPost(limit, id);
+    async getLimitedPost(limit, id, filter){
+        return await communityRepository.getLimitedPost(limit, id, filter);
+    }
+
+    async getPostCount(){
+        return await communityRepository.getPostCount();
     }
 
     async postUpload(post)
@@ -43,6 +47,10 @@ class communityService
 
     async filesDelete(none_files){
         return await communityRepository.filesDelete(none_files);
+    }
+
+    async getTags(){
+        return await communityRepository.getTags();
     }
 }
 

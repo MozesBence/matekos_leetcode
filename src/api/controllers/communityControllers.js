@@ -1,11 +1,13 @@
 const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
-    const { limit, id } = req.query;
+    const { limit, id, filter } = req.query;
 
-    const get_posts = await communityService.getLimitedPost(limit,id);
+    const get_posts = await communityService.getLimitedPost(limit,id,filter);
 
-    res.status(200).send(get_posts == null ? 'null' : get_posts);
+    const get_postsCount = await communityService.getPostCount();
+
+    res.status(200).json(get_posts == null ? 'null' : {posts: get_posts, total_posts: get_postsCount});
 };
 
 exports.postUpload = async (req, res, next) => {
@@ -173,6 +175,25 @@ exports.commentEdit = async (req,res,next)=>{
         }
 
         res.status(200).send("Sikeres volt a szerkeztés!");
+    }
+    catch(error){
+        next(error);
+    }
+}
+
+exports.getTags = async (req,res,next) =>{
+    const tag_result = await communityService.getTags();
+
+    try{
+        if(tag_result == null){
+            const error = new Error("Nem sikerült lekérni a tageket!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).send(tag_result);
     }
     catch(error){
         next(error);

@@ -242,8 +242,7 @@
           class="order-1 order-md-1"
           >
             <transition-group 
-            name="fade" 
-            tag="div" 
+            name="fade"
             appear
             >
             <v-card
@@ -281,24 +280,24 @@
                         <v-btn 
                           icon 
                           elevation="0" 
-                          size="70"
+                          size="50"
                           @click="downloadFile(file)"
                         >
-                          <v-icon size="50">mdi-file</v-icon>
+                          <v-icon size="30">mdi-file</v-icon>
                         </v-btn>
-                        <p>
+                        <h3 style="font-weight: normal;">
                           {{ (file.name == undefined ? file.file_name : file.name) }}
-                        </p>
-                        <p style="font-size: .5vw;">
+                        </h3>
+                        <h5 style="font-weight: normal;">
                           Méret: {{ formatFileSize(file.size == undefined ? file.file_size : file.size) }}
-                        </p>
+                        </h5>
                       </div>
                     </v-card-text>
                   </div>
                 </transition-group>
 
-
                 <v-divider></v-divider>
+
                 <v-card-actions>
                   <v-btn icon @click="like(post,'post')">
                     <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
@@ -348,15 +347,24 @@
                           >
                             Küldés
                           </v-btn>
+                          <v-btn
+                            color="transparent"
+                            elevation="0"
+                            small
+                            v-if="post.total_comments == 0"
+                            @click="post.showComments = false"
+                          >
+                            Mégse
+                          </v-btn>
                         </div>
                       </div>
                     </div>
                     
-                    <v-divider class="my-2"></v-divider>
+                    <v-divider class="my-2" v-if="post.total_comments > 0"></v-divider>
                     <!-- Kommentek listája -->
                     <div v-for="(comment, index) in limitedComments(post)" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                       <transition-group name="expand-transition" tag="div">
-                        <div class="d-flex flex-column pl-2 position-relative">
+                        <div class="d-flex flex-column pl-2 position-relative" :key="comment.id">
                           <div class="d-flex ga-2 align-center">
                             <div 
                               class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" 
@@ -379,9 +387,9 @@
                           <div class="mt-2">
                             <v-expand-transition>
                               <div v-if="!comment.editable" class="d-flex align-center">
-                                <p class="pa-2 pl-4 mr-2" style="font-weight: normal;">
+                                <h3 class="pa-2 pl-4 mr-2" style="font-weight: normal;">
                                   {{ comment.linkAuthor }} {{ comment.content }}
-                                </p>
+                                </h3>
                                 <h5 v-if="comment.gotEdit" style="font-weight: normal;">[Szerkesztve]</h5>
                               </div>
                             </v-expand-transition>
@@ -423,7 +431,7 @@
                         <v-btn v-if="comment.user_name == get_UserName && comment.editable" text color="transparent" elevation="0" @click="commentEditConf(comment,'commentId'+post.id+''+ index)">
                           Módosít
                         </v-btn>
-                        <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="comment.editable = false">
+                        <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="CommentClose(comment)">
                           Mégse
                         </v-btn>
                       </div>
@@ -477,7 +485,7 @@
                             <div>
                               <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                                 <transition-group name="expand-transition" tag="div">
-                                  <div class="d-flex flex-column pl-2">
+                                  <div class="d-flex flex-column pl-2" :key="inner_comment.id">
                                     <div class="d-flex ga-2 align-center">
                                       <div 
                                       class="d-flex flex-row align-center mb-1 pa-1 pr-2 rounded-xl" 
@@ -490,24 +498,28 @@
                                       <h5 style="font-weight: normal;">{{ inner_comment.createdAt }}</h5>
                                     </div>
                                     <div class="mt-2">
-                                      <div v-if="!inner_comment.editable" class="d-flex align-center">
-                                        <p class="pa-2 pl-4" style="font-weight: normal; width: max-content;">
-                                          {{ inner_comment.linkAuthor }} {{ inner_comment.content }}
-                                        </p>
-                                        <v-expand-transition>
-                                          <h5 v-if="inner_comment.gotEdit" style="font-weight: normal;">[Szerkeztve]</h5>
-                                        </v-expand-transition>
-                                      </div>
-                                      <v-text-field
-                                        v-if="inner_comment.editable"
-                                        type="text"
-                                        elevation="0"
-                                        hide-details
-                                        variant="solo-inverted" 
-                                        v-model="inner_comment.content"
-                                        class="custom-solo-inverted"
-                                        :id="'commentId' + post.id+''+comment.id+''+ index"
-                                      ></v-text-field>
+                                      <v-expand-transition>
+                                        <div v-if="!inner_comment.editable" class="d-flex align-center">
+                                          <h3 class="pa-2 pl-4" style="font-weight: normal; width: max-content;">
+                                            {{ inner_comment.linkAuthor }} {{ inner_comment.content }}
+                                          </h3>
+                                          <v-expand-transition>
+                                            <h5 v-if="inner_comment.gotEdit" style="font-weight: normal;">[Szerkeztve]</h5>
+                                          </v-expand-transition>
+                                        </div>
+                                      </v-expand-transition>
+                                      <v-expand-transition>
+                                        <v-text-field
+                                          v-if="inner_comment.editable"
+                                          type="text"
+                                          elevation="0"
+                                          hide-details
+                                          variant="solo-inverted" 
+                                          v-model="inner_comment.content"
+                                          class="custom-solo-inverted"
+                                          :id="'commentId' + post.id+''+comment.id+''+ index"
+                                        ></v-text-field>
+                                      </v-expand-transition>
                                     </div>
                                   </div>
                                 </transition-group>
@@ -534,7 +546,7 @@
                                     </v-btn>
                                   </v-expand-transition>
                                   <v-expand-transition>
-                                    <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="inner_comment.editable = false">
+                                    <v-btn v-if="inner_comment.editable" class="expand-edit-btn-second" text color="transparent" elevation="0" @click="CommentClose(inner_comment)">
                                       Mégse
                                     </v-btn>
                                   </v-expand-transition>
@@ -898,10 +910,10 @@
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, computed, nextTick, watch  } from 'vue';
+import { onMounted, ref, reactive, computed, nextTick, watch, watchEffect   } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit } from '@/api/community/communityQuery';
+import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit, useCommunityTags } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 import { useDisplay } from 'vuetify';
 
@@ -930,7 +942,9 @@ const get_fullUser = ref(null);
 const get_UserName = ref('Betöltés...');
 
 const posts_limit = ref(10);
+const total_posts = ref(null);
 const PostLoading = ref(true);
+
 
 const { mutate: ProfileGetUser } = useProfileGetUser();
 const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
@@ -955,13 +969,16 @@ onMounted(async () => {
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
       id: null,
+      filter: null,
     }, {
       onSuccess: (posts_array) => {
         PostLoading.value = false;
-        if(posts_array != null){
-          posts_array.reverse();
-          posts_array.forEach((post) => {
-            postsConvertToDisplay(post, true);
+        total_posts.value = posts_array.total_posts;
+        if (posts_array.posts != null) {
+          posts_array.posts.forEach((post, index) => {
+            setTimeout(() => {
+              postsConvertToDisplay(post, true);
+            });
           });
         }
       },
@@ -976,12 +993,13 @@ watch(get_fullUser, async (User) => {
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
       id: User.id == null ? null : User.id,
+      filter: null,
     }, {
       onSuccess: (posts_array) => {
         PostLoading.value = false;
-        if (posts_array != null) {
-          posts_array.reverse();
-          posts_array.forEach((post, index) => {
+        total_posts.value = posts_array.total_posts;
+        if (posts_array.posts != null) {
+          posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
               postsConvertToDisplay(post, true);
             });
@@ -1028,7 +1046,7 @@ const showEditPost = ref(false);
 const showPostDial = ref(false);
 const defaultPostSave = ref(null);
 
-const newPost = reactive({ title: "", files: ref([]) });
+const newPost = reactive({ title: "", images: ref([]), files: ref([]) });
 const editingPost = reactive({ title: "", images: ref([]), files: ref([]), content: "" });
 
 // Posts tömb
@@ -1050,23 +1068,159 @@ function search() {
   ];
 }
 
-const FilterChips = ["Megoldások", "Programozás", "Segítség", "Probléma", "Bejelentés"];
+const mutation = useCommunityTags();
+
+watchEffect(() => {
+  mutation.mutate(undefined, {
+    onSuccess: (response) => {
+      const tags = response.map(item => item.tag);
+      FilterChips.value.push(...tags);
+    },
+    onError: (error) => {
+      console.error("Hiba történt:", error);
+    }
+  });
+});
+
+const FilterChips = ref([]);
 
 const FilterOpt = ref([]);
 
-const sortOptions = ref([]); // Tömb, amely tartalmazza a kiválasztott értékeket
-const sortOptionForPop = ref([]);
-
-const toggleOption = (option) => {
-  if(sortOptions.value == option){
-    sortOptions.value = [];
+watch(FilterOpt, (newVal, oldVal) => {
+  if(newVal.length != 0){
+    console.log("FilterOpt változott:", newVal);
   }
-  else if (sortOptions.value.length > 0) {
-    sortOptions.value = option;
-  } else {
+});
+
+const sortOptions = ref([]); // Tömb, amely tartalmazza a kiválasztott értékeket
+
+const toggleOption = async (option) => {
+  if(sortOptions.value.length == 0){
     sortOptions.value.push(option);
+  }else{
+    if(sortOptions.value[0] == option){
+      sortOptions.value = [];
+      sortOptionForPop.value = null;
+      posts.length = 0;
+      PostLoading.value = true;
+      await CommunityGetLimitedPosts({
+        limit: posts_limit.value,
+        id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+        filter: null,
+      }, {
+        onSuccess: (posts_array) => {
+          PostLoading.value = false;
+          total_posts.value = posts_array.total_posts;
+          if (posts_array.posts != null) {
+            posts_array.posts.forEach((post, index) => {
+              setTimeout(() => {
+                postsConvertToDisplay(post, true);
+              });
+            });
+          }
+        },
+        onError: (error) => {
+          console.error('Hiba történt a posztok lekérésekor:', error);
+        },
+      });
+    }
+    else{
+      sortOptions.value[0] = option;
+    }
   }
 };
+
+const sortOptionForPop = ref(null); // Alapértelmezett érték
+
+watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
+  if (newSortOption !== oldSortOption) {
+    if (newSortOption === 'popularity') {
+      posts.length = 0;
+      PostLoading.value = false;
+      await CommunityGetLimitedPosts({
+        limit: posts_limit.value,
+        id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+        filter: [[sortOptions.value[0], 'ASC']],
+        }, 
+        {
+          onSuccess: (posts_array) => {
+            PostLoading.value = false;
+            total_posts.value = posts_array.total_posts;
+            if (posts_array.posts != null) {
+              posts_array.posts.forEach((post, index) => {
+                setTimeout(() => {
+                  postsConvertToDisplay(post, true);
+                });
+              });
+            }
+          },
+          onError: (error) => {
+            console.error('Hiba történt a posztok lekérésekor:', error);
+          },
+        }
+      );
+    } else if (newSortOption === 'date') {
+      posts.length = 0;
+      PostLoading.value = false;
+      if (sortOptionForPop.value != null) {
+        await CommunityGetLimitedPosts({
+          limit: posts_limit.value,
+          id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+          filter: [[sortOptions.value[0], 'DESC']],
+          }, 
+          {
+            onSuccess: (posts_array) => {
+              PostLoading.value = false;
+              total_posts.value = posts_array.total_posts;
+              if (posts_array.posts != null) {
+                posts_array.posts.forEach((post, index) => {
+                  setTimeout(() => {
+                    postsConvertToDisplay(post, true);
+                  });
+                });
+              }
+            },
+            onError: (error) => {
+              console.error('Hiba történt a posztok lekérésekor:', error);
+            },
+          }
+        );
+      }
+    }
+  }
+});
+
+// Figyeljük a sortOptions változását
+watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
+  if (sortOptionForPop.value != null) {
+    posts.length = 0;
+    PostLoading.value = false;
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+      filter: [[newSortOptions[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
+      }, 
+      {
+        onSuccess: (posts_array) => {
+          PostLoading.value = false;
+          total_posts.value = posts_array.total_posts;
+          if (posts_array.posts != null) {
+            posts_array.posts.forEach((post, index) => {
+              setTimeout(() => {
+                postsConvertToDisplay(post, true);
+              });
+            });
+          }
+        },
+        onError: (error) => {
+          console.error('Hiba történt a posztok lekérésekor:', error);
+        },
+      }
+    );
+  }
+});
+
+
 
 function CreatePostOpen(){
   showEditPost.value = false;
@@ -1840,7 +1994,7 @@ function commentEdit(comment,id){
   comment.editable = true;
 
   if(editingComment.value != null){
-    editingComment.value.editable = null;
+    editingComment.value.editable = false;
     document.getElementById(editingID.value).value = editingContent.value;
     editingComment.value.content = editingContent.value;
   }
@@ -1848,7 +2002,7 @@ function commentEdit(comment,id){
   editingComment.value = comment;
   editingID.value = id;
   editingContent.value = comment.content;
-
+  
   nextTick(() => {
     const element = document.getElementById(id);
     if (element) {
@@ -1861,11 +2015,17 @@ const commentEditConf = async (comment,id) =>{
   var edited_content = document.getElementById(id).value;
 
   if(edited_content.value != ''){
-    console.log({content: String(edited_content), comment_id: comment.id});
     await CommunityCommentEdit({content: String(edited_content), comment_id: comment.id});
     comment.gotEdit = true;
   }
 
+  editingID.value = null,
+  editingComment.value = null,
+  editingContent.value = null;
+  comment.editable = false;
+}
+
+function CommentClose(comment){
   editingID.value = null,
   editingComment.value = null,
   editingContent.value = null;
@@ -1995,7 +2155,8 @@ const addLastCommentToComment = async (comment, inner_comment) => {
   min-width: 0;
   padding-top: .5vw;
   padding-bottom: .5vw;
-  font-size: .9vw;
+  font-size: 1.15rem; 
+  font-weight: normal;
 }
 
 .expand-edit-btn-first-enter-active,

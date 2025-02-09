@@ -24,6 +24,7 @@ const {
     Community_posts,
     Community_files,
     Community_likes,
+    Community_tags,
     Themes, 
     Tasks, 
     Competitions, 
@@ -42,6 +43,7 @@ db.Community_comments = Community_comments;
 db.Community_posts = Community_posts;
 db.Community_files = Community_files;
 db.Community_likes = Community_likes;
+db.Community_tags = Community_tags;
 db.Themes = Themes;
 db.Tasks = Tasks;
 db.Competitions = Competitions;
@@ -75,6 +77,9 @@ const initializeDatabase = async () => {
 
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');
+        
+        await db.Community_tags.initializeTags();
+        console.log('Default tags inserted.');
 
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
         console.log("Event Scheduler is enabled.");

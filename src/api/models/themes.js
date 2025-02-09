@@ -51,7 +51,7 @@ module.exports = (sequelize, DataTypes) => {
             { theme: "Valószínűségszámítás" },
         ];
 
-        await Themes.bulkCreate(defaultThemes, { ignoreDuplicates: false });
+        await Themes.bulkCreate(defaultThemes, { ignoreDuplicates: true });
     };
 
     return Themes;
