@@ -31,23 +31,23 @@
       multiple
       style="background-color: rgb(var(--v-theme-background));"
     >
-      <v-slide-group-item
-        v-for="n in themeStore.themes"
-        :key="n.theme"
-        v-slot="{ isSelected, toggle }"
-        >
-        <v-btn
-          :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
-          class="ma-4"
-          rounded
-          width="auto"
-          height="3em"
-          style="font-size: small;"
-          @click="toggle"
-        >
-          {{ n.theme }} 
-        </v-btn>
-      </v-slide-group-item>
+    <v-slide-group-item
+    v-for="n in themeStore.themes"
+    :key="n.theme"
+    v-slot="{ isSelected, toggle }"
+  >
+    <v-btn
+      :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
+      class="ma-4"
+      rounded
+      width="auto"
+      height="3em"
+      style="font-size: small;"
+      @click="() => handleToggle(n.theme, isSelected, toggle)"
+    >
+      {{ n.theme }}
+    </v-btn>
+  </v-slide-group-item>
     </v-slide-group>
   </v-sheet>
   
@@ -211,7 +211,7 @@
   
       <v-row 
       class="task_card mx-8 pa-3"
-      v-for="(card) in cardsStore.cards" 
+      v-for="(card) in cardsArray" 
       :key="card.id" 
       style="border-bottom: 1px solid #ccc;"
       @click="TaskView(card.id)"
@@ -236,7 +236,7 @@
       
       <!-- Completion Rate -->
       <v-col class="d-flex align-center justify-center" cols="6" sm="2">
-        {{ cardCompRate(cardsStore.completion_rates, card.id) }}%
+        {{ cardCompRate(cardsStore.completion_rates, card.id) }}% 
       </v-col>
 
       <!-- Difficulty -->
@@ -261,11 +261,12 @@ https://laravel.com/docs/11.x/pagination#main-content
 https://laravel-news.com/laravel-pagination
 
 -->
-  <v-pagination 
+<v-pagination 
   v-model="pageNumber" 
-  :length="Math.ceil(cardsStore.cards.length / 15 + 1)" 
+  :length="Math.ceil(cardsStore.cards.length / 15)" 
   @update:modelValue="UpdatePage">
 </v-pagination>
+
 
 
 </template> 
@@ -278,6 +279,7 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts';
 import { useRouter } from 'vue-router';
 import { number } from 'zod';
+import {useCards,useCompletionRates} from '@/api/cards/cardQuery'
 
 
 function getCookie(name: string): string | null {
@@ -313,16 +315,20 @@ export default defineComponent({
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
     const router = useRouter();
-    const pageNumber = ref(Number(sessionStorage.getItem('pageNumber')) || 1);
+    const pageNumber = ref(1);
+    const cardsPerPage = 15;
     const difficulty_Query = ref<string | null>(null)
     const state_Query = ref<string | null>(null)
+    const task_Theme_Query = ref<string[]>([]);
+    const cardsArray = ref([]);
+    const completion_rates = ref([]);
 
-    const UpdatePage = (newPage: number) => {
-      window.scroll({
-  top: 0,
-  left: 0,
-  behavior: 'smooth'
-});
+        const UpdatePage = (newPage: number) => {
+          window.scroll({
+      top: 0,
+      left: 0,
+      behavior: 'smooth'
+    });
 
         console.log(newPage)
         pageNumber.value = newPage;
@@ -335,6 +341,7 @@ export default defineComponent({
         console.log(`Page: ${newPage}, Offset: ${offset}`);
         cardsStore.fetchCards();
         console.log('cards got fetched')
+        
 };
     /*Szuresesk*/
     const filterTasksByCharacters = (characters: any) => {
@@ -382,7 +389,31 @@ export default defineComponent({
    watch(state_Query, (newVal) =>{
       filterByState(newVal);
    })
-
+   
+   const handleToggle = (theme: string, isSelected: boolean, toggle: Function) => {
+    if (isSelected) {
+      task_Theme_Query.value = task_Theme_Query.value.filter(t => t !== theme);
+    } else {
+      task_Theme_Query.value.push(theme);
+    }
+    toggle();
+    if(task_Theme_Query.value.length == 0){
+      cardsStore.fetchCards();
+    }else{
+      cardsStore.fetchCardsByThemes(task_Theme_Query.value)
+    }
+    //console.log(task_Theme_Query.value);
+  };
+  const { mutate: fetchCards } = useCards();
+  fetchCards(undefined, {
+        onSuccess: (array) => {
+          cardsArray.value = array;
+          console.log('Fetched cards:', cardsArray.value);
+        },
+        onError: (error) => {
+          console.error('Error fetching cards:', error);
+        },
+      });
     /*--------------------------------------*/
     const TaskView = (id: any) => {
       console.log(id)
@@ -497,9 +528,9 @@ export default defineComponent({
     if (value == new Date().getDate()) {
       return '2px solid black';
     }
-    return ''; // Fixed the 'return' typo
+    return '';
   };
-    // ApexCharts Data and Chart Options
+
     const series = ref([0, 0, 0]);
     const chartOptions = ref({
       chart: {
@@ -578,16 +609,45 @@ export default defineComponent({
           console.error('Error fetching user profile:', error);
         }
       }
+   
+      onMounted(() => {
+        const {mutate} = useCompletionRates();
+        mutate(undefined,{
+          onSuccess: (array) => {
+          completion_rates.value = array;
+          console.log(completion_rates.value)
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+        })
+      })
 
+      onMounted(() => {
+      const { mutate } = useCards();
+      mutate(undefined, {
+        onSuccess: (array) => {
+          cardsArray.value = array;
+          console.log(cardsArray.value)
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      });
+    });
+
+
+    quoteStore.fetchQuote();
+    themeStore.fetchThemes();
+    
       cardsStore.getAllTaskCount();
-      quoteStore.fetchQuote();
-      themeStore.fetchThemes();
       cardsStore.fetchCards();
       cardsStore.fetchCompletionRate();
       cardsStore.fetchSolvedTaskRates(Number(get_user_name.value));
       cardsStore.fetchTaskState(Number(get_user_name.value));
       cardsStore.fetchCards();
       cardsStore.fetchRandomTask();
+      
       watch(() => cardsStore.solved_task_rates, (newRates) => {
         series.value = newRates.countpercenct;
       });
@@ -625,7 +685,11 @@ export default defineComponent({
       filterByDifficulty,
       difficulty_Query,
       state_Query,
-      filterByState
+      filterByState,
+      handleToggle,
+      task_Theme_Query,
+      cardsArray,
+      completion_rates
     };
   },
 });
