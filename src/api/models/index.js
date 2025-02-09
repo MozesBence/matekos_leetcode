@@ -4,7 +4,6 @@ module.exports = (sequelize, DataTypes) => {
     const Community_comments = require("../models/community_comments")(sequelize, DataTypes);
     const Community_files = require("../models/community_files")(sequelize, DataTypes);
     const Community_likes = require("../models/community_likes")(sequelize, DataTypes);
-    const Community_tags = require("../models/community_tags")(sequelize, DataTypes);
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
@@ -70,9 +69,9 @@ module.exports = (sequelize, DataTypes) => {
         through: "tasks_creator",
     });
 
-    Themes.hasOne(Tasks, {
-        foreignKey: "theme_id",
-    });
+    Themes.hasMany(Tasks, {
+        foreignKey: 'theme_id',
+      });
 
     // Community_posts kapcsolatai
     Community_posts.hasMany(Community_comments, {
@@ -138,9 +137,6 @@ module.exports = (sequelize, DataTypes) => {
         constraints: false,
     });
 
-    Community_posts.belongsToMany(Community_tags, { through: 'PostTags' });
-    Community_tags.belongsToMany(Community_posts, { through: 'PostTags' });
-
     Users.hasMany(Alerts, {
         foreignKey: "user_id",
     });
@@ -155,7 +151,6 @@ module.exports = (sequelize, DataTypes) => {
         Community_comments,
         Community_files,
         Community_likes,
-        Community_tags,
         Themes,
         Tasks,
         Competitions,
