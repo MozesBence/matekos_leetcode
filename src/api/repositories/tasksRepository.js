@@ -72,8 +72,26 @@ const tasksRepository = {
         difficulty: difficulty_value
       }
     })
-  }
+  },
+
+  async getTaskByThemes(themeNames) {
+    const themes = await db.Themes.findAll({
+      where: {
+        theme: themeNames
+      },
+      attributes: ['id']
+    });
   
+    const themeIds = themes.map(theme => theme.id);
+  
+    const tasks = await Tasks.findAll({
+      where: {
+        theme_id: themeIds
+      }
+    });
+  
+    return tasks;
+  }
   
 };
 
