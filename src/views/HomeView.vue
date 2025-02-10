@@ -608,22 +608,8 @@ export default defineComponent({
   
     const offset = computed(() => (page.value - 1) * perPage.value);
 
-<<<<<<< HEAD
-     
-      /*const { mutate } = useCards();
-      mutate(undefined, {
-        onSuccess: (array) => {
-          cardsArray.value = array;
-          console.log(cardsArray.value)
-        },
-        onError: (error) => {
-          console.log(error);
-        },
-      });*/
-=======
       
      //cardsArray.value = useCards(number(offset.value)).data;
->>>>>>> 299ee05225073714f7a32b4f3678a4e353dce28b
 
 
       quoteStore.fetchQuote();
