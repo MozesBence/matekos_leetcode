@@ -46,6 +46,8 @@ const CommunityEditPostUpload = async (data: CommunityEditData) => {
   formData.append('title', data.title);
   formData.append('content', data.content);
   formData.append('none_files', JSON.stringify(data.none_files));
+  formData.append('new_Chips', JSON.stringify(data.new_Chips));
+  formData.append('none_Chips', JSON.stringify(data.none_Chips));
    // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
   Object.keys(data.files).forEach(key => {
     const file = data.files[key];
@@ -77,8 +79,7 @@ export const useCommunityEditPost = () => {
   })
 }
 
-
-const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null, filter: Array<Array<string>> | null}) => {
+const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null, filter: Array<Array<string>> | null, tagsArray: Array<number> | null, search: string | null}) => {
   const response = await axiosClient.get('http://localhost:3000/community', {
     params: data,
   });

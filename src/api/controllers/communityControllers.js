@@ -1,9 +1,9 @@
 const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
-    const { limit, id, filter } = req.query;
+    const { limit, id, filter, tagsArray, search } = req.query;
 
-    const get_posts = await communityService.getLimitedPost(limit,id,filter);
+    const get_posts = await communityService.getLimitedPost(limit, id, filter, tagsArray, search);
 
     const get_postsCount = await communityService.getPostCount();
 
@@ -24,7 +24,7 @@ exports.postUpload = async (req, res, next) => {
     }
 
     try{
-        const post_result = await communityService.postUpload(newPost);
+        const post_result = await communityService.postUpload(newPost, JSON.parse(chips));
 
         if(post_result == null){
             const error = new Error("Sikertelen volt a poszt feltöltés!");
@@ -43,12 +43,6 @@ exports.postUpload = async (req, res, next) => {
 
             throw error;
         }
-
-        if(chips != "null"){
-            const chips_index = JSON.parse(chips);
-
-            
-        }
     
         res.status(201).json(post_result);
     }
@@ -58,14 +52,20 @@ exports.postUpload = async (req, res, next) => {
 };
 
 exports.postEditUpload = async (req, res, next) => {
-    const {id, title, content, none_files} = req.body;
+    const {id, title, content, none_files, new_Chips, none_Chips} = req.body;
+
     const files = req.files;
+
     const none_existingFiles = JSON.parse(none_files);
+
+    const newChips = new_Chips != null && new_Chips != undefined && new_Chips != 'undefined' ? JSON.parse(new_Chips) : null;
+
+    const none_existingChips = none_Chips != null && none_Chips != undefined && none_Chips != 'undefined' ? JSON.parse(none_Chips) : null;
 
     try{
         const postEdit_result = await communityService.postEdit(id, title, content);
 
-        if(none_existingFiles[0] != undefined){
+        if(none_existingFiles != []){
             const fileDelete_result = await communityService.filesDelete(none_existingFiles);
 
             if(fileDelete_result == null){
@@ -81,7 +81,31 @@ exports.postEditUpload = async (req, res, next) => {
             const postFiles_result = await communityService.postFilesUpload(files, id);
         
             if(postFiles_result == null){
-                const error = new Error("A poszt feltöltése megtörtént de sikertelen volt a fájl(ok) feltöltése(i)!");
+                const error = new Error("Sikertelen volt a fájl(ok) feltöltése(i)!");
+        
+                error.status = 400;
+        
+                throw error;
+            }
+        }
+
+        if(none_existingChips != null){
+            const ChipsDelete_result = await communityService.chipsDelete(id, none_existingChips);
+
+            if(ChipsDelete_result == null){
+                const error = new Error("A tag(ek) törlésében valami hiba lépett fel!");
+        
+                error.status = 400;
+        
+                throw error;
+            }
+        }
+
+        if(newChips != null){
+            const chipUpload_result = await communityService.chipUpload(id, newChips);
+        
+            if(chipUpload_result == null){
+                const error = new Error("Sikertelen volt a tag(ek) feltöltése!");
         
                 error.status = 400;
         

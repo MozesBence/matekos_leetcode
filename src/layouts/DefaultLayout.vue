@@ -188,7 +188,7 @@
                     elevation="0"
                     class="d-flex justify-space-between align-center rounded-lg"
                     style="width: 100%;"
-                    @click="currentRoute.name !== 'home' && router.push({ name: 'home', params: {id: 1} })"
+                    @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
                     :class="{'btn-active': currentRoute.name === 'home'}"
                   >
                     <template v-slot:prepend>

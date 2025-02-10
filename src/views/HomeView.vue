@@ -344,7 +344,7 @@ export default defineComponent({
         
 };
     /*Szuresesk*/
-    const filterTasksByCharacters = (characters: any) => {
+    /*const filterTasksByCharacters = (characters: any) => {
       if(characters.length == 0){
         cardsStore.fetchCards();
       }else{
@@ -371,7 +371,7 @@ export default defineComponent({
   }
   watch(difficulty_Query, (newVal) => {
         filterByDifficulty(newVal)
-  })
+  })*/
    const filterByState = (state: any) => {
     const userCookie = getCookie('user');
     switch (state) {
@@ -626,7 +626,7 @@ export default defineComponent({
   
 
      
-      const { mutate } = useCards();
+      /*const { mutate } = useCards();
       mutate(undefined, {
         onSuccess: (array) => {
           cardsArray.value = array;
@@ -635,7 +635,7 @@ export default defineComponent({
         onError: (error) => {
           console.log(error);
         },
-      });
+      });*/
 
 
 

@@ -24,6 +24,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
-    open: '/1', // Automatikusan a /1 oldalra navigál, amikor elindítod a szervert
+    open: '/', // Automatikusan a /1 oldalra navigál, amikor elindítod a szervert
   },
 })

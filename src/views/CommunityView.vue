@@ -6,7 +6,7 @@
           height: 'max-content',
           maxWidth: '35%',
           width: '100%',
-          top: !get_fullUser ? '12vh' : '6.7vh'
+          top: !get_fullUser ? '13.2vh' : '6.7vh'
         }"
         class="ma-2 ml-3 mt-4 rounded"
         v-if="!isMobile"
@@ -18,7 +18,6 @@
                 v-model="searchQuery"
                 label="Keresés"
                 clearable
-                @keyup.enter="search"
                 icon="mdi-magnify"
                 variant="outlined"
                 hide-details
@@ -129,7 +128,10 @@
           >
             <v-expansion-panels v-if="isMobile">
               <v-expansion-panel>
-                <v-expansion-panel-title>Keresési lehetőségek</v-expansion-panel-title>
+                <v-expansion-panel-title>
+                  <v-icon size="20" class="mr-2">mdi-magnify</v-icon>
+                  <h2 style="font-weight: normal;">Keresési lehetőségek</h2>
+                </v-expansion-panel-title>
                 <v-expansion-panel-text class="mobilExpensionText">
                   <v-list>
                     <v-list-item>
@@ -304,6 +306,26 @@
                     </v-card-text>
                   </div>
                 </transition-group>
+
+                <v-divider v-if="post.tags.length > 0"></v-divider>
+
+                <div v-if="post.tags.length > 0" class="text-center d-flex flex-row flex-wrap align-center">
+                  <div class="d-flex flex-row align-items-center mr-2">
+                    <v-icon icon="mdi-label-multiple" class="mx-1" color="community_primary_color"></v-icon>
+                    <span class="font-weight-normal">Címkék</span>
+                  </div>
+                  <v-chip
+                    v-for="tag in post.tags"
+                    :key="tag"
+                    class="mx-1 my-2"
+                    color="community_primary_color"
+                    variant="outlined"
+                  >
+                    <v-icon icon="mdi-tag-multiple" start></v-icon>
+                    <h3 style="font-weight: normal;">{{ tag }}</h3>
+                  </v-chip>
+                </div>
+
 
                 <v-divider></v-divider>
 
@@ -1008,6 +1030,8 @@ onMounted(async () => {
       limit: posts_limit.value,
       id: null,
       filter: null,
+      tagsArray: null,
+      search: null
     }, {
       onSuccess: (posts_array) => {
         PostLoading.value = false;
@@ -1032,6 +1056,8 @@ watch(get_fullUser, async (User) => {
       limit: posts_limit.value,
       id: User.id == null ? null : User.id,
       filter: null,
+      tagsArray: null,
+      search: null
     }, {
       onSuccess: (posts_array) => {
         PostLoading.value = false;
@@ -1082,6 +1108,7 @@ const editingContent = ref(null);
 const showEditPost = ref(false);
 const showPostDial = ref(false);
 const defaultPostSave = ref(null);
+const saveEditingChips = ref([]);
 
 const newPost = reactive({ title: "", images: ref([]), files: ref([]) });
 const editingPost = reactive({ title: "", images: ref([]), files: ref([]), content: "" });
@@ -1091,19 +1118,68 @@ const posts = reactive([]);
 
 const showCreatePost = ref(false);
 
-const searchQuery = ref('');
-const results = ref([]);
+const searchQuery = ref("");
+let timeout = null;
 
-function search() {
-  // Itt implementáld a keresést, például API hívás vagy adatbázis lekérdezés
-  console.log('Keresés:', searchQuery.value);
-  // Példa eredmények:
-  results.value = [
-    { id: 1, title: 'Eredmény 1', description: 'Leírás 1' },
-    { id: 2, title: 'Eredmény 2', description: 'Leírás 2' },
-    { id: 3, title: 'Eredmény 3', description: 'Leírás 3' }
-  ];
-}
+watch(searchQuery, async (newValue) => {
+  clearTimeout(timeout);
+
+  if (newValue !== "") {
+    timeout = setTimeout( async () => {
+      posts.length = 0;
+      PostLoading.value = true;
+      const newArray = FilterOpt.value.map(num => num + 1);
+      await CommunityGetLimitedPosts({
+        limit: posts_limit.value,
+        id: get_fullUser.value == null ? null : get_fullUser.value.id,
+        filter: null,
+        tagsArray: newArray.length > 0 ? newArray : null,
+        search: newValue
+      }, {
+        onSuccess: (posts_array) => {
+          PostLoading.value = false;
+          total_posts.value = posts_array.total_posts;
+          if (posts_array.posts != null) {
+            posts_array.posts.forEach((post, index) => {
+              setTimeout(() => {
+                postsConvertToDisplay(post, true);
+              });
+            });
+          }
+        },
+        onError: (error) => {
+          console.error('Hiba történt a posztok lekérésekor:', error);
+        },
+      });
+    }, 300);
+  }else{
+    posts.length = 0;
+    PostLoading.value = true;
+    const newArray = FilterOpt.value.map(num => num + 1);
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: get_fullUser.value == null ? null : get_fullUser.value.id,
+      filter: null,
+      tagsArray: newArray.length > 0 ? newArray : null,
+      search: null
+    }, {
+      onSuccess: (posts_array) => {
+        PostLoading.value = false;
+        total_posts.value = posts_array.total_posts;
+        if (posts_array.posts != null) {
+          posts_array.posts.forEach((post, index) => {
+            setTimeout(() => {
+              postsConvertToDisplay(post, true);
+            });
+          });
+        }
+      },
+      onError: (error) => {
+        console.error('Hiba történt a posztok lekérésekor:', error);
+      },
+    });
+  }
+});
 
 const mutation = useCommunityTags();
 
@@ -1124,9 +1200,57 @@ const FilterChips = ref([]);
 const FilterOpt = ref([]);
 const FilterOptForCreate = ref([]);
 
-watch(FilterOpt, (newVal, oldVal) => {
+watch(FilterOpt, async (newVal, oldVal) => {
   if(newVal.length != 0){
-   //console.log("FilterOpt változott:", newVal);
+    posts.length = 0;
+    PostLoading.value = true;
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: get_fullUser.value == null ? null : get_fullUser.value.id,
+      filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
+      tagsArray: newVal.map(num => num + 1),
+      search: searchQuery.value
+    }, {
+      onSuccess: (posts_array) => {
+        PostLoading.value = false;
+        total_posts.value = posts_array.total_posts;
+        if (posts_array.posts != null) {
+          posts_array.posts.forEach((post, index) => {
+            setTimeout(() => {
+              postsConvertToDisplay(post, true);
+            });
+          });
+        }
+      },
+      onError: (error) => {
+        console.error('Hiba történt a posztok lekérésekor:', error);
+      },
+    });
+  }else if(oldVal.length == 1 && newVal.length == 0){
+    posts.length = 0;
+    PostLoading.value = true;
+    await CommunityGetLimitedPosts({
+      limit: posts_limit.value,
+      id: get_fullUser.value == null ? null : get_fullUser.value.id,
+      filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
+      tagsArray: null,
+      search: searchQuery.value
+    }, {
+      onSuccess: (posts_array) => {
+        PostLoading.value = false;
+        total_posts.value = posts_array.total_posts;
+        if (posts_array.posts != null) {
+          posts_array.posts.forEach((post, index) => {
+            setTimeout(() => {
+              postsConvertToDisplay(post, true);
+            });
+          });
+        }
+      },
+      onError: (error) => {
+        console.error('Hiba történt a posztok lekérésekor:', error);
+      },
+    });
   }
 });
 
@@ -1139,28 +1263,33 @@ const toggleOption = async (option) => {
     if(sortOptions.value[0] == option){
       sortOptions.value = [];
       sortOptionForPop.value = null;
-      posts.length = 0;
-      PostLoading.value = true;
-      await CommunityGetLimitedPosts({
-        limit: posts_limit.value,
-        id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
-        filter: null,
-      }, {
-        onSuccess: (posts_array) => {
-          PostLoading.value = false;
-          total_posts.value = posts_array.total_posts;
-          if (posts_array.posts != null) {
-            posts_array.posts.forEach((post, index) => {
-              setTimeout(() => {
-                postsConvertToDisplay(post, true);
+      if(sortOptions.value[0] != null){
+        posts.length = 0;
+        PostLoading.value = true;
+        const newArray = FilterOpt.value.map(num => num + 1);
+        await CommunityGetLimitedPosts({
+          limit: posts_limit.value,
+          id: get_fullUser.value == null ? null : get_fullUser.value.id,
+          filter: null,
+          tagsArray: newArray.length > 0 ? newArray : null,
+          search: searchQuery.value
+        }, {
+          onSuccess: (posts_array) => {
+            PostLoading.value = false;
+            total_posts.value = posts_array.total_posts;
+            if (posts_array.posts != null) {
+              posts_array.posts.forEach((post, index) => {
+                setTimeout(() => {
+                  postsConvertToDisplay(post, true);
+                });
               });
-            });
-          }
-        },
-        onError: (error) => {
-          console.error('Hiba történt a posztok lekérésekor:', error);
-        },
-      });
+            }
+          },
+          onError: (error) => {
+            console.error('Hiba történt a posztok lekérésekor:', error);
+          },
+        });
+      }
     }
     else{
       sortOptions.value[0] = option;
@@ -1172,13 +1301,16 @@ const sortOptionForPop = ref(null); // Alapértelmezett érték
 
 watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
   if (newSortOption !== oldSortOption) {
+    const newArray = FilterOpt.value.map(num => num + 1);
     if (newSortOption === 'popularity') {
       posts.length = 0;
       PostLoading.value = false;
       await CommunityGetLimitedPosts({
         limit: posts_limit.value,
-        id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+        id: get_fullUser.value == null ? null : get_fullUser.value.id,
         filter: [[sortOptions.value[0], 'ASC']],
+        tagsArray: newArray.length > 0 ? newArray : null,
+        search: searchQuery.value
         }, 
         {
           onSuccess: (posts_array) => {
@@ -1203,8 +1335,10 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
       if (sortOptionForPop.value != null) {
         await CommunityGetLimitedPosts({
           limit: posts_limit.value,
-          id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+          id: get_fullUser.value == null ? null : get_fullUser.value.id,
           filter: [[sortOptions.value[0], 'DESC']],
+          tagsArray: newArray.length > 0 ? newArray : null,
+          search: searchQuery.value
           }, 
           {
             onSuccess: (posts_array) => {
@@ -1231,12 +1365,15 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
 // Figyeljük a sortOptions változását
 watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
   if (sortOptionForPop.value != null) {
+    const newArray = FilterOpt.value.map(num => num + 1);
     posts.length = 0;
     PostLoading.value = false;
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
-      id: get_fullUser.value.id == null ? null : get_fullUser.value.id,
+      id: get_fullUser.value == null ? null : get_fullUser.value.id,
       filter: [[newSortOptions[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
+      tagsArray: newArray.length > 0 ? newArray : null,
+      search: searchQuery.value
       }, 
       {
         onSuccess: (posts_array) => {
@@ -1258,8 +1395,6 @@ watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
   }
 });
 
-
-
 function CreatePostOpen(){
   showEditPost.value = false;
   showPostDial.value = true;
@@ -1271,6 +1406,8 @@ function EditPostOpen(post){
   editingPost.content = post.content;
   editingPost.files = [...post.files];
   editingPost.images = [...post.images];
+  FilterOptForCreate.value = [...post.tags.map(c=> FilterChips.value.indexOf(c))];
+  saveEditingChips.value = [...post.tags.map(c=> FilterChips.value.indexOf(c))];
   defaultPostSave.value = post;
   showCreatePost.value = false;
   showPostDial.value = true;
@@ -1337,10 +1474,13 @@ const EditPostConf = async () =>{
     }
   });
 
+  const new_Chips = FilterOptForCreate.value.filter(c=> !saveEditingChips.value.includes(c)).map(x => x +1);
+  const none_Chips = saveEditingChips.value.filter(c=> !FilterOptForCreate.value.includes(c)).map(x => x +1);
+
   const def_postId =  Number(defaultPostSave.value.id);
 
   if(editor.innerHTML != "" && editor.innerHTML != "<br>" && (defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images)){
-    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles, chips: 'null'}, {
+    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles, new_Chips: new_Chips.length > 0 ? new_Chips : [], none_Chips: none_Chips.length > 0 ? none_Chips : []}, {
       onSuccess : async (response) =>{
         const post = posts.find(c => c.id == def_postId);
 
@@ -1389,6 +1529,7 @@ const EditPostConf = async () =>{
 
         post.title = editingPost.title;
         post.content = htmlContent;
+        post.tags = FilterOptForCreate.value.map(i => FilterChips.value[i]);
       }
     });
 
@@ -1676,9 +1817,11 @@ const addPost = async () =>{
 
   const compressingFilesArray = await compressingFiles(mergedArray);
 
+  const newArray = FilterOptForCreate.value.map(num => num + 1);
+
   if(get_fullUser.value.id && newPost.title && htmlContent){
     loading.value = true;
-    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray, chips: FilterOptForCreate.value}, {
+    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray, chips: newArray}, {
       onSuccess: (response) => {
         loading.value = false;
         postsConvertToDisplay({

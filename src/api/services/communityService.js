@@ -2,17 +2,17 @@ const communityRepository  = require("../repositories/communityRepository");
 
 class communityService
 {
-    async getLimitedPost(limit, id, filter){
-        return await communityRepository.getLimitedPost(limit, id, filter);
+    async getLimitedPost(limit, id, filter, tagsArray, search){
+        return await communityRepository.getLimitedPost(limit, id, filter, tagsArray,  search);
     }
 
     async getPostCount(){
         return await communityRepository.getPostCount();
     }
 
-    async postUpload(post)
+    async postUpload(post,tagIds)
     {
-        return await communityRepository.postUpload(post);
+        return await communityRepository.postUpload(post,tagIds);
     }
 
     async postFilesUpload(files,post_id)
@@ -47,6 +47,14 @@ class communityService
 
     async filesDelete(none_files){
         return await communityRepository.filesDelete(none_files);
+    }
+    
+    async chipsDelete(postId, none_existingFiles){
+        return await communityRepository.chipsDelete(postId, none_existingFiles);
+    }
+
+    async chipUpload(id, newChips){
+        return await communityRepository.chipUpload(id, newChips);
     }
 
     async getTags(){

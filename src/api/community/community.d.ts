@@ -12,5 +12,6 @@ export type CommunityEditData = {
     content: string;
     files: Array<File>;
     none_files: number[] | null;
-    chips: Array<number> | null;
+    new_Chips: number[] | null;
+    none_Chips: number[] | null;
 };
