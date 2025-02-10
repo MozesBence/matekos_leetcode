@@ -1,5 +1,5 @@
 import axiosClient from '../../lib/axios';
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQuery } from '@tanstack/vue-query';
 import type { Ref } from 'vue';
 
 const GetTaskData = async (id: number) => {
@@ -8,8 +8,8 @@ const GetTaskData = async (id: number) => {
 }
 
 export const UseGetTaskData = () => {
-    return useMutation({
-        mutationFn: (id: number) => GetTaskData(id),
+    return useQuery({
+        queryFn: (id: number) => GetTaskData(id),
         onSuccess: (data) => {
             console.log('Task data:', data);
         },

@@ -75,23 +75,24 @@ const tasksRepository = {
   },
 
   async getTaskByThemes(themeNames) {
-    const themes = await db.Themes.findAll({
+    const themesWithTasks = await db.Themes.findAll({
       where: {
         theme: themeNames
       },
-      attributes: ['id']
-    });
-  
-    const themeIds = themes.map(theme => theme.id);
-  
-    const tasks = await Tasks.findAll({
-      where: {
-        theme_id: themeIds
+      attributes: ['id', 'theme'],
+      include: {
+        model: db.Tasks
       }
     });
   
+    const tasks = themesWithTasks.reduce((acc, theme) => {
+      return acc.concat(theme.Tasks);
+    }, []);
+  
     return tasks;
   }
+  
+  
   
 };
 

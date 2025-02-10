@@ -345,7 +345,7 @@
           } else {
             setPersistentCookie('user', token);
           }
-          router.push({ name: 'home', params: {id: 1} });
+          router.push({ name: 'home' });
         },
       });
     }

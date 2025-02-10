@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import axios from "axios";
 
 const Themes = async() => {
@@ -11,8 +11,8 @@ const Themes = async() => {
 }
 
 export const UseThemes = async () => {
-    return useMutation({
-        mutationFn: Themes,
+    return useQuery({
+        queryFn: Themes,
         onSuccess:(data)=>{
             console.log(data)
         },

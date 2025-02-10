@@ -1,12 +1,13 @@
 import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
+import queryClient from "@/lib/queryClient";
 
 //OSSZES MUTATET query-re atirni
 
 // Fetching Cards
-const fetchCards = async () => {
+const fetchCards = async (offset:number) => {
   try {
-    const response = await axios.get(`/api/tasks/get-cards-info/${sessionStorage.getItem('offset')}`);
+    const response = await axios.get(`/api/tasks/get-cards-info/${offset}`);
     return response.data;
   } catch (error) {
     console.error(`Error occurred while fetching cards: ${error}`);
@@ -14,8 +15,8 @@ const fetchCards = async () => {
 };
 
 export const useCards = () => {
-  return useMutation({
-    mutationFn: fetchCards,
+  return useQuery({
+    queryFn: (offset: number) => fetchCards(offset),
     onSuccess: (data) => {
       console.log(data);
     },
@@ -36,8 +37,8 @@ const fetchCompletionRates = async () => {
 };
 
 export const useCompletionRates = () => {
-  return useMutation({
-    mutationFn: fetchCompletionRates,
+  return useQuery({
+    queryFn: fetchCompletionRates,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -58,8 +59,8 @@ const fetchTaskState = async (id) => {
 };
 
 export const useTaskState = () => {
-  return useMutation({
-    mutationFn: fetchTaskState,
+  return useQuery({
+    queryFn: fetchTaskState,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -80,8 +81,8 @@ const fetchSolvedTaskRates = async (id) => {
 };
 
 export const useSolvedTaskRates = () => {
-  return useMutation({
-    mutationFn: fetchSolvedTaskRates,
+  return useQuery({
+    queryFn: fetchSolvedTaskRates,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -102,8 +103,8 @@ const fetchAllTaskCount = async () => {
 };
 
 export const useAllTaskCount = () => {
-  return useMutation({
-    mutationFn: fetchAllTaskCount,
+  return useQuery({
+    queryFn: fetchAllTaskCount,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -124,8 +125,8 @@ const fetchRandomTask = async () => {
 };
 
 export const useRandomTask = () => {
-  return useMutation({
-    mutationFn: fetchRandomTask,
+  return useQuery({
+    queryFn: fetchRandomTask,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -135,7 +136,6 @@ export const useRandomTask = () => {
   });
 };
 
-// Fetching Task with Search Characters
 const fetchTaskWithSearch = async (characters) => {
   try {
     const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
@@ -146,8 +146,8 @@ const fetchTaskWithSearch = async (characters) => {
 };
 
 export const useTaskWithSearch = () => {
-  return useMutation({
-    mutationFn: fetchTaskWithSearch,
+  return useQuery({
+    queryFn: fetchTaskWithSearch,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -168,8 +168,8 @@ const fetchSpecificTask = async (day) => {
 };
 
 export const useSpecificTask = () => {
-  return useMutation({
-    mutationFn: fetchSpecificTask,
+  return useQuery({
+    queryFn: fetchSpecificTask,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -190,8 +190,8 @@ const fetchTaskByDifficulty = async (difficulty_value) => {
 };
 
 export const useTaskByDifficulty = () => {
-  return useMutation({
-    mutationFn: fetchTaskByDifficulty,
+  return useQuery({
+    queryFn: fetchTaskByDifficulty,
     onSuccess: (data) => {
       console.log(data);
     },
@@ -235,8 +235,8 @@ const fetchCardsByThemes = async (themes) => {
 };
 
 export const useCardsByThemes = () => {
-  return useMutation({
-    mutationFn: fetchCardsByThemes,
+  return useQuery({
+    queryFn: fetchCardsByThemes,
     onSuccess: (data) => {
       console.log(data);
     },
