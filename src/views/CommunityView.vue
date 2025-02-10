@@ -1,7 +1,16 @@
 <template>
   <main>
-    <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%;" :style="{maxWidth: isMobile ? '100%' : '75%'}">
-      <v-navigation-drawer style="height: max-content; max-width: 35%; width: 100%;" class="ma-2 ml-3 mt-4 rounded" v-if="!isMobile">
+    <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%; position: relative;" :style="{maxWidth: isMobile ? '100%' : '65%'}">
+      <v-navigation-drawer
+        :style="{
+          height: 'max-content',
+          maxWidth: '35%',
+          width: '100%',
+          top: !get_fullUser ? '12vh' : '6.7vh'
+        }"
+        class="ma-2 ml-3 mt-4 rounded"
+        v-if="!isMobile"
+      >
         <v-list>
           <v-list-item>
             <div class="d-flex align-center justify-center ga-2 pa-2">
@@ -27,7 +36,7 @@
                 :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
               >
                 <v-card-text>
-                  <h2 class="text-h6 mb-2">Szűrési opciók</h2>
+                  <h2 class="text-h6 mb-2">Tagek</h2>
                   <v-chip-group
                     v-model="FilterOpt"
                     multiple
@@ -637,10 +646,10 @@
       </v-container>
 
       <!-- Új poszt létrehozása modal -->
-      <v-dialog v-model="showPostDial" max-width="600px">
+      <v-dialog v-model="showPostDial" :style="{maxWidth: isMobile ? '100%': '1000px'}" max-height="100vh">
         <v-card>
           <v-card-title>Új poszt létrehozása</v-card-title>
-          <v-card-text class="mb-2">
+          <v-card-text class="pa-0">
             <v-text-field
               v-if="showCreatePost"
               v-model="newPost.title"
@@ -659,12 +668,12 @@
               hide-details
             ></v-text-field>
             
-            <v-container class="editor-area">
+            <v-container class="editor-area" style="max-width: 1600px;">
               <v-row>
                 <v-col cols="12">
                   <div class="editor-container">
                     <!-- Toolbar -->
-                    <div class="d-flex justify-start ga-2 mb-2 editor-btns">
+                    <div class="d-flex justify-start ga-2 mb-2 editor-btns flex-wrap">
                       <v-btn 
                       elevation="0"
                       small
@@ -785,6 +794,32 @@
                 </v-col>
               </v-row>
             </v-container>
+            <v-card
+              class="mb-1 mx-4 rounded custom_searchCard"
+              elevation="0"
+              style="transition: .3s;"
+              :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+            >
+              <v-card-text>
+                <h2 class="text-h6 mb-2">Tagek</h2>
+                <v-chip-group
+                  v-model="FilterOpt"
+                  multiple
+                  column
+                  style="transition: .3s;"
+                >
+                  <v-chip
+                    v-for="chip in FilterChips"
+                    :key="chip"
+                    :text="chip"
+                    variant="outlined"
+                    filter
+                    class="mr-2 chip"
+                    :class="{'selected-chip': FilterOpt.includes(FilterChips.indexOf(chip))}"
+                  ></v-chip>
+                </v-chip-group>
+              </v-card-text>
+            </v-card>
             <div v-if="showCreatePost">
               <!-- Rejtett fájl input -->
               <div class="d-flex ml-4 mb-2 ga-2 align-center">
@@ -816,9 +851,13 @@
                   <p class="mx-4">
                     Kiválasztott fájlok:
                   </p>
-                  <v-expand-transition>
-                    <ul class="mx-12">
-                      <li v-for="(file, index) in newPost.files" :key="index">
+                  <ul class="mx-12">
+                    <transition-group 
+                      name="expand-transition"
+                      appear
+                    >
+                      <!-- Kulcsot rendelünk a file.name + index kombinációval -->
+                      <li v-for="(file, index) in newPost.files" :key="`${file.name}-${index}`">
                         {{ file.name }} ({{ (file.size / 1024).toFixed(2) }} KB)
 
                         <v-btn 
@@ -829,10 +868,9 @@
                         >
                           <v-icon>mdi-delete</v-icon>
                         </v-btn>
-
                       </li>
-                    </ul>
-                  </v-expand-transition>
+                    </transition-group>
+                  </ul>
                 </div>
               </v-expand-transition>
             </div>
@@ -1027,7 +1065,6 @@ function formatDate(date) {
 }
 
 // Állapotok és változók
-const content = ref(""); // A textarea tartalma
 const activeBold = ref(false);
 const activeItalic = ref(false);
 const activeStrikethrough = ref(false);
@@ -1088,7 +1125,7 @@ const FilterOpt = ref([]);
 
 watch(FilterOpt, (newVal, oldVal) => {
   if(newVal.length != 0){
-    console.log("FilterOpt változott:", newVal);
+   //console.log("FilterOpt változott:", newVal);
   }
 });
 
@@ -1638,6 +1675,8 @@ const addPost = async () =>{
 
   const compressingFilesArray = await compressingFiles(mergedArray);
 
+  console.log(FilterChips.value);
+
   if(get_fullUser.value.id && newPost.title && htmlContent){
     loading.value = true;
     await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
@@ -2173,7 +2212,7 @@ const addLastCommentToComment = async (comment, inner_comment) => {
 
 /* ---- editor-area ----*/
 .editor-area .editor-container {
-  max-width: 60vw;
+  width: 100%;
   margin: auto;
   display: flex;
   flex-direction: column;
@@ -2278,4 +2317,25 @@ const addLastCommentToComment = async (comment, inner_comment) => {
 .mobilExpensionText .v-expansion-panel-text__wrapper{
   padding: 0;
 }
+
+/* Transition a fájlok megjelenítéséhez */
+.expand-transition-enter-active, .expand-transition-leave-active {
+  transition: max-height 0.3s ease-in-out, opacity 0.3s ease;
+}
+
+.expand-transition-enter, .expand-transition-leave-to /* .expand-transition-leave-active in <2.1.8 */ {
+  max-height: 0;
+  opacity: 0;
+}
+
+/* Alapértelmezett magasság a fájl listaelemekhez */
+ul {
+  padding-left: 0;
+  margin: 0;
+}
+li {
+  max-height: 1000px; /* Maximum magasság az animációhoz */
+  opacity: 1;
+}
+
 </style>

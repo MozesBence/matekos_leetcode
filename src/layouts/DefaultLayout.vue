@@ -250,7 +250,7 @@
           </v-list>
         </v-navigation-drawer>
   
-        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden;" elevation="0">
+        <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden; --v-layout-left: 0px !important;" elevation="0">
           <v-container
               v-if="!get_fullUser"
               fluid
