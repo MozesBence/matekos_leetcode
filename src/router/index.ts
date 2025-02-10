@@ -14,7 +14,7 @@ const router = createRouter({
       children: [
         {
           //ezt ki kell szedni
-          path: '/:id',
+          path: '/',
           name: 'home',
           component: () => import('../views/HomeView.vue'),
         },
