@@ -279,6 +279,7 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import VueApexCharts from 'vue3-apexcharts';
 import { useRouter } from 'vue-router';
 import { number } from 'zod';
+import { useRoute } from 'vue-router';
 import {useCards,useCompletionRates} from '@/api/cards/cardQuery'
 
 
@@ -311,6 +312,7 @@ export default defineComponent({
   setup() {
     
    // sessionStorage.setItem('offset','0');
+   const route = useRoute();
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
@@ -404,19 +406,8 @@ export default defineComponent({
     }else{
       cardsStore.fetchCardsByThemes(task_Theme_Query.value)
     }
-    //console.log(task_Theme_Query.value);
   };
-  const { mutate: fetchCards } = useCards();
-  fetchCards(undefined, {
-        onSuccess: (array) => {
-          cardsArray.value = array;
-          console.log('Fetched cards:', cardsArray.value);
-        },
-        onError: (error) => {
-          console.error('Error fetching cards:', error);
-        },
-      });
-    /*--------------------------------------*/
+
     const TaskView = (id: any) => {
       console.log(id)
       router.push({ name: 'task', params: { id } });
@@ -612,35 +603,17 @@ export default defineComponent({
         }
       }
    
-
-        const {mutate} = useCompletionRates();
-        mutate(undefined,{
-          onSuccess: (array) => {
-          completion_rates.value = array;
-          console.log(completion_rates.value)
-        },
-        onError: (error) => {
-          console.log(error);
-        },
-        })
+      const page = computed(() => Number(route.query.page) || 1);
+    const perPage = computed(() => Number(route.query.per_page) || 15); 
   
+    const offset = computed(() => (page.value - 1) * perPage.value);
 
-     
-      const { mutate } = useCards();
-      mutate(undefined, {
-        onSuccess: (array) => {
-          cardsArray.value = array;
-          console.log(cardsArray.value)
-        },
-        onError: (error) => {
-          console.log(error);
-        },
-      });
+      
+     //cardsArray.value = useCards(number(offset.value)).data;
 
 
-
-    quoteStore.fetchQuote();
-    themeStore.fetchThemes();
+      quoteStore.fetchQuote();
+      themeStore.fetchThemes();
     
       cardsStore.getAllTaskCount();
       cardsStore.fetchCards();
