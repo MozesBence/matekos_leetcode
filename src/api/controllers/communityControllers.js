@@ -11,7 +11,7 @@ exports.getLimitedPosts = async (req, res, next) => {
 };
 
 exports.postUpload = async (req, res, next) => {
-    const {id, title, content} = req.body;
+    const {id, title, content, chips} = req.body;
     const files = req.files;
 
     const newPost = {
@@ -42,6 +42,12 @@ exports.postUpload = async (req, res, next) => {
             error.status = 400;
 
             throw error;
+        }
+
+        if(chips != "null"){
+            const chips_index = JSON.parse(chips);
+
+            
         }
     
         res.status(201).json(post_result);

@@ -3,6 +3,7 @@ export type CommunityData = {
     title: string;
     content: string;
     files: Array<File>;
+    chips: Array<number> | null;
 }
 
 export type CommunityEditData = {
@@ -11,4 +12,5 @@ export type CommunityEditData = {
     content: string;
     files: Array<File>;
     none_files: number[] | null;
+    chips: Array<number> | null;
 };

@@ -798,12 +798,12 @@
               class="mb-1 mx-4 rounded custom_searchCard"
               elevation="0"
               style="transition: .3s;"
-              :style="{border: FilterOpt.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
+              :style="{border: FilterOptForCreate.length > 0 ? '.1vw solid rgb(var(--v-theme-community_createpost_editor_area_border))' : '.1vw solid gray'}"
             >
               <v-card-text>
                 <h2 class="text-h6 mb-2">Tagek</h2>
                 <v-chip-group
-                  v-model="FilterOpt"
+                  v-model="FilterOptForCreate"
                   multiple
                   column
                   style="transition: .3s;"
@@ -815,7 +815,7 @@
                     variant="outlined"
                     filter
                     class="mr-2 chip"
-                    :class="{'selected-chip': FilterOpt.includes(FilterChips.indexOf(chip))}"
+                    :class="{'selected-chip': FilterOptForCreate.includes(FilterChips.indexOf(chip))}"
                   ></v-chip>
                 </v-chip-group>
               </v-card-text>
@@ -1122,6 +1122,7 @@ watchEffect(() => {
 const FilterChips = ref([]);
 
 const FilterOpt = ref([]);
+const FilterOptForCreate = ref([]);
 
 watch(FilterOpt, (newVal, oldVal) => {
   if(newVal.length != 0){
@@ -1339,7 +1340,7 @@ const EditPostConf = async () =>{
   const def_postId =  Number(defaultPostSave.value.id);
 
   if(editor.innerHTML != "" && editor.innerHTML != "<br>" && (defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images)){
-    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles}, {
+    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles, chips: 'null'}, {
       onSuccess : async (response) =>{
         const post = posts.find(c => c.id == def_postId);
 
@@ -1675,11 +1676,9 @@ const addPost = async () =>{
 
   const compressingFilesArray = await compressingFiles(mergedArray);
 
-  console.log(FilterChips.value);
-
   if(get_fullUser.value.id && newPost.title && htmlContent){
     loading.value = true;
-    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray}, {
+    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray, chips: FilterOptForCreate.value}, {
       onSuccess: (response) => {
         loading.value = false;
         postsConvertToDisplay({

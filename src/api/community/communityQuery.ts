@@ -8,6 +8,7 @@ const CommunityPostUpload = async (data: CommunityData) => {
   formData.append('id', data.id.toString());
   formData.append('title', data.title);
   formData.append('content', data.content);
+  formData.append('chips', JSON.stringify(data.chips));
    // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
   Object.keys(data.files).forEach(key => {
     const file = data.files[key];
@@ -62,7 +63,7 @@ const CommunityEditPostUpload = async (data: CommunityEditData) => {
 }
 
 export const useCommunityEditPost = () => {
-  return useMutation({
+  return useMutation({  
     mutationFn: CommunityEditPostUpload,
     onMutate: () => {
 
