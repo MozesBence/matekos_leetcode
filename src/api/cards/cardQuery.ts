@@ -1,5 +1,7 @@
 import axios from "axios";
-import { useMutation } from '@tanstack/vue-query';
+import { useMutation, useQuery } from '@tanstack/vue-query';
+
+//OSSZES MUTATET query-re atirni
 
 // Fetching Cards
 const fetchCards = async () => {
@@ -210,8 +212,8 @@ const fetchTaskByState = async (state, user_id) => {
 };
 
 export const useTaskByState = () => {
-  return useMutation({
-    mutationFn: fetchTaskByState,
+  return useQuery({
+    queryFn: fetchTaskByState,
     onSuccess: (data) => {
       console.log(data);
     },

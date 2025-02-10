@@ -310,7 +310,7 @@ export default defineComponent({
   },
   setup() {
     
-    sessionStorage.setItem('offset','0');
+   // sessionStorage.setItem('offset','0');
     const themeStore = useThemeStore();
     const cardsStore = useCardsStore();
     const quoteStore = useQuoteStore();
@@ -351,7 +351,9 @@ export default defineComponent({
         cardsStore.fetchTaskWithSearch(characters);
       }
     }
-
+    //localba letarolni
+    //https://tanstack.com/query/v4/docs/framework/vue/guides/paginated-queries
+    router.push({query:{page: 1,per_page:15}})
     const filterByDifficulty = (difficulty: any) => {
       switch (difficulty) {
         case 'Könnyű':
@@ -487,8 +489,7 @@ export default defineComponent({
 
       return Math.min(Math.max(progress, 0), 100);
     });
-
-    const chipColor = (difficulty: number) => {
+ const chipColor = (difficulty: number) => {
       if (difficulty === 0) return 'green';
       if (difficulty === 1) return 'orange';
       return 'red';
@@ -500,6 +501,7 @@ export default defineComponent({
       return 'Nehéz';
     };
 
+   
     const getTaskStateForCard = (taskId: number) => {
       return cardsStore.task_state.find(task => task.task_id === taskId) || null;
     };
@@ -610,7 +612,7 @@ export default defineComponent({
         }
       }
    
-      onMounted(() => {
+
         const {mutate} = useCompletionRates();
         mutate(undefined,{
           onSuccess: (array) => {
@@ -621,9 +623,9 @@ export default defineComponent({
           console.log(error);
         },
         })
-      })
+  
 
-      onMounted(() => {
+     
       const { mutate } = useCards();
       mutate(undefined, {
         onSuccess: (array) => {
@@ -634,7 +636,7 @@ export default defineComponent({
           console.log(error);
         },
       });
-    });
+
 
 
     quoteStore.fetchQuote();
