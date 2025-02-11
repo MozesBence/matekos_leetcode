@@ -2,8 +2,12 @@ const communityRepository  = require("../repositories/communityRepository");
 
 class communityService
 {
-    async getLimitedPost(limit, id, filter, tagsArray, search){
-        return await communityRepository.getLimitedPost(limit, id, filter, tagsArray,  search);
+    async getLimitedPost(limit, offset, id, filter, tagsArray, search){
+        return await communityRepository.getLimitedPost(limit, offset, id, filter, tagsArray,  search);
+    }
+
+    async getLimitedComments(limit, offset, id){
+        return await communityRepository.getLimitedComments(limit, offset, id);
     }
 
     async getPostCount(){

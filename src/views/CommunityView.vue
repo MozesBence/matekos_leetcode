@@ -4,7 +4,7 @@
       <v-navigation-drawer
         :style="{
           height: 'max-content',
-          maxWidth: '35%',
+          maxWidth: '34.5%',
           width: '100%',
           top: !get_fullUser ? '13.2vh' : '6.7vh'
         }"
@@ -630,7 +630,7 @@
                               elevation="0"
                               icon
                               small
-                              @click="loadMoreCommentsForPost(post)"
+                              @click="loadMoreCommentsForComment(comment)"
                               class="align-center d-flex justify-center position-absolute"
                               v-tooltip="'Több komment megjelenítése'"
                               style="
@@ -663,6 +663,9 @@
                 </v-expand-transition>
               </v-card>
             </transition-group>
+            <div class="d-flex justify-center w-100 mx-3 my-5" v-if="PostLoading">
+              <v-progress-circular indeterminate></v-progress-circular>
+            </div>
           </v-col>
         </v-row>
       </v-container>
@@ -961,16 +964,11 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-      <v-expand-transition>
-        <div class="d-flex justify-center" v-if="PostLoading">
-          <v-progress-circular indeterminate></v-progress-circular>
-        </div>
-      </v-expand-transition>
   </main>
 </template>
 
 <script setup>
-import { onMounted, ref, reactive, computed, nextTick, watch, watchEffect   } from 'vue';
+import { onMounted, onUnmounted, ref, reactive, computed, nextTick, watch, watchEffect   } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit, useCommunityTags } from '@/api/community/communityQuery';
@@ -1028,6 +1026,7 @@ onMounted(async () => {
   if(get_user_by_token == null){
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: null,
       filter: null,
       tagsArray: null,
@@ -1039,7 +1038,7 @@ onMounted(async () => {
         if (posts_array.posts != null) {
           posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
-              postsConvertToDisplay(post, true);
+              postsConvertToDisplay(post, true, false);
             });
           });
         }
@@ -1054,6 +1053,7 @@ watch(get_fullUser, async (User) => {
   try {
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: User.id == null ? null : User.id,
       filter: null,
       tagsArray: null,
@@ -1065,7 +1065,7 @@ watch(get_fullUser, async (User) => {
         if (posts_array.posts != null) {
           posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
-              postsConvertToDisplay(post, true);
+              postsConvertToDisplay(post, true, false);
             });
           });
         }
@@ -1131,8 +1131,9 @@ watch(searchQuery, async (newValue) => {
       const newArray = FilterOpt.value.map(num => num + 1);
       await CommunityGetLimitedPosts({
         limit: posts_limit.value,
+        offset: posts.length,
         id: get_fullUser.value == null ? null : get_fullUser.value.id,
-        filter: null,
+        filter: [[sortOptions.value, (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
         tagsArray: newArray.length > 0 ? newArray : null,
         search: newValue
       }, {
@@ -1142,7 +1143,7 @@ watch(searchQuery, async (newValue) => {
           if (posts_array.posts != null) {
             posts_array.posts.forEach((post, index) => {
               setTimeout(() => {
-                postsConvertToDisplay(post, true);
+                postsConvertToDisplay(post, true, false);
               });
             });
           }
@@ -1158,8 +1159,9 @@ watch(searchQuery, async (newValue) => {
     const newArray = FilterOpt.value.map(num => num + 1);
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: get_fullUser.value == null ? null : get_fullUser.value.id,
-      filter: null,
+      filter: [[sortOptions.value, (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
       tagsArray: newArray.length > 0 ? newArray : null,
       search: null
     }, {
@@ -1169,7 +1171,7 @@ watch(searchQuery, async (newValue) => {
         if (posts_array.posts != null) {
           posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
-              postsConvertToDisplay(post, true);
+              postsConvertToDisplay(post, true, false);
             });
           });
         }
@@ -1206,6 +1208,7 @@ watch(FilterOpt, async (newVal, oldVal) => {
     PostLoading.value = true;
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: get_fullUser.value == null ? null : get_fullUser.value.id,
       filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
       tagsArray: newVal.map(num => num + 1),
@@ -1217,7 +1220,7 @@ watch(FilterOpt, async (newVal, oldVal) => {
         if (posts_array.posts != null) {
           posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
-              postsConvertToDisplay(post, true);
+              postsConvertToDisplay(post, true, false);
             });
           });
         }
@@ -1231,6 +1234,7 @@ watch(FilterOpt, async (newVal, oldVal) => {
     PostLoading.value = true;
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: get_fullUser.value == null ? null : get_fullUser.value.id,
       filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
       tagsArray: null,
@@ -1242,7 +1246,7 @@ watch(FilterOpt, async (newVal, oldVal) => {
         if (posts_array.posts != null) {
           posts_array.posts.forEach((post, index) => {
             setTimeout(() => {
-              postsConvertToDisplay(post, true);
+              postsConvertToDisplay(post, true, false);
             });
           });
         }
@@ -1267,8 +1271,9 @@ const toggleOption = async (option) => {
         const newArray = FilterOpt.value.map(num => num + 1);
         await CommunityGetLimitedPosts({
           limit: posts_limit.value,
+          offset: posts.length,
           id: get_fullUser.value == null ? null : get_fullUser.value.id,
-          filter: null,
+          filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
           tagsArray: newArray.length > 0 ? newArray : null,
           search: searchQuery.value
         }, {
@@ -1278,7 +1283,7 @@ const toggleOption = async (option) => {
             if (posts_array.posts != null) {
               posts_array.posts.forEach((post, index) => {
                 setTimeout(() => {
-                  postsConvertToDisplay(post, true);
+                  postsConvertToDisplay(post, true, false);
                 });
               });
             }
@@ -1296,7 +1301,7 @@ const toggleOption = async (option) => {
   }
 };
 
-const sortOptionForPop = ref('popularity'); // Alapértelmezett érték
+const sortOptionForPop = ref(''); // Alapértelmezett érték
 
 watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
     const newArray = FilterOpt.value.map(num => num + 1);
@@ -1305,6 +1310,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
       PostLoading.value = false;
       await CommunityGetLimitedPosts({
         limit: posts_limit.value,
+        offset: posts.length,
         id: get_fullUser.value == null ? null : get_fullUser.value.id,
         filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'DESC' : 'ASC']],
         tagsArray: newArray.length > 0 ? newArray : null,
@@ -1317,7 +1323,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
             if (posts_array.posts != null) {
               posts_array.posts.forEach((post, index) => {
                 setTimeout(() => {
-                  postsConvertToDisplay(post, true);
+                  postsConvertToDisplay(post, true, false);
                 });
               });
             }
@@ -1333,6 +1339,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
       if (sortOptionForPop.value != null) {
         await CommunityGetLimitedPosts({
           limit: posts_limit.value,
+          offset: posts.length,
           id: get_fullUser.value == null ? null : get_fullUser.value.id,
           filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'ASC' : 'DESC']],
           tagsArray: newArray.length > 0 ? newArray : null,
@@ -1345,7 +1352,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
               if (posts_array.posts != null) {
                 posts_array.posts.forEach((post, index) => {
                   setTimeout(() => {
-                    postsConvertToDisplay(post, true);
+                    postsConvertToDisplay(post, true, false);
                   });
                 });
               }
@@ -1368,6 +1375,7 @@ watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
     PostLoading.value = false;
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
+      offset: posts.length,
       id: get_fullUser.value == null ? null : get_fullUser.value.id,
       filter: [[newSortOptions[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
       tagsArray: newArray.length > 0 ? newArray : null,
@@ -1380,7 +1388,7 @@ watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
           if (posts_array.posts != null) {
             posts_array.posts.forEach((post, index) => {
               setTimeout(() => {
-                postsConvertToDisplay(post, true);
+                postsConvertToDisplay(post, true, false);
               });
             });
           }
@@ -1391,6 +1399,52 @@ watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
       }
     );
   }
+});
+
+const checkScroll = async () => {
+  if(total_posts.value != posts.length){
+    if (PostLoading.value) return;
+    
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+  
+    if (scrollPosition >= pageHeight - 10) {
+      PostLoading.value = true;
+      const newArray = FilterOpt.value.map(num => num + 1);
+      await CommunityGetLimitedPosts({
+        limit: posts_limit.value,
+        offset: posts.length,
+        id: get_fullUser.value == null ? null : get_fullUser.value.id,
+        filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
+        tagsArray: newArray.length > 0 ? newArray : null,
+        search: searchQuery.value
+      }, {
+        onSuccess: (posts_array) => {
+          PostLoading.value = false;
+          total_posts.value = posts_array.total_posts;
+          if (posts_array.posts != null) {
+            posts_array.posts.forEach((post, index) => {
+              setTimeout(() => {
+                postsConvertToDisplay(post, true, true);
+              });
+            });
+          }
+        },
+        onError: (error) => {
+          console.error('Hiba történt a posztok lekérésekor:', error);
+          PostLoading.value = false;  // Hiba esetén is visszaállítjuk a loadingot
+        },
+      });
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('scroll', checkScroll);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', checkScroll);
 });
 
 function CreatePostOpen(){
@@ -1845,7 +1899,7 @@ const addPost = async () =>{
           commentLimit: 10,
           showComments: false,
           total_comments: 0,
-        }, false);
+        }, false, false);
       },
       onError: (error) => {
   
@@ -1855,7 +1909,7 @@ const addPost = async () =>{
   }
 };
 
-function postsConvertToDisplay(array,igaze){
+function postsConvertToDisplay(array, igaze, alulra){
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = array.content;
 
@@ -1884,7 +1938,11 @@ function postsConvertToDisplay(array,igaze){
   
   array.content = tempDiv.innerHTML;
   
-  posts.unshift(array);
+  if(alulra){
+    posts.push(array);
+  }else{
+    posts.unshift(array);
+  }
   
   newPost.files = [];
   newPost.images = [];
@@ -2309,6 +2367,10 @@ const addLastCommentToComment = async (comment, inner_comment) => {
       },
     });
   }
+}
+
+const loadMoreCommentsForPost = async (post) =>{
+  console.log(post.id);
 }
 
 </script>

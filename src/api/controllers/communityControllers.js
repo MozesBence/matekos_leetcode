@@ -1,14 +1,23 @@
 const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
-    const { limit, id, filter, tagsArray, search } = req.query;
+    const { limit, offset, id, filter, tagsArray, search } = req.query;
 
-    const get_posts = await communityService.getLimitedPost(limit, id, filter, tagsArray, search);
+    const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, tagsArray, search);
 
     const get_postsCount = await communityService.getPostCount();
 
     res.status(200).json(get_posts == null ? 'null' : {posts: get_posts, total_posts: get_postsCount});
 };
+
+exports.getLimitedComments = async (req, res, next) => {
+    const { limit, offset, id, type } = req.query;
+
+    const get_comments = type == 1 ? await communityService.getLimitedComments(limit, offset, id) : await communityService.getLimitedComments(limit, offset, id);
+
+    res.status(200).json(get_comments == null ? 'null' : {posts: get_comments.comments, hasMore: get_comments.hasMoreComments });
+};
+
 
 exports.postUpload = async (req, res, next) => {
     const {id, title, content, chips} = req.body;

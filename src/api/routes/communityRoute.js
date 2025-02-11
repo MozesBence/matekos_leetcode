@@ -6,6 +6,8 @@ const communityControllers = require("../controllers/communityControllers");
 
 route.get("/community", communityControllers.getLimitedPosts);
 
+route.get("/community/get-comments", communityControllers.getLimitedComments);
+
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -52,5 +54,6 @@ route.patch("/community/comment-edit", communityControllers.commentEdit);
 route.patch("/community/post-edit",upload.array("files", 10), communityControllers.postEditUpload);
   
 route.get("/community/tags", communityControllers.getTags);
+
 
 module.exports = route;

@@ -79,7 +79,7 @@ export const useCommunityEditPost = () => {
   })
 }
 
-const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null, filter: Array<Array<string>> | null, tagsArray: Array<number> | null, search: string | null}) => {
+const CommunityGetLimitedPosts = async (data: {limit: number, offset: number , id: number | null, filter: Array<Array<string>> | null, tagsArray: Array<number> | null, search: string | null}) => {
   const response = await axiosClient.get('http://localhost:3000/community', {
     params: data,
   });
@@ -90,6 +90,26 @@ const CommunityGetLimitedPosts = async (data: {limit: number, id: number | null,
 export const useGetCommunityPost = () => {
   return useMutation({
     mutationFn: CommunityGetLimitedPosts,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}
+
+const CommunityGetLimitedComments = async (data: {limit: number, offset: number , id: number, type: number}) => {
+  const response = await axiosClient.get('http://localhost:3000/community/get-comments', {
+    params: data,
+  });
+
+  return response.data;
+}
+
+export const useGetCommunityComments = () => {
+  return useMutation({
+    mutationFn: CommunityGetLimitedComments,
     onSuccess(response) {
       
     },

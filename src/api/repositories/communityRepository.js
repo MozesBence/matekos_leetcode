@@ -24,9 +24,11 @@ class communityRepository
       this.Community_tags = db.Community_tags;
     }
 
-    async getLimitedPost(limit, userId, filter, tagsArray, search) {
+    async getLimitedPost(limit, get_offset, userId, filter, tagsArray, search) {
       // Gondoskodj arról, hogy a limit egy szám legyen
-      const parsedLimit = Number(limit);
+      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
+      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+
     
       if (isNaN(parsedLimit) || parsedLimit <= 0) {
         throw new Error('The limit parameter must be a positive integer.');
@@ -60,27 +62,28 @@ class communityRepository
     
     // 📌 Először rendezünk, aztán vesszük ki az első 10 elemet
     const orderBy = filter 
-        ? (filter[0][0] === 'date'
-            ? [['createdAt', filter[0][1] || 'DESC']]
-            : filter[0][0] === 'popularity'
-            ? [
-                [Sequelize.literal(`(
-                    SELECT COUNT(*) FROM Community_likes 
-                    WHERE Community_likes.entity_id = Community_posts.id 
-                    AND Community_likes.entity_type = 'post' 
-                    AND Community_likes.like_type = 'like'
-                )`), filter[0][1] || 'DESC']]
-            
-            : [['createdAt', 'DESC']]) 
-        : [['createdAt', 'DESC']];
-    
-        // 📌 Először megszerezzük az ID-kat a helyes sorrendben és limitálva
-        const db_postIds = await this.Community_posts.findAll({
-          attributes: ['id'],  // Csak az ID-kat kérjük
-          where: whereCondition,
-          order: orderBy,  // Először rendezünk
-          limit: parsedLimit  // Csak ezután limitálunk
-        });
+      ? (filter[0][0] === 'date'
+          ? [['createdAt', filter[0][1] || 'DESC']]
+          : filter[0][0] === 'popularity'
+          ? [
+              [Sequelize.literal(`(
+                  SELECT COUNT(*) FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_posts.id 
+                  AND Community_likes.entity_type = 'post' 
+                  AND Community_likes.like_type = 'like'
+              )`), filter[0][1] || 'DESC']]
+          
+          : [['createdAt', 'DESC']]) 
+      : [['createdAt', 'DESC']];
+  
+      // 📌 Először megszerezzük az ID-kat a helyes sorrendben és limitálva
+      const db_postIds = await this.Community_posts.findAll({
+        attributes: ['id'],  // Csak az ID-kat kérjük
+        where: whereCondition,
+        order: orderBy,  // Először rendezünk
+        limit: parsedLimit,  // Csak ezután limitálunk
+        offset: offset,  // 🔹 OFFSET ITT VAN
+      });
 
         // 📌 Az ID-k kinyerése egy tömbbe
         const ids = db_postIds.map(post => post.id);
@@ -513,6 +516,187 @@ class communityRepository
       
       return postCount;
     }
+
+    async getLimitedComments(limit, get_offset, id) {
+      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
+      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+    
+      // Kommentek lekérése
+      const comments = await this.Community_comments.findAll({
+        where: {
+          post_id: id,
+        },
+        limit: parsedLimit,
+        offset: offset,
+        order: [['createdAt', 'DESC']],
+        attributes: {
+          include: [
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) 
+                FROM Community_comments AS replies
+                WHERE replies.parent_comment_id = Community_comments.id
+              )`),
+              'total_replies',
+            ],
+          ],
+        },
+        include: [
+          {
+            model: this.Users,
+            attributes: ['id', 'user_name'],
+            include: [
+              {
+                model: this.User_customization,
+                attributes: ['profil_picture'],
+              },
+            ],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'comment' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_comments.id  
+                        AND Community_likes.entity_type = 'comment'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
+          },
+          {
+            model: this.Community_comments,
+            as: 'replies',
+          },
+        ],
+      });
+    
+      const commentIds = comments.map(comment => comment.id);
+      
+      // Válaszok lekérése
+      const replies = await this.Community_comments.findAll({
+        where: {
+          parent_comment_id: commentIds,
+        },
+        limit: 11, // Ha szeretnél csak 11 választ, az OK, de ezt szükség esetén lehet változtatni
+        include: [
+          {
+            model: this.Users,
+            attributes: ['id', 'user_name'],
+            include: [
+              {
+                model: this.User_customization,
+                attributes: ['profil_picture'],
+              },
+            ],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'comment' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_comments.id  
+                        AND Community_likes.entity_type = 'comment'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
+          },
+        ],
+      });
+    
+      // A válaszokat hozzárendeljük a kommentekhez
+      for (let comment of comments) {
+        comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
+      }
+
+      // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
+      const hasMoreComments = comments.length === parsedLimit;
+
+      // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
+      const lastCommentDate = comments[comments.length - 1]?.createdAt;
+      let hasNewComments = false;
+
+      if (lastCommentDate) {
+        // Lekérdezzük, van-e újabb komment a legutolsó dátum után
+        const newComments = await this.Community_comments.count({
+          where: {
+            post_id: id,
+            createdAt: {
+              [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+            },
+          },
+        });
+
+        // Ha több mint 0 új komment van, akkor van következő oldal
+        hasNewComments = newComments > 0;
+      }
+
+      return {
+        comments,
+        hasMoreComments: hasMoreComments || hasNewComments, // Igaz, ha van több komment
+      };
+    }    
 
     async postUpload(post, tagIds) {
       // Poszt létrehozása és mentése
