@@ -307,16 +307,16 @@
                   </div>
                 </transition-group>
 
-                <v-divider v-if="post.tags.length > 0"></v-divider>
+                <v-divider v-if="post.tags && post.tags.length > 0"></v-divider>
 
                 <div v-if="post.tags.length > 0" class="text-center d-flex flex-row flex-wrap align-center">
                   <div class="d-flex flex-row align-items-center mr-2">
-                    <v-icon icon="mdi-label-multiple" class="mx-1" color="community_primary_color"></v-icon>
+                    <v-icon icon="mdi-label-multiple" class="mx-1 ml-4" color="community_primary_color"></v-icon>
                     <span class="font-weight-normal">Címkék</span>
                   </div>
                   <v-chip
                     v-for="tag in post.tags"
-                    :key="tag"
+                    :key="tag"  
                     class="mx-1 my-2"
                     color="community_primary_color"
                     variant="outlined"
@@ -1261,8 +1261,6 @@ const toggleOption = async (option) => {
     sortOptions.value.push(option);
   }else{
     if(sortOptions.value[0] == option){
-      sortOptions.value = [];
-      sortOptionForPop.value = null;
       if(sortOptions.value[0] != null){
         posts.length = 0;
         PostLoading.value = true;
@@ -1289,6 +1287,7 @@ const toggleOption = async (option) => {
             console.error('Hiba történt a posztok lekérésekor:', error);
           },
         });
+        sortOptions.value = [];
       }
     }
     else{
@@ -1297,10 +1296,9 @@ const toggleOption = async (option) => {
   }
 };
 
-const sortOptionForPop = ref(null); // Alapértelmezett érték
+const sortOptionForPop = ref('popularity'); // Alapértelmezett érték
 
 watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
-  if (newSortOption !== oldSortOption) {
     const newArray = FilterOpt.value.map(num => num + 1);
     if (newSortOption === 'popularity') {
       posts.length = 0;
@@ -1308,7 +1306,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
       await CommunityGetLimitedPosts({
         limit: posts_limit.value,
         id: get_fullUser.value == null ? null : get_fullUser.value.id,
-        filter: [[sortOptions.value[0], 'ASC']],
+        filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'DESC' : 'ASC']],
         tagsArray: newArray.length > 0 ? newArray : null,
         search: searchQuery.value
         }, 
@@ -1336,7 +1334,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
         await CommunityGetLimitedPosts({
           limit: posts_limit.value,
           id: get_fullUser.value == null ? null : get_fullUser.value.id,
-          filter: [[sortOptions.value[0], 'DESC']],
+          filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'ASC' : 'DESC']],
           tagsArray: newArray.length > 0 ? newArray : null,
           search: searchQuery.value
           }, 
@@ -1360,7 +1358,7 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
       }
     }
   }
-});
+);
 
 // Figyeljük a sortOptions változását
 watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
@@ -1530,6 +1528,7 @@ const EditPostConf = async () =>{
         post.title = editingPost.title;
         post.content = htmlContent;
         post.tags = FilterOptForCreate.value.map(i => FilterChips.value[i]);
+        post.gotEdit = true;
       }
     });
 
@@ -1554,6 +1553,8 @@ function ShowPostClose(){
   showCreatePost.value = false;
   showEditPost.value = false;
   defaultPostSave.value = false;
+  FilterOptForCreate.value = [];
+  saveEditingChips.value = [];
 }
 
 // Methods
@@ -1840,6 +1841,7 @@ const addPost = async () =>{
           comments: [],
           files: newPost.files,
           images: newPost.images,
+          tags: FilterOptForCreate.value.map(i => FilterChips.value[i]),
           commentLimit: 10,
           showComments: false,
           total_comments: 0,
