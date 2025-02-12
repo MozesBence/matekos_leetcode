@@ -267,7 +267,7 @@ class communityRepository
         where: {
           parent_comment_id: commentIds,
         },
-        limit: 11,
+        limit: 10,
         include: [
           {
             model: this.Users,
@@ -336,7 +336,7 @@ class communityRepository
         return postJSON;
       });
 
-      const postsWithBase64Files = postsWithComments.map(postObj => {
+      const postsWithBase64Files = await Promise.all(postsWithComments.map(async (postObj) => {
 
         postObj.userReaction = null;
         postObj.newComment = "";
@@ -395,7 +395,7 @@ class communityRepository
 
         var Comments = [];
 
-        postObj.Community_comments.forEach(comment =>{
+        for (const comment of postObj.Community_comments) {
 
           let userReactionForComment = null;
           
@@ -414,6 +414,29 @@ class communityRepository
               comment.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
             }
           }
+
+            // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
+            const hasMoreComments = comment.replies.length === parsedLimit;
+
+            // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
+            const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
+            let hasNewComments = false;
+
+            if (lastCommentDate) {
+              // Lekérdezzük, van-e újabb komment a legutolsó dátum után
+              const newComments = await this.Community_comments.count({
+                where: {
+                  parent_comment_id: comment.id,
+                  createdAt: {
+                    [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+                  },
+                },
+              });
+
+              // Ha több mint 0 új komment van, akkor van következő oldal
+              hasNewComments = newComments > 0;
+            }
+
 
           Comments.push({
             id: comment.id,
@@ -476,10 +499,38 @@ class communityRepository
               };
             }),
             createdAt: comment.createdAt,
-            commentLimit: 10
+            commentLimit: 10,
+            hasMoreComments: hasMoreComments || hasNewComments,
           });
-        });
-      
+        };
+
+        // A válaszokat hozzárendeljük a kommentekhez
+        for (let comment of comments) {
+          comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
+        }
+
+        // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
+        const hasMoreComments = comments.length === parsedLimit;
+
+        // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
+        const lastCommentDate = comments[comments.length - 1]?.createdAt;
+        let hasNewComments = false;
+
+        if (lastCommentDate) {
+          // Lekérdezzük, van-e újabb komment a legutolsó dátum után
+          const newComments = await this.Community_comments.count({
+            where: {
+              post_id: postObj.id,
+              createdAt: {
+                [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+              },
+            },
+          });
+
+          // Ha több mint 0 új komment van, akkor van következő oldal
+          hasNewComments = newComments > 0;
+        }
+
         const FinalPost = {
           id: postObj.id,
           title: postObj.title,
@@ -502,11 +553,12 @@ class communityRepository
           files: postObj.files,
           tags: postObj.Community_tags.map(tag => tag.tag),
           limitedComments: 10,
-          commentLimit: 10
+          commentLimit: 10,
+          hasMoreComments: hasMoreComments || hasNewComments, 
         }
 
         return FinalPost;
-      });
+      }));
       
       return postsWithBase64Files.reverse();
     }
@@ -517,7 +569,7 @@ class communityRepository
       return postCount;
     }
 
-    async getLimitedComments(limit, get_offset, id) {
+    async getLimitedComments(limit, get_offset, id, userId) {
       const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
       const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
     
@@ -608,7 +660,7 @@ class communityRepository
         where: {
           parent_comment_id: commentIds,
         },
-        limit: 11, // Ha szeretnél csak 11 választ, az OK, de ezt szükség esetén lehet változtatni
+        limit: 10, // Ha szeretnél csak 11 választ, az OK, de ezt szükség esetén lehet változtatni
         include: [
           {
             model: this.Users,
@@ -664,6 +716,113 @@ class communityRepository
           },
         ],
       });
+
+      const commentsWithreplies = await Promise.all(comments.map(async (comment) => {
+        let userReactionForComment = null;
+          
+        if (comment.Community_likes && comment.Community_likes.length > 0) {
+          const userLike = comment.Community_likes[0].dataValues.user_reacted;
+          userReactionForComment = userLike ? userLike : null;
+        }
+
+        if (comment.User.User_customization.profil_picture != null) {
+          const profileProfPicBuffer = comment.User.User_customization.profil_picture;
+          
+          const profileProfPicMimeType = comment.User.User_customization.profil_picture_type || 'image/jpeg';
+          
+          if (profileProfPicBuffer) {
+            const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+            comment.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+          }
+        }
+
+        // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
+        const hasMoreComments = comment.replies.length === parsedLimit;
+
+        // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
+        const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
+        let hasNewComments = false;
+
+        if (lastCommentDate) {
+          // Lekérdezzük, van-e újabb komment a legutolsó dátum után
+          const newComments = await this.Community_comments.count({
+            where: {
+              parent_comment_id: id,
+              createdAt: {
+                [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+              },
+            },
+          });
+
+          // Ha több mint 0 új komment van, akkor van következő oldal
+          hasNewComments = newComments > 0;
+        }
+
+        return {
+          id: comment.id,
+          User: comment.User,
+          user_name: comment.User.user_name,
+          content: comment.content,
+          user_id: comment.user_id,
+          post_id: comment.post_id,
+          parent_comment_id: comment.parent_comment_id,
+          total_comments: comment.dataValues.total_replies,
+          like: Number(comment.Community_likes[0]?.dataValues.total_likes) ?? null,
+          dislike: Number(comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
+          userReaction: userReactionForComment,
+          limitedComments: 10,
+          prepareReply: false,
+          gotEdit: comment.gotEdit,
+          editable: false,
+          comments: comment.replies == undefined ? [] : comment.replies.map(inner_comment => {
+            let inner_userReactionForComment = null;
+
+            let inner_User = {};
+
+            if (inner_comment.Community_likes && inner_comment.Community_likes.length > 0) {
+              const userLike = inner_comment.Community_likes[0].dataValues.user_reacted;
+              inner_userReactionForComment = userLike ? userLike : null;
+            }
+
+            let inner_prof = null;
+
+            if (inner_comment.User.User_customization.profil_picture != null) {
+              const profileProfPicBuffer = inner_comment.User.User_customization.profil_picture;
+              
+              const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg';
+
+              
+              if (profileProfPicBuffer) {
+                const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                inner_prof = `data:${profileProfPicMimeType};base64,${base64Image}`;
+              }
+            }
+
+            inner_User = {id: inner_comment.User.id, user_name: inner_comment.User.user_name, User_customization : {profil_picture: inner_prof}};
+
+            return {
+              id: inner_comment.id,
+              User: inner_User,
+              user_name: inner_comment.User.user_name,
+              content: inner_comment.content,
+              user_id: inner_comment.user_id,
+              post_id: inner_comment.post_id,
+              linkAuthor: inner_comment.linkAuthor,
+              parent_comment_id: inner_comment.parent_comment_id,
+              like: Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null,
+              dislike: Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
+              prepareReply: false,
+              gotEdit: inner_comment.gotEdit,
+              editable: false,
+              userReaction: inner_userReactionForComment,
+              createdAt: inner_comment.createdAt,
+            };
+          }),
+          createdAt: comment.createdAt,
+          commentLimit: 10,
+          hasMoreComments: hasMoreComments || hasNewComments
+        };
+      }));
     
       // A válaszokat hozzárendeljük a kommentekhez
       for (let comment of comments) {
@@ -693,10 +852,147 @@ class communityRepository
       }
 
       return {
-        comments,
+        commentsWithreplies,
         hasMoreComments: hasMoreComments || hasNewComments, // Igaz, ha van több komment
       };
-    }    
+    }
+
+    async getLimitedInnerComments(limit, get_offset, id, userId) {
+      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
+      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+      
+      const replies = await this.Community_comments.findAll({
+        where: {
+          parent_comment_id: id,
+        },
+        limit: parsedLimit,
+        offset: offset,
+        include: [
+          {
+            model: this.Users,
+            attributes: ['id', 'user_name'],
+            include: [
+              {
+                model: this.User_customization,
+                attributes: ['profil_picture'],
+              },
+            ],
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'comment' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes',
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) 
+                  FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_comments.id 
+                  AND Community_likes.entity_type = 'comment' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes',
+              ],
+              ...(userId
+                ? [
+                    [
+                      Sequelize.literal(`COALESCE((  
+                        SELECT like_type  
+                        FROM Community_likes  
+                        WHERE Community_likes.entity_id = Community_comments.id  
+                        AND Community_likes.entity_type = 'comment'  
+                        AND Community_likes.user_id = ${userId}  
+                        LIMIT 1  
+                      ), 'no_reaction')`),
+                      'user_reacted',
+                    ],
+                  ]
+                : []),
+            ],
+          },
+        ],
+      });
+
+      const commentsWithreplies = await Promise.all(replies.map(async (inner_comment) => {
+        let inner_userReactionForComment = null;
+
+        let inner_User = {};
+
+        if (inner_comment.Community_likes && inner_comment.Community_likes.length > 0) {
+          const userLike = inner_comment.Community_likes[0].dataValues.user_reacted;
+          inner_userReactionForComment = userLike ? userLike : null;
+        }
+
+        let inner_prof = null;
+
+        if (inner_comment.User.User_customization.profil_picture != null) {
+          const profileProfPicBuffer = inner_comment.User.User_customization.profil_picture;
+          
+          const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg';
+
+          
+          if (profileProfPicBuffer) {
+            const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+            inner_prof = `data:${profileProfPicMimeType};base64,${base64Image}`;
+          }
+        }
+
+        inner_User = {id: inner_comment.User.id, user_name: inner_comment.User.user_name, User_customization : {profil_picture: inner_prof}};
+
+        return {
+          id: inner_comment.id,
+          User: inner_User,
+          user_name: inner_comment.User.user_name,
+          content: inner_comment.content,
+          user_id: inner_comment.user_id,
+          post_id: inner_comment.post_id,
+          linkAuthor: inner_comment.linkAuthor,
+          parent_comment_id: inner_comment.parent_comment_id,
+          like: Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null,
+          dislike: Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
+          prepareReply: false,
+          gotEdit: inner_comment.gotEdit,
+          editable: false,
+          userReaction: inner_userReactionForComment,
+          createdAt: inner_comment.createdAt,
+        };
+      }));
+      // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
+      const hasMoreComments = replies.length === parsedLimit;
+
+      // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
+      const lastCommentDate = replies[replies.length - 1]?.createdAt;
+      let hasNewComments = false;
+
+      if (lastCommentDate) {
+        const newComments = await this.Community_comments.count({
+          where: {
+            parent_comment_id: id,
+            createdAt: {
+              [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+            },
+          },
+        });
+
+        // Ha több mint 0 új komment van, akkor van következő oldal
+        hasNewComments = newComments > 0;
+      }
+
+      return {
+        commentsWithreplies,
+        hasMoreComments: hasMoreComments || hasNewComments, // Igaz, ha van több komment
+      };
+    }
 
     async postUpload(post, tagIds) {
       // Poszt létrehozása és mentése

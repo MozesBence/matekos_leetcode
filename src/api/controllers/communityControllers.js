@@ -11,11 +11,11 @@ exports.getLimitedPosts = async (req, res, next) => {
 };
 
 exports.getLimitedComments = async (req, res, next) => {
-    const { limit, offset, id, type } = req.query;
+    const { limit, offset, id, type, userId } = req.query;
 
-    const get_comments = type == 1 ? await communityService.getLimitedComments(limit, offset, id) : await communityService.getLimitedComments(limit, offset, id);
+    const get_comments = type == 1 ? await communityService.getLimitedComments(limit, offset, id, userId) : await communityService.getLimitedInnerComments(limit, offset, id, userId);
 
-    res.status(200).json(get_comments == null ? 'null' : {posts: get_comments.comments, hasMore: get_comments.hasMoreComments });
+    res.status(200).json(get_comments == null ? 'null' : {comments: get_comments.commentsWithreplies, hasMore: get_comments.hasMoreComments });
 };
 
 

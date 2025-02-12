@@ -326,7 +326,6 @@
                   </v-chip>
                 </div>
 
-
                 <v-divider></v-divider>
 
                 <v-card-actions>
@@ -393,7 +392,7 @@
                     
                     <v-divider class="my-2" v-if="post.total_comments > 0"></v-divider>
                     <!-- Kommentek listája -->
-                    <div v-for="(comment, index) in limitedComments(post)" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
+                    <div v-for="(comment, index) in post.comments" :key="comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                       <transition-group name="expand-transition" tag="div">
                         <div class="d-flex flex-column pl-2 position-relative" :key="comment.id">
                           <div class="d-flex ga-2 align-center">
@@ -514,7 +513,7 @@
                           <v-divider class="my-2" v-if="comment.total_comments > 0"></v-divider>
                           <v-expand-transition>
                             <div>
-                              <div v-for="(inner_comment, index) in limitedComments(comment)" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
+                              <div v-for="(inner_comment, index) in comment.comments" :key="inner_comment.id" class="d-flex flex-column rounded-lg ma-4 pt-3" style="background-color: rgb(var(--v-theme-community_comment_bc));">
                                 <transition-group name="expand-transition" tag="div">
                                   <div class="d-flex flex-column pl-2" :key="inner_comment.id">
                                     <div class="d-flex ga-2 align-center">
@@ -623,14 +622,13 @@
                               </div>
                             </div>
                           </v-expand-transition>
-
-                          <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit">
+                          <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit && comment.hasMoreComments">
                             <v-divider class=""></v-divider>
                             <v-btn
                               elevation="0"
                               icon
                               small
-                              @click="loadMoreCommentsForComment(comment)"
+                              @click="loadMoreComments(comment,2)"
                               class="align-center d-flex justify-center position-absolute"
                               v-tooltip="'Több komment megjelenítése'"
                               style="
@@ -645,13 +643,13 @@
                       </v-expand-transition>
                     </div>
 
-                    <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit">
+                    <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit && post.hasMoreComments">
                       <v-divider class=""></v-divider>
                       <v-btn
                         elevation="0"
                         icon
                         small
-                        @click="loadMoreCommentsForPost(post)"
+                        @click="loadMoreComments(post,1)"
                         class="align-center d-flex justify-center position-absolute"
                         v-tooltip="'Több komment megjelenítése'"
                         style="left: 50%; transform: translate(-50%,0);"
@@ -971,7 +969,16 @@
 import { onMounted, onUnmounted, ref, reactive, computed, nextTick, watch, watchEffect   } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { useCommunityPost, useGetCommunityPost, useCommunityEditPost, useLikeDislikeForPost, useCommentForPost, useCommentEdit, useCommunityTags } from '@/api/community/communityQuery';
+import { 
+  useCommunityPost, 
+  useGetCommunityPost, 
+  useCommunityEditPost,
+  useLikeDislikeForPost, 
+  useCommentForPost, 
+  useCommentEdit, 
+  useCommunityTags ,
+  useGetCommunityComments
+} from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 import { useDisplay } from 'vuetify';
 
@@ -1408,7 +1415,7 @@ const checkScroll = async () => {
     const scrollPosition = window.innerHeight + window.scrollY;
     const pageHeight = document.documentElement.scrollHeight;
   
-    if (scrollPosition >= pageHeight - 10) {
+    if (scrollPosition >= pageHeight) {
       PostLoading.value = true;
       const newArray = FilterOpt.value.map(num => num + 1);
       await CommunityGetLimitedPosts({
@@ -1420,7 +1427,6 @@ const checkScroll = async () => {
         search: searchQuery.value
       }, {
         onSuccess: (posts_array) => {
-          PostLoading.value = false;
           total_posts.value = posts_array.total_posts;
           if (posts_array.posts != null) {
             posts_array.posts.forEach((post, index) => {
@@ -1428,6 +1434,7 @@ const checkScroll = async () => {
                 postsConvertToDisplay(post, true, true);
               });
             });
+            PostLoading.value = false;
           }
         },
         onError: (error) => {
@@ -1937,10 +1944,10 @@ function postsConvertToDisplay(array, igaze, alulra){
   }
   
   array.content = tempDiv.innerHTML;
-  
-  if(alulra){
+
+  if(alulra && posts.filter(c=> c.id == array.id).length == 0){
     posts.push(array);
-  }else{
+  }else if(!alulra && posts.filter(c=> c.id == array.id).length == 0){
     posts.unshift(array);
   }
   
@@ -2224,11 +2231,6 @@ function prepareReply(array){
   array.prepareReply = true;
   array.showComments = true;
 }
-
-function limitedComments(array){
-  return array.comments.slice(0,array.limitedComments);
-}
-
 const { mutate: CommunityCommentEdit } = useCommentEdit();
 
 function commentEdit(comment,id){
@@ -2369,10 +2371,23 @@ const addLastCommentToComment = async (comment, inner_comment) => {
   }
 }
 
-const loadMoreCommentsForPost = async (post) =>{
-  console.log(post.id);
-}
+const { mutate: CommunityGetLimitedComments } = useGetCommunityComments();
+const loadMoreComments = async (post,type) =>{
+  await CommunityGetLimitedComments({limit: 10, offset: post.comments.length , id: post.id , type: type, userId: get_fullUser.value == null ? null : get_fullUser.value.id}, {
+    onSuccess: (res_comment) => {
+      var comments = res_comment.comments;
+      for (let i = 0; i < comments.length; i++) {
+        const createdAt = comments[i].createdAt;
+        comments[i].createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
+        post.comments.push(comments[i]);
+        post.hasMoreComments = res_comment.hasMoreComments;
+      }
+    },
+    onError: (error) => {
 
+    },
+  });
+}
 </script>
 
 <style>

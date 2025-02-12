@@ -99,7 +99,7 @@ export const useGetCommunityPost = () => {
   })
 }
 
-const CommunityGetLimitedComments = async (data: {limit: number, offset: number , id: number, type: number}) => {
+const CommunityGetLimitedComments = async (data: {limit: number, offset: number , id: number, type: number, userId: number | null}) => {
   const response = await axiosClient.get('http://localhost:3000/community/get-comments', {
     params: data,
   });

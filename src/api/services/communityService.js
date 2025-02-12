@@ -6,8 +6,12 @@ class communityService
         return await communityRepository.getLimitedPost(limit, offset, id, filter, tagsArray,  search);
     }
 
-    async getLimitedComments(limit, offset, id){
-        return await communityRepository.getLimitedComments(limit, offset, id);
+    async getLimitedComments(limit, offset, id, userId){
+        return await communityRepository.getLimitedComments(limit, offset, id, userId);
+    }
+
+    async getLimitedInnerComments(limit, offset, id, userId){
+        return await communityRepository.getLimitedInnerComments(limit, offset, id, userId);
     }
 
     async getPostCount(){
