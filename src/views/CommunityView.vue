@@ -140,7 +140,6 @@
                           v-model="searchQuery"
                           label="Keresés"
                           clearable
-                          @keyup.enter="search"
                           icon="mdi-magnify"
                           variant="outlined"
                           hide-details
@@ -352,43 +351,45 @@
                 <v-expand-transition>
                   <div v-if="post.showComments">
                     <!-- Új komment -->
-                    <div class="position-relative mx-4 pa-2">
-                      <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                        <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                        <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
-                      </div>
-                      <div>
-                        <v-textarea
-                          v-model="post.newComment"
-                          label="Válaszod"
-                          hide-details
-                          variant="outlined"
-                          rows="1"
-                          style="min-height: min-content; width: 100%;"
-                        ></v-textarea>
-                        <div class="d-flex pa-2 pl-0 ga-2">
-                          <v-btn
-                            :disabled="post.newComment == ''" 
-                            :style="post.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
-                            color="transparent"
-                            elevation="0"
-                            small
-                            @click="addCommentToPost(post)"
-                          >
-                            Küldés
-                          </v-btn>
-                          <v-btn
-                            color="transparent"
-                            elevation="0"
-                            small
-                            v-if="post.total_comments == 0"
-                            @click="post.showComments = false"
-                          >
-                            Mégse
-                          </v-btn>
+                    <v-expand-transition>
+                      <div class="position-relative mx-4 pa-2">
+                        <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
+                          <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                          <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
+                        </div>
+                        <div>
+                          <v-textarea
+                            v-model="post.newComment"
+                            label="Válaszod"
+                            hide-details
+                            variant="outlined"
+                            rows="1"
+                            style="min-height: min-content; width: 100%;"
+                          ></v-textarea>
+                          <div class="d-flex pa-2 pl-0 ga-2">
+                            <v-btn
+                              :disabled="post.newComment == ''" 
+                              :style="post.newComment == '' ? 'background-color: rgb(var(--v-theme-community_posts_bc)) !important; color: darkgray !important;' : ''"
+                              color="transparent"
+                              elevation="0"
+                              small
+                              @click="addCommentToPost(post)"
+                            >
+                              Küldés
+                            </v-btn>
+                            <v-btn
+                              color="transparent"
+                              elevation="0"
+                              small
+                              v-if="post.total_comments == 0"
+                              @click="post.showComments = false"
+                            >
+                              Mégse
+                            </v-btn>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </v-expand-transition>
                     
                     <v-divider class="my-2" v-if="post.total_comments > 0"></v-divider>
                     <!-- Kommentek listája -->

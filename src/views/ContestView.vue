@@ -48,18 +48,18 @@
             <v-divider></v-divider>
             <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0">
               <v-list-item>
-                <div class="d-flex flex-row align-center mb-3 pa-1 px-3 rounded justify-space-between" 
+                <div class="d-flex flex-row align-center mb-1 pa-1 px-3 rounded justify-space-between" 
                     style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
-                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
+                  <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;" icon elevation="0">
                     <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden; position: relative;">
                       <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" 
                           alt="" 
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                  </b-btn>
-                  <b-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer;">
-                    <h3 style="font-weight: normal;">{{ member.name }}</h3>
-                  </b-btn>
+                  </v-btn>
+                  <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;"  elevation="0">
+                    <h3 style="font-weight: normal; text-transform: none;">{{ member.name }}</h3>
+                  </v-btn>
                   <h3 style="font-weight: normal; width: 5rem; text-align: right;">{{ member.level }}.szint</h3>
                 </div>
               </v-list-item>
