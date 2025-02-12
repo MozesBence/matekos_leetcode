@@ -92,25 +92,26 @@ export const useSolvedTaskRates = () => {
   });
 };
 
-// Fetching All Task Count
 const fetchAllTaskCount = async () => {
   try {
     const response = await axios.get(`/api/tasks/taskCount`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching all task count:', error);
+    throw error;
   }
 };
 
 export const useAllTaskCount = () => {
   return useQuery({
+    queryKey: ['allTaskCount'], // Make sure this is an array
     queryFn: fetchAllTaskCount,
     onSuccess: (data) => {
-      console.log(data);
+      console.log('Fetched task count:', data);
     },
     onError: (error) => {
-      console.error('Error occurred while fetching all task count:', error);
-    }
+      console.error('Error fetching task count:', error);
+    },
   });
 };
 
@@ -245,4 +246,6 @@ export const useCardsByThemes = () => {
     }
   });
 };
+
+
 
