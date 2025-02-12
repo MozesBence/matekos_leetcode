@@ -670,6 +670,22 @@ export default defineComponent({
 });
 </script>
 
+<!--
+<script setup lang="ts">
+  import { useAllTaskCount } from '@/api/cards/cardQuery';
+  import { onMounted, ref, watch } from 'vue';
+  const taskCount = ref(0);
+  const cards = ref([]);
+  const allTaskCountQuery = useAllTaskCount();
+  watch(() => allTaskCountQuery.data.value, (newVal) => {
+    if (newVal) {
+      taskCount.value = newVal;
+    }
+  });
+
+
+</script>
+-->
 
 
 <style>
