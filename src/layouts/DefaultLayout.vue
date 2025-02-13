@@ -295,52 +295,76 @@
           <div class="pa-4 text-center" :style="{position: dialog ? 'relativ': 'absolute'}">
             <v-dialog
               v-model="dialog"
-              max-width="700"
+              max-width="1600"
             >
               <v-card>
                 <v-card-title>
                   <span class="text-h6">{{ get_user_name }} felhasználó beállításai</span>
                 </v-card-title>
-                <v-card-text>
-                  <v-container>
-                    <v-row>
-                      <!-- Felhasználónév -->
-                      <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="userName"
-                          :label="get_user_name"
-                          outlined
-                        ></v-text-field>
-                      </v-col>
-                      <!-- E-mail -->
-                      <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="email"
-                          :label="get_fullUser.email"
-                          outlined
-                          type="email"
-                        ></v-text-field>
-                      </v-col>
-                      <!-- Jelszó -->
-                      <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="password"
-                          label="Új Jelszó"
-                          outlined
-                          type="password"
-                        ></v-text-field>
-                      </v-col>
-                      <v-col cols="12" md="12">
-                        <v-text-field
-                          v-model="confpassword"
-                          label="Új Jelszó megerősítés"
-                          outlined
-                          type="confpassword"
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-card-text>
+                <v-layout ref="app" class="rounded rounded-md">
+                  <v-navigation-drawer
+                    color="grey-darken-2"
+                    location="left"
+                    name="drawer"
+                    permanent
+                    border="none"
+                    style="max-width: 42%;"
+                  >
+                    <div
+                      class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn"
+                    >
+                      <v-icon style="flex: 0; text-align: center;">mdi-account</v-icon>
+                      <h4
+                        style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                      >
+                        fiók
+                      </h4>
+                      <div v-if="ProfSettingDraw" style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 1.4vw; max-height: 3vh; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;">
+                        <v-icon class="ml-1">mdi-chevron-right</v-icon>
+                      </div>
+                    </div>
+
+                    <div
+                      class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn"
+                    >
+                      <v-icon style="flex: 0; text-align: center;">mdi-email</v-icon>
+                      <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                        email
+                      </h4>
+                      <div v-if="EmailSettingDraw" style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 1.4vw; max-height: 3vh; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;">
+                        <v-icon class="ml-1">mdi-chevron-right</v-icon>
+                      </div>
+                    </div>
+
+                    <div
+                      class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn"
+                    >
+                      <v-icon style="flex: 0; text-align: center;">mdi-lock</v-icon>
+                      <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                        jelszó
+                      </h4>
+                      <div v-if="PassSettingDraw" style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 1.4vw; max-height: 3vh; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;">
+                        <v-icon class="ml-1">mdi-chevron-right</v-icon>
+                      </div>
+                    </div>
+
+                    <div
+                      class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn"
+                    >
+                      <v-icon style="flex: 0; text-align: center;">mdi-bell</v-icon>
+                      <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                        értesítések
+                      </h4>
+                      <div v-if="NotifDraw" style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 1.4vw; max-height: 3vh; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;">
+                        <v-icon class="ml-1">mdi-chevron-right</v-icon>
+                      </div>
+                    </div>
+                  </v-navigation-drawer>
+
+                  <v-main class="d-flex align-center justify-center" style="min-height: 300px;">
+                    Main Content
+                  </v-main>
+                </v-layout>
                 <v-divider></v-divider>
                 <v-card-actions>
                   <v-spacer></v-spacer>
@@ -350,7 +374,7 @@
                     @click="dialog = false"
                   ></v-btn>
                   <v-btn
-                    color="primary"
+                    color="success"
                     text="Mentés"
                     variant="tonal"
                     @click="saveSettings"
@@ -384,6 +408,11 @@ const route = useRoute();
 const dialog = shallowRef(false)
 
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
+
+const ProfSettingDraw = ref(false);
+const EmailSettingDraw = ref(true);
+const PassSettingDraw = ref(false);
+const NotifDraw = ref(false);
 
 const get_fullUser = ref(null);
 const get_fullUser_customs = ref(null);
@@ -643,5 +672,12 @@ export default {
   50% {
     border-color: transparent;
   }
+}
+
+.custom-drawer-btn{
+  transition: .3s;
+}
+.custom-drawer-btn:hover{
+  background-color: rgb(var(--v-theme-custom_drawer_btn), .3);
 }
 </style>
