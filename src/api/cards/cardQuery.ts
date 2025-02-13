@@ -225,7 +225,7 @@ export const useTaskByState = () => {
 };
 
 // Fetching Cards by Themes
-const fetchCardsByThemes = async (themes) => {
+const fetchCardsByThemes = async (themes: string[]) => {
   try {
     const themesPath = themes.join(';');
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
@@ -235,9 +235,10 @@ const fetchCardsByThemes = async (themes) => {
   }
 };
 
-export const useCardsByThemes = () => {
+export const useCardsByThemes = (themes: string[]) => {
   return useQuery({
-    queryFn: fetchCardsByThemes,
+    queryFn: () => fetchCardsByThemes(themes),  // Correctly passing themes to the fetch function
+    queryKey: ['filteredByThemes', themes],
     onSuccess: (data) => {
       console.log(data);
     },
