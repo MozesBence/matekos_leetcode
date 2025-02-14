@@ -17,6 +17,7 @@ const fetchCards = async (offset:number) => {
 export const useCards = () => {
   return useQuery({
     queryFn: (offset: number) => fetchCards(offset),
+    queryKey:['cards'],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -137,24 +138,26 @@ export const useRandomTask = () => {
   });
 };
 
-const fetchTaskWithSearch = async (characters) => {
+const fetchTaskWithSearch = async (characters: string) => {
   try {
     const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with these characters:', error);
+    throw error; // Ensure the error is thrown so Vue Query can handle it
   }
 };
 
-export const useTaskWithSearch = () => {
+export const useTaskWithSearch = (characters: string) => {
   return useQuery({
-    queryFn: fetchTaskWithSearch,
+    ueryKey: ['tasks', characters], // Correct
+    queryFn: () => fetchTaskWithSearch(characters),
     onSuccess: (data) => {
       console.log(data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task with search characters:', error);
-    }
+    },
   });
 };
 
