@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 // Importok kezdete
-import { useAllTaskCount,useCards, useCardsByThemes, useTaskByDifficulty,useTaskByState } from '@/api/cards/cardQuery';
+import { useAllTaskCount,useCards, useCardsByThemes, useTaskByDifficulty,useTaskByState, useTaskWithSearch } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch } from 'vue';
@@ -120,6 +120,7 @@ const difficulty_Query = ref<string | null>(null)
 var tasks = computed(() => cardsQuery.data.value || []);
 // A feladatok számának összesítése
 const allTaskCountQuery = useAllTaskCount();
+
 const taskCount = ref(0);
 
 // Statikus kártyák adatok
@@ -165,7 +166,9 @@ const handleToggle = (theme: string, isSelected: boolean, toggle: Function) => {
       if(characters.length == 0){
         tasks = cardsQuery.data.value || [];
       }else{
-        cardsStore.fetchTaskWithSearch(characters);
+        const tasksWithSearch = useTaskWithSearch(characters);
+        tasks = computed(() => tasksWithSearch.data.value)
+        //cardsStore.fetchTaskWithSearch(characters);
       }
     }
     //localba letarolni
