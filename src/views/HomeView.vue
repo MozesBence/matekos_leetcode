@@ -104,7 +104,7 @@
 
 <script setup lang="ts">
 // Importok kezdete
-import { useAllTaskCount,useCards, useCardsByThemes, useTaskByDifficulty,useTaskByState } from '@/api/cards/cardQuery';
+import { useAllTaskCount,useCards, useCardsByThemes, useTaskByDifficulty,useTaskByState, useTaskWithSearch } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch } from 'vue';
@@ -116,10 +116,12 @@ const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
 const cardsQuery = useCards();
 const difficulty_Query = ref<string | null>(null)
-    const state_Query = ref<string | null>(null)
-var tasks = computed(() => cardsQuery.data.value || []);
+const state_Query = ref<string | null>(null)
+const searchQuery = ref('');
+var tasks = ref([])
 // A feladatok számának összesítése
 const allTaskCountQuery = useAllTaskCount();
+
 const taskCount = ref(0);
 
 // Statikus kártyák adatok
@@ -161,48 +163,63 @@ const handleToggle = (theme: string, isSelected: boolean, toggle: Function) => {
 };
 
 /*Szuresesk*/
-    const filterTasksByCharacters = (characters: any) => {
-      if(characters.length == 0){
-        tasks = cardsQuery.data.value || [];
-      }else{
-        cardsStore.fetchTaskWithSearch(characters);
-      }
+
+const filterTasksByCharacters = (characters: string) => {
+  if (characters.length === 0) {
+    tasks.value = cardsQuery.data.value || [];
+  } else {
+    // This must be called inside setup(), so we're keeping it here
+    const tasksWithSearch = useTaskWithSearch(characters); // Pass search query
+    if (tasksWithSearch && tasksWithSearch.data) {
+      tasks.value = tasksWithSearch.data.value || []; // Update tasks with search results
     }
+  }
+};
+
+// Watch search query and trigger task filtering
+watch(searchQuery, (newQuery) => {
+  filterTasksByCharacters(newQuery);  // Call the filter function whenever the search query changes
+});
+
+// Watch search query and trigger task filtering
+watch(searchQuery, (newQuery) => {
+  filterTasksByCharacters(newQuery);  // Call the filter function whenever the search query changes
+});
     //localba letarolni
     //https://tanstack.com/query/v4/docs/framework/vue/guides/paginated-queries
     router.push({query:{page: 1,per_page:15}})
     const filterByDifficulty = (difficulty: any) => {
       switch (difficulty) {
         case 'Könnyű':
-        cardsStore.fetchTaskByDifficulty(0);
+    //    cardsStore.fetchTaskByDifficulty(0);
           break
         case 'Közepes':
-        cardsStore.fetchTaskByDifficulty(1);
+     //   cardsStore.fetchTaskByDifficulty(1);
           break
         case 'Nehéz':
-        cardsStore.fetchTaskByDifficulty(2);
+     //   cardsStore.fetchTaskByDifficulty(2);
           break
         default:
-          cardsStore.fetchCards();
+       //   cardsStore.fetchCards();
     }  
   }
   watch(difficulty_Query, (newVal) => {
         filterByDifficulty(newVal)
   })
   const filterByState = (state: any) => {
-    const userCookie = getCookie('user');
+   // const userCookie = getCookie('user');
     switch (state) {
         case 'Megkezdetlen':
-       cardsStore.fetchTaskByState(2,JSON.parse(atob(userCookie.split('.')[1])).id)
+     //  cardsStore.fetchTaskByState(2,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         case 'Függőben lévő':
-        cardsStore.fetchTaskByState(0,JSON.parse(atob(userCookie.split('.')[1])).id)
+       // cardsStore.fetchTaskByState(0,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         case 'Kész':
-        cardsStore.fetchTaskByState(1,JSON.parse(atob(userCookie.split('.')[1])).id)
+       // cardsStore.fetchTaskByState(1,JSON.parse(atob(userCookie.split('.')[1])).id)
           break
         default:
-          cardsStore.fetchCards();
+          //cardsStore.fetchCards();
     }  
    }
    watch(state_Query, (newVal) =>{
@@ -216,6 +233,9 @@ watch(() => allTaskCountQuery.data.value, (newVal) => {
   if (newVal) {
     taskCount.value = newVal;
   }
+});
+watch(() => cardsQuery.data.value, (newValue) => {
+  tasks.value = newValue || [];
 });
 </script>
 
