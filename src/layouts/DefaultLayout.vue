@@ -296,121 +296,217 @@
             <v-dialog
               v-model="dialog"
               max-width="1200"
+              persistent
             >
-              <v-card>
-                <v-layout ref="app" class="rounded rounded-md">
-                  <v-navigation-drawer
-                    color="grey-darken-2"
-                    location="left"
-                    name="drawer"
-                    permanent
-                    border="none"
-                    style="max-width: 42%; border-radius: 0 !important;"
-                  >
-                    <div class="pl-2 mt-2">
-                      <h1 style="font-weight: normal;">Beállítások</h1>
+              <v-card style="display: flex; flex-direction: column;">
+                <v-layout>
+                  <div
+                    style="max-width: 50%; border-radius: 0 !important; height: min-content; background-color: gray;"
+                    class="d-flex flex-column position-relative"
+                    >
+                  <div>
+                      <div class="my-2 d-flex justify-center">
+                        <v-icon color="custom_drawer_icon" class="mx-2">mdi-cog</v-icon>
+                        <h3 style="font-weight: normal;">Beállítások</h3>
+                      </div>
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="ProfSettingsActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-account</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                            fiók
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="ProfSettingDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-expand-transition>
+                        <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="EmailSettingsActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-email</v-icon>
+                          <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                            email
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="EmailSettingDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-expand-transition>
+                        <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="PassSettingsActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-lock</v-icon>
+                          <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                            jelszó
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="PassSettingDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      
+                      <v-expand-transition>
+                        <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="NotifActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-bell</v-icon>
+                          <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
+                            értesítések
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="NotifDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+
+                      <div class="my-2 d-flex justify-center">
+                        <v-icon color="custom_drawer_icon" class="mx-2">mdi-crown</v-icon>
+                        <h3 style="font-weight: normal;">VIP cuccok talán</h3>
+                      </div>
+
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="LeaderBoardActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-podium</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                            ranglista
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="LeaderBoardDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="PostActive">
+                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-newspaper</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                          Posztbeállítások 
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="PostDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      
+                      <div class="my-2 d-flex justify-center">
+                        <v-icon color="custom_drawer_icon" class="mx-2">mdi-shield</v-icon>
+                        <h3 style="font-weight: normal;">Admin panel</h3>
+                      </div>
+
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="UsersActive">
+                          <v-icon style="flex: 0; text-align: center;">mdi-account-multiple</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                          felhasználók 
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="UsersDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1"  size="20">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="AdminNotifActive">
+                          <v-icon style="flex: 0; text-align: center;">mdi-alert-circle</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                          admin értesítések 
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="AdminNotifDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1"  size="20">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
+                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
                     </div>
-                    <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-                    <v-expand-transition>
-                      <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="ProfSettingsActive">
-                        <v-icon style="flex: 0; text-align: center;">mdi-account</v-icon>
-                        <h4
-                          style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
-                        >
-                          fiók
-                        </h4>
-                        <v-slide-x-reverse-transition hide-on-leave>
-                          <div 
-                          v-if="ProfSettingDraw" 
-                          style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                          class="d-flex align-center"
-                          >
-                            <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                          </div>
-                        </v-slide-x-reverse-transition>
-                      </div>
-                    </v-expand-transition>
-                    <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
-                    <v-expand-transition>
-                      <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="EmailSettingsActive">
-                        <v-icon style="flex: 0; text-align: center;">mdi-email</v-icon>
-                        <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
-                          email
-                        </h4>
-                        <v-slide-x-reverse-transition hide-on-leave>
-                          <div 
-                          v-if="EmailSettingDraw" 
-                          style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                          class="d-flex align-center"
-                          >
-                            <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                          </div>
-                        </v-slide-x-reverse-transition>
-                      </div>
-                    </v-expand-transition>
-                    <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
-                    <v-expand-transition>
-                      <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="PassSettingsActive">
-                        <v-icon style="flex: 0; text-align: center;">mdi-lock</v-icon>
-                        <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
-                          jelszó
-                        </h4>
-                        <v-slide-x-reverse-transition hide-on-leave>
-                          <div 
-                          v-if="PassSettingDraw" 
-                          style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                          class="d-flex align-center"
-                          >
-                            <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                          </div>
-                        </v-slide-x-reverse-transition>
-                      </div>
-                    </v-expand-transition>
-                    <v-divider inset :color="PassSettingDraw ? 'transparent' : 'default_btn_bc'" style="transition: .3s;"></v-divider>
-                    <v-expand-transition>
-                      <div class="rounded-0 w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" @click="NotifActive">
-                        <v-icon style="flex: 0; text-align: center;">mdi-bell</v-icon>
-                        <h4 style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;">
-                          értesítések
-                        </h4>
-                        <v-slide-x-reverse-transition hide-on-leave>
-                          <div 
-                          v-if="NotifDraw" 
-                          style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                          class="d-flex align-center"
-                          >
-                            <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                          </div>
-                        </v-slide-x-reverse-transition>
-                      </div>
-                    </v-expand-transition>
-                    <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
 
-                    <div class="pl-2 mt-2">
-                      <h1 style="font-weight: normal;">VIP cuccok talán</h1>
-                    </div>
-
-                    <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-
-                    <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-                    
-                    <div class="pl-2 mt-2">
-                      <h1 style="font-weight: normal;">Admin panel</h1>
-                    </div>
-
-                    <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-
-                    <div style="position: absolute; bottom: 0; width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center">
+                    <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5">
                       <div style="height: 100%; border-radius: 50%; width: 5rem; height: 5rem; overflow: hidden; position: relative;">
                         <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture"
-                          alt="" 
-                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
+                          alt="profil_kep"
+                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
+                          @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
+                          >
                         </div>
-                        <h2 style="font-weight: normal; text-decoration: none;" class="mt-1">{{ get_user_name }}</h2>
+                        <h2 
+                        style="font-weight: normal; text-decoration: none; cursor: pointer;" 
+                        class="mt-1" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
+                        >{{ get_user_name }}</h2>
                     </div>
-                  </v-navigation-drawer>
 
-                  <v-main class="d-flex align-center justify-center" style="min-height: 55vh;">
+                  </div>
+
+                  <v-main class="d-flex align-center justify-center" style="height: 100%;">
                     Main Content
                   </v-main>
                 </v-layout>
@@ -422,12 +518,6 @@
                     variant="plain"
                     @click="dialog = false"
                   ></v-btn>
-                  <v-btn
-                    color="success"
-                    text="Mentés"
-                    variant="tonal"
-                    @click="saveSettings"
-                  >Mentés</v-btn>
                 </v-card-actions>
               </v-card>
             </v-dialog>
@@ -462,12 +552,20 @@ const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
 const PassSettingDraw = ref(false);
 const NotifDraw = ref(false);
+const LeaderBoardDraw = ref(false);
+const PostDraw = ref(false);
+const UsersDraw = ref(false);
+const AdminNotifDraw = ref(false);
 
 function ProfSettingsActive(){
   ProfSettingDraw.value = true;
   EmailSettingDraw.value = false;
   PassSettingDraw.value = false;
   NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
 }
 
 function EmailSettingsActive(){
@@ -475,6 +573,10 @@ function EmailSettingsActive(){
   EmailSettingDraw.value = true;
   PassSettingDraw.value = false;
   NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
 }
 
 function PassSettingsActive(){
@@ -482,6 +584,10 @@ function PassSettingsActive(){
   EmailSettingDraw.value = false;
   PassSettingDraw.value = true;
   NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
 }
 
 function NotifActive(){
@@ -489,6 +595,54 @@ function NotifActive(){
   EmailSettingDraw.value = false;
   PassSettingDraw.value = false;
   NotifDraw.value = true;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
+}
+
+function LeaderBoardActive(){
+  ProfSettingDraw.value = false;
+  EmailSettingDraw.value = false;
+  PassSettingDraw.value = false;
+  NotifDraw.value = false;
+  LeaderBoardDraw.value = true;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
+}
+
+function PostActive(){
+  ProfSettingDraw.value = false;
+  EmailSettingDraw.value = false;
+  PassSettingDraw.value = false;
+  NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = true;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = false;
+}
+
+function UsersActive(){
+  ProfSettingDraw.value = false;
+  EmailSettingDraw.value = false;
+  PassSettingDraw.value = false;
+  NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = true;
+  AdminNotifDraw.value = false;
+}
+
+function AdminNotifActive(){
+  ProfSettingDraw.value = false;
+  EmailSettingDraw.value = false;
+  PassSettingDraw.value = false;
+  NotifDraw.value = false;
+  LeaderBoardDraw.value = false;
+  PostDraw.value = false;
+  UsersDraw.value = false;
+  AdminNotifDraw.value = true;
 }
 
 const get_fullUser = ref(null);
@@ -756,5 +910,16 @@ export default {
 }
 .custom-drawer-btn:hover{
   background-color: rgb(var(--v-theme-custom_drawer_btn), .3);
+}
+
+.v-dialog > .v-overlay__content > .v-card,
+.v-dialog > .v-overlay__content > .v-sheet,
+.v-dialog > .v-overlay__content > form > .v-card,
+.v-dialog > .v-overlay__content > form > .v-sheet {
+    --v-scrollbar-offset: 0px;
+    border-radius: 4px;
+    overflow-y: auto;
+    flex: none !important;
+    height: inherit !important; /* vagy adj meg egy kívánt magasságot */
 }
 </style>
