@@ -105,29 +105,24 @@
 </template>
 
 <script setup lang="ts">
-// Importok kezdete
-import { useAllTaskCount, useCards, useCardsByThemes, useTaskByDifficulty, useTaskByState, useTaskWithSearch, useRandomTask } from '@/api/cards/cardQuery';
+// Redirect to page 1 on load
+router.push({ query: { page: 1, per_page: 15 } });
+
+// Imports
+import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted } from 'vue';
-import { onBeforeRouteUpdate } from 'vue-router';
-// Importok vége
 
-// Query hookok
+// Query hooks
 const themesQuery = UseThemes();
-const themes = computed(() => themesQuery.data.value || []); // Use themes fetched by the hook
+const themes = computed(() => themesQuery.data.value || []);
 
 const cardsQuery = useCards();
-
-const difficulty_Query = ref<string | null>(null);
-const state_Query = ref<string | null>(null);
-const searchQuery = ref('');
-
-// A feladatok számának összesítése
 const allTaskCountQuery = useAllTaskCount();
 const taskCount = ref(0);
 
-// Statikus kártyák adatok
+// Static card data
 const cards = ref([
   {
     title: 'Gyűjts aranyat!',
@@ -152,42 +147,46 @@ const selectedThemes = ref<string[]>([]);
 const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes.value);
 
 const tasks = computed(() => {
-  if (selectedThemes.value.length === 0) {
-    return cardsQuery.data.value || [];
-  } else {
-    return filteredTasks.value || [];
-  }
+  console.log(selectedThemes.value)
+  return selectedThemes.value.length === 0 ? (cardsQuery.data.value || []) : (filteredTasks.value || []);
 });
 
-// Handling theme toggle
 const handleToggle = async (theme: string, isSelected: boolean, toggle: Function) => {
   if (!themesQuery.data.value) {
-    await themesQuery.refetch(); 
+    await themesQuery.refetch();
   }
 
-  if (isSelected) { 
+  if (isSelected) {
+    //console.log('before:',selectedThemes.value)
     selectedThemes.value = selectedThemes.value.filter(t => t !== theme);
+    //console.log('after:',selectedThemes.value)
   } else {
+    console.log('before:',selectedThemes.value)
+    // Add theme to selectedThemes if it's not selected
     selectedThemes.value.push(theme);
+    //console.log('afer:',selectedThemes.value)
   }
 
-  console.log("Selected Themes: ", selectedThemes.value); 
+  console.log("Updated Selected Themes: ", selectedThemes.value);
   toggle();
+
   if (selectedThemes.value.length === 0) {
-    cardsQuery.refetch();
-    console.log(tasks.value)
+    await cardsQuery.refetch();
+    //console.log("All tasks (no filter):", tasks.value);
   } else {
-    refetchFilteredTasks();
-    console.log(tasks.value)
+    await refetchFilteredTasks();
+   /// console.log("Filtered tasks:", tasks.value);
   }
 };
 
-onMounted(() => {
-  cardsQuery.refetch();
+
+// Refetch cards on mount
+onMounted(async () => {
+  await cardsQuery.refetch();
 });
 
 // Random task handling
-var randomTaskId = ref<number | null>(null);
+const randomTaskId = ref<number | null>(null);
 const randomTask = useRandomTask();
 
 const LoadRandomTask = async () => {
@@ -200,13 +199,14 @@ const LoadRandomTask = async () => {
   }
 };
 
+// Navigate to task view
 const TaskView = (id: number) => {
-  console.log(id);
+  console.log("Navigating to task ID:", id);
   router.push({ name: 'task', params: { id } });
 };
 
+// Watch for changes in random task data
 watch(() => randomTask.data.value, (newVal) => {
-  console.log(newVal);
   if (newVal?.id) {
     randomTaskId.value = newVal.id;
   } else {
@@ -214,12 +214,16 @@ watch(() => randomTask.data.value, (newVal) => {
   }
 });
 
+// Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
   if (newVal) {
     taskCount.value = newVal;
   }
 });
 </script>
+
+
+
 
 
 <style scoped>

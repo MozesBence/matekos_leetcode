@@ -229,31 +229,38 @@ export const useTaskByState = () => {
   });
 };
 
-// Fetching Cards by Themes
-const fetchCardsByThemes = async (themes: string[]) => {
+const fetchCardsByThemes = async (themeIds: number[]) => {
+  //console.log('Selected Theme IDs:', themeIds);
+
   try {
-    const themesPath = themes.join(';');
+    const themesPath = themeIds.length > 0 ? themeIds.join(';') : 'all'; // Ensure a valid API parameter
+    console.log('Formatted Theme IDs:', themesPath);
+
+    // Send the request with the theme IDs
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
+   // console.log(response);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching tasks by themes:', error);
   }
 };
 
-export const useCardsByThemes = (themes: string[]) => { 
-  console.log(themes)
+export const useCardsByThemes = (themeIds: number[]) => {
+  console.log("Fetching with theme IDs:", themeIds);
+
   return useQuery({
-    
-    queryFn: () => fetchCardsByThemes(themes),  // Correctly passing themes to the fetch function
-    queryKey: ['filteredByThemes', themes.join(';')], // Concatenating themes with ';' for the query key
+    queryFn: () => fetchCardsByThemes(themeIds),
+    queryKey: ['filteredByThemes', themeIds.join(';')], 
     onSuccess: (data) => {
-      console.log(data);
+      console.log("Filtered tasks received:", data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching cards by themes:', error);
     }
   });
 };
+
+
 
 
 
