@@ -100,115 +100,70 @@
   </v-app>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, watch, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router"; // Import useRouter
+<script lang="ts" setup>
+import { ref, watch, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData } from "@/api/taskSolving/taskSolvingQuery";
 
+// MathJax Directive
 const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.typesetPromise([el]).catch((err: any) =>
-        console.error("MathJax error:", err)
-      );
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
     }
   },
   updated(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.typesetPromise([el]).catch((err: any) =>
-        console.error("MathJax error:", err)
-      );
+      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
     }
   }
 };
 
-export default defineComponent({
-  name: "TaskComponent",
-  directives: {
-    mathjax: mathjaxDirective
-  },
-  data: () => ({
-    drawer: false,
-    group: null,
-    items: [
-      { title: "Foo", value: "foo" },
-      { title: "Bar", value: "bar" },
-      { title: "Fizz", value: "fizz" },
-      { title: "Buzz", value: "buzz" }
-    ]
-  }),
-  watch: {
-    group() {
-      this.drawer = false;
-    }
-  },
-  setup() {
-    const task = ref<any>(null);
-    const isLoading = ref(false);
-    const error = ref(null);
-    const route = useRoute();
-    const router = useRouter(); 
 
-    const { mutate: GetTaskData } = UseGetTaskData();
 
-    const fetchTaskData = (taskId: number) => {
-      isLoading.value = true;
-      GetTaskData(taskId, {
-        onSuccess: (data: any) => {
-          task.value = data;
-          isLoading.value = false;
-        },
-        onError: (err: any) => {
-          error.value = err;
-          isLoading.value = false;
-        }
-      });
-    };
+// Reactive state
+const drawer = ref(false);
+const group = ref<string | null>(null);
+const items = ref([
+  { title: "Foo", value: "foo" },
+  { title: "Bar", value: "bar" },
+  { title: "Fizz", value: "fizz" },
+  { title: "Buzz", value: "buzz" }
+]);
 
-    watch(
-      () => route.params.id,
-      (id) => {
-        const taskId = Number(id);
-        if (!isNaN(taskId)) {
-          fetchTaskData(taskId);
-        }
-      },
-      { immediate: true }
-    );
-
-    onMounted(() => {
-      const id = Number(route.params.id);
-      if (!isNaN(id)) {
-        fetchTaskData(id);
-      }
-    });
-
-    const chipColor = (difficulty: number) => {
-      if (difficulty === 0) return "green";
-      if (difficulty === 1) return "orange";
-      return "red";
-    };
-
-    const difficultyLabel = (difficulty: number) => {
-      if (difficulty === 0) return "Könnyű";
-      if (difficulty === 1) return "Közepes";
-      return "Nehéz";
-    };
-
-    const back = () => {
-      router.go(-1);
-    };
-
-    return {
-      task,
-      isLoading,
-      error,
-      chipColor,
-      difficultyLabel,
-      back
-    };
-  }
+// Watch group state
+watch(group, () => {
+  drawer.value = false;
 });
+
+// Task Data
+const isLoading = ref(false);
+const error = ref<any>(null);
+const route = useRoute();
+const router = useRouter();
+const getTaskData = UseGetTaskData(Number(route.params.id));
+var task = ref([]);
+
+watch(() => getTaskData.data.value, (newVal) => {
+  console.log(newVal);
+  task.value = newVal;
+  console.log(task.value)
+});
+
+// Helper functions
+const chipColor = (difficulty: number) => {
+  return difficulty === 0 ? "green" : difficulty === 1 ? "orange" : "red";
+};
+
+const difficultyLabel = (difficulty: number) => {
+  return difficulty === 0 ? "Könnyű" : difficulty === 1 ? "Közepes" : "Nehéz";
+};
+
+const back = () => {
+  router.go(-1);
+};
 </script>
+
+

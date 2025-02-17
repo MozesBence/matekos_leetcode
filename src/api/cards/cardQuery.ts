@@ -120,6 +120,7 @@ export const useAllTaskCount = () => {
 const fetchRandomTask = async () => {
   try {
     const response = await axios.get(`/api/tasks/random-task`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching a random task:', error);
@@ -129,6 +130,7 @@ const fetchRandomTask = async () => {
 export const useRandomTask = () => {
   return useQuery({
     queryFn: fetchRandomTask,
+    queryKey:['randomTaskId'],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -238,10 +240,12 @@ const fetchCardsByThemes = async (themes: string[]) => {
   }
 };
 
-export const useCardsByThemes = (themes: string[]) => {
+export const useCardsByThemes = (themes: string[]) => { 
+  console.log(themes)
   return useQuery({
+    
     queryFn: () => fetchCardsByThemes(themes),  // Correctly passing themes to the fetch function
-    queryKey: ['filteredByThemes', themes],
+    queryKey: ['filteredByThemes', themes.join(';')], // Concatenating themes with ';' for the query key
     onSuccess: (data) => {
       console.log(data);
     },
@@ -250,6 +254,7 @@ export const useCardsByThemes = (themes: string[]) => {
     }
   });
 };
+
 
 
 

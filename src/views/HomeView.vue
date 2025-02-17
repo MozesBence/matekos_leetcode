@@ -26,16 +26,17 @@
     <v-slide-group show-arrows multiple>
       <v-slide-group-item v-for="n in themes" :key="n.theme" v-slot="{ isSelected, toggle }">
         <v-btn
-         :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
+          :color="isSelected ? 'blue-lighten-1' : 'background-color: rgb(var(--v-theme-background));'"
           class="ma-4"
           rounded
           width="auto"
           height="3em"
           style="font-size: small;"
-          @click="() => handleToggle(n.theme, isSelected, toggle)"
+          @click="handleToggle(n.theme, isSelected, toggle)"
         >
           {{ n.theme }}
-        </v-btn>
+      </v-btn>
+
       </v-slide-group-item>
     </v-slide-group>
   </v-sheet>
@@ -98,30 +99,32 @@
   </v-col>
 </v-row>
   <!---->
-{{tasks}}
+
+  {{ tasks }}
   {{ taskCount }}
 </template>
 
 <script setup lang="ts">
 // Importok kezdete
-import { useAllTaskCount,useCards, useCardsByThemes, useTaskByDifficulty,useTaskByState, useTaskWithSearch } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCards, useCardsByThemes, useTaskByDifficulty, useTaskByState, useTaskWithSearch, useRandomTask } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
-import { ref, computed, watch } from 'vue';
-
+import { ref, computed, watch, onMounted } from 'vue';
+import { onBeforeRouteUpdate } from 'vue-router';
 // Importok vége
 
 // Query hookok
 const themesQuery = UseThemes();
-const themes = computed(() => themesQuery.data.value || []);
+const themes = computed(() => themesQuery.data.value || []); // Use themes fetched by the hook
+
 const cardsQuery = useCards();
-const difficulty_Query = ref<string | null>(null)
-const state_Query = ref<string | null>(null)
+
+const difficulty_Query = ref<string | null>(null);
+const state_Query = ref<string | null>(null);
 const searchQuery = ref('');
-var tasks = ref([])
+
 // A feladatok számának összesítése
 const allTaskCountQuery = useAllTaskCount();
-
 const taskCount = ref(0);
 
 // Statikus kártyák adatok
@@ -143,99 +146,78 @@ const cards = ref([
     description: 'Csapatunk összeválogatta azokat a zenéket, amelyeket a legtöbbet hallgatunk tanulás közben. Hallgass bele!'
   }
 ]);
-const task_Theme_Query = ref<string[]>([]);
 
-const handleToggle = (theme: string, isSelected: boolean, toggle: Function) => {
-  if (isSelected) {
-    task_Theme_Query.value = task_Theme_Query.value.filter(t => t !== theme);
+const selectedThemes = ref<string[]>([]);
+
+const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes.value);
+
+const tasks = computed(() => {
+  if (selectedThemes.value.length === 0) {
+    return cardsQuery.data.value || [];
   } else {
-    task_Theme_Query.value.push(theme);
+    return filteredTasks.value || [];
   }
+});
+
+// Handling theme toggle
+const handleToggle = async (theme: string, isSelected: boolean, toggle: Function) => {
+  if (!themesQuery.data.value) {
+    await themesQuery.refetch(); 
+  }
+
+  if (isSelected) { 
+    selectedThemes.value = selectedThemes.value.filter(t => t !== theme);
+  } else {
+    selectedThemes.value.push(theme);
+  }
+
+  console.log("Selected Themes: ", selectedThemes.value); 
   toggle();
-
-  // Handling reactivity
-  if (task_Theme_Query.value.length === 0) {
-    tasks.value = cardsQuery.data.value || [];
+  if (selectedThemes.value.length === 0) {
+    cardsQuery.refetch();
+    console.log(tasks.value)
   } else {
-    const filteredCardsQuery = useCardsByThemes(task_Theme_Query.value);
-    tasks.value = filteredCardsQuery.data.value || [];
+    refetchFilteredTasks();
+    console.log(tasks.value)
   }
 };
 
-/*Szuresesk*/
+onMounted(() => {
+  cardsQuery.refetch();
+});
 
-const filterTasksByCharacters = (characters: string) => {
-  if (characters.length === 0) {
-    tasks.value = cardsQuery.data.value || [];
+// Random task handling
+var randomTaskId = ref<number | null>(null);
+const randomTask = useRandomTask();
+
+const LoadRandomTask = async () => {
+  await randomTask.refetch();
+
+  if (randomTaskId.value !== null) {
+    TaskView(randomTaskId.value);
   } else {
-    // This must be called inside setup(), so we're keeping it here
-    const tasksWithSearch = useTaskWithSearch(characters); // Pass search query
-    if (tasksWithSearch && tasksWithSearch.data) {
-      tasks.value = tasksWithSearch.data.value || []; // Update tasks with search results
-    }
+    console.error('No random task ID found.');
   }
 };
 
-// Watch search query and trigger task filtering
-watch(searchQuery, (newQuery) => {
-  filterTasksByCharacters(newQuery);  // Call the filter function whenever the search query changes
-});
+const TaskView = (id: number) => {
+  console.log(id);
+  router.push({ name: 'task', params: { id } });
+};
 
-// Watch search query and trigger task filtering
-watch(searchQuery, (newQuery) => {
-  filterTasksByCharacters(newQuery);  // Call the filter function whenever the search query changes
-});
-    //localba letarolni
-    //https://tanstack.com/query/v4/docs/framework/vue/guides/paginated-queries
-    router.push({query:{page: 1,per_page:15}})
-    const filterByDifficulty = (difficulty: any) => {
-      switch (difficulty) {
-        case 'Könnyű':
-    //    cardsStore.fetchTaskByDifficulty(0);
-          break
-        case 'Közepes':
-     //   cardsStore.fetchTaskByDifficulty(1);
-          break
-        case 'Nehéz':
-     //   cardsStore.fetchTaskByDifficulty(2);
-          break
-        default:
-       //   cardsStore.fetchCards();
-    }  
+watch(() => randomTask.data.value, (newVal) => {
+  console.log(newVal);
+  if (newVal?.id) {
+    randomTaskId.value = newVal.id;
+  } else {
+    randomTaskId.value = null;
   }
-  watch(difficulty_Query, (newVal) => {
-        filterByDifficulty(newVal)
-  })
-  const filterByState = (state: any) => {
-   // const userCookie = getCookie('user');
-    switch (state) {
-        case 'Megkezdetlen':
-     //  cardsStore.fetchTaskByState(2,JSON.parse(atob(userCookie.split('.')[1])).id)
-          break
-        case 'Függőben lévő':
-       // cardsStore.fetchTaskByState(0,JSON.parse(atob(userCookie.split('.')[1])).id)
-          break
-        case 'Kész':
-       // cardsStore.fetchTaskByState(1,JSON.parse(atob(userCookie.split('.')[1])).id)
-          break
-        default:
-          //cardsStore.fetchCards();
-    }  
-   }
-   watch(state_Query, (newVal) =>{
-      filterByState(newVal);
-   })
-   
+});
 
-
-// Watchers for task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
   if (newVal) {
     taskCount.value = newVal;
   }
-});
-watch(() => cardsQuery.data.value, (newValue) => {
-  tasks.value = newValue || [];
 });
 </script>
 
