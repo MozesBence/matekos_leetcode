@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import queryClient from "@/lib/queryClient";
-
+import type { Ref } from "vue";
 //OSSZES MUTATET query-re atirni
 
 // Fetching Cards
@@ -229,14 +229,13 @@ export const useTaskByState = () => {
   });
 };
 
-const fetchCardsByThemes = async (themeIds: number[]) => {
-  //console.log('Selected Theme IDs:', themeIds);
-
+const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
+  console.log('Selected Theme IDs:', themeIds);
   try {
-    const themesPath = themeIds.length > 0 ? themeIds.join(';') : 'all'; // Ensure a valid API parameter
+    const themesPath = themeIds.length > 0 ? themeIds.join(';') : 'all';
+    console.log('Themespath',themesPath)
     console.log('Formatted Theme IDs:', themesPath);
 
-    // Send the request with the theme IDs
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
    // console.log(response);
     return response.data;
@@ -245,12 +244,12 @@ const fetchCardsByThemes = async (themeIds: number[]) => {
   }
 };
 
-export const useCardsByThemes = (themeIds: number[]) => {
+export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
   console.log("Fetching with theme IDs:", themeIds);
 
   return useQuery({
-    queryFn: () => fetchCardsByThemes(themeIds),
-    queryKey: ['filteredByThemes', themeIds.join(';')], 
+    queryFn: () => fetchCardsByThemes(themeIds.value),
+    queryKey: ['filteredByThemes', themeIds.value.join(';')], 
     onSuccess: (data) => {
       console.log("Filtered tasks received:", data);
     },
