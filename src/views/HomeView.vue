@@ -101,6 +101,7 @@
   <!---->
 
   {{ tasks }}
+  {{selectedThemes}}
   {{ taskCount }}
 </template>
 
@@ -144,7 +145,7 @@ const cards = ref([
 
 const selectedThemes = ref<string[]>([]);
 
-const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes.value);
+const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes);
 
 const tasks = computed(() => {
   console.log(selectedThemes.value)
@@ -157,14 +158,14 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
   }
 
   if (isSelected) {
-    //console.log('before:',selectedThemes.value)
+    console.log('before:',selectedThemes.value)
     selectedThemes.value = selectedThemes.value.filter(t => t !== theme);
-    //console.log('after:',selectedThemes.value)
+    console.log('after:',selectedThemes.value)
   } else {
     console.log('before:',selectedThemes.value)
     // Add theme to selectedThemes if it's not selected
     selectedThemes.value.push(theme);
-    //console.log('afer:',selectedThemes.value)
+    console.log('afer:',selectedThemes.value)
   }
 
   console.log("Updated Selected Themes: ", selectedThemes.value);
@@ -172,10 +173,10 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
 
   if (selectedThemes.value.length === 0) {
     await cardsQuery.refetch();
-    //console.log("All tasks (no filter):", tasks.value);
+    console.log("All tasks (no filter):", tasks.value);
   } else {
     await refetchFilteredTasks();
-   /// console.log("Filtered tasks:", tasks.value);
+   console.log("Filtered tasks:", tasks.value);
   }
 };
 
