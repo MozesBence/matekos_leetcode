@@ -141,19 +141,22 @@ export const useRandomTask = () => {
 };
 
 const fetchTaskWithSearch = async (characters: Ref<string>) => {
+  console.log(characters.value); // This will now print the correct value
   try {
-    const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
+    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`); // Use characters.value
+    console.log(response)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with these characters:', error);
-    throw error; // Ensure the error is thrown so Vue Query can handle it
+    throw error;
   }
 };
+
 
 export const useTaskWithSearch = (characters: Ref<string>) => {
   return useQuery({
     queryKey: ['tasks', characters.value], // Correct
-    queryFn: () => fetchTaskWithSearch(characters.value),
+    queryFn: () => fetchTaskWithSearch(characters),
     onSuccess: (data) => {
       console.log(data);
     },
@@ -186,18 +189,19 @@ export const useSpecificTask = () => {
 };
 
 // Fetching Task by Difficulty
-const fetchTaskByDifficulty = async (difficulty_value) => {
+const fetchTaskByDifficulty = async (difficulty_value: Ref<Number>) => {
   try {
-    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value}`);
+    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value.value}`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with this difficulty:', error);
   }
 };
 
-export const useTaskByDifficulty = () => {
+export const useTaskByDifficulty = (difficulty: Ref<Number>) => {
   return useQuery({
-    queryFn: fetchTaskByDifficulty,
+    queryKey:['difficulty_level',difficulty],
+    queryFn: () => fetchTaskByDifficulty(difficulty),
     onSuccess: (data) => {
       console.log(data);
     },

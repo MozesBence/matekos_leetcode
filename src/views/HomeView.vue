@@ -110,7 +110,7 @@
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask,useTaskWithSearch } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask,useTaskWithSearch,useTaskByDifficulty } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted } from 'vue';
@@ -216,12 +216,45 @@ watch(() => randomTask.data.value, (newVal) => {
 });
 //--------------------
 
+//Szures keresessel
 const searchQuery = ref('')
 const taskWithSearch = useTaskWithSearch(searchQuery)
 const filterTasksByCharacters= (chars: string) => {
   searchQuery.value = chars;
   console.log(searchQuery.value);
+  taskWithSearch.refetch();
 }
+//----------
+
+//--------Szures nehezseg alapjan---------------
+const difficulty_Query = ref<string | null>(null)
+const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
+const filterByDifficulty = (difficulty: any) => {
+      switch (difficulty) {
+        case 'Könnyű':
+        cardsStore.fetchTaskByDifficulty(0);
+          break
+        case 'Közepes':
+        cardsStore.fetchTaskByDifficulty(1);
+          break
+        case 'Nehéz':
+        cardsStore.fetchTaskByDifficulty(2);
+          break
+        default:
+          cardsStore.fetchCards();
+    }  
+  }
+  watch(difficulty_Query, (newVal) => {
+        filterByDifficulty(newVal)
+  })
+  
+  watch(() => difficulty_Query, (newVal) =>{
+  if(newVal){
+    console.log(newVal);
+  }
+})
+//--------Szures nehezseg alapjan vege----------
+
 
 // Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
