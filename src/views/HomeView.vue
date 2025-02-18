@@ -110,7 +110,7 @@
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask,useTaskWithSearch } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted } from 'vue';
@@ -214,6 +214,14 @@ watch(() => randomTask.data.value, (newVal) => {
     randomTaskId.value = null;
   }
 });
+//--------------------
+
+const searchQuery = ref('')
+const taskWithSearch = useTaskWithSearch(searchQuery)
+const filterTasksByCharacters= (chars: string) => {
+  searchQuery.value = chars;
+  console.log(searchQuery.value);
+}
 
 // Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
