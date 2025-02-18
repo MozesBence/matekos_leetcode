@@ -140,7 +140,7 @@ export const useRandomTask = () => {
   });
 };
 
-const fetchTaskWithSearch = async (characters: string) => {
+const fetchTaskWithSearch = async (characters: Ref<string>) => {
   try {
     const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
     return response.data;
@@ -150,10 +150,10 @@ const fetchTaskWithSearch = async (characters: string) => {
   }
 };
 
-export const useTaskWithSearch = (characters: string) => {
+export const useTaskWithSearch = (characters: Ref<string>) => {
   return useQuery({
-    ueryKey: ['tasks', characters], // Correct
-    queryFn: () => fetchTaskWithSearch(characters),
+    queryKey: ['tasks', characters.value], // Correct
+    queryFn: () => fetchTaskWithSearch(characters.value),
     onSuccess: (data) => {
       console.log(data);
     },
