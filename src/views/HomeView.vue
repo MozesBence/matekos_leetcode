@@ -110,7 +110,7 @@
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask,useTaskWithSearch,useTaskByDifficulty } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted } from 'vue';
@@ -125,22 +125,7 @@ const taskCount = ref(0);
 
 // Static card data
 const cards = ref([
-  {
-    title: 'Gyűjts aranyat!',
-    description: 'Heti és havi versenyeinkkel növelheted aranyaid számát, melyek segítségével értékes ajándékokra vagy az oldalon megjelenő kozmetikumokra tehetsz szert!'
-  },
-  {
-    title: 'Napi feladat!',
-    description: 'A napi feladat teljesítésével 10 arany ütheti a markod, és folytathatod a streaket!'
-  },
-  {
-    title: 'Vajon mi folyik a közösségi részen?',
-    description: 'A közösségi rész teret ad a segítségkeresre, megoldasok megosztasara, és akár barátokra is szert tehetsz.'
-  },
-  {
-    title: 'Szeretsz zenét hallgatni?',
-    description: 'Csapatunk összeválogatta azokat a zenéket, amelyeket a legtöbbet hallgatunk tanulás közben. Hallgass bele!'
-  }
+  // your static card data
 ]);
 
 const selectedThemes = ref<string[]>([]);
@@ -148,7 +133,6 @@ const selectedThemes = ref<string[]>([]);
 const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes);
 
 const tasks = computed(() => {
-  console.log(selectedThemes.value)
   return selectedThemes.value.length === 0 ? (cardsQuery.data.value || []) : (filteredTasks.value || []);
 });
 
@@ -158,28 +142,19 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
   }
 
   if (isSelected) {
-    console.log('before:',selectedThemes.value)
     selectedThemes.value = selectedThemes.value.filter(t => t !== theme);
-    console.log('after:',selectedThemes.value)
   } else {
-    console.log('before:',selectedThemes.value)
-    // Add theme to selectedThemes if it's not selected
     selectedThemes.value.push(theme);
-    console.log('afer:',selectedThemes.value)
   }
 
-  console.log("Updated Selected Themes: ", selectedThemes.value);
   toggle();
 
   if (selectedThemes.value.length === 0) {
     await cardsQuery.refetch();
-    console.log("All tasks (no filter):", tasks.value);
   } else {
     await refetchFilteredTasks();
-   console.log("Filtered tasks:", tasks.value);
   }
 };
-
 
 // Refetch cards on mount
 onMounted(async () => {
@@ -192,21 +167,15 @@ const randomTask = useRandomTask();
 
 const LoadRandomTask = async () => {
   await randomTask.refetch();
-
   if (randomTaskId.value !== null) {
     TaskView(randomTaskId.value);
-  } else {
-    console.error('No random task ID found.');
   }
 };
 
-// Navigate to task view
 const TaskView = (id: number) => {
-  console.log("Navigating to task ID:", id);
   router.push({ name: 'task', params: { id } });
 };
 
-// Watch for changes in random task data
 watch(() => randomTask.data.value, (newVal) => {
   if (newVal?.id) {
     randomTaskId.value = newVal.id;
@@ -214,46 +183,92 @@ watch(() => randomTask.data.value, (newVal) => {
     randomTaskId.value = null;
   }
 });
+
 //--------------------
 
-//Szures keresessel
-const searchQuery = ref('')
-const taskWithSearch = useTaskWithSearch(searchQuery)
-const filterTasksByCharacters= (chars: string) => {
+// Filter by search query
+const searchQuery = ref('');
+const taskWithSearch = useTaskWithSearch(searchQuery);
+const filterTasksByCharacters = (chars: string) => {
   searchQuery.value = chars;
-  console.log(searchQuery.value);
   taskWithSearch.refetch();
-}
-//----------
+};
 
-//--------Szures nehezseg alapjan---------------
-const difficulty_Query = ref<string | null>(null)
-const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
-const filterByDifficulty = (difficulty: any) => {
-      switch (difficulty) {
-        case 'Könnyű':
-        cardsStore.fetchTaskByDifficulty(0);
-          break
-        case 'Közepes':
-        cardsStore.fetchTaskByDifficulty(1);
-          break
-        case 'Nehéz':
-        cardsStore.fetchTaskByDifficulty(2);
-          break
-        default:
-          cardsStore.fetchCards();
-    }  
+//-------- Filter by difficulty ---------------
+const difficulty_Query = ref<string | null>(null);
+
+// Update query based on selected difficulty
+watch(difficulty_Query, async (newVal) => {
+  console.log(difficulty_Query.value)
+  if (newVal !== null) {
+    let difficultyValue;
+    switch (newVal) {
+      case 'Könnyű':
+        difficultyValue = 0;
+        break;
+      case 'Közepes':
+        difficultyValue = 1;
+        break;
+      case 'Nehéz':
+        difficultyValue = 2;
+        break;
+      default:
+        difficultyValue = null;
+    }
+
+    if (difficultyValue !== null) {
+      difficulty_Query.value = String(difficultyValue);
+    } else {
+      await cardsQuery.refetch();
+    }
   }
-  watch(difficulty_Query, (newVal) => {
-        filterByDifficulty(newVal)
-  })
-  
-  watch(() => difficulty_Query, (newVal) =>{
-  if(newVal){
+});
+
+const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
+
+watch(() => difficulty_Query, (newVal) => {
+  if (newVal) {
     console.log(newVal);
   }
-})
-//--------Szures nehezseg alapjan vege----------
+});
+//-------- End filter by difficulty ---------------
+
+//-------- Filter by completionrate ---------------
+const state_Query = ref<string | null>(null);
+
+// Update query based on selected difficulty
+watch(difficulty_Query, async (newVal) => {
+  console.log(difficulty_Query.value)
+  if (newVal !== null) {
+    let state;
+    switch (newVal) {
+      case 'Kész':
+        state = 0;
+        break;
+      case 'Fügőben lévő':
+        state = 1;
+        break;
+      default:
+        state = null;
+    }
+
+    if (state !== null) {
+      state_Query.value = String(state);
+    } else {
+      await cardsQuery.refetch();
+    }
+  }
+});
+
+const taskState = useTaskState(state_Query);
+
+watch(() => difficulty_Query, (newVal) => {
+  if (newVal) {
+    console.log(newVal);
+  }
+});
+//-------- End filter by completionrate ---------------
+
 
 
 // Watch for changes in task count
@@ -263,6 +278,7 @@ watch(() => allTaskCountQuery.data.value, (newVal) => {
   }
 });
 </script>
+
 
 
 

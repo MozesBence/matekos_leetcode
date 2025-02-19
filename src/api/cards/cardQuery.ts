@@ -50,7 +50,7 @@ export const useCompletionRates = () => {
 };
 
 // Fetching Task State
-const fetchTaskState = async (id) => {
+const fetchTaskState = async (id: Ref<String>) => {
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
     return response.data;
@@ -59,9 +59,10 @@ const fetchTaskState = async (id) => {
   }
 };
 
-export const useTaskState = () => {
+export const useTaskState = (id: Ref<String>) => {
   return useQuery({
-    queryFn: fetchTaskState,
+    queryKey:['difficuty',id.value],
+    queryFn: () => fetchTaskState(id),
     onSuccess: (data) => {
       console.log(data);
     },
@@ -72,9 +73,9 @@ export const useTaskState = () => {
 };
 
 // Fetching Solved Task Rates
-const fetchSolvedTaskRates = async (id) => {
+const fetchSolvedTaskRates = async (id: Ref<String>) => {
   try {
-    const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id}`);
+    const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id.value}`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching solved task rates:', error);
@@ -189,16 +190,17 @@ export const useSpecificTask = () => {
 };
 
 // Fetching Task by Difficulty
-const fetchTaskByDifficulty = async (difficulty_value: Ref<Number>) => {
+const fetchTaskByDifficulty = async (difficulty_value: Ref<String>) => {
   try {
     const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value.value}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with this difficulty:', error);
   }
 };
 
-export const useTaskByDifficulty = (difficulty: Ref<Number>) => {
+export const useTaskByDifficulty = (difficulty: Ref<String>) => {
   return useQuery({
     queryKey:['difficulty_level',difficulty],
     queryFn: () => fetchTaskByDifficulty(difficulty),
