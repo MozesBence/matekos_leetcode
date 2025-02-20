@@ -56,7 +56,7 @@ const tasksRepository = {
     return await Tasks.findAll({
       where: {
         task_title: {
-          [Op.like]: `${characters.toLowerCase()}%`
+          [Op.like]: `%${characters.toLowerCase()}%`
         }
       },
       order: [['id', 'ASC']],

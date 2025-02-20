@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import queryClient from "@/lib/queryClient";
-
+import type { Ref } from "vue";
 //OSSZES MUTATET query-re atirni
 
 // Fetching Cards
@@ -50,7 +50,7 @@ export const useCompletionRates = () => {
 };
 
 // Fetching Task State
-const fetchTaskState = async (id) => {
+const fetchTaskState = async (id: Ref<String>) => {
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
     return response.data;
@@ -59,9 +59,10 @@ const fetchTaskState = async (id) => {
   }
 };
 
-export const useTaskState = () => {
+export const useTaskState = (id: Ref<String>) => {
   return useQuery({
-    queryFn: fetchTaskState,
+    queryKey:['difficuty',id.value],
+    queryFn: () => fetchTaskState(id),
     onSuccess: (data) => {
       console.log(data);
     },
@@ -72,9 +73,9 @@ export const useTaskState = () => {
 };
 
 // Fetching Solved Task Rates
-const fetchSolvedTaskRates = async (id) => {
+const fetchSolvedTaskRates = async (id: Ref<String>) => {
   try {
-    const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id}`);
+    const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id.value}`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching solved task rates:', error);
@@ -120,6 +121,7 @@ export const useAllTaskCount = () => {
 const fetchRandomTask = async () => {
   try {
     const response = await axios.get(`/api/tasks/random-task`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching a random task:', error);
@@ -129,6 +131,7 @@ const fetchRandomTask = async () => {
 export const useRandomTask = () => {
   return useQuery({
     queryFn: fetchRandomTask,
+    queryKey:['randomTaskId'],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -138,19 +141,22 @@ export const useRandomTask = () => {
   });
 };
 
-const fetchTaskWithSearch = async (characters: string) => {
+const fetchTaskWithSearch = async (characters: Ref<string>) => {
+  console.log(characters.value); // This will now print the correct value
   try {
-    const response = await axios.get(`/api/tasks/task-with-search/${characters}`);
+    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`); // Use characters.value
+    console.log(response)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with these characters:', error);
-    throw error; // Ensure the error is thrown so Vue Query can handle it
+    throw error;
   }
 };
 
-export const useTaskWithSearch = (characters: string) => {
+
+export const useTaskWithSearch = (characters: Ref<string>) => {
   return useQuery({
-    ueryKey: ['tasks', characters], // Correct
+    queryKey: ['tasks', characters.value], // Correct
     queryFn: () => fetchTaskWithSearch(characters),
     onSuccess: (data) => {
       console.log(data);
@@ -184,18 +190,20 @@ export const useSpecificTask = () => {
 };
 
 // Fetching Task by Difficulty
-const fetchTaskByDifficulty = async (difficulty_value) => {
+const fetchTaskByDifficulty = async (difficulty_value: Ref<String>) => {
   try {
-    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value}`);
+    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value.value}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task with this difficulty:', error);
   }
 };
 
-export const useTaskByDifficulty = () => {
+export const useTaskByDifficulty = (difficulty: Ref<String>) => {
   return useQuery({
-    queryFn: fetchTaskByDifficulty,
+    queryKey:['difficulty_level',difficulty],
+    queryFn: () => fetchTaskByDifficulty(difficulty),
     onSuccess: (data) => {
       console.log(data);
     },
@@ -227,29 +235,38 @@ export const useTaskByState = () => {
   });
 };
 
-// Fetching Cards by Themes
-const fetchCardsByThemes = async (themes: string[]) => {
+const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
+  console.log('Selected Theme IDs:', themeIds);
   try {
-    const themesPath = themes.join(';');
+    const themesPath = themeIds.length > 0 ? themeIds.join(';') : 'all';
+    console.log('Themespath',themesPath)
+    console.log('Formatted Theme IDs:', themesPath);
+
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
+   // console.log(response);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching tasks by themes:', error);
   }
 };
 
-export const useCardsByThemes = (themes: string[]) => {
+export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
+  console.log("Fetching with theme IDs:", themeIds);
+
   return useQuery({
-    queryFn: () => fetchCardsByThemes(themes),  // Correctly passing themes to the fetch function
-    queryKey: ['filteredByThemes', themes],
+    queryFn: () => fetchCardsByThemes(themeIds.value),
+    queryKey: ['filteredByThemes', themeIds.value.join(';')], 
     onSuccess: (data) => {
-      console.log(data);
+      console.log("Filtered tasks received:", data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching cards by themes:', error);
     }
   });
 };
+
+
+
 
 
 
