@@ -72,7 +72,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Themes.hasMany(Tasks, {
         foreignKey: 'theme_id',
-      });
+    });
 
     // Community_posts kapcsolatai
     Community_posts.hasMany(Community_comments, {

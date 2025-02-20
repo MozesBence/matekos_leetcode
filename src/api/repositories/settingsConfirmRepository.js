@@ -58,7 +58,35 @@ class settingsConfirmRepository
 
         user.save();
 
-        return "Felhasználó neve meglett változtatva!";
+        return content;
+    }
+
+    async setNewGmail(id,content){
+        const user =  await this.Users.findOne({
+            where: {
+                id: id,
+            }
+        });
+
+        user.email = content;
+
+        user.save();
+
+        return content;
+    }
+
+    async setNewPassword(id,content){
+        const user =  await this.Users.findOne({
+            where: {
+                id: id,
+            }
+        });
+
+        user.password = content;
+
+        user.save();
+
+        return content;
     }
 }
 

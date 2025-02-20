@@ -14,6 +14,14 @@ class settingsConfirmService
     async setNewUsername(id,content){
         return await settingsConfirmRepository.setNewUsername(id,content);
     }
+
+    async setNewGmail(id,content){
+        return await settingsConfirmRepository.setNewGmail(id,content);
+    }
+
+    async setNewPassword(id,content){
+        return await settingsConfirmRepository.setNewPassword(id,content);
+    }
 }
 
 module.exports = new settingsConfirmService();

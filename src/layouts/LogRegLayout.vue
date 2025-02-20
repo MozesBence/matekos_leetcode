@@ -81,7 +81,7 @@
         @click:append-inner="visible = !visible"
         v-model="passwordValue"
         v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.',  (v) => v.length >= 8 || 'Minimum 6 karakteres név kell.',]"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.',  (v) => v.length >= 8 || 'Minimum 8 karakteres jelszó kell.',]"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'register' || route.name == 'set-new-password'">

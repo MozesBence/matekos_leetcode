@@ -300,7 +300,7 @@
               <v-card style="display: flex; flex-direction: column;">
                 <v-layout>
                   <div
-                  style="max-width: max-content; border-radius: 0 !important; height: min-content; background-color: grey;"
+                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: fit-content; height: auto; transition: .3s;"
                   class="d-flex flex-column position-relative"
                   >
                     <div>
@@ -384,56 +384,6 @@
                           </v-slide-x-reverse-transition>
                         </div>
                       </v-expand-transition>
-                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-
-                      <div class="my-2 d-flex justify-center">
-                        <v-icon color="custom_drawer_icon" class="mx-2">mdi-crown</v-icon>
-                        <h3 style="font-weight: normal;">VIP cuccok talán</h3>
-                      </div>
-
-                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
-
-                      <v-expand-transition>
-                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="LeaderBoardActive">
-                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-podium</v-icon>
-                          <h4
-                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
-                          >
-                            ranglista
-                          </h4>
-                          <v-slide-x-reverse-transition hide-on-leave>
-                            <div 
-                            v-if="LeaderBoardDraw" 
-                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                            class="d-flex align-center"
-                            >
-                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                            </div>
-                          </v-slide-x-reverse-transition>
-                        </div>
-                      </v-expand-transition>
-
-                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
-
-                      <v-expand-transition>
-                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="PostActive">
-                          <v-icon style="flex: 0; text-align: center;" size="20">mdi-newspaper</v-icon>
-                          <h4
-                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
-                          >
-                          Posztbeállítások 
-                          </h4>
-                          <v-slide-x-reverse-transition hide-on-leave>
-                            <div 
-                            v-if="PostDraw" 
-                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
-                            class="d-flex align-center"
-                            >
-                              <v-icon color="custom_drawer_icon" class="ml-1">mdi-radiobox-marked</v-icon>
-                            </div>
-                          </v-slide-x-reverse-transition>
-                        </div>
-                      </v-expand-transition>
 
                       <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
                       
@@ -489,7 +439,7 @@
                       <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
                     </div>
 
-                    <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5">
+                    <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5 position-absolute bottom-0">
                       <div style="height: 100%; border-radius: 50%; width: 5rem; height: 5rem; overflow: hidden; position: relative;">
                         <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture"
                           alt="profil_kep"
@@ -503,11 +453,12 @@
                         >{{ get_user_name }}</h2>
                     </div>
 
+                    <div style="height: 11vh;"></div>
                   </div>
 
                   <v-main class="d-flex justify-center pa-4">
                     <v-slide-y-transition mode="out-in">
-                      <div :key="activePanel" class="w-100 px-5" style="height: 100%;">
+                      <div :key="activePanel" class="w-100 px-5" style="height: auto; min-height: fit-content;">
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
@@ -549,20 +500,22 @@
 
                             <div class="d-flex align-center mt-5 ga-5">
                               <v-text-field
+                              v-model="userEmailInput"
                               clearable
                               :label="get_fullUser.email"
                               variant="outlined"
-                              :disabled="EmailInputDisabled"
+                              :disabled="EmailInputDisabled || ConfirmCode"
                               placeholder="Email cím..."
                               hide-details
                               ></v-text-field>
                               <div class="d-flex ga-2">
-                                <v-btn variant="flat" @click="EmailInputDisabled = false">Módosítás</v-btn>
+                                <v-btn variant="flat" @click="EmailInputDisabled = false" :disabled="!EmailInputDisabled">Módosítás</v-btn>
                                 <v-btn
-                                :disabled="ProfInputDisabled"
+                                :disabled="EmailInputDisabled || !userEmailInput || userNameInput === get_fullUser.email"
                                 :loading="loading"
                                 variant="flat"
                                 @click="SendConfirmCode"
+                                v-if="!ConfirmCode"
                                 >
                                 Mentés
                                 </v-btn>
@@ -575,30 +528,38 @@
                           <div v-if="activePanel == 'password'" class="w-100">
                             <h1 class="text-center">Jelszó változtatás</h1>
 
-                            <div class="d-flex flex-column align-center mt-5 ga-5 w-100">
+                            <div class="d-flex flex-column align-center my-5 ga-5 w-100">
                               <v-text-field
+                              v-model="CurrentPasswordInput"
                               clearable
                               variant="outlined"
                               label="Jelenlegi jelszó"
-                              hide-details
                               style="width: 80%;"
                               ></v-text-field>
                               <v-text-field
+                              v-model="NewPasswordInput"
                               clearable
                               variant="outlined"
                               label="Új jelszó"
-                              hide-details
                               style="width: 80%;"
+                              :rules="[
+                                (v) => (CurrentPasswordInput == '' || v != CurrentPasswordInput) || 'Nem lehet ugyan az a jelszó!',
+                                (v) => (!v || v.length >= 8) || 'Minimum 8 karakteres jelszó kell.',
+                                (v) => (!v || v.length <= 30) || 'Maximum 30 karakter lehet.'
+                              ]"
                               ></v-text-field>
                               <v-text-field
+                              v-model="NewPasswordConfirmInput"
                               clearable
                               variant="outlined"
                               label="Új jelszó megerősítése"
-                              hide-details
                               style="width: 80%;"
+                              :rules="[
+                                (v) => (!v || !NewPasswordInput || v == NewPasswordInput) || 'A jelszavak nem egyeznek.',
+                              ]"
                               ></v-text-field>
                               <v-btn
-                                :disabled="ProfInputDisabled"
+                                :disabled="!CurrentPasswordInput || !NewPasswordInput || !NewPasswordConfirmInput || CurrentPasswordInput == NewPasswordInput || NewPasswordInput != NewPasswordConfirmInput || NewPasswordInput.length < 8 || NewPasswordInput.length > 30"
                                 :loading="loading"
                                 variant="flat"
                                 @click="SendConfirmCode"
@@ -612,22 +573,9 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'notif'" class="w-100 h-100">
                             <h1 class="text-center">Értesítések</h1>
-                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
                               
                             </div>
-                          </div>
-                        </v-fade-transition>
-
-                        <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'leaderboard'" class="w-100 h-100">
-                            <h1 class="text-center">Ranglista</h1>
-                            
-                          </div>
-                        </v-fade-transition>
-
-                        <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'post'" class="w-100">
-                            <p class="text-center">Posztbeállítások</p>
                           </div>
                         </v-fade-transition>
 
@@ -635,7 +583,7 @@
                           <div v-if="activePanel == 'users'" class="w-100 h-100">
                             <h1 class="text-center">Felhasználók</h1>
 
-                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
                               
                             </div>
                           </div>
@@ -644,18 +592,32 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
                             <h1 class="text-center">Admin értesítések</h1>
-                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
                               
                             </div>
                           </div>
                         </v-fade-transition>
 
                         <v-expand-transition mode="out-in">
-                          <div v-if="ConfirmCode" class="text-center mt-4">
+                          <div v-if="ConfirmCode && ResponseContent == null" class="text-center mt-4">
                             <h4 style="font-weight: normal;">A megerősítő kód el lett küldve email-ben!</h4>
                             <v-otp-input v-model="otpCode" length="6"></v-otp-input>
                           </div>
                         </v-expand-transition>
+
+                        <v-expand-transition mode="out-in">
+                          <div v-if="ResponseContent != null" class="text-center mt-4">
+                            <h2>{{ ResponseContent }}</h2>
+                          </div>
+                        </v-expand-transition>
+
+                        <v-expand-transition mode="out-in">
+                          <div v-if="ResponseError != null" class="text-center my-4">
+                            <v-icon size="50" color="red">mdi-alert</v-icon>
+                            <h2 style="color: red;">{{ ResponseError }}</h2>
+                          </div>
+                        </v-expand-transition>
+
                       </div>
                     </v-slide-y-transition>
                   </v-main>
@@ -680,7 +642,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef, nextTick } from 'vue';
+import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
@@ -713,7 +675,13 @@ const EmailInputDisabled = ref(true);
 const ConfirmCode = ref(false);
 
 const userNameInput = ref('');
+const userEmailInput = ref('');
+const CurrentPasswordInput = ref('');
+const NewPasswordInput = ref('');
+const NewPasswordConfirmInput = ref('');
 const otpCode = ref(null);
+const ResponseContent = ref(null);
+const ResponseError = ref(null);
 
 const loading = ref(false);
 
@@ -727,6 +695,13 @@ function ProfSettingsActive(){
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
   activePanel.value = 'profile';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
 
   EmailInputDisabled.value = true;
   loading.value = false;
@@ -742,6 +717,13 @@ function EmailSettingsActive(){
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
   activePanel.value = 'email';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
   
   ProfInputDisabled.value = true;
   ConfirmCode.value = false;
@@ -758,6 +740,13 @@ function PassSettingsActive(){
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
   activePanel.value = 'password';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
   
   ProfInputDisabled.value = true;
   EmailInputDisabled.value = true;
@@ -775,40 +764,13 @@ function NotifActive(){
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
   activePanel.value = 'notif';
-  
-  ProfInputDisabled.value = true;
-  EmailInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-}
-
-function LeaderBoardActive(){
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = true;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'leaderboard';
-  
-  ProfInputDisabled.value = true;
-  EmailInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-}
-
-function PostActive(){
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = true;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'post';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
   
   ProfInputDisabled.value = true;
   EmailInputDisabled.value = true;
@@ -826,6 +788,13 @@ function UsersActive(){
   UsersDraw.value = true;
   AdminNotifDraw.value = false;
   activePanel.value = 'users';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
   
   ProfInputDisabled.value = true;
   EmailInputDisabled.value = true;
@@ -843,6 +812,13 @@ function AdminNotifActive(){
   UsersDraw.value = false;
   AdminNotifDraw.value = true;
   activePanel.value = 'adminNotif';
+  ResponseContent.value = null;
+  ResponseError.value = null;
+  userNameInput.value = '';
+  userEmailInput.value = '';
+  CurrentPasswordInput.value = '';
+  NewPasswordInput.value = '';
+  NewPasswordConfirmInput.value = '';
   
   ProfInputDisabled.value = true;
   EmailInputDisabled.value = true;
@@ -868,19 +844,39 @@ const SendConfirmCode = async () => {
 const { mutate : setNewSettings} = useSetSettings()
 
 watch(otpCode, async (newVal) => {
-  if (newVal.length === 6) {
-    var content = null;
+  ResponseError.value = null;
+  if (newVal != null && newVal.length === 6) {
+    var content = [];
 
     if(ProfSettingDraw.value){
-      content = userNameInput.value;
+      content = [userNameInput.value];
+    }
+    else if(EmailSettingDraw.value){
+      content = [userEmailInput.value];
+    }
+    else if(PassSettingDraw.value){
+      content = [CurrentPasswordInput.value, NewPasswordInput.value, get_fullUser.value.password];
     }
 
     await setNewSettings({content: content, code: newVal, id: get_fullUser.value.id, type: activePanel.value}, {
     onSuccess: (response) => {
-
+      otpCode.value = null;
+      if(activePanel.value == 'profile'){
+        ResponseContent.value = "A fiók név sikeresen meg lett változtatva!";
+        get_fullUser.value.user_name = response;
+        get_user_name.value = response;
+      }
+      else if(activePanel.value == 'email'){
+        ResponseContent.value = "A fiókhoz tartozó e-mail sikeresen meg lett változtatva!";
+        get_fullUser.value.email = response;
+      }
+      else if(activePanel.value == 'password'){
+        ResponseContent.value = "A fiókhoz tartozó jelszó sikeresen meg lett változtatva!";
+        get_fullUser.value.password = response;
+      }
     },
     onError: (error) => {
-      console.log(error);
+      ResponseError.value = error.response.data;
     },
   });
   }

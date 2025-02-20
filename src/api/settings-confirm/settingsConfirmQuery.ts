@@ -23,7 +23,7 @@ export const useGetSettingsConfirm = () => {
     })
 }
 
-const setNewSettings = async (data: {content: string, code: number, id: number, type: string}) => {
+const setNewSettings = async (data: {content: string[], code: number, id: number, type: string}) => {
     const response = await axiosClient.patch('http://localhost:3000/set-settings', data);
     return response.data
 }

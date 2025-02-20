@@ -22,6 +22,7 @@
     "cheerio": "^1.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "email-validator": "^2.0.4",
     "express": "^4.21.2",
     "image-type": "^5.2.0",
     "jsonwebtoken": "^9.0.2",

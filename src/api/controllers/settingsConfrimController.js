@@ -3,6 +3,12 @@ require("dotenv").config();
 
 const nodemailer = require('nodemailer');
 
+const validator = require("email-validator");
+
+const bcrypt = require("bcrypt");
+
+const salt = 10;
+
 exports.sendConfirmCode = async (req, res, next) =>
 {
     const { email, user_name, id } = req.query;
@@ -102,8 +108,6 @@ exports.sendConfirmCode = async (req, res, next) =>
 exports.setSettings = async (req,res,next) =>{
     const { content, code, id, type } = req.body;
 
-    console.log(content, code, id, type);
-
     const code_result = await settingsConfirmService.codeConfirm(code, id);
 
     try{
@@ -117,7 +121,38 @@ exports.setSettings = async (req,res,next) =>{
 
         var setSettings_result = null;
         if(type == 'profile'){
-            setSettings_result = await settingsConfirmService.setNewUsername(id,content);
+            setSettings_result = await settingsConfirmService.setNewUsername(id,content[0]);
+        }else if(type == 'email'){
+            const isValid = validator.validate(content[0]);
+
+            if(!isValid){
+                const error = new Error("Nem létezik a megadott email!");
+    
+                error.status = 404;
+    
+                throw error;
+            }
+
+            setSettings_result = await settingsConfirmService.setNewGmail(id,content[0]);
+        }
+        else if(type == 'password'){
+            if(!await bcrypt.compare(content[0], content[2])){
+                const error = new Error("A jelenlegi jelszó nem egyezik!");
+    
+                error.status = 404;
+    
+                throw error;
+            }
+
+            setSettings_result = await settingsConfirmService.setNewPassword(id,await bcrypt.hash(content[1], salt));
+        }
+
+        if(setSettings_result == null){
+            const error = new Error("Valami hiba történt a beállítás firssítése közben!");
+
+            error.status = 500;
+
+            throw error;
         }
 
         res.status(200).send(setSettings_result);
