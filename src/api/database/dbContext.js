@@ -89,10 +89,20 @@ const initializeDatabase = async () => {
             ON SCHEDULE EVERY 10 SECOND
             DO
                 DELETE FROM Tokenz
-                WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR);`;
+                WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR) AND type = 'regisztrálás';`;
 
         await sequelize.query(createEventQuery);
         console.log('Event for automatic token deletion created.');
+        
+        const createConfDeleteEventQuery = `
+            CREATE EVENT IF NOT EXISTS delete_expired_confirm_tokens
+            ON SCHEDULE EVERY 10 SECOND
+            DO
+                DELETE FROM Tokenz
+                WHERE expires <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND type = 'beállítások';`;
+
+        await sequelize.query(createConfDeleteEventQuery);
+        console.log('Event for automatic confirm token deletion created.');
 
         const createTriggerQuery = `
             CREATE TRIGGER IF NOT EXISTS delete_user_when_token_deleted

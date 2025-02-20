@@ -10,18 +10,14 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
             },
-            type: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                validate: {
-                    min: 0,
-                    max: 10,
-                },
-            },
             expires: {
                 type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            },
+            type: {
+                type: DataTypes.TEXT,
+                allowNull: false,
             },
         },
         {

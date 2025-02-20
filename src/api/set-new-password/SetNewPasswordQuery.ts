@@ -18,7 +18,6 @@ export const useSetNewPassword = (loading: Ref<boolean, boolean>,  SetBtnValue: 
           loading.value = true
         },
         onSuccess: (response) => {
-          console.log(response);
           // A művelet sikeres befejezéséig, beállítjuk a loading-ot false-ra
           loading.value = false
           SetBtnValue.value = 'Új jelszó beállítva';

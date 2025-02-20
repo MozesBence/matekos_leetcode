@@ -56,7 +56,7 @@
         variant="outlined"
         v-if="route.name == 'register'"
         v-model="RegdataRef.user_name"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 12) || 'Maximum 12 karakter lehet.']"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 24) || 'Maximum 24 karakter lehet.', (v) => v.length >= 6 || 'Minimum 6 karakteres név kell.']"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'">
@@ -81,7 +81,7 @@
         @click:append-inner="visible = !visible"
         v-model="passwordValue"
         v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.']"
+        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.',  (v) => v.length >= 8 || 'Minimum 6 karakteres név kell.',]"
       ></v-text-field>
 
       <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'register' || route.name == 'set-new-password'">
@@ -351,9 +351,9 @@
     }
   };
 
-  function setCookieWithExpiry(name: string, value: string, years: number) {
+  function setCookieWithExpiry(name: string, value: string, day: number) {
     const date = new Date();
-    date.setFullYear(date.getFullYear() + years);
+    date.setDate(date.getDate() + day); 
     document.cookie = `${name}=${value}; expires=${date.toUTCString()}; path=/`;
   }
 

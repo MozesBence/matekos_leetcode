@@ -76,7 +76,8 @@ class logregRepository
         (
             {
                 where: {
-                    token: String(token)
+                    token: String(token),
+                    type: "regisztrálás"
                 }
             }
         )
@@ -90,7 +91,7 @@ class logregRepository
                 where: {
                     [Op.and]:{
                         token: String(token),
-                        type: 1,
+                        type: "regisztrálás",
                     }
                 }
             }

@@ -62,7 +62,7 @@ exports.registerUser = async (req, res, next) =>
                 const newToken =
                 {
                     token: token,
-                    type: 0,
+                    type: "regisztrálás",
                     user_id: result.id,
                 }
                 const token_result = await logregServices.uploadToken(newToken);
@@ -226,7 +226,7 @@ exports.loginUser = async (req, res, next) =>
             { id: user.id },
             process.env.JWT_KEY,
             rememberMe ? {} : { expiresIn: '1d' }
-        ); 
+        );
 
         res.status(200).send(token);
     }

@@ -296,16 +296,15 @@
             <v-dialog
               v-model="dialog"
               max-width="1200"
-              persistent
             >
               <v-card style="display: flex; flex-direction: column;">
                 <v-layout>
                   <div
-                    style="max-width: 50%; border-radius: 0 !important; height: min-content; background-color: gray;"
-                    class="d-flex flex-column position-relative"
-                    >
-                  <div>
-                      <div class="my-2 d-flex justify-center">
+                  style="max-width: max-content; border-radius: 0 !important; height: min-content; background-color: grey;"
+                  class="d-flex flex-column position-relative"
+                  >
+                    <div>
+                      <div class="my-2 mx-16 d-flex justify-center">
                         <v-icon color="custom_drawer_icon" class="mx-2">mdi-cog</v-icon>
                         <h3 style="font-weight: normal;">Beállítások</h3>
                       </div>
@@ -506,13 +505,163 @@
 
                   </div>
 
-                  <v-main class="d-flex align-center justify-center" style="height: 100%;">
-                    Main Content
+                  <v-main class="d-flex justify-center pa-4">
+                    <v-slide-y-transition mode="out-in">
+                      <div :key="activePanel" class="w-100 px-5" style="height: 100%;">
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
+                            <h1 class="text-center">Fiók név változtatás</h1>
+
+                            <div class="d-flex align-center mt-5 ga-5">
+                              <v-text-field
+                                clearable
+                                v-model="userNameInput"
+                                :label="get_fullUser.user_name"
+                                variant="outlined"
+                                :disabled="ProfInputDisabled || ConfirmCode"
+                                placeholder="Felhasználó név..."
+                                :rules="[
+                                  (v) => v.length >= 6 || 'Minimum 6 karakteres név kell.',
+                                  (v) => v.length <= 24 || 'Maximum 24 karakter lehet.'
+                                ]"
+                              />
+                              <div class="d-flex ga-2" style="margin-top: -2.5vh;">
+                                <v-btn variant="flat" @click="ProfInputDisabled = false" :disabled="!ProfInputDisabled">Módosítás</v-btn>
+                                <v-expand-transition>
+                                  <v-btn
+                                    :disabled="ProfInputDisabled || !userNameInput || userNameInput === get_user_name || userNameInput.length < 6"
+                                    :loading="loading"
+                                    variant="flat"
+                                    @click="SendConfirmCode"
+                                    v-if="!ConfirmCode"
+                                  >
+                                    Mentés
+                                  </v-btn>
+                                </v-expand-transition>
+                              </div>
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'email'" class="w-100">
+                            <h1 class="text-center">Email változtatás</h1>
+
+                            <div class="d-flex align-center mt-5 ga-5">
+                              <v-text-field
+                              clearable
+                              :label="get_fullUser.email"
+                              variant="outlined"
+                              :disabled="EmailInputDisabled"
+                              placeholder="Email cím..."
+                              hide-details
+                              ></v-text-field>
+                              <div class="d-flex ga-2">
+                                <v-btn variant="flat" @click="EmailInputDisabled = false">Módosítás</v-btn>
+                                <v-btn
+                                :disabled="ProfInputDisabled"
+                                :loading="loading"
+                                variant="flat"
+                                @click="SendConfirmCode"
+                                >
+                                Mentés
+                                </v-btn>
+                              </div>
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'password'" class="w-100">
+                            <h1 class="text-center">Jelszó változtatás</h1>
+
+                            <div class="d-flex flex-column align-center mt-5 ga-5 w-100">
+                              <v-text-field
+                              clearable
+                              variant="outlined"
+                              label="Jelenlegi jelszó"
+                              hide-details
+                              style="width: 80%;"
+                              ></v-text-field>
+                              <v-text-field
+                              clearable
+                              variant="outlined"
+                              label="Új jelszó"
+                              hide-details
+                              style="width: 80%;"
+                              ></v-text-field>
+                              <v-text-field
+                              clearable
+                              variant="outlined"
+                              label="Új jelszó megerősítése"
+                              hide-details
+                              style="width: 80%;"
+                              ></v-text-field>
+                              <v-btn
+                                :disabled="ProfInputDisabled"
+                                :loading="loading"
+                                variant="flat"
+                                @click="SendConfirmCode"
+                                >
+                                Mentés
+                                </v-btn>
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'notif'" class="w-100 h-100">
+                            <h1 class="text-center">Értesítések</h1>
+                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                              
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'leaderboard'" class="w-100 h-100">
+                            <h1 class="text-center">Ranglista</h1>
+                            
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'post'" class="w-100">
+                            <p class="text-center">Posztbeállítások</p>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'users'" class="w-100 h-100">
+                            <h1 class="text-center">Felhasználók</h1>
+
+                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                              
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
+                            <h1 class="text-center">Admin értesítések</h1>
+                            <div style="border: .1vw solid white; height: 90%;" class="rounded-lg">
+                              
+                            </div>
+                          </div>
+                        </v-fade-transition>
+
+                        <v-expand-transition mode="out-in">
+                          <div v-if="ConfirmCode" class="text-center mt-4">
+                            <h4 style="font-weight: normal;">A megerősítő kód el lett küldve email-ben!</h4>
+                            <v-otp-input v-model="otpCode" length="6"></v-otp-input>
+                          </div>
+                        </v-expand-transition>
+                      </div>
+                    </v-slide-y-transition>
                   </v-main>
                 </v-layout>
                 <v-divider></v-divider>
                 <v-card-actions>
-                  <v-spacer></v-spacer>
                   <v-btn
                     text="Bezárás"
                     variant="plain"
@@ -535,6 +684,7 @@ import { onMounted, ref, shallowRef, nextTick } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
+import { useGetSettingsConfirm, useSetSettings } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
@@ -556,6 +706,16 @@ const LeaderBoardDraw = ref(false);
 const PostDraw = ref(false);
 const UsersDraw = ref(false);
 const AdminNotifDraw = ref(false);
+const activePanel = ref('profile');
+
+const ProfInputDisabled = ref(true);
+const EmailInputDisabled = ref(true);
+const ConfirmCode = ref(false);
+
+const userNameInput = ref('');
+const otpCode = ref(null);
+
+const loading = ref(false);
 
 function ProfSettingsActive(){
   ProfSettingDraw.value = true;
@@ -566,6 +726,10 @@ function ProfSettingsActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'profile';
+
+  EmailInputDisabled.value = true;
+  loading.value = false;
 }
 
 function EmailSettingsActive(){
@@ -577,6 +741,11 @@ function EmailSettingsActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'email';
+  
+  ProfInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function PassSettingsActive(){
@@ -588,6 +757,12 @@ function PassSettingsActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'password';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function NotifActive(){
@@ -599,6 +774,12 @@ function NotifActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'notif';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function LeaderBoardActive(){
@@ -610,6 +791,12 @@ function LeaderBoardActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'leaderboard';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function PostActive(){
@@ -621,6 +808,12 @@ function PostActive(){
   PostDraw.value = true;
   UsersDraw.value = false;
   AdminNotifDraw.value = false;
+  activePanel.value = 'post';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function UsersActive(){
@@ -632,6 +825,12 @@ function UsersActive(){
   PostDraw.value = false;
   UsersDraw.value = true;
   AdminNotifDraw.value = false;
+  activePanel.value = 'users';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
 
 function AdminNotifActive(){
@@ -643,7 +842,49 @@ function AdminNotifActive(){
   PostDraw.value = false;
   UsersDraw.value = false;
   AdminNotifDraw.value = true;
+  activePanel.value = 'adminNotif';
+  
+  ProfInputDisabled.value = true;
+  EmailInputDisabled.value = true;
+  ConfirmCode.value = false;
+  loading.value = false;
 }
+
+const { mutate : getSettingsConfirm} = useGetSettingsConfirm()
+
+const SendConfirmCode = async () => {
+  loading.value = true;
+  await getSettingsConfirm({email: get_fullUser.value.email, user_name: get_user_name.value, id: get_fullUser.value.id}, {
+    onSuccess: (response) => {
+      ConfirmCode.value = true;
+      loading.value = false;
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+}
+
+const { mutate : setNewSettings} = useSetSettings()
+
+watch(otpCode, async (newVal) => {
+  if (newVal.length === 6) {
+    var content = null;
+
+    if(ProfSettingDraw.value){
+      content = userNameInput.value;
+    }
+
+    await setNewSettings({content: content, code: newVal, id: get_fullUser.value.id, type: activePanel.value}, {
+    onSuccess: (response) => {
+
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+  });
+  }
+});
 
 const get_fullUser = ref(null);
 const get_fullUser_customs = ref(null);
@@ -905,11 +1146,11 @@ export default {
   }
 }
 
-.custom-drawer-btn{
+.custom-drawer-btn, .custom-drawer-btn h4{
   transition: .3s;
 }
 .custom-drawer-btn:hover{
-  background-color: rgb(var(--v-theme-custom_drawer_btn), .3);
+  background-color: rgb(var(--v-theme-secondary), .3);
 }
 
 .v-dialog > .v-overlay__content > .v-card,

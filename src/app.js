@@ -74,6 +74,12 @@ const contest_route = require('../src/api/routes/contestRoute');
 app.use('/',contest_route);
 //----------------------
 
+
+//settings confirm routes
+const settingsConf_route = require('../src/api/routes/settingsConfirmRoute');
+app.use('/',settingsConf_route);
+//----------------------
+
 const daily_tasks_route = require('../src/api/routes/daily_taskRoute');
 app.use('/api/daily_tasks',daily_tasks_route);
 
