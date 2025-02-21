@@ -137,7 +137,8 @@ export const useRandomTask = () => {
     },
     onError: (error) => {
       console.error('Error occurred while fetching a random task:', error);
-    }
+    },
+    enabled: false,
   });
 };
 
@@ -164,6 +165,7 @@ export const useTaskWithSearch = (characters: Ref<string>) => {
     onError: (error) => {
       console.error('Error occurred while fetching task with search characters:', error);
     },
+    enabled: false,
   });
 };
 
@@ -190,48 +192,56 @@ export const useSpecificTask = () => {
 };
 
 // Fetching Task by Difficulty
-const fetchTaskByDifficulty = async (difficulty_value: Ref<String>) => {
+// Function to fetch tasks by difficulty
+const fetchTaskByDifficulty = async (difficulty: Ref<string>) => {
   try {
-    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty_value.value}`);
+    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty.value}`);
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching task with this difficulty:', error);
+    console.error('Error occurred while fetching tasks with this difficulty:', error);
+    throw new Error('Failed to fetch tasks');
   }
 };
 
-export const useTaskByDifficulty = (difficulty: Ref<String>) => {
+// Hook to use the query for tasks by difficulty
+export const useTaskByDifficulty = (difficulty: Ref<string>) => {
   return useQuery({
-    queryKey:['difficulty_level',difficulty],
+    queryKey: ['difficulty_level', difficulty.value],
     queryFn: () => fetchTaskByDifficulty(difficulty),
     onSuccess: (data) => {
-      console.log(data);
+      console.log("Fetched tasks:", data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task with difficulty:', error);
-    }
+    },
+    enabled: false,  // Disable automatic fetching, refetch manually after setting difficulty
   });
 };
 
+
 // Fetching Task by State and User ID
-const fetchTaskByState = async (state, user_id) => {
+const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
   try {
-    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state}/${user_id}`);
+    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task by state:', error);
   }
 };
 
-export const useTaskByState = () => {
+export const useTaskByState = (state:Ref<string>, user_id: Number) => {
   return useQuery({
-    queryFn: fetchTaskByState,
+    queryKey:['task_info',state,user_id],
+    queryFn: () => fetchTaskByState(state, user_id),
     onSuccess: (data) => {
       console.log(data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task by state:', error);
-    }
+    },
+    enabled: false,
   });
 };
 

@@ -110,7 +110,7 @@
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState } from '@/api/cards/cardQuery';
 import { UseThemes } from '@/api/themes/themeQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted } from 'vue';
@@ -195,81 +195,65 @@ const filterTasksByCharacters = (chars: string) => {
 };
 
 //-------- Filter by difficulty ---------------
-const difficulty_Query = ref<string | null>(null);
+const difficulty_Query = ref(null);
+const difficulty_param = ref('');
+const taskByDifficulty = useTaskByDifficulty(difficulty_param);
 
-// Update query based on selected difficulty
-watch(difficulty_Query, async (newVal) => {
-  console.log(difficulty_Query.value)
-  if (newVal !== null) {
-    let difficultyValue;
-    switch (newVal) {
-      case 'Könnyű':
-        difficultyValue = 0;
-        break;
-      case 'Közepes':
-        difficultyValue = 1;
-        break;
-      case 'Nehéz':
-        difficultyValue = 2;
-        break;
-      default:
-        difficultyValue = null;
+watch(difficulty_Query, (newVal) => {
+  console.log("Selected difficulty:", newVal);
+  if (newVal == null) {
+    difficulty_param.value = ''; 
+    cardsQuery.refetch();
+  } else {
+    if (newVal === "Könnyű") {
+      difficulty_param.value = '0';
+    } else if (newVal === "Közepes") {
+      difficulty_param.value = '1';
+    } else if (newVal === "Nehéz") {
+      difficulty_param.value = '2';
     }
-
-    if (difficultyValue !== null) {
-      difficulty_Query.value = String(difficultyValue);
-    } else {
-      await cardsQuery.refetch();
-    }
+    taskByDifficulty.refetch();
   }
 });
 
-const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
-
-watch(() => difficulty_Query, (newVal) => {
-  if (newVal) {
-    console.log(newVal);
-  }
-});
 //-------- End filter by difficulty ---------------
 
 //-------- Filter by completionrate ---------------
-const state_Query = ref<string | null>(null);
+const state_Query = ref(null);
+const state_param = ref('');
+const taskByState = useTaskByState(state_param,1);
 
-// Update query based on selected difficulty
-watch(difficulty_Query, async (newVal) => {
-  console.log(difficulty_Query.value)
-  if (newVal !== null) {
-    let state;
-    switch (newVal) {
-      case 'Kész':
-        state = 0;
-        break;
-      case 'Fügőben lévő':
-        state = 1;
-        break;
-      default:
-        state = null;
-    }
-
-    if (state !== null) {
-      state_Query.value = String(state);
-    } else {
-      await cardsQuery.refetch();
-    }
-  }
+watch(state_Query, (newVal) => {
+  HandleStateChange(newVal);
 });
 
-const taskState = useTaskState(state_Query);
-
-watch(() => difficulty_Query, (newVal) => {
-  if (newVal) {
-    console.log(newVal);
+function HandleStateChange(newVal){
+  if (newVal == null || newVal == '') {
+    state_param.value = '';
+    cardsQuery.refetch();
+  } else {
+    SetStateParamsValue(newVal);
+    taskByState.refetch();
   }
-});
+}
+
+function SetStateParamsValue(state){
+ switch (state) {
+    case "Függőben lévő":
+    state_param.value = '0';
+      break;
+    case "Kész":
+    state_param.value = '1';
+      break;
+    case "Megkezdetlen":
+    state_param.value = '2';
+      break;
+    default:
+    state_param.value = '';
+  }
+}
+
 //-------- End filter by completionrate ---------------
-
-
 
 // Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
