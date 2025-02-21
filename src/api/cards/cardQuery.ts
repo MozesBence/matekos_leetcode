@@ -223,7 +223,8 @@ export const useTaskByDifficulty = (difficulty: Ref<string>) => {
 // Fetching Task by State and User ID
 const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
   try {
-    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state}/${user_id}`);
+    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task by state:', error);
@@ -232,14 +233,15 @@ const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
 
 export const useTaskByState = (state:Ref<string>, user_id: Number) => {
   return useQuery({
-    queryKey:[],
-    queryFn: () => fetchTaskByState(state:Ref<string>, user_id: Number),
+    queryKey:['task_info',state,user_id],
+    queryFn: () => fetchTaskByState(state, user_id),
     onSuccess: (data) => {
       console.log(data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task by state:', error);
-    }
+    },
+    enabled: false,
   });
 };
 

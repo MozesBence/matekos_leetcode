@@ -224,22 +224,34 @@ const state_param = ref('');
 const taskByState = useTaskByState(state_param,1);
 
 watch(state_Query, (newVal) => {
-  console.log("Selected difficulty:", newVal);
-  if (newVal == null) {
-    difficulty_param.value = ''; 
-    cardsQuery.refetch();
-  } else {
-    if (newVal === "Könnyű") {
-      difficulty_param.value = '0';
-    } else if (newVal === "Közepes") {
-      difficulty_param.value = '1';
-    } else if (newVal === "Nehéz") {
-      difficulty_param.value = '2';
-    }
-    taskByDifficulty.refetch();
-  }
+  HandleStateChange(newVal);
 });
 
+function HandleStateChange(newVal){
+  if (newVal == null || newVal == '') {
+    state_param.value = '';
+    cardsQuery.refetch();
+  } else {
+    SetStateParamsValue(newVal);
+    taskByState.refetch();
+  }
+}
+
+function SetStateParamsValue(state){
+ switch (state) {
+    case "Függőben lévő":
+    state_param.value = '0';
+      break;
+    case "Kész":
+    state_param.value = '1';
+      break;
+    case "Megkezdetlen":
+    state_param.value = '2';
+      break;
+    default:
+    state_param.value = '';
+  }
+}
 
 //-------- End filter by completionrate ---------------
 
