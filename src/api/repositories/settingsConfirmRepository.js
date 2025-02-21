@@ -48,43 +48,43 @@ class settingsConfirmRepository
     }
 
     async setNewUsername(id,content){
-        const user =  await this.Users.findOne({
-            where: { 
+        const user =  await this.Users.update(
+        { 
+            user_name: content 
+        }, 
+        {
+            where: {
                 id: id,
             }
         });
-
-        user.user_name = content;
-
-        user.save();
 
         return content;
     }
 
     async setNewGmail(id,content){
-        const user =  await this.Users.findOne({
+        const user =  await this.Users.update(
+        { 
+            email: content 
+        }, 
+        {
             where: {
                 id: id,
             }
         });
-
-        user.email = content;
-
-        user.save();
 
         return content;
     }
 
     async setNewPassword(id,content){
-        const user =  await this.Users.findOne({
+        const user =  await this.Users.update(
+        { 
+            password: content
+        }, 
+        {
             where: {
                 id: id,
             }
         });
-
-        user.password = content;
-
-        user.save();
 
         return content;
     }

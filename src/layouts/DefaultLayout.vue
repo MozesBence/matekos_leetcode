@@ -440,7 +440,7 @@
                     </div>
 
                     <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5 position-absolute bottom-0">
-                      <div style="height: 100%; border-radius: 50%; width: 5rem; height: 5rem; overflow: hidden; position: relative;">
+                      <div style="border-radius: 50%; width: 5rem; height: 5rem; overflow: hidden; position: relative;">
                         <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture"
                           alt="profil_kep"
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
@@ -453,7 +453,7 @@
                         >{{ get_user_name }}</h2>
                     </div>
 
-                    <div style="height: 11vh;"></div>
+                    <div style="height: 9rem;"></div>
                   </div>
 
                   <v-main class="d-flex justify-center pa-4">
@@ -480,7 +480,7 @@
                                 <v-btn variant="flat" @click="ProfInputDisabled = false" :disabled="!ProfInputDisabled">Módosítás</v-btn>
                                 <v-expand-transition>
                                   <v-btn
-                                    :disabled="ProfInputDisabled || !userNameInput || userNameInput === get_user_name || userNameInput.length < 6"
+                                    :disabled="ProfInputDisabled || !userNameInput || userNameInput === get_user_name || userNameInput.length < 6 || userNameInput.length > 24"
                                     :loading="loading"
                                     variant="flat"
                                     @click="SendConfirmCode"
@@ -682,6 +682,7 @@ const NewPasswordConfirmInput = ref('');
 const otpCode = ref(null);
 const ResponseContent = ref(null);
 const ResponseError = ref(null);
+
 
 const loading = ref(false);
 

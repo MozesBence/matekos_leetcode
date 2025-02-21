@@ -327,7 +327,7 @@
 
                 <v-divider></v-divider>
 
-                <v-card-actions>
+                <v-card-actions class="position-relative">
                   <v-btn icon @click="like(post,'post')">
                     <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                     {{ post.like > 0 ? post.like : null }}
@@ -345,6 +345,16 @@
                   </v-btn>
                   <v-btn v-if="post.user_name == get_UserName && !post.editable" text elevation="0" @click="EditPostOpen(post)">
                     Módosítás
+                  </v-btn>
+                  <v-btn
+                    elevation="0"
+                    icon
+                    small
+                    style="position: absolute; right: 0;"
+                    class="mr-3"
+                    @click="AlertOpen"
+                  >
+                    <v-icon>mdi-flag-outline</v-icon>
                   </v-btn>
                 </v-card-actions>
                 <!-- Komment szekció -->
@@ -668,6 +678,149 @@
           </v-col>
         </v-row>
       </v-container>
+
+      <!-- Alert modal -->
+      <v-dialog v-model="showAlert" :style="{maxWidth: isMobile ? '100%': '1000px'}" max-height="100vh" min-width="340px" width="auto" class="px-3">
+        <v-card>          
+          <v-card-title>Bejelentés</v-card-title>
+          <v-card-text class="px-2">
+            <v-radio-group class="px-2" style="transition: .3s;">
+
+              <div class="mb-2">
+                <h3 class="ml-2">Általános szabályszegések</h3>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div>
+                <v-radio value="Spam" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Spam</strong> - Indokolatlan, értelmetlen vagy többször ismétlődő poszt.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Hamis információ" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Hamis információ</strong> - Téves vagy félrevezető információ terjesztése.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Off-topic" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Off-topic</strong> - Nem kapcsolódik a fórum témájához vagy adott beszélgetéshez.
+                    </div>
+                  </template>
+                </v-radio>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div class="my-2">
+                <h3 class="ml-2">Káros vagy sértő tartalom</h3>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div>
+                <v-radio value="Gyűlöletbeszéd" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Gyűlöletbeszéd</strong> - Másokat sértő, rasszista, szexista, homofób vagy más módon gyűlöletkeltő tartalom.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Zaklatás vagy fenyegetés" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Zaklatás vagy fenyegetés</strong> - Más felhasználók fenyegetése, zaklatása vagy személyes támadása.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Trágárság vagy durva nyelvezet" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Trágárság vagy durva nyelvezet</strong> - Túlzottan vulgáris vagy agresszív megnyilvánulások.
+                    </div>
+                  </template>
+                </v-radio>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div class="my-2">
+                <h3 class="ml-2">Káros vagy illegális fájlok</h3>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div>
+                <v-radio value="Illegális tartalom" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Illegális tartalom</strong> - Szerzői jogokat sértő vagy illegális fájlok (pl. kalóz szoftver, lopott adatok).
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Vírus vagy rosszindulatú program" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Vírus vagy rosszindulatú program</strong> - Kártékony fájlok vagy linkek megosztása.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Tiltott vagy veszélyes anyagok" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Tiltott vagy veszélyes anyagok</strong> - Pl. fegyverekkel, drogokkal kapcsolatos dokumentumok.
+                    </div>
+                  </template>
+                </v-radio>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div class="my-2">
+                <h3 class="ml-2">Egyéb közösségi problémák</h3>
+              </div>
+
+              <v-divider></v-divider>
+
+              <div>
+                <v-radio value="Önveszélyes vagy öngyilkossági tartalom" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Önveszélyes vagy öngyilkossági tartalom</strong> - Ha valaki veszélyes viselkedést vagy öngyilkossági gondolatokat oszt meg.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Személyes adatok közzététel" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Személyes adatok közzététele</strong> - Pl. telefonszám, cím, jelszó vagy más érzékeny adat publikálása.
+                    </div>
+                  </template>
+                </v-radio>
+                <v-radio value="Tartalomduplikáció" class="my-1">
+                  <template v-slot:label>
+                    <div>
+                      <strong>Tartalomduplikáció</strong> -  Ugyanaz a poszt már létezik a platformon.
+                    </div>
+                  </template>
+                </v-radio>
+              </div>
+
+            </v-radio-group>
+          </v-card-text>
+  
+          <v-card-actions>
+            <v-btn color="success" @click="">Küldés</v-btn>
+            <v-btn text @click="AlertClose">Mégse</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <!-- Új poszt létrehozása modal -->
       <v-dialog v-model="showPostDial" :style="{maxWidth: isMobile ? '100%': '1000px'}" max-height="100vh">
@@ -1096,6 +1249,16 @@ function formatDate(date) {
   const minutes = date.getMinutes().toString().padStart(2, '0'); // perc, 2 számjegyre
   
   return `${year}-${month}-${day} ${hours}:${minutes}`;
+}
+
+const showAlert = ref(false);
+
+function AlertOpen(){
+  showAlert.value = true;
+}
+
+function AlertClose(){
+  showAlert.value = false;
 }
 
 // Állapotok és változók
