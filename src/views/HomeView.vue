@@ -196,35 +196,16 @@ const filterTasksByCharacters = (chars: string) => {
 
 //-------- Filter by difficulty ---------------
 const difficulty_Query = ref<string | null>(null);
+const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
 
 // Update query based on selected difficulty
-watch(difficulty_Query, async (newVal) => {
-  console.log(difficulty_Query.value)
-  if (newVal !== null) {
-    let difficultyValue;
-    switch (newVal) {
-      case 'Könnyű':
-        difficultyValue = 0;
-        break;
-      case 'Közepes':
-        difficultyValue = 1;
-        break;
-      case 'Nehéz':
-        difficultyValue = 2;
-        break;
-      default:
-        difficultyValue = null;
+watch(difficulty_Query, (newVal) => {
+  //console.log(difficulty_Query.value)
+  if (newVal == null) {
+      cardsQuery.refetch();
     }
-
-    if (difficultyValue !== null) {
-      difficulty_Query.value = String(difficultyValue);
-    } else {
-      await cardsQuery.refetch();
-    }
-  }
 });
 
-const taskByDifficulty = useTaskByDifficulty(difficulty_Query);
 
 watch(() => difficulty_Query, (newVal) => {
   if (newVal) {
@@ -235,38 +216,36 @@ watch(() => difficulty_Query, (newVal) => {
 
 //-------- Filter by completionrate ---------------
 const state_Query = ref<string | null>(null);
+const taskState = useTaskState(state_Query);
 
 // Update query based on selected difficulty
 watch(difficulty_Query, async (newVal) => {
-  console.log(difficulty_Query.value)
-  if (newVal !== null) {
-    let state;
-    switch (newVal) {
-      case 'Kész':
-        state = 0;
-        break;
-      case 'Fügőben lévő':
-        state = 1;
-        break;
-      default:
-        state = null;
-    }
-
-    if (state !== null) {
+  console.log(newVal)
+  if(newVal != null)
+  {
+    console.log(difficulty_Query.value)
+    if (newVal !== null) 
+    {
+      let state;
+      switch (newVal) {
+        case 'Kész':
+          state = 0;
+          break;
+        case 'Fügőben lévő':
+          state = 1;
+          break;
+        default:
+          state = null;
+      }
       state_Query.value = String(state);
-    } else {
-      await cardsQuery.refetch();
     }
+  }else {
+      await cardsQuery.refetch();
+      console.log(tasks)
   }
 });
 
-const taskState = useTaskState(state_Query);
 
-watch(() => difficulty_Query, (newVal) => {
-  if (newVal) {
-    console.log(newVal);
-  }
-});
 //-------- End filter by completionrate ---------------
 
 
