@@ -13,8 +13,8 @@ module.exports = (sequelize, DataTypes) => {
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
     const User_custom = require("../models/user_customization")(sequelize, DataTypes);
-    const Vip_custom = require("../models/vip_customization")(sequelize, DataTypes);
     const Daily_Tasks = require('../models/daily_tasks')(sequelize,DataTypes);
+    const Notification = require("./notification")(sequelize,DataTypes);
     
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
@@ -30,10 +30,6 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 1,
         },
-    });
-
-    Users.hasOne(Vip_custom, {
-        foreignKey: "user_id",
     });
 
     Users.hasOne(User_custom, {
@@ -149,6 +145,20 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
     });
 
+    Users.hasMany(Notification, {
+        foreignKey: "user_id"
+    });
+
+    Users.hasMany(Notification, {
+        foreignKey: "from_user_id"
+    });
+
+    Community_posts.hasMany(Notification, { foreignKey: 'content_id' });
+    Community_comments.hasMany(Notification, { foreignKey: 'content_id' });
+
+    Notification.belongsTo(Community_posts, { foreignKey: 'content_id', constraints: false });
+    Notification.belongsTo(Community_comments, { foreignKey: 'content_id', constraints: false });
+
     return {
         Users,
         Community_posts,
@@ -164,8 +174,8 @@ module.exports = (sequelize, DataTypes) => {
         Alerts,
         Tokenz,
         User_custom,
-        Vip_custom,
         Task_solutions,
-        Daily_Tasks
+        Daily_Tasks,
+        Notification
     };
 };

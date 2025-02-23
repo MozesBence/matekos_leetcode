@@ -33,9 +33,9 @@ const {
     Alerts, 
     Tokenz, 
     User_custom, 
-    Vip_custom, 
     Task_solutions,
-    Daily_Tasks
+    Daily_Tasks,
+    Notification
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
@@ -52,9 +52,9 @@ db.Badges = Badges;
 db.Alerts = Alerts;
 db.Tokenz = Tokenz;
 db.User_customization = User_custom;
-db.Vip_customization = Vip_custom;
 db.Task_solutions = Task_solutions; // Assign Task_solutions to db
 db.Daily_Tasks = Daily_Tasks;
+db.Notification = Notification;
 
 // Initialize database and themes
 const initializeDatabase = async () => {
