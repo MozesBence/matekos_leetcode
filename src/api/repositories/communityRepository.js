@@ -22,6 +22,8 @@ class communityRepository
       this.Community_likes = db.Community_likes;
 
       this.Community_tags = db.Community_tags;
+
+      this.Notification = db.Notification;
     }
 
     async getLimitedPost(limit, get_offset, userId, filter, tagsArray, search) {
@@ -1173,6 +1175,12 @@ class communityRepository
     const tags = await this.Community_tags.findAll();
 
     return tags;
+  }
+
+  async sendReports(newReport){
+    const report = await this.Notification.create(newReport);
+
+    return report;
   }
 }
 

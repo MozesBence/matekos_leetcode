@@ -39,8 +39,8 @@ const {
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
-db.Community_comments = Community_comments;
 db.Community_posts = Community_posts;
+db.Community_comments = Community_comments;
 db.Community_files = Community_files;
 db.Community_likes = Community_likes;
 db.Community_tags = Community_tags;
@@ -69,7 +69,7 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await db.sequelize.sync({ alter: true });
+        await sequelize.sync({ alter: true });
         console.log('Database connected and models synchronized.');
 
         await db.Themes.initializeThemes();

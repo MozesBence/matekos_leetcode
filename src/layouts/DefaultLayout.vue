@@ -422,7 +422,7 @@
                           <h4
                             style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
                           >
-                          admin értesítések 
+                          bejelentések
                           </h4>
                           <v-slide-x-reverse-transition hide-on-leave>
                             <div 
@@ -591,10 +591,134 @@
 
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
-                            <h1 class="text-center">Admin értesítések</h1>
-                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
-                              
+                            <h1 class="text-center">Bejelentések</h1>
+
+                            <div style="border: .1vw solid white; height: auto; min-height: 85%; max-height: 40vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminNotif">
+                              <v-expansion-panels v-for="(report, index) in AllReports" class="d-flex" elevation="0" style="position: relative;">
+                                <v-expansion-panel style="background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="mb-2">
+                                  <v-expansion-panel-title class="px-4 py-2">
+                                    <div class="w-100 rounded position-relative align-center d-flex">
+                                      <div>
+                                        <div class="d-flex mb-2">
+                                          <v-icon size="20" class="mr-2">mdi-flag-outline</v-icon>
+                                          <h2 style="font-weight: normal;">{{ report.notif_content }}</h2>
+                                        </div>
+                                        <div class="d-flex align-center">
+                                          <v-icon>mdi-gavel</v-icon>
+                                          <div class="d-flex flex-row ga-2 pl-3 align-center">
+                                            <div 
+                                            class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
+                                            style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                            @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
+                                              <img :src="report.Reporter.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                              <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
+                                            </div>
+                                          </div>
+                                          <v-icon class="ml-2">mdi-arrow-right</v-icon>
+                                          <div class="d-flex flex-row ga-2 pl-3 align-center">
+                                            <div 
+                                            class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
+                                            style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                            @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
+                                              <img :src="report.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                              <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div style="right: 1vw;" class="position-absolute">
+                                        <v-tooltip location="left">
+                                          <template v-slot:activator="{ props }">
+                                            <v-btn 
+                                              elevation="0" 
+                                              icon 
+                                              small
+                                              style="background-color: transparent;"
+                                              v-bind="props"
+                                            >
+                                              <v-icon size="30">mdi-check-circle-outline</v-icon>
+                                            </v-btn>
+                                          </template>
+                                          <span style="font-size: larger;">Lezárás</span>
+                                        </v-tooltip>
+                                      </div>
+                                    </div>
+                                  </v-expansion-panel-title>
+                                  <v-expansion-panel-text style="position: relative; transition: .3s ease-in-out;">
+                                    <v-list style="background-color: transparent;" class="pa-0" v-if="report.reportedPost">
+                                      <div>
+                                        <div class="px-2 my-1 d-flex">
+                                          <h3 class="mr-1">Poszt címe / létrehozási dátuma: </h3>
+                                          <h3 style="font-weight: normal;">{{ report.reportedPost.title }}</h3>
+                                          <v-divider vertical class="mx-2"></v-divider>
+                                          <h3 style="font-weight: normal;">{{ report.reportedPost.createdAt }}</h3>
+                                          <v-divider vertical class="mx-2" v-if="report.reportedPost.gotEdit"></v-divider>
+                                          <h3 style="font-weight: normal;" v-if="report.reportedPost.gotEdit">[Szerkeztve]</h3>
+                                        </div>
+
+                                        <v-divider></v-divider>
+
+                                        <div class="px-2 my-1">
+                                          <h3>Poszt kontent: </h3>
+                                          <div v-html="report.reportedPost.content" style="background-color: rgb(var(--v-theme-community_posts_bc));" class="py-2 px-2 mx-4 rounded"></div>
+                                        </div>
+
+                                        <v-divider v-if="report.reportedPost.tags.length > 0"></v-divider>
+
+                                        <div class="px-2 my-2" v-if="report.reportedPost.tags.length > 0">
+                                          <div class="d-flex flex-row align-items-center mr-2">
+                                            <v-icon icon="mdi-label-multiple" class="mr-1" color="community_primary_color"></v-icon>
+                                            <h3 class="font-weight-normal">Címkék</h3>
+                                          </div>
+                                          <div class="text-center d-flex flex-row flex-wrap align-center">
+                                            <v-chip
+                                              v-for="tag in report.reportedPost.tags"
+                                              :key="tag"  
+                                              class="mx-1 my-2"
+                                              color="community_primary_color"
+                                              variant="outlined"
+                                            >
+                                              <v-icon icon="mdi-tag-multiple" start></v-icon>
+                                              <h3 style="font-weight: normal;">{{ tag }}</h3>
+                                            </v-chip>
+                                          </div>
+                                        </div>
+
+                                        <v-divider v-if="report.reportedPost.files.length > 0"></v-divider>
+
+                                        <div class="d-flex flex-row align-items-center mr-2">
+                                          <v-icon icon="mdi-file-multiple" class="mr-1" color="community_primary_color"></v-icon>
+                                          <h3 class="font-weight-normal">Fájlok</h3>
+                                        </div>
+                                        <div v-if="report.reportedPost.files.length > 0" v-for="(file, index) in report.reportedPost.files" :key="index">
+                                          <v-card-text>
+                                            <div class="d-inline-flex flex-column justify-center align-center">
+                                              <v-btn 
+                                                icon 
+                                                elevation="0" 
+                                                size="50"
+                                                @click="downloadFile(file.file)"
+                                                color="transparent"
+                                              >
+                                                <v-icon size="30">mdi-file</v-icon>
+                                              </v-btn>
+                                              <h3 style="font-weight: normal;">
+                                                {{ (file.dataValues.file_name) }}
+                                              </h3>
+                                              <h5 style="font-weight: normal;">
+                                                Méret: {{ formatFileSize(file.dataValues.file_size ) }}
+                                              </h5>
+                                            </div>
+                                          </v-card-text>
+                                        </div>
+                                        
+                                      </div>
+                                    </v-list>
+                                  </v-expansion-panel-text>
+                                </v-expansion-panel>
+                              </v-expansion-panels>       
                             </div>
+
                           </div>
                         </v-fade-transition>
 
@@ -646,7 +770,7 @@ import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
@@ -803,7 +927,11 @@ function UsersActive(){
   loading.value = false;
 }
 
-function AdminNotifActive(){
+const { mutate : getAllReports} = useGetAllReports()
+
+const AllReports = ref([]);
+
+const AdminNotifActive = async () =>{
   ProfSettingDraw.value = false;
   EmailSettingDraw.value = false;
   PassSettingDraw.value = false;
@@ -825,6 +953,74 @@ function AdminNotifActive(){
   EmailInputDisabled.value = true;
   ConfirmCode.value = false;
   loading.value = false;
+
+  AllReports.value = [];
+  await getAllReports(get_user_by_token, {
+    onSuccess: (response) => {
+      response.forEach((post, index) => {
+          if (post.reportedPost) {
+            postsConvertToDisplay(post);
+          }else{
+            AllReports.value.push(post);
+          }
+      });
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+    },
+  });
+}
+
+function postsConvertToDisplay(array){
+  const tempDiv = document.createElement("div");
+  tempDiv.innerHTML = array.reportedPost.content;
+  
+  var createdAt = array.reportedPost.createdAt;
+  array.reportedPost.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
+  
+  const imgElements = tempDiv.querySelectorAll("img");
+
+  if(imgElements){
+    imgElements.forEach((img) => {
+      const id = Number(img.id)-1;
+      if (array.reportedPost.images[id]) {
+        img.setAttribute("src", (array.reportedPost.images[id].url != null ? array.reportedPost.images[id].url : array.reportedPost.images[id].file)); // Az `src` attribútumot beállítjuk
+      }
+    });
+  }
+  
+  array.reportedPost.content = tempDiv.innerHTML;
+
+  AllReports.value.push(array);
+}
+
+function downloadFile(file) {
+  try {
+    const blob = dataURLtoBlob(file.file);
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.file_name || 'file';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    // Az URL-t felszabadítjuk
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Fájl letöltési hiba:', error);
+  }
+}
+
+function formatFileSize(size) {
+  if (!size) return 'Ismeretlen méret';
+  const i = Math.floor(Math.log(size) / Math.log(1024));
+  return (
+    (size / Math.pow(1024, i)).toFixed(2) * 1 +
+    ' ' +
+    ['B', 'KB', 'MB', 'GB', 'TB'][i]
+  );
 }
 
 const { mutate : getSettingsConfirm} = useGetSettingsConfirm()
@@ -1159,5 +1355,27 @@ export default {
     overflow-y: auto;
     flex: none !important;
     height: inherit !important; /* vagy adj meg egy kívánt magasságot */
+}
+
+.adminNotif{
+  transition: .3s;
+}
+
+.adminNotif::-webkit-scrollbar {
+  width: 8px; /* Görgetősáv szélessége */
+}
+
+.adminNotif::-webkit-scrollbar-track {
+  background: transparent; /* Háttérszín */
+  border-radius: 10px;
+}
+
+.adminNotif::-webkit-scrollbar-thumb {
+  background: rgb(var(--v-theme-profile_bc)); /* Görgetősáv színe */
+  border-radius: 10px;
+}
+
+.adminNotif::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.7);
 }
 </style>

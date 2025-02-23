@@ -1,4 +1,5 @@
 const settingsConfirmService = require("../services/settingsConfirmService");
+
 require("dotenv").config();
 
 const nodemailer = require('nodemailer');
@@ -6,6 +7,8 @@ const nodemailer = require('nodemailer');
 const validator = require("email-validator");
 
 const bcrypt = require("bcrypt");
+
+const jwt = require("jsonwebtoken");
 
 const salt = 10;
 
@@ -161,4 +164,41 @@ exports.setSettings = async (req,res,next) =>{
         next(error);
     }
 
+}
+
+exports.getAllReports = async (req,res,next) =>{
+    const token = req.headers['token'];
+
+    const secretKey = process.env.JWT_KEY;
+    
+    try{
+        var decoded = null;
+        
+        if(token){
+            decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        }else{
+            const error = new Error("Valami hiba történt a felhasználó igazolásában!");
+    
+            error.status = 500;
+    
+            throw error;
+        }
+
+        const adminCheck = await settingsConfirmService.getElseUserById(decoded.id);
+
+        if(!adminCheck){
+            const error = new Error("A felhasználónak nincs ehhez joga!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const allReports = await settingsConfirmService.getReports();
+
+        res.status(200).send(allReports);
+
+    }catch(error){
+        next(error);
+    }
 }

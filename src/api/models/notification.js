@@ -11,15 +11,23 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true,
                 allowNull:false
             },
+            type: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+            },
             notif_content: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
             content_type: {
                 type: DataTypes.BOOLEAN,
-                allowNull: false,
+                allowNull: true,
             },
-            type: {
+            content_id: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
+            },
+            closed: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
             },

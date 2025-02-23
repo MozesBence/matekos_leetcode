@@ -187,3 +187,20 @@ export const useCommunityTags = () => {
     },
   })
 }
+
+const CommunityReports = async (data: {type: boolean, notif_content: string, content_type: boolean, user_id: number, from_user_id: number, content_id: number}) => {
+  const response = await axiosClient.post(`http://localhost:3000/community/reports`, data);
+  return response.data;
+}
+
+export const useSendReports = () => {
+  return useMutation({
+    mutationFn: CommunityReports,
+    onSuccess(response) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}

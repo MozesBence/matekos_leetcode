@@ -55,5 +55,6 @@ route.patch("/community/post-edit",upload.array("files", 10), communityControlle
   
 route.get("/community/tags", communityControllers.getTags);
 
+route.post("/community/reports", communityControllers.sendReports);
 
 module.exports = route;

@@ -352,7 +352,8 @@
                     small
                     style="position: absolute; right: 0;"
                     class="mr-3"
-                    @click="AlertOpen"
+                    @click="AlertOpen(post)"
+                    v-if="get_fullUser"
                   >
                     <v-icon>mdi-flag-outline</v-icon>
                   </v-btn>
@@ -684,7 +685,7 @@
         <v-card>          
           <v-card-title>Bejelentés</v-card-title>
           <v-card-text class="px-2">
-            <v-radio-group class="px-2" style="transition: .3s;">
+            <v-radio-group class="px-2" style="transition: .3s;" v-model="ReportSelected">
 
               <div class="mb-2">
                 <h3 class="ml-2">Általános szabályszegések</h3>
@@ -816,7 +817,7 @@
           </v-card-text>
   
           <v-card-actions>
-            <v-btn color="success" @click="">Küldés</v-btn>
+            <v-btn color="success" :disabled="!ReportSelected" @click="SendReport(true)">Küldés</v-btn>
             <v-btn text @click="AlertClose">Mégse</v-btn>
           </v-card-actions>
         </v-card>
@@ -1130,8 +1131,9 @@ import {
   useLikeDislikeForPost, 
   useCommentForPost, 
   useCommentEdit, 
-  useCommunityTags ,
-  useGetCommunityComments
+  useCommunityTags,
+  useGetCommunityComments,
+  useSendReports
 } from '@/api/community/communityQuery';
 import imageCompression from 'browser-image-compression';
 import { useDisplay } from 'vuetify';
@@ -1252,13 +1254,38 @@ function formatDate(date) {
 }
 
 const showAlert = ref(false);
+const ReportSelected = ref(null);
+const SelectedReportArray = ref(null);
 
-function AlertOpen(){
+function AlertOpen(array){
   showAlert.value = true;
+  ReportSelected.value = null;
+  SelectedReportArray.value = array;
 }
 
 function AlertClose(){
   showAlert.value = false;
+}
+
+const { mutate: CommunityReports } = useSendReports();
+const SendReport = async (post) =>{
+  await CommunityReports({
+    type: true, 
+    notif_content: ReportSelected.value, 
+    content_type: post, 
+    user_id: SelectedReportArray.value.User.id, 
+    from_user_id: get_fullUser.value.id, 
+    content_id: SelectedReportArray.value.id
+  }, {
+    onSuccess: (response) => {
+      console.log(response);
+    },
+    onError: (error) => {
+
+    },
+  });
+
+  AlertClose();
 }
 
 // Állapotok és változók

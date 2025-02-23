@@ -238,3 +238,35 @@ exports.getTags = async (req,res,next) =>{
         next(error);
     }
 }
+
+exports.sendReports = async (req,res,next) => {
+    const {type, notif_content, content_type, user_id, from_user_id, content_id} = req.body;
+
+    const newReport = {
+        id: null,
+        type: type,
+        notif_content: notif_content,
+        content_type: content_type,
+        user_id: user_id,
+        from_user_id: from_user_id,
+        content_id: content_id,
+        closed: false,
+    }
+
+    try{
+        const repost_result = await communityService.sendReports(newReport);
+
+        if(repost_result == null){
+            const error = new Error("Nem sikerült feltölteni a reportokat!");
+            
+            error.status = 400;
+            
+            throw error;
+        }
+        
+        res.status(200).send("El lett küldve a bejelentés!");
+    }
+    catch(error){
+        next(error);
+    }
+}

@@ -68,6 +68,10 @@ class communityService
     async getTags(){
         return await communityRepository.getTags();
     }
+
+    async sendReports(newReport){
+        return await communityRepository.sendReports(newReport);
+    }
 }
 
 module.exports = new communityService();

@@ -146,18 +146,31 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Users.hasMany(Notification, {
-        foreignKey: "user_id"
+        foreignKey: "user_id",
+        as: "SentReports" // A felhasználó által küldött bejelentések
     });
-
+    
     Users.hasMany(Notification, {
-        foreignKey: "from_user_id"
+        foreignKey: "from_user_id",
+        as: "ReceivedReports" // A felhasználóról érkezett bejelentések
+    });
+    
+    // Fordított kapcsolatok a Notification táblában:
+    Notification.belongsTo(Users, {
+        foreignKey: "user_id",
+        as: "Reporter" // Bejelentést küldő személy
+    });
+    
+    Notification.belongsTo(Users, {
+        foreignKey: "from_user_id",
+        as: "ReportedUser" // A bejelentés célpontja (akiről szó van)
     });
 
-    Community_posts.hasMany(Notification, { foreignKey: 'content_id' });
-    Community_comments.hasMany(Notification, { foreignKey: 'content_id' });
+    Community_posts.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedPost' });
+    Community_comments.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedComment' });
 
-    Notification.belongsTo(Community_posts, { foreignKey: 'content_id', constraints: false });
-    Notification.belongsTo(Community_comments, { foreignKey: 'content_id', constraints: false });
+    Notification.belongsTo(Community_posts, { foreignKey: 'content_id', constraints: false, as: 'reportedPost' });
+    Notification.belongsTo(Community_comments, { foreignKey: 'content_id', constraints: false, as: 'reportedComment' });
 
     return {
         Users,

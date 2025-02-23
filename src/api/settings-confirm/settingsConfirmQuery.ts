@@ -41,3 +41,27 @@ export const useSetSettings = () => {
         }
     })
 }
+
+
+const getAllReports = async (token: string) => {
+    const response = await axiosClient.get('http://localhost:3000/get-all-reports', {
+        headers: {
+            token: token,
+        },
+    });
+    return response.data
+}
+
+export const useGetAllReports = () => {
+    return useMutation({
+        mutationFn: getAllReports,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}

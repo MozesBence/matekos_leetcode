@@ -22,6 +22,14 @@ class settingsConfirmService
     async setNewPassword(id,content){
         return await settingsConfirmRepository.setNewPassword(id,content);
     }
+
+    async getElseUserById(id){
+        return await settingsConfirmRepository.getElseUserById(id);
+    }
+
+    async getReports(){
+        return await settingsConfirmRepository.getReports();
+    }
 }
 
 module.exports = new settingsConfirmService();
