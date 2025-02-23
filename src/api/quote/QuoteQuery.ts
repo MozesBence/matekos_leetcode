@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/vue-query";
+import { useMutation, useQuery } from "@tanstack/vue-query";
 import axios from "axios";
 
 const Quote = async () => {
@@ -10,8 +10,9 @@ const Quote = async () => {
     }
 }
 export const UseQuote = () => {
-    return useMutation({
-        mutationFn: Quote,
+    return useQuery({
+        queryFn: Quote,
+        queryKey:["quote"],
         onSuccess:(data)=> {
             console.log(data.quote)
         },

@@ -50,47 +50,59 @@ export const useCompletionRates = () => {
 };
 
 // Fetching Task State
-const fetchTaskState = async (id: Ref<String>) => {
+// Fetch the task state by passing the actual value of the ref (id.value)
+const fetchTaskState = async (id: number) => {
+//  console.log(id);  // Log the id value to ensure it's correct
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
+   // console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task state:', error);
+    throw error;  // Rethrow error to be caught by useQuery onError
   }
 };
 
-export const useTaskState = (id: Ref<String>) => {
+// useTaskState function to correctly handle the id ref and pass its value
+export const useTaskState = (id: Ref<number>) => {
+ // console.log(id.value);  // Log the actual value of the ref
   return useQuery({
-    queryKey:['difficuty',id.value],
-    queryFn: () => fetchTaskState(id),
+    queryKey: ['taskState', id.value],  // Pass the value, not the ref
+    queryFn: () => fetchTaskState(id.value),  // Pass the value to the fetch function
     onSuccess: (data) => {
-      console.log(data);
+      console.log('Task state fetched successfully:', data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
-    }
+    },
+    enabled: false,  // Keep disabled until manually triggered
   });
 };
 
+
 // Fetching Solved Task Rates
-const fetchSolvedTaskRates = async (id: Ref<String>) => {
+const fetchSolvedTaskRates = async (id: Ref<string>) => {
+  console.log(id.value)
   try {
     const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id.value}`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching solved task rates:', error);
   }
 };
 
-export const useSolvedTaskRates = () => {
+export const useSolvedTaskRates = (id: Ref<string>) => {
   return useQuery({
-    queryFn: fetchSolvedTaskRates,
+    queryKey:['userId',id],
+    queryFn: ()=> fetchSolvedTaskRates(id),
     onSuccess: (data) => {
       console.log(data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching solved task rates:', error);
-    }
+    },
+    enabled:false
   });
 };
 
@@ -170,24 +182,29 @@ export const useTaskWithSearch = (characters: Ref<string>) => {
 };
 
 // Fetching Specific Task by Day
-const fetchSpecificTask = async (day) => {
+const fetchSpecificTask = async (day: Ref<string>) => {
+  console.log(day.value)
   try {
-    const response = await axios.get(`/api/daily_tasks/get-daily-task/${day}`);
+    const response = await axios.get(`/api/daily_tasks/get-daily-task/${day.value}`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching specific task:', error);
   }
 };
 
-export const useSpecificTask = () => {
+export const useSpecificTask = (day: Ref<string>) => {
+    console.log(day.value)
   return useQuery({
-    queryFn: fetchSpecificTask,
+    queryFn: () => fetchSpecificTask(day),
+    queryKey: ["specificDay",day],
     onSuccess: (data) => {
       console.log(data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching specific task:', error);
-    }
+    },
+    enabled:false,
   });
 };
 
@@ -271,7 +288,8 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
     },
     onError: (error) => {
       console.error('Error occurred while fetching cards by themes:', error);
-    }
+    },
+    enabled:false,
   });
 };
 

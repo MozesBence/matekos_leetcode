@@ -3,11 +3,11 @@ const {Daily_Tasks} = db;
 const sequelize = require('sequelize');
 
 const daily_taskRepository = {
-    async getDailyTask(task_id){
+    async getDailyTask(id){
         return await Daily_Tasks.findOne({
             attributes:['task_id'],
             where: {
-                id: task_id
+                id: id
             }
         })
     }   
