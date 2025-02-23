@@ -644,7 +644,7 @@
                                       </div>
                                     </div>
                                   </v-expansion-panel-title>
-                                  <v-expansion-panel-text style="position: relative; transition: .3s ease-in-out;">
+                                  <v-expansion-panel-text style="position: relative;">
                                     <v-list style="background-color: transparent;" class="pa-0" v-if="report.reportedPost">
                                       <div>
                                         <div class="px-2 my-1 d-flex">
@@ -686,32 +686,34 @@
 
                                         <v-divider v-if="report.reportedPost.files.length > 0"></v-divider>
 
-                                        <div class="d-flex flex-row align-items-center mr-2">
-                                          <v-icon icon="mdi-file-multiple" class="mr-1" color="community_primary_color"></v-icon>
-                                          <h3 class="font-weight-normal">Fájlok</h3>
+                                        <div class="mt-2">
+                                          <div class="d-flex flex-row align-items-center mr-2">
+                                            <v-icon icon="mdi-file-multiple" class="mr-1" color="community_primary_color"></v-icon>
+                                            <h3 class="font-weight-normal">Fájlok</h3>
+                                          </div>
+                                          <div v-if="report.reportedPost.files.length > 0" v-for="(file, index) in report.reportedPost.files" :key="index">
+                                            <v-card-text>
+                                              <div class="d-inline-flex flex-column justify-center align-center">
+                                                <v-btn 
+                                                  icon 
+                                                  elevation="0" 
+                                                  size="50"
+                                                  @click="downloadFile(file.file)"
+                                                  color="transparent"
+                                                >
+                                                  <v-icon size="30">mdi-file</v-icon>
+                                                </v-btn>
+                                                <h3 style="font-weight: normal;">
+                                                  {{ (file.dataValues.file_name) }}
+                                                </h3>
+                                                <h5 style="font-weight: normal;">
+                                                  Méret: {{ formatFileSize(file.dataValues.file_size ) }}
+                                                </h5>
+                                              </div>
+                                            </v-card-text>
+                                          </div>
                                         </div>
-                                        <div v-if="report.reportedPost.files.length > 0" v-for="(file, index) in report.reportedPost.files" :key="index">
-                                          <v-card-text>
-                                            <div class="d-inline-flex flex-column justify-center align-center">
-                                              <v-btn 
-                                                icon 
-                                                elevation="0" 
-                                                size="50"
-                                                @click="downloadFile(file.file)"
-                                                color="transparent"
-                                              >
-                                                <v-icon size="30">mdi-file</v-icon>
-                                              </v-btn>
-                                              <h3 style="font-weight: normal;">
-                                                {{ (file.dataValues.file_name) }}
-                                              </h3>
-                                              <h5 style="font-weight: normal;">
-                                                Méret: {{ formatFileSize(file.dataValues.file_size ) }}
-                                              </h5>
-                                            </div>
-                                          </v-card-text>
-                                        </div>
-                                        
+
                                       </div>
                                     </v-list>
                                   </v-expansion-panel-text>
