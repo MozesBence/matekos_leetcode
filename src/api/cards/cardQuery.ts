@@ -50,32 +50,27 @@ export const useCompletionRates = () => {
 };
 
 // Fetching Task State
-// Fetch the task state by passing the actual value of the ref (id.value)
-const fetchTaskState = async (id: number) => {
-//  console.log(id);  // Log the id value to ensure it's correct
+const fetchTaskState = async (id: Ref<number>) => {
   try {
-    const response = await axios.get(`/api/task_solution/taskState/${id}`);
-   // console.log(response.data);
+    const response = await axios.get(`/api/task_solution/taskState/${id.value}`);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task state:', error);
-    throw error;  // Rethrow error to be caught by useQuery onError
+    throw error;
   }
 };
 
-// useTaskState function to correctly handle the id ref and pass its value
 export const useTaskState = (id: Ref<number>) => {
- // console.log(id.value);  // Log the actual value of the ref
   return useQuery({
-    queryKey: ['taskState', id.value],  // Pass the value, not the ref
-    queryFn: () => fetchTaskState(id.value),  // Pass the value to the fetch function
+    queryKey: ['taskState', id],
+    queryFn: () => fetchTaskState(id),
     onSuccess: (data) => {
       console.log('Task state fetched successfully:', data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
     },
-    enabled: false,  // Keep disabled until manually triggered
+    enabled: false,
   });
 };
 
@@ -292,9 +287,3 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
     enabled:false,
   });
 };
-
-
-
-
-
-
