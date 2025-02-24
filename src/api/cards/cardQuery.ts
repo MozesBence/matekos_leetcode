@@ -2,22 +2,22 @@ import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import queryClient from "@/lib/queryClient";
 import type { Ref } from "vue";
-//OSSZES MUTATET query-re atirni
 
 // Fetching Cards
-const fetchCards = async (offset:number) => {
+const fetchCards = async (offset: number) => { // Accepts a number, not a Ref
   try {
     const response = await axios.get(`/api/tasks/get-cards-info/${offset}`);
     return response.data;
   } catch (error) {
     console.error(`Error occurred while fetching cards: ${error}`);
+    throw error; // Ensure error propagates correctly
   }
 };
 
-export const useCards = () => {
+export const useCards = (offset: Ref<number>) => {
   return useQuery({
-    queryFn: (offset: number) => fetchCards(offset),
-    queryKey:['cards'],
+    queryFn: () => fetchCards(offset.value),
+    queryKey: ['cards', offset.value],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -50,9 +50,10 @@ export const useCompletionRates = () => {
 };
 
 // Fetching Task State
-const fetchTaskState = async (id: Ref<number>) => {
+const fetchTaskState = async (id: number) => {
   try {
-    const response = await axios.get(`/api/task_solution/taskState/${id.value}`);
+    const response = await axios.get(`/api/task_solution/taskState/${id}`);
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching task state:', error);
@@ -70,9 +71,10 @@ export const useTaskState = (id: Ref<number>) => {
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
     },
-    enabled: false,
+    enabled: !!id.value, // Enable the query only when user ID is available
   });
 };
+
 
 
 // Fetching Solved Task Rates
@@ -88,6 +90,7 @@ const fetchSolvedTaskRates = async (id: Ref<string>) => {
 };
 
 export const useSolvedTaskRates = (id: Ref<string>) => {
+  console.log(id.value)
   return useQuery({
     queryKey:['userId',id],
     queryFn: ()=> fetchSolvedTaskRates(id),

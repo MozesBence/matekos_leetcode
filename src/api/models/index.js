@@ -15,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     const User_custom = require("../models/user_customization")(sequelize, DataTypes);
     const Daily_Tasks = require('../models/daily_tasks')(sequelize,DataTypes);
     const Notification = require("./notification")(sequelize,DataTypes);
-    
+    const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
+
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
 
@@ -189,6 +190,7 @@ module.exports = (sequelize, DataTypes) => {
         User_custom,
         Task_solutions,
         Daily_Tasks,
-        Notification
+        Notification,
+        Advertisement_Cards
     };
 };
