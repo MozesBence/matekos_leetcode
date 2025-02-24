@@ -219,17 +219,17 @@
   >
     <!-- Task Icon and Status -->
     <v-col class="d-flex align-center justify-center" cols="2" style="min-height: 100%;">
-      <!-- Use a computed property or await the async result properly -->
-      <v-icon 
-        v-if="task_state.data && getTaskStateForCard(card.id)" 
-        :color="getTaskStateForCard(card.id).state === 0 ? 'yellow' : 'green'" 
-        small
-      >
-        {{ getTaskStateForCard(card.id).state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
-      </v-icon>
-      
-      <span v-else>&nbsp;</span>
-    </v-col>
+  <v-icon 
+    v-if="getTaskStateForCard(card.id)" 
+    :color="getTaskStateForCard(card.id)?.state === 0 ? 'yellow' : 'green'" 
+    small
+  >
+    {{ getTaskStateForCard(card.id)?.state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
+  </v-icon>
+  <span v-else>&nbsp;</span>
+  {{getTaskStateForCard(card.id)}}
+</v-col>
+
     
 
 <!-- Task Title -->
@@ -631,30 +631,32 @@ const getDaysInMonth = (year: number, month: number): number => {
       if (difficulty === 1) return 'Közepes';
       return 'Nehéz';
     };
-    const task_id = ref(0);
-  const task_state = useTaskState(task_id.value); // Ensure task_id is used correctly
+    const task_id = ref<number>(0); // Reactive task_id
 
+// Pass the ref itself to useTaskState so it can react to changes
+const task_state = useTaskState(task_id);
+
+// Function to update task_id and refetch task_state
 const getTaskStateForCard = async (taskId: number) => {
-  task_id.value = taskId
-  console.log(task_id.value)  
-  task_state.refetch(); 
-  if (!tasks || !task_state.data.value) {
+  task_id.value = taskId;  // Update the reactive task_id
+  await task_state.refetch(); // Refetch after updating task_id
+  if (!task_state.data.value) {
     return null;
   }
+  console.log(task_state.data.value.find(task => task.task_id === taskId))
   return task_state.data.value.find(task => task.task_id === taskId) || null;
 };
 
-
-
-    const getTaskIcon = (taskId: number) => {
-      const taskState = getTaskStateForCard(taskId);
-      console.log(taskState.state)
-      if (taskState) {
-        return taskState.state === 0 ? { icon: 'mdi-clock-outline', color: 'yellow' } 
-                                     : { icon: 'mdi-check-circle', color: 'green' };
-      }
-      return { icon: '', color: '' };
-    };
+// Computed property to handle async task state for icons
+const getTaskIcon = (taskId: number) => {
+  const taskState = task_state.data.value?.find(task => task.task_id === taskId);
+  if (taskState) {
+    return taskState.state === 0
+      ? { icon: 'mdi-clock-outline', color: 'yellow' }
+      : { icon: 'mdi-check-circle', color: 'green' };
+  }
+  return { icon: '', color: '' };
+};
 
     const cardCompRate = (
   CompArray: { task_id: number; completionRate: number }[] | undefined,
