@@ -35,7 +35,8 @@ const {
     User_custom, 
     Task_solutions,
     Daily_Tasks,
-    Notification
+    Notification,
+    Advertisement_Cards
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
@@ -55,6 +56,7 @@ db.User_customization = User_custom;
 db.Task_solutions = Task_solutions; // Assign Task_solutions to db
 db.Daily_Tasks = Daily_Tasks;
 db.Notification = Notification;
+db.Advertisement_Cards = Advertisement_Cards;
 
 // Initialize database and themes
 const initializeDatabase = async () => {

@@ -218,18 +218,18 @@
     @click="TaskView(card.id)"
   >
     <!-- Task Icon and Status -->
-    <v-col class="d-flex align-center justify-center" cols="2" style="min-height: 100%;">
-      <!-- Use a computed property or await the async result properly -->
+    <v-col v-if="task_state.data" class="d-flex align-center justify-center" cols="2" style="min-height: 100%;">
       <v-icon 
-        v-if="task_state.data && getTaskStateForCard(card.id)" 
-        :color="getTaskStateForCard(card.id).state === 0 ? 'yellow' : 'green'" 
+        v-if="getTaskStateForCard(card.id)" 
+        :color="getTaskStateForCard(card.id)?.state === 0 ? 'yellow' : 'green'" 
         small
       >
-        {{ getTaskStateForCard(card.id).state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
+        {{ getTaskStateForCard(card.id)?.state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
       </v-icon>
-      
       <span v-else>&nbsp;</span>
     </v-col>
+    
+
     
 
 <!-- Task Title -->
@@ -269,7 +269,7 @@ https://laravel-news.com/laravel-pagination
 -->
 <v-pagination 
 v-model="pageNumber" 
-:length="Math.ceil(15000 / 15)" 
+:length="Math.ceil(allTaskCountQuery.data.value / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
 
@@ -285,9 +285,11 @@ import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import router from '@/router';
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import { number } from 'zod';
+import { useRoute, useRouter } from 'vue-router';
+
 
 // Static card data
 const cards = ref([
@@ -295,14 +297,16 @@ const cards = ref([
 ]);
 
 // Query hooks
+const offset = ref<number>(0);
 const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
-const cardsQuery = useCards();
+const cardsQuery = useCards(offset);
 const completion_rates = useCompletionRates();
 const allTaskCountQuery = useAllTaskCount();
 const taskCount = ref(0);
 const quote = UseQuote();
 //----
+const route = useRoute();
 const apexchart = VueApexCharts;
 const selectedThemes = ref<string[]>([]);
 const get_user_name = ref<string | null>(null);
@@ -315,7 +319,6 @@ const monthsNames = [
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-
 const tasks = computed(() => {
   if (
     selectedThemes.value.length === 0 &&
@@ -631,30 +634,47 @@ const getDaysInMonth = (year: number, month: number): number => {
       if (difficulty === 1) return 'Közepes';
       return 'Nehéz';
     };
-    const task_id = ref(0);
-  const task_state = useTaskState(task_id.value); // Ensure task_id is used correctly
+    // Get the user's ID reactively
+const userId = ref(get_fullUser.value.id);
 
-const getTaskStateForCard = async (taskId: number) => {
-  task_id.value = taskId
-  console.log(task_id.value)  
-  task_state.refetch(); 
-  if (!tasks || !task_state.data.value) {
+// Fetch task state based on user ID
+const task_state = useTaskState(userId);
+
+// Watch for changes in the fetched task state
+watchEffect(() => {
+  if (task_state.data.value) {
+    console.log('Task state has been updated:', task_state.data.value);
+  }
+});
+
+const getTaskStateForCard = (taskId: number) => {
+  if (!task_state.data || !task_state.data.value) {
+    console.log('Task state data is not available yet.');
     return null;
   }
-  return task_state.data.value.find(task => task.task_id === taskId) || null;
+
+  const task = task_state.data.value.find((task) => task.task_id === taskId);
+  if (task) {
+    console.log(`Found task state for taskId ${taskId}:`, task);
+  } else {
+    console.log(`No task found for taskId ${taskId}`);
+  }
+
+  return task || null;
 };
 
 
 
-    const getTaskIcon = (taskId: number) => {
-      const taskState = getTaskStateForCard(taskId);
-      console.log(taskState.state)
-      if (taskState) {
-        return taskState.state === 0 ? { icon: 'mdi-clock-outline', color: 'yellow' } 
-                                     : { icon: 'mdi-check-circle', color: 'green' };
-      }
-      return { icon: '', color: '' };
-    };
+// Computed property to handle async task state for icons
+const getTaskIcon = (taskId: number) => {
+  const taskState = task_state.data.value?.find(task => task.task_id === taskId);
+  if (taskState) {
+    return taskState.state === 0
+      ? { icon: 'mdi-clock-outline', color: 'yellow' }
+      : { icon: 'mdi-check-circle', color: 'green' };
+  }
+  return { icon: '', color: '' };
+};
 
     const cardCompRate = (
   CompArray: { task_id: number; completionRate: number }[] | undefined,
@@ -743,27 +763,33 @@ onMounted(async ()=>{
           }
         }
 });
-const user_id = ref<string>('');
-const solvedTaskStatesQuery = useSolvedTaskRates(user_id);  // Pass `user_id` to query
-onMounted(async () =>{
-  
-    user_id.value = get_fullUser.value.id;
 
-  watch(() => solvedTaskStatesQuery, (newRates) => {
-    console.log(get_fullUser)
-    if (newRates) {
-      console.log('New rates:', newRates);
-      series.value = newRates.countpercenct;  // Update series or other reactive values
+
+const UpdatePage = (newPage: number) => {
+  offset.value = newPage;
+  router.push({ query: { page: newPage, per_page: 15 } });
+  cardsQuery.refetch();
+};
+
+const user_id = ref<string | null>(null);
+const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
+
+onMounted(async () => {
+  watch(() => get_fullUser.value, (newUser) => {
+    if (newUser && newUser.id) {
+      user_id.value = String(newUser.id);
+      solvedTaskStatesQuery.refetch();
     }
-  });
+  }, { immediate: true });
 
-      })
+  watch(() => solvedTaskStatesQuery.data, (newData) => {
+    if (newData) {
+      console.log('New task rates:', newData.value);
+      series.value = newData.value.countpercenct;
+    }
+  }, { deep: true });
+});
 </script>
-
-
-
-
-
 
 <style scoped>
   .hero {
