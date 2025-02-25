@@ -1,4 +1,5 @@
-const settingsConfirmService = require("../services/settingsConfirmService");
+const settingsConfirmService = require("../services/settingsConfirmService")
+const communityService = require("../services/communityService");
 
 require("dotenv").config();
 
@@ -200,5 +201,83 @@ exports.getAllReports = async (req,res,next) =>{
 
     }catch(error){
         next(error);
+    }
+}
+
+exports.closeReport = async (req,res,next) =>{
+    const {id, user_id, admin_id, content, content_id, content_type, token} = req.body;
+
+    const secretKey = process.env.JWT_KEY;
+    
+    try{
+        var decoded = null;
+        
+        if(token){
+            decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        }else{
+            const error = new Error("Valami hiba történt a felhasználó igazolásában!");
+    
+            error.status = 500;
+    
+            throw error;
+        }
+
+        const adminCheck = await settingsConfirmService.getElseUserById(decoded.id);
+
+        if(!adminCheck){
+            const error = new Error("A felhasználónak nincs ehhez joga!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const close_result = await settingsConfirmService.closeReport(id);
+
+        if(!close_result){
+            const error = new Error("Nem sikerült megváltoztatni a bejelentés státuszát!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const newNotif = {
+            id: null,
+            type: false,
+            user_id: user_id,
+            from_user_id: admin_id,
+            notif_content: content,
+            content_type: null,
+            content_id: null,
+            closed: true
+        }
+
+        if(content_id){
+            const content_delete = await settingsConfirmService.deleteContent(content_id, content_type);
+
+            if(content_delete == 'Error deleting content.' || content_delete == 'Content not found.'){
+                const error = new Error("Hiba történt a fájl törlése közben!");
+    
+                error.status = 400;
+        
+                throw error;
+            }
+        }
+
+        const notif_result = await communityService.sendReports(newNotif);
+
+        if(!notif_result){
+            const error = new Error("Valami hiba történt az értesítés feltöltése közben!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        res.status(201).send('El lett küldve az értesítés!');
+    }
+    catch(error){
+        next(error)
     }
 }

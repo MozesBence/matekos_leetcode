@@ -10,4 +10,6 @@ router.patch('/set-settings', settingsConfirmController.setSettings);
 
 router.get('/get-all-reports', [ profileAuth.verifyToken ], settingsConfirmController.getAllReports);
 
+router.post('/close-report', [ profileAuth.verifyToken ], settingsConfirmController.closeReport);
+
 module.exports = router;

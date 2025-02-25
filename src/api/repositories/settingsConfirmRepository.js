@@ -242,7 +242,40 @@ class settingsConfirmRepository
 
 
         return reportObjects;
-    }     
+    }  
+    
+    async closeReport(id){
+        return await this.Notification.update({
+            closed : true
+        },
+        {
+            where:{
+                id: id
+            }
+        }
+        );
+    }
+    
+    async deleteContent(content_id, content_type) {
+        let content;
+        try {
+            if (content_type) {
+                content = await this.Community_posts.findOne({ where: { id: content_id } });
+            } else {
+                content = await this.Community_comments.findOne({ where: { id: content_id } });
+            }
+    
+            if (!content) {
+                return { success: false, message: "Content not found." };
+            }
+    
+            const result = await content.destroy();
+    
+            return { success: true, message: "Content deleted successfully.", result };
+        } catch (error) {
+            return { success: false, message: "Error deleting content.", error };
+        }
+    }
 }
 
 module.exports = new settingsConfirmRepository(db);

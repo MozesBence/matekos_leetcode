@@ -30,6 +30,14 @@ class settingsConfirmService
     async getReports(){
         return await settingsConfirmRepository.getReports();
     }
+
+    async closeReport(id){
+        return await settingsConfirmRepository.closeReport(id);
+    }
+
+    async deleteContent(content_id, content_type){
+        return await settingsConfirmRepository.deleteContent(content_id, content_type);
+    }
 }
 
 module.exports = new settingsConfirmService();

@@ -594,130 +594,202 @@
                             <h1 class="text-center">Bejelentések</h1>
 
                             <div style="border: .1vw solid white; height: auto; min-height: 85%; max-height: 40vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminNotif">
+                              
+                              <v-slide-y-transition mode="out-in">
+                                <div class="d-flex justify-center"  v-if="AllReports.length == 0">
+                                  <h1 style="font-weight: normal;">Jelenleg egy bejelentés sincs!</h1>
+                                  <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
+                                </div>
+                              </v-slide-y-transition>
+                              
                               <v-expansion-panels v-for="(report, index) in AllReports" class="d-flex" elevation="0" style="position: relative;">
-                                <v-expansion-panel style="background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="mb-2">
-                                  <v-expansion-panel-title class="px-4 py-2">
-                                    <div class="w-100 rounded position-relative align-center d-flex">
-                                      <div>
-                                        <div class="d-flex mb-2">
-                                          <v-icon size="20" class="mr-2">mdi-flag-outline</v-icon>
-                                          <h2 style="font-weight: normal;">{{ report.notif_content }}</h2>
-                                        </div>
-                                        <div class="d-flex align-center">
-                                          <v-icon>mdi-gavel</v-icon>
-                                          <div class="d-flex flex-row ga-2 pl-3 align-center">
-                                            <div 
-                                            class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
-                                            style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
-                                            @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
-                                              <img :src="report.Reporter.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                              <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
-                                            </div>
+                                <v-slide-y-transition mode="out-in">
+                                  <v-expansion-panel style="background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="mb-2" :disabled="report.closed != 0">
+                                    <v-expansion-panel-title class="px-4 py-2">
+                                      <div class="w-100 rounded position-relative align-center d-flex">
+                                        <div>
+                                          <div class="d-flex mb-2">
+                                            <v-icon size="20" class="mr-2">mdi-flag-outline</v-icon>
+                                            <h2 style="font-weight: normal;">{{ report.notif_content }}</h2>
                                           </div>
-                                          <v-icon class="ml-2">mdi-arrow-right</v-icon>
-                                          <div class="d-flex flex-row ga-2 pl-3 align-center">
-                                            <div 
-                                            class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
-                                            style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
-                                            @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
-                                              <img :src="report.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                              <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div style="right: 1vw;" class="position-absolute">
-                                        <v-tooltip location="left">
-                                          <template v-slot:activator="{ props }">
-                                            <v-btn 
-                                              elevation="0" 
-                                              icon 
-                                              small
-                                              style="background-color: transparent;"
-                                              v-bind="props"
-                                            >
-                                              <v-icon size="30">mdi-check-circle-outline</v-icon>
-                                            </v-btn>
-                                          </template>
-                                          <span style="font-size: larger;">Lezárás</span>
-                                        </v-tooltip>
-                                      </div>
-                                    </div>
-                                  </v-expansion-panel-title>
-                                  <v-expansion-panel-text style="position: relative;">
-                                    <v-list style="background-color: transparent;" class="pa-0" v-if="report.reportedPost">
-                                      <div>
-                                        <div class="px-2 my-1 d-flex">
-                                          <h3 class="mr-1">Poszt címe / létrehozási dátuma: </h3>
-                                          <h3 style="font-weight: normal;">{{ report.reportedPost.title }}</h3>
-                                          <v-divider vertical class="mx-2"></v-divider>
-                                          <h3 style="font-weight: normal;">{{ report.reportedPost.createdAt }}</h3>
-                                          <v-divider vertical class="mx-2" v-if="report.reportedPost.gotEdit"></v-divider>
-                                          <h3 style="font-weight: normal;" v-if="report.reportedPost.gotEdit">[Szerkeztve]</h3>
-                                        </div>
-
-                                        <v-divider></v-divider>
-
-                                        <div class="px-2 my-1">
-                                          <h3>Poszt kontent: </h3>
-                                          <div v-html="report.reportedPost.content" style="background-color: rgb(var(--v-theme-community_posts_bc));" class="py-2 px-2 mx-4 rounded"></div>
-                                        </div>
-
-                                        <v-divider v-if="report.reportedPost.tags.length > 0"></v-divider>
-
-                                        <div class="px-2 my-2" v-if="report.reportedPost.tags.length > 0">
-                                          <div class="d-flex flex-row align-items-center mr-2">
-                                            <v-icon icon="mdi-label-multiple" class="mr-1" color="community_primary_color"></v-icon>
-                                            <h3 class="font-weight-normal">Címkék</h3>
-                                          </div>
-                                          <div class="text-center d-flex flex-row flex-wrap align-center">
-                                            <v-chip
-                                              v-for="tag in report.reportedPost.tags"
-                                              :key="tag"  
-                                              class="mx-1 my-2"
-                                              color="community_primary_color"
-                                              variant="outlined"
-                                            >
-                                              <v-icon icon="mdi-tag-multiple" start></v-icon>
-                                              <h3 style="font-weight: normal;">{{ tag }}</h3>
-                                            </v-chip>
-                                          </div>
-                                        </div>
-
-                                        <v-divider v-if="report.reportedPost.files.length > 0"></v-divider>
-
-                                        <div class="mt-2">
-                                          <div class="d-flex flex-row align-items-center mr-2">
-                                            <v-icon icon="mdi-file-multiple" class="mr-1" color="community_primary_color"></v-icon>
-                                            <h3 class="font-weight-normal">Fájlok</h3>
-                                          </div>
-                                          <div v-if="report.reportedPost.files.length > 0" v-for="(file, index) in report.reportedPost.files" :key="index">
-                                            <v-card-text>
-                                              <div class="d-inline-flex flex-column justify-center align-center">
-                                                <v-btn 
-                                                  icon 
-                                                  elevation="0" 
-                                                  size="50"
-                                                  @click="downloadFile(file.file)"
-                                                  color="transparent"
-                                                >
-                                                  <v-icon size="30">mdi-file</v-icon>
-                                                </v-btn>
-                                                <h3 style="font-weight: normal;">
-                                                  {{ (file.dataValues.file_name) }}
-                                                </h3>
-                                                <h5 style="font-weight: normal;">
-                                                  Méret: {{ formatFileSize(file.dataValues.file_size ) }}
-                                                </h5>
+                                          <div class="d-flex align-center">
+                                            <v-icon>mdi-gavel</v-icon>
+                                            <div class="d-flex flex-row ga-2 pl-3 align-center">
+                                              <div 
+                                              class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                              style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                              @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
+                                                <img :src="report.Reporter.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
                                               </div>
-                                            </v-card-text>
+                                            </div>
+                                            <v-icon class="ml-2">mdi-arrow-right</v-icon>
+                                            <div class="d-flex flex-row ga-2 pl-3 align-center">
+                                              <div 
+                                              class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                              style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                              @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
+                                                <img :src="report.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
+                                              </div>
+                                            </div>
                                           </div>
                                         </div>
-
+                                        <div style="position: absolute; right: 2vw;" v-if="report.closed != 0">
+                                          <h3 style="color: rgb(var(--v-theme-success));">LEZÁRVA</h3>
+                                        </div>
                                       </div>
-                                    </v-list>
-                                  </v-expansion-panel-text>
-                                </v-expansion-panel>
+                                    </v-expansion-panel-title>
+                                    <v-expansion-panel-text style="position: relative;" v-if="!report.closed">
+                                      <v-list style="background-color: transparent;" class="pa-0" v-if="report.reportedPost">
+                                        <div>
+                                          <div class="px-2 my-1 d-flex">
+                                            <h3 class="mr-1">Poszt címe / létrehozási dátuma: </h3>
+                                            <h3 style="font-weight: normal;">{{ report.reportedPost.title }}</h3>
+                                            <v-divider vertical class="mr-2 ml-3"></v-divider>
+                                            <h3 style="font-weight: normal;">{{ report.reportedPost.createdAt }}</h3>
+                                            <v-divider vertical class="mx-2 ml-3" v-if="report.reportedPost.gotEdit"></v-divider>
+                                            <h3 style="font-weight: normal;" v-if="report.reportedPost.gotEdit">[Szerkeztve]</h3>
+                                          </div>
+
+                                          <v-divider></v-divider>
+
+                                          <div class="px-2 my-1">
+                                            <h3>Poszt kontent: </h3>
+                                            <div v-html="report.reportedPost.content" style="background-color: rgb(var(--v-theme-community_posts_bc));" class="py-2 px-2 mx-4 rounded"></div>
+                                          </div>
+
+                                          <v-divider v-if="report.reportedPost.tags.length > 0"></v-divider>
+
+                                          <div class="px-2 my-2" v-if="report.reportedPost.tags.length > 0">
+                                            <div class="d-flex flex-row align-items-center mr-2">
+                                              <v-icon icon="mdi-label-multiple" class="mr-1" color="community_primary_color"></v-icon>
+                                              <h3 class="font-weight-normal">Címkék</h3>
+                                            </div>
+                                            <div class="text-center d-flex flex-row flex-wrap align-center">
+                                              <v-chip
+                                                v-for="tag in report.reportedPost.tags"
+                                                :key="tag"  
+                                                class="mx-1 my-2"
+                                                color="community_primary_color"
+                                                variant="outlined"
+                                              >
+                                                <v-icon icon="mdi-tag-multiple" start></v-icon>
+                                                <h3 style="font-weight: normal;">{{ tag }}</h3>
+                                              </v-chip>
+                                            </div>
+                                          </div>
+
+                                          <v-divider v-if="report.reportedPost.files.length > 0"></v-divider>
+
+                                          <div class="mt-2" v-if="report.reportedPost.files.length > 0">
+                                            <div class="d-flex flex-row align-items-center mr-2">
+                                              <v-icon icon="mdi-file-multiple" class="mr-1" color="community_primary_color"></v-icon>
+                                              <h3 class="font-weight-normal">Fájlok</h3>
+                                            </div>
+                                            <div v-for="(file, index) in report.reportedPost.files" :key="index">
+                                              <v-card-text>
+                                                <div class="d-inline-flex flex-column justify-center align-center">
+                                                  <v-btn 
+                                                    icon 
+                                                    elevation="0" 
+                                                    size="50"
+                                                    @click="downloadFile(file.file)"
+                                                    color="transparent"
+                                                  >
+                                                    <v-icon size="30">mdi-file</v-icon>
+                                                  </v-btn>
+                                                  <h3 style="font-weight: normal;">
+                                                    {{ (file.dataValues.file_name) }}
+                                                  </h3>
+                                                  <h5 style="font-weight: normal;">
+                                                    Méret: {{ formatFileSize(file.dataValues.file_size ) }}
+                                                  </h5>
+                                                </div>
+                                              </v-card-text>
+                                            </div>
+                                          </div>
+
+                                          <div class="d-flex justify-space-around my-3">
+                                            <v-tooltip location="top">
+                                              <template v-slot:activator="{ props }">
+                                                <v-btn 
+                                                  elevation="0" 
+                                                  icon 
+                                                  small
+                                                  style="background-color: transparent;"
+                                                  v-bind="props"
+                                                  @click="ReportCloseOpen('ReportDelete')"
+                                                >
+                                                  <v-icon size="35">mdi-close-outline</v-icon>
+                                                </v-btn>
+                                              </template>
+                                              <span style="font-size: larger;">Törlés</span>
+                                            </v-tooltip>
+
+                                            <v-tooltip location="top">
+                                              <template v-slot:activator="{ props }">
+                                                <v-btn 
+                                                  elevation="0" 
+                                                  icon 
+                                                  small
+                                                  style="background-color: transparent;"
+                                                  v-bind="props"
+                                                  @click="ReportCloseOpen('ReportAccept')"
+                                                >
+                                                  <v-icon size="35">mdi-check-circle-outline</v-icon>
+                                                </v-btn>
+                                              </template>
+                                              <span style="font-size: larger;">Engedélyezés</span>
+                                            </v-tooltip>
+                                          </div>
+
+                                          <v-expand-transition>
+                                            <div v-if="ReportAccept || ReportDelete">
+                                              <div>
+                                                <v-text-field v-model="CloseMessage" label="Üzenet" variant="outlined" style="width: 100%;"></v-text-field>
+                                              </div>
+                                              <div class="d-flex justify-center">
+                                                <v-slide-y-transition mode="out-in">
+                                                  <v-btn 
+                                                    elevation="0" 
+                                                    text 
+                                                    small
+                                                    style="background-color: transparent; width: 40%;"
+                                                    variant="flat"
+                                                    :disabled="!CloseMessage"
+                                                    v-if="ReportAccept"
+                                                    @click="ReportClose(report, report.id, report.Reporter.id, report.reportedPost.id, report.content_type)"
+                                                  >
+                                                  Engedélyezés véglegesítése
+                                                  </v-btn>
+
+                                                  <v-btn 
+                                                    elevation="0" 
+                                                    text 
+                                                    small
+                                                    style="background-color: transparent; width: 40%;"
+                                                    variant="flat"
+                                                    :disabled="!CloseMessage"
+                                                    v-if="ReportDelete"
+                                                    @click="ReportClose(report, report.id, report.ReportedUser.id, report.reportedPost.id, report.content_type)"
+                                                  >
+                                                    Törlés véglegesítése
+                                                  </v-btn>
+                                                </v-slide-y-transition>
+                                              </div>
+                                            </div>
+                                          </v-expand-transition>
+
+                                        </div>
+                                      </v-list>
+                                      <div class="d-flex justify-center w-100 mx-3 my-5" v-if="ReportLoading">
+                                        <v-progress-circular indeterminate></v-progress-circular>
+                                      </div>
+
+                                    </v-expansion-panel-text>
+                                  </v-expansion-panel>
+                                </v-slide-y-transition>
                               </v-expansion-panels>       
                             </div>
 
@@ -772,7 +844,7 @@ import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
@@ -808,7 +880,11 @@ const NewPasswordConfirmInput = ref('');
 const otpCode = ref(null);
 const ResponseContent = ref(null);
 const ResponseError = ref(null);
+const ReportLoading = ref(false);
 
+const ReportDelete = ref(false);
+const ReportAccept = ref(false);
+const CloseMessage = ref('');
 
 const loading = ref(false);
 
@@ -1023,6 +1099,43 @@ function formatFileSize(size) {
     ' ' +
     ['B', 'KB', 'MB', 'GB', 'TB'][i]
   );
+}
+
+function dataURLtoBlob(dataURL) {
+  const [header, base64] = dataURL.split(',');
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(base64);
+  const array = [];
+  for (let i = 0; i < binary.length; i++) {
+    array.push(binary.charCodeAt(i));
+  }
+  return new Blob([new Uint8Array(array)], { type: mime });
+}
+
+function ReportCloseOpen(model){
+  if(model == 'ReportAccept'){
+    ReportAccept.value = true;
+    ReportDelete.value = false;
+  }else{
+    ReportAccept.value = false;
+    ReportDelete.value = true;
+  }
+}
+
+const { mutate : closeReport} = useCloseReport()
+
+const ReportClose = async (report,report_id, user_id, content_id, content_type) => {
+  ReportLoading.value = true;
+  await closeReport({id: report_id, user_id: user_id, admin_id: get_fullUser.value.id, content: CloseMessage.value, content_id: ReportDelete.value ? content_id : null, content_type: ReportDelete.value ? content_type : null, token: get_user_by_token}, {
+    onSuccess: (response) => {
+      report.closed = true;
+      ReportLoading.value = false;
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+      ReportLoading.value = false;
+    },
+  });
 }
 
 const { mutate : getSettingsConfirm} = useGetSettingsConfirm()

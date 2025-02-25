@@ -65,3 +65,49 @@ export const useGetAllReports = () => {
         }
     })
 }
+
+const closeReport = async (data: {id: number, user_id: number, admin_id: number, content: string, content_id: string | null, content_type: boolean | null, token: string}) => {
+    const response = await axiosClient.post('http://localhost:3000/close-report', data, {
+        headers: {
+            token: data.token,
+        },
+    });
+    return response.data
+}
+
+export const useCloseReport = () => {
+    return useMutation({
+        mutationFn: closeReport,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}
+
+const getAllNotif = async (token: string) => {
+    const response = await axiosClient.get('http://localhost:3000/get-all-reports', {
+        headers: {
+            token: token,
+        },
+    });
+    return response.data
+}
+
+export const useGetAllNotif = () => {
+    return useMutation({
+        mutationFn: getAllNotif,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}
