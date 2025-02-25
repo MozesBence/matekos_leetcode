@@ -71,11 +71,14 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await sequelize.sync({ alter: true });
+        await sequelize.sync({ alter: false });
         console.log('Database connected and models synchronized.');
 
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
+
+        await db.Advertisement_Cards.initializeCards()
+        console.log('Advertisements are added')
 
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');

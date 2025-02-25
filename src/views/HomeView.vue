@@ -769,6 +769,11 @@ const UpdatePage = (newPage: number) => {
   offset.value = newPage;
   router.push({ query: { page: newPage, per_page: 15 } });
   cardsQuery.refetch();
+  window.scrollTo({
+  top: 0,
+  left: 0,
+  behavior: 'smooth'
+});
 };
 
 const user_id = ref<string | null>(null);
