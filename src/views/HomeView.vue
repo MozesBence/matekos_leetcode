@@ -8,11 +8,11 @@
             {{ card.title }}
           </v-card-title>
           <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;">
-            {{ card.description }}
+            {{ card.content }} 
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
             <v-btn append-icon="mdi-chevron-right" color="white" text="Program megkezdése" variant="outlined" block style="width: 4rem;">
-              Program megkezdése
+              {{card.button_title}}
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -272,7 +272,6 @@ v-model="pageNumber"
 :length="Math.ceil(allTaskCountQuery.data.value / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
-
 </template>
 
 <script setup lang="ts">
@@ -287,14 +286,12 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import router from '@/router';
 import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
+import {useGetAllAds} from '@/api/adcards/adcardQuery'
 import { number } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
 
 
-// Static card data
-const cards = ref([
-  // your static card data
-]);
+
 
 // Query hooks
 const offset = ref<number>(0);
@@ -305,6 +302,8 @@ const completion_rates = useCompletionRates();
 const allTaskCountQuery = useAllTaskCount();
 const taskCount = ref(0);
 const quote = UseQuote();
+const { data: cards, isLoading, error } = useGetAllAds();
+
 //----
 const route = useRoute();
 const apexchart = VueApexCharts;
@@ -794,6 +793,7 @@ onMounted(async () => {
     }
   }, { deep: true });
 });
+
 </script>
 
 <style scoped>
