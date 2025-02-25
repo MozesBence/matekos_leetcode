@@ -89,12 +89,8 @@ export const useCloseReport = () => {
     })
 }
 
-const getAllNotif = async (token: string) => {
-    const response = await axiosClient.get('http://localhost:3000/get-all-reports', {
-        headers: {
-            token: token,
-        },
-    });
+const getAllNotif = async () => {
+    const response = await axiosClient.get('http://localhost:3000/get-all-notif');
     return response.data
 }
 

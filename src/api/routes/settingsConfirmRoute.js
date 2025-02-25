@@ -12,4 +12,6 @@ router.get('/get-all-reports', [ profileAuth.verifyToken ], settingsConfirmContr
 
 router.post('/close-report', [ profileAuth.verifyToken ], settingsConfirmController.closeReport);
 
+router.get('/get-all-notif',  settingsConfirmController.getAllNotif);
+
 module.exports = router;

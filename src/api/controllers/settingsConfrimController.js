@@ -281,3 +281,10 @@ exports.closeReport = async (req,res,next) =>{
         next(error)
     }
 }
+
+exports.getAllNotif = async (req,res,next) =>{
+    const id = req.query;
+    const all_notif = await settingsConfirmService.getAllnotif(id);
+
+    res.status(200).send(all_notif);
+}
