@@ -252,7 +252,7 @@
   
         <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden; --v-layout-left: 0px !important;" elevation="0">
           <v-container
-              v-if="!get_fullUser"
+              v-if="!get_user_by_token"
               fluid
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"

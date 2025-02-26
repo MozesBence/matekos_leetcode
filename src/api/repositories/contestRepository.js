@@ -26,10 +26,10 @@ class contestRepository
 
         const UsersOnLeaderboard = [];
 
-        var baseXP = 100;
+        var baseXP = 10;
 
-        const experienceForNextLevel = (level) => {
-            return baseXP * Math.pow(level, 2);
+        const experienceForNextLevel = () => {
+            return baseXP * 5;
         };
         
         const totalXPForLevel = (level) => {
