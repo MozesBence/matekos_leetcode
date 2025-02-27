@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
     const Badges = require("../models/badges")(sequelize, DataTypes);
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
-    const User_custom = require("../models/user_customization")(sequelize, DataTypes);
+    const User_customization = require("../models/user_customization")(sequelize, DataTypes);
     const Daily_Tasks = require('../models/daily_tasks')(sequelize,DataTypes);
     const Notification = require("./notification")(sequelize,DataTypes);
     const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         },
     });
 
-    Users.hasOne(User_custom, {
+    Users.hasOne(User_customization, {
         foreignKey: "user_id",
     });
 
@@ -187,7 +187,7 @@ module.exports = (sequelize, DataTypes) => {
         Badges,
         Alerts,
         Tokenz,
-        User_custom,
+        User_customization,
         Task_solutions,
         Daily_Tasks,
         Notification,

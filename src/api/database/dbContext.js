@@ -32,7 +32,7 @@ const {
     Badges, 
     Alerts, 
     Tokenz, 
-    User_custom, 
+    User_customization, 
     Task_solutions,
     Daily_Tasks,
     Notification,
@@ -52,7 +52,7 @@ db.Competitions_types = Competitions_types;
 db.Badges = Badges;
 db.Alerts = Alerts;
 db.Tokenz = Tokenz;
-db.User_customization = User_custom;
+db.User_customization = User_customization;
 db.Task_solutions = Task_solutions; // Assign Task_solutions to db
 db.Daily_Tasks = Daily_Tasks;
 db.Notification = Notification;
