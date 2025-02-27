@@ -66,7 +66,7 @@ const initializeDatabase = async () => {
             user: process.env.DB_USERNAME,
             password: process.env.DB_PASSWORD,
         });
-
+        console.log("itt")
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();

@@ -18,7 +18,7 @@
                 Heti kihivás
               </v-card-title>
               <v-card-subtitle>
-                <!-- Visszaszámláló hogy mennyi idő van még az aktuális challengből -->
+                {{ weeklyCountdown }}
               </v-card-subtitle>
             </v-card-text>
           </v-card>
@@ -32,7 +32,7 @@
                 Havi kihívás
               </v-card-title>
               <v-card-subtitle class="text-grey-lighten-1 pa-0">
-                <!-- Visszaszámláló hogy mennyi idő van még a kihívásból -->
+                {{ monthlyCountdown }}
               </v-card-subtitle>
             </v-card-text>
           </v-card>
@@ -97,15 +97,47 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, ref } from 'vue';
+<script setup lang="ts">
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-import { useLeaderboard } from '@/api/contest/contestQuery'
+import { useLeaderboard } from '@/api/contest/contestQuery';
 
 const LeaderboardArray = ref([]);
+
+const weeklyCountdown = ref('');
+const monthlyCountdown = ref('');
+let interval = null;
+
+function updateCountdowns() {
+  weeklyCountdown.value = getTimeUntilNextMonday();
+  monthlyCountdown.value = getTimeUntilNextMonth();
+}
+
+function getTimeUntilNextMonday() {
+  const now = new Date();
+  const nextMonday = new Date();
+  nextMonday.setDate(now.getDate() + ((8 - now.getDay()) % 7 || 7));
+  nextMonday.setHours(0, 0, 0, 0);
+  return formatTimeDifference(nextMonday - now);
+}
+
+function getTimeUntilNextMonth() {
+  const now = new Date();
+  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  return formatTimeDifference(nextMonth - now);
+}
+
+function formatTimeDifference(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / (60 * 60 * 24));
+  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
+  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+  const seconds = totalSeconds % 60;
+  return `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
+}
 
 onMounted(() => {
   const { mutate } = useLeaderboard();
@@ -118,13 +150,20 @@ onMounted(() => {
       console.log(error);
     },
   });
+
+  updateCountdowns();
+  interval = setInterval(updateCountdowns, 1000);
 });
 
-function hetiKihivasAtiranyit(){
-  router.push({path: '/weekly-challange'});
+onUnmounted(() => {
+  clearInterval(interval);
+});
+
+function hetiKihivasAtiranyit() {
+  router.push({ path: '/weekly-challange' });
 }
-function haviKihivasAtiranyit(){
-  router.push({path: '/monthly-challange'});
+function haviKihivasAtiranyit() {
+  router.push({ path: '/monthly-challange' });
 }
 </script>
 
