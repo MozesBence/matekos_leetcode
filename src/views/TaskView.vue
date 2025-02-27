@@ -70,29 +70,33 @@
               </v-chip>
             </v-row>
 
-            <div style="margin-top: 2em;">
+            <div style="margin-top: 2em;" class="taskDisplay">
               <h3>A feladat leírása:</h3>
               <div v-mathjax="task?.task"></div>
             </div>
 
-            <h3>A releváns community postok</h3>
             <v-row>
             </v-row>
           </v-col>
 
           <v-col cols="12" md="6">
-            <h1>Megoldás:</h1>
-            <br>
-            <input type="file" name="Megoldás" id="" />
-            <br>
-            <v-text-field label="Megoldás" variant="outlined"></v-text-field>
-            <br>
-            <v-btn width="100%" style="background-color: #0091EA; color: white">
-              Beadás
-            </v-btn>
-            <v-btn width="100%" style="margin-top: 1em;" @click="back">
-              Vissza a fooldalra
-            </v-btn>
+            <v-row>
+              <h1>Megoldás:</h1>
+            </v-row>
+            <v-row>
+              <v-text-field label="Megoldás" variant="outlined"></v-text-field>
+            </v-row>
+            <v-row>
+              <input type="file" name="Megoldás" id="" />
+            </v-row>
+            <v-row>
+              <v-btn width="100%" style="background-color: #0091EA; color: white">
+                Beadás
+              </v-btn>
+              <v-btn width="100%" style="margin-top: 1em;" @click="back">
+                Vissza a főoldalra
+              </v-btn>
+            </v-row>
           </v-col>
         </v-row>
       </v-main>
@@ -167,3 +171,10 @@ const back = () => {
 </script>
 
 
+<style scoped>
+.taskDisplay{
+  background-color: rgb(203, 207, 207);
+  border-radius: 15px;
+  padding: 2em;
+}
+</style>
