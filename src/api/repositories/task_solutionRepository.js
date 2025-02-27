@@ -115,7 +115,21 @@ const task_solutionRepository = {
                 }
             });
         }
-    } 
+    },
+    async submitSolution(userId, taskId, state) {
+        try {
+            const solution = await Task_solutions.create({
+                UserId: userId,
+                task_id: taskId,
+                state: state
+            });
+            return solution;
+        } catch (error) {
+            console.error("Error saving solution:", error);
+            throw error;
+        }
+    }
+    
 };
 
 module.exports = task_solutionRepository;

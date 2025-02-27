@@ -11,9 +11,17 @@
             {{ card.content }} 
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
-            <v-btn append-icon="mdi-chevron-right" color="white" text="Program megkezdése" variant="outlined" block style="width: 4rem;">
-              {{card.button_title}}
-            </v-btn>
+            <v-btn
+            append-icon="mdi-chevron-right"
+            color="white"
+            :text="card.button_title"
+            variant="outlined"
+            block
+            style="width: 4rem;"
+            @click="navigate(card.redirect)"
+          >
+            {{ card.button_title }}
+          </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -313,11 +321,24 @@ const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes);
 const currentYear = new Date().getFullYear();
+const user_id = ref<string | null>(null);
+const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const monthsNames = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
+
+
+const navigate = (redirect: string) => {
+  if (!redirect) return; // Safety check
+
+  if (redirect.startsWith("/")) {
+    router.push(redirect); // Internal Vue route
+  } else {
+    window.open(redirect, "_blank"); // External link opens in a new tab
+  }
+};
 const tasks = computed(() => {
   if (
     selectedThemes.value.length === 0 &&
@@ -435,21 +456,31 @@ function SetDifficultyValue(difficulty: string){
 //-------- Filter by completionrate ---------------
 const state_Query = ref(null);
 const state_param = ref('');
-const taskByState = useTaskByState(state_param,1);
+const taskByState = useTaskByState(state_param, user_id);
+
+watch(() => get_fullUser.value, (newUser) => {
+  if (newUser?.id) {
+    user_id.value = String(newUser.id);
+    taskByState.refetch();
+  }
+}, { immediate: true });
 
 watch(state_Query, (newVal) => {
   HandleStateChange(newVal);
 });
 
-function HandleStateChange(newVal: string | null){
+function HandleStateChange(newVal: string | null) {
   if (newVal == null) {
     state_param.value = '';
+    console.log(user_id.value);
     cardsQuery.refetch();
   } else {
+    console.log(user_id.value);
     SetStateParamsValue(newVal);
     taskByState.refetch();
   }
 }
+
 
 function SetStateParamsValue(state: string){
  switch (state) {
@@ -775,8 +806,7 @@ const UpdatePage = (newPage: number) => {
 });
 };
 
-const user_id = ref<string | null>(null);
-const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
+
 
 onMounted(async () => {
   watch(() => get_fullUser.value, (newUser) => {

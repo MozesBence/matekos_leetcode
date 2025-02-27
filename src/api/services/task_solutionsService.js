@@ -16,6 +16,9 @@ class Task_Solutions {
     async getTasksByCompletionState(state,userId){
         return await task_solutionRepository.getTasksByCompletionState(state,userId);
     }
+    async submitSolution(userId, taskId, score){
+        return await task_solutionRepository.submitSolution(userId, taskId, score);
+    }
 }
 
 module.exports = new Task_Solutions();
