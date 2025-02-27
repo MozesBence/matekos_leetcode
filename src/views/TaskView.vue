@@ -26,6 +26,8 @@
         <v-row style="height: 100vh; padding: 0.5em;">
           <!-- Left Column: Task Details -->
           <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+            <br>
+            <div class="taskInfo">
             <h1 style="text-align: left; width: 100%;">
               {{ task?.id }}. {{ task?.task_title }}
             </h1>
@@ -69,17 +71,55 @@
                 <p class="ma-0">👑 Creator: @Jozsi</p>
               </v-chip>
             </v-row>
+          </div>
 
             <div style="margin-top: 2em;" class="taskDisplay">
               <h3>A feladat leírása:</h3>
               <div v-mathjax="task?.task"></div>
             </div>
 
+            <div style="margin-top: 2em;" class="plusItems">
+            <br>
+            <v-expansion-panels style="border-radius: 15px;">
+              <v-expansion-panel
+                title="Hasonló feladatok"
+                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima"
+              >
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <br>
+            <v-expansion-panels style="border-radius: 15px;">
+              <v-expansion-panel>
+                <template v-slot:title>
+                  <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 1.
+                </template>
+                <v-expansion-panel-text>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima.
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
+            <br>
+            <v-expansion-panels style="border-radius: 15px;">
+              <v-expansion-panel>
+                <template v-slot:title>
+                  <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 2.
+                </template>
+                <v-expansion-panel-text>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima.
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
             <v-row>
             </v-row>
+            <br>
+            </div>
           </v-col>
 
           <v-col cols="12" md="6" style="padding: 2em;">
+            <v-row style="margin-bottom: 1em;margin-top: 1em;">
+              <h1>Megoldás formatuma:</h1>
+              <p>x = 1 peldaul</p>
+            </v-row>
             <v-row style="margin-bottom: 1em;margin-top: 1em;">
               <h1>Megoldás:</h1>
             </v-row>
@@ -172,7 +212,23 @@ const back = () => {
 
 
 <style scoped>
+v-main {
+  overflow-y: auto;
+}
+
+.taskInfo{
+  background-color: rgb(203, 207, 207);
+  border-radius: 15px;
+  padding: 2em;
+}
+
 .taskDisplay{
+  background-color: rgb(203, 207, 207);
+  border-radius: 15px;
+  padding: 2em;
+}
+
+.plusItems{
   background-color: rgb(203, 207, 207);
   border-radius: 15px;
   padding: 2em;
