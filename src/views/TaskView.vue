@@ -79,17 +79,17 @@
             </v-row>
           </v-col>
 
-          <v-col cols="12" md="6">
-            <v-row>
+          <v-col cols="12" md="6" style="padding: 2em;">
+            <v-row style="margin-bottom: 1em;margin-top: 1em;">
               <h1>Megoldás:</h1>
             </v-row>
-            <v-row>
+            <v-row style="margin-bottom: 1em;">
               <v-text-field label="Megoldás" variant="outlined"></v-text-field>
             </v-row>
-            <v-row>
+            <v-row style="margin-bottom: 1em;">
               <input type="file" name="Megoldás" id="" />
             </v-row>
-            <v-row>
+            <v-row style="margin-bottom: 1em;">
               <v-btn width="100%" style="background-color: #0091EA; color: white">
                 Beadás
               </v-btn>
