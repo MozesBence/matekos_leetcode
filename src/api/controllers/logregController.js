@@ -131,7 +131,6 @@ exports.registerUser = async (req, res, next) =>
 
                 //console.log("Email küldésére kész:", mailOptions);
             const email_send = await transporter.sendMail(mailOptions);
-
                             
             if(!email_send){
                 const error = new Error("Hiba törént az email küldése közbe!");
@@ -156,8 +155,6 @@ exports.successRegister = async (req,res,next) =>{
     const { token } = req.body;
 
     token_result = token != 'null' ? await logregServices.getToken(token) : null;
-
-    console.log(token_result);
 
     try{
         if(token_result == null){
