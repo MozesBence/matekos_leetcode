@@ -352,7 +352,7 @@
                     small
                     style="position: absolute; right: 0;"
                     class="mr-3"
-                    @click="AlertOpen(post)"
+                    @click="AlertOpen(post,true)"
                     v-if="get_fullUser"
                   >
                     <v-icon>mdi-flag-outline</v-icon>
@@ -451,7 +451,7 @@
                           </div>
                         </div>
                       </transition-group>
-                      <div class="ml-1">
+                      <div class="ml-1 position-relative">
                         <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
                           <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
                           {{ comment.like > 0 ? comment.like : null }}
@@ -475,6 +475,17 @@
                         </v-btn>
                         <v-btn v-if="comment.editable" text color="transparent" elevation="0" @click="CommentClose(comment)">
                           Mégse
+                        </v-btn>
+                        <v-btn
+                          elevation="0"
+                          icon
+                          small
+                          style="position: absolute; right: 0; background-color: transparent;"
+                          class="mr-3"
+                          @click="AlertOpen(comment,false)"
+                          v-if="get_fullUser"
+                        >
+                          <v-icon>mdi-flag-outline</v-icon>
                         </v-btn>
                       </div>
                       <v-expand-transition>
@@ -1256,11 +1267,13 @@ function formatDate(date) {
 const showAlert = ref(false);
 const ReportSelected = ref(null);
 const SelectedReportArray = ref(null);
+const SelectedReportArrayType = ref(true);
 
-function AlertOpen(array){
+function AlertOpen(array,igaze){
   showAlert.value = true;
   ReportSelected.value = null;
   SelectedReportArray.value = array;
+  SelectedReportArrayType.value = igaze;
 }
 
 function AlertClose(){
@@ -1270,9 +1283,9 @@ function AlertClose(){
 const { mutate: CommunityReports } = useSendReports();
 const SendReport = async (post) =>{
   await CommunityReports({
-    type: true, 
+    type: true,
     notif_content: ReportSelected.value, 
-    content_type: post, 
+    content_type: SelectedReportArrayType.value, 
     user_id: SelectedReportArray.value.User.id, 
     from_user_id: get_fullUser.value.id, 
     content_id: SelectedReportArray.value.id
