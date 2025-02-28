@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  
     <v-layout>
       <!-- App Bar -->
       <v-app-bar color="primary" :absolute="false">
@@ -76,8 +76,10 @@
             <div style="margin-top: 2em;" class="taskDisplay">
               <h3>A feladat leírása:</h3>
               <div v-mathjax="task?.task"></div>
+              <h3>Megoldás formatuma:</h3>
+              <p>x = 1</p>
             </div>
-
+            
             <div style="margin-top: 2em;" class="plusItems">
             <br>
             <v-expansion-panels style="border-radius: 15px;">
@@ -116,10 +118,8 @@
           </v-col>
 
           <v-col cols="12" md="6" style="padding: 2em;">
-            <v-row style="margin-bottom: 1em;margin-top: 1em;">
-              <h1>Megoldás formatuma:</h1>
-              <p>x = 1 peldaul</p>
-            </v-row>
+            
+     
             <v-row style="margin-bottom: 1em;margin-top: 1em;">
               <h1>Megoldás:</h1>
             </v-row>
@@ -141,7 +141,6 @@
         </v-row>
       </v-main>
     </v-layout>
-  </v-app>
 </template>
 
 <script lang="ts" setup>
@@ -214,6 +213,12 @@ const back = () => {
 <style scoped>
 v-main {
   overflow-y: auto;
+}
+
+.solution_format{
+  background-color: rgb(203, 207, 207);
+  border-radius: 15px;
+  padding: 2em;
 }
 
 .taskInfo{
