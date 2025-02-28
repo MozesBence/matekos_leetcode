@@ -783,6 +783,94 @@
 
                                         </div>
                                       </v-list>
+                                      <v-list style="background-color: transparent;" class="pa-0" v-if="report.reportedComment">
+                                        <div class="px-2 my-1 d-flex">
+                                          <h3 class="mr-1">Poszt címe / létrehozási dátuma: </h3>
+                                          <h3 style="font-weight: normal;">{{ report.reportedComment.title }}</h3>
+                                          <v-divider vertical class="mr-2 ml-3"></v-divider>
+                                          <h3 style="font-weight: normal;">{{ report.reportedComment.createdAt }}</h3>
+                                          <v-divider vertical class="mx-2 ml-3" v-if="report.reportedComment.gotEdit"></v-divider>
+                                          <h3 style="font-weight: normal;" v-if="report.reportedComment.gotEdit">[Szerkeztve]</h3>
+                                        </div>
+
+                                        <v-divider></v-divider>
+
+                                        <div class="px-2 my-1">
+                                          <h3>Comment kontent: </h3>
+                                          <div v-html="report.reportedComment.content" style="background-color: rgb(var(--v-theme-community_posts_bc));" class="py-2 px-2 mx-4 rounded"></div>
+                                        </div>
+
+                                        <div class="d-flex justify-space-around my-3">
+                                          <v-tooltip location="top">
+                                            <template v-slot:activator="{ props }">
+                                              <v-btn 
+                                                elevation="0" 
+                                                icon 
+                                                small
+                                                style="background-color: transparent;"
+                                                v-bind="props"
+                                                @click="ReportCloseOpen('ReportDelete')"
+                                              >
+                                                <v-icon size="35">mdi-close-outline</v-icon>
+                                              </v-btn>
+                                            </template>
+                                            <span style="font-size: larger;">Törlés</span>
+                                          </v-tooltip>
+
+                                          <v-tooltip location="top">
+                                            <template v-slot:activator="{ props }">
+                                              <v-btn 
+                                                elevation="0" 
+                                                icon 
+                                                small
+                                                style="background-color: transparent;"
+                                                v-bind="props"
+                                                @click="ReportCloseOpen('ReportAccept')"
+                                              >
+                                                <v-icon size="35">mdi-check-circle-outline</v-icon>
+                                              </v-btn>
+                                            </template>
+                                            <span style="font-size: larger;">Engedélyezés</span>
+                                          </v-tooltip>
+                                        </div>
+
+                                        <v-expand-transition>
+                                          <div v-if="ReportAccept || ReportDelete">
+                                            <div>
+                                              <v-text-field v-model="CloseMessage" label="Üzenet" variant="outlined" style="width: 100%;"></v-text-field>
+                                            </div>
+                                            <div class="d-flex justify-center">
+                                              <v-slide-y-transition mode="out-in">
+                                                <v-btn 
+                                                  elevation="0" 
+                                                  text 
+                                                  small
+                                                  style="background-color: transparent; width: 40%;"
+                                                  variant="flat"
+                                                  :disabled="!CloseMessage"
+                                                  v-if="ReportAccept"
+                                                  @click="ReportClose(report, report.id, report.Reporter.id, report.reportedComment.id, report.content_type)"
+                                                >
+                                                Engedélyezés véglegesítése
+                                                </v-btn>
+
+                                                <v-btn 
+                                                  elevation="0" 
+                                                  text 
+                                                  small
+                                                  style="background-color: transparent; width: 40%;"
+                                                  variant="flat"
+                                                  :disabled="!CloseMessage"
+                                                  v-if="ReportDelete"
+                                                  @click="ReportClose(report, report.id, report.ReportedUser.id, report.reportedComment.id, report.content_type)"
+                                                >
+                                                  Törlés véglegesítése
+                                                </v-btn>
+                                              </v-slide-y-transition>
+                                            </div>
+                                          </div>
+                                        </v-expand-transition>
+                                      </v-list>
                                       <div class="d-flex justify-center w-100 mx-3 my-5" v-if="ReportLoading">
                                         <v-progress-circular indeterminate></v-progress-circular>
                                       </div>
@@ -1278,6 +1366,7 @@ function getCookie(name){
 
 function Logout(){
   deleteCookie('user');
+  get_user_by_token = null;
   window.location.reload();
 }
 

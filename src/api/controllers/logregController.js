@@ -210,7 +210,6 @@ exports.loginUser = async (req, res, next) =>
             throw error;
         }
 
-
         if(user != null && user.activated == 0)
         {
             const error = new Error("A profil nincs aktiválva!");
