@@ -36,7 +36,16 @@ const router = createRouter({
           path: '/contest',
           name: 'contest',
           component: () => import('../views/ContestView.vue')
+        },{
+          path: '/weekly-challange',
+          name: 'weekly-challange',
+          component: () => import('../views/WeeklyChallangeView.vue')
         },
+        {
+          path: '/monthly-challange',
+          name: 'monthly-challange',
+          component: () => import('../views/MonthlyChallangeView.vue')
+        }
       ]
     },
     {
@@ -77,16 +86,6 @@ const router = createRouter({
       path: '/profile/:id',
       name: 'profile',
       component: () => import('../views/ProfileView.vue')
-    },
-    {
-      path: '/weekly-challange',
-      name: 'weekly-challange',
-      component: () => import('../views/WeeklyChallangeView.vue')
-    },
-    {
-      path: '/monthly-challange',
-      name: 'monthly-challange',
-      component: () => import('../views/MonthlyChallangeView.vue')
     },
     {
       path: '/profil/redeem',

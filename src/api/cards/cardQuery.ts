@@ -70,8 +70,7 @@ export const useTaskState = (id: Ref<number>) => {
     },
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
-    },
-    enabled: !!id.value, // Enable the query only when user ID is available
+    }
   });
 };
 
