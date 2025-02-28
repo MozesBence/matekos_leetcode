@@ -4,6 +4,10 @@ const { Op, where } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
+const bcrypt = require("bcrypt");
+
+const salt = 10;
+
 class settingsConfirmRepository
 {
     constructor(db)
@@ -284,11 +288,11 @@ class settingsConfirmRepository
             whereClause.user_name = { [Sequelize.Op.like]: `%${name}%` };
         }
     
-        if (activated_type === 0 || activated_type === 2) {
+        if (activated_type == 0 || activated_type == 2) {
             whereClause.activated = activated_type;
         }
     
-        if (typeof admin === "boolean") {
+        if (admin) {
             whereClause.admin = admin;
         }
     
@@ -319,7 +323,62 @@ class settingsConfirmRepository
 
         return users;
     }
+
+    async setUserSettings(content, id, type){
+        const user = await this.Users.findOne({
+            where:{
+                id: id
+            }
+        });
+
+        if(type == 1){
+            user.user_name = content;
+        }
+        else if(type == 2){
+            user.email = content;
+        }
+        else if(type == 3){
+            user.password = await bcrypt.hash(content, salt);
+        }
+
+        user.save();
+
+        return type == 3 ? user.password : content;
+    }
     
+    async setUserRoles(id, type){
+        const user = await this.Users.findOne({
+            where:{
+                id: id
+            }
+        });
+
+        if(type == 1){
+            user.activated = 1;
+        }
+        else if(type == 2){
+            user.user_role = 'banned';
+            user.activated = 2;
+            user.admin = 0;
+        }
+        else if(type == 3){
+            user.user_role = 'member';
+            user.activated = 1;
+            user.admin = 0;
+        }
+        else if(type == 4){
+            user.user_role = 'admin';
+            user.admin = 1;
+        }
+        else if(type == 5){
+            user.user_role = 'member';
+            user.admin = 0;
+        }
+
+        user.save();
+
+        return 'OK'
+    }
 }
 
 module.exports = new settingsConfirmRepository(db);

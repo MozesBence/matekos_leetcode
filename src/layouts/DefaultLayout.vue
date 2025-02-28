@@ -297,10 +297,10 @@
               v-model="dialog"
               max-width="1200"
             >
-              <v-card style="display: flex; flex-direction: column;">
+              <v-card style="display: flex; flex-direction: column; height: auto;">
                 <v-layout>
                   <div
-                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: fit-content; height: auto; transition: .3s;"
+                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: max-content; height: auto; transition: .3s;"
                   class="d-flex flex-column position-relative"
                   >
                     <div>
@@ -456,9 +456,9 @@
                     <div style="height: 9rem;"></div>
                   </div>
 
-                  <v-main class="d-flex justify-center pa-4">
+                  <v-main class="d-flex justify-center pa-4" style="height: auto;">
                     <v-slide-y-transition mode="out-in">
-                      <div :key="activePanel" class="w-100 px-5" style="height: auto; min-height: max-content; max-height: max-content;">
+                      <div :key="activePanel" class="w-100 px-5" style="height: auto;">
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
@@ -580,7 +580,7 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'users'" class="w-100 h-100" style="max-height: 40vh">
+                          <div v-if="activePanel == 'users'" class="w-100 h-100">
                             <h1 class="text-center">Felhasználók</h1>
                             <div class="d-flex align-center ga-2">
                               <v-text-field
@@ -593,12 +593,12 @@
                                 style="width: 40%;"
                               >
                               </v-text-field>
-                              <v-btn elevation="0">admin</v-btn>
-                              <v-btn elevation="0">bannolt</v-btn>
-                              <v-btn elevation="0">nem aktivált</v-btn>
+                              <v-btn elevation="0" @click="AdminType()" :style="{backgroundColor: adminTypeButton == 1 ? 'gray' : 'transparent'}">admin</v-btn>
+                              <v-btn elevation="0" @click="ActivatedType(2)" :style="{backgroundColor: activatedTypeButton == 2 ? 'gray' : 'transparent'}">bannolt</v-btn>
+                              <v-btn elevation="0" @click="ActivatedType(0)" :style="{backgroundColor: activatedTypeButton == 0 ? 'gray' : 'transparent'}">nem aktivált</v-btn>
                             </div>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 85%; max-height: 35vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminUsers">
+                            <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminUsers">
                               
                               <v-expansion-panels v-for="(user, index) in AllUsers" class="d-flex" elevation="0" style="position: relative;" @update:modelValue="handlePanelToggle">
                                 <v-slide-y-transition mode="out-in">
@@ -611,48 +611,105 @@
                                               <div 
                                                 v-bind="props" 
                                                 class="d-flex flex-row align-center pa-1 pr-3 rounded-pill" 
-                                                style="width: max-content; cursor: pointer;" 
-                                                :style="{ backgroundColor: user.admin ? 'rgb(var(--v-theme-admin_bc))' : 'rgb(var(--v-theme-community_posts_bc))' }"
+                                                style="width: max-content; cursor: pointer; background-color: rgb(var(--v-theme-community_posts_bc));" 
                                               >
                                                 <img 
                                                   :src="user.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : user.User_customization.profil_picture"  
                                                   alt="" 
-                                                  style="height: 2rem; width: 2rem; border-radius: 50%;" 
+                                                  style="height: 3rem; width: 3rem; border-radius: 50%;" 
                                                   class="mr-3"
                                                 >
-                                                <h3 style="font-weight: normal;">{{ user.user_name }}</h3>
+                                                <h2 style="font-weight: normal;">{{ user.user_name }}</h2>
                                               </div>
                                             </template>
-                                            <span>{{ user.admin ? 'Admin' : 'Member' }}</span>
+                                            <span>{{ user.user_role }}</span>
                                           </v-tooltip>
                                         </div>
                                         <div style="position: absolute; right: 2vw; background-color: rgb(var(--v-theme-error), .2);" class="pa-2 rounded-pill" v-if="user.activated == 2">
-                                          <h4 style="color: rgb(var(--v-theme-error));">BANNOLVA</h4>
+                                          <h3 style="color: rgb(var(--v-theme-error));">KITíLTVA</h3>
                                         </div>
                                         <div style="position: absolute; right: 2vw; background-color: rgb(var(--v-theme-warning), .2);" class="pa-2 rounded-pill" v-if="user.activated == 0">
-                                          <h4 style="color: rgb(var(--v-theme-warning));">NEM AKTIVÁLVA</h4>
+                                          <h3 style="color: rgb(var(--v-theme-warning));">NEM AKTIVÁLVA</h3>
+                                        </div>
+                                        <div style="position: absolute; right: 2vw; background-color: rgb(var(--v-theme-admin_bc), .2);" class="pa-2 rounded-pill" v-if="user.admin">
+                                          <h3 style="color: rgb(var(--v-theme-admin_bc));">ADMIN</h3>
                                         </div>
                                       </div>
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text style="position: relative;">
-                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Név megváltoztatás:</h4>
+                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Név megváltoztatás (A felhasználó névnek min. 6 és max. 24 karakter lehet!):</h4>
                                       <div class="d-flex align-center ga-2 my-2">
                                         <v-text-field v-model="users_UserName" :label="user.user_name" variant="outlined" hide-details></v-text-field>
-                                        <v-btn variant="flat">változtatás</v-btn>
+                                        <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserName, 1)" :disabled="!users_UserName">változtatás</v-btn>
                                       </div>
-                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Email megváltoztatás:</h4>
+                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Email megváltoztatás (A felhasználó eamil címe max. 35 karakter lehet!):</h4>
                                       <div class="d-flex align-center ga-2 my-2">
                                         <v-text-field v-model="users_UserEmail" :label="user.email" variant="outlined" hide-details></v-text-field>
-                                        <v-btn variant="flat">változtatás</v-btn>
+                                        <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserEmail, 2)" :disabled="!users_UserEmail">változtatás</v-btn>
                                       </div>
-                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Jelszó megváltoztatás:</h4>
+                                      <h4 style="font-weight: normal;" class="ml-2">Jelszó megváltoztatás (A felhasználó jelszava min. 8 és max. 24 karakter lehet!):</h4>
                                       <div class="d-flex align-center ga-2 my-2">
-                                        <v-text-field v-model="users_UserPassword" label="Felhasználó jelszava"variant="outlined" hide-details></v-text-field>
-                                        <v-btn variant="flat">változtatás</v-btn>
+                                        <v-text-field v-model="users_UserPassword" label="új jelszó..."variant="outlined" hide-details></v-text-field>
+                                        <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserPassword, 3)" :disabled="!users_UserPassword">változtatás</v-btn>
                                       </div>
 
-                                      <div v-if="user.activated == 0">
-                                        <v-btn variant="flat">User aktiválás</v-btn>
+
+                                      <div class="d-flex ga-5 pl-1 mt-10 position-relative">
+                                        <v-tooltip location="top">
+                                          <template v-slot:activator="{ props }">
+                                            <div v-if="user.activated == 0" v-bind="props">
+                                              <v-btn variant="flat" @click="setUserRoles(user, user.id, 1)">
+                                                <v-icon size="25">mdi-account-check</v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <span>AKTIVÁLÁS</span>
+                                        </v-tooltip>
+
+                                        <v-tooltip location="top">
+                                          <template v-slot:activator="{ props }">
+                                            <div v-if="user.activated != 2" v-bind="props">
+                                              <v-btn variant="flat" @click="setUserRoles(user, user.id, 2)">
+                                                <v-icon size="25">mdi-account-lock</v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <span>KITILTÁS</span>
+                                        </v-tooltip>
+
+                                        <v-tooltip location="right">
+                                          <template v-slot:activator="{ props }">
+                                            <div v-if="user.activated == 2" v-bind="props">
+                                              <v-btn variant="flat" @click="setUserRoles(user, user.id, 3)">
+                                                <v-icon size="25">mdi-account-lock-open</v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <span>KITILTÁS VISSZAVONÁSA</span>
+                                        </v-tooltip>
+
+                                        <v-tooltip location="right">
+                                          <template v-slot:activator="{ props }">
+                                            <div v-if="!user.admin && user.activated == 1" v-bind="props">
+                                              <v-btn variant="flat" @click="setUserRoles(user, user.id, 4)">
+                                                <v-icon size="25">mdi-key</v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <span>ADMINNÁ AVATÁS</span>
+                                        </v-tooltip>
+
+                                        <v-tooltip location="right">
+                                          <template v-slot:activator="{ props }">
+                                            <div v-if="user.admin" v-bind="props">
+                                              <v-btn variant="flat" @click="setUserRoles(user, user.id, 5)">
+                                                <v-icon size="25">mdi-key-remove</v-icon>
+                                              </v-btn>
+                                            </div>
+                                          </template>
+                                          <span>ADMIN MEGVONÁS</span>
+                                        </v-tooltip>
+
                                       </div>
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
@@ -1009,10 +1066,11 @@ import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
+
 
 const { currentRoute } = useRouter()
 
@@ -1197,6 +1255,148 @@ function handlePanelToggle(){
  users_UserEmail.value = ''; 
  users_UserPassword.value = '';
 }
+
+const { mutate : setUserNewSettings} = useSetUserNewSettings()
+
+const setNewSetting = async(user,id, model, type) =>{
+  await setUserNewSettings({content: model, id: id, type: type, token: get_user_by_token}, {
+    onSuccess: (response) => {
+      if(type == 1){
+        user.user_name = response;
+      }
+      else if(type == 2){
+        user.email = response;
+      }
+      else if(type == 3){
+        user.password = response;
+      }
+      handlePanelToggle();
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+    },
+  });
+}
+
+const { mutate : setNewUserRoles} = useSetUserRoles()
+
+const setUserRoles = async (user, id, type) => {
+  await setNewUserRoles({id: id, type: type, token: get_user_by_token}, {
+    onSuccess: (response) => {
+      if(type == 1){
+        user.activated = 1;
+      }
+      else if(type == 2){
+        user.user_role = 'banned';
+        user.activated = 2;
+        user.admin = 0;
+        if(get_fullUser.value.id == id){
+          deleteCookie('user');
+        }
+      }
+      else if(type == 3){
+        user.user_role = 'member';
+        user.activated = 1;
+        user.admin = 0;
+      }
+      else if(type == 4){
+        user.user_role = 'admin';
+        user.admin = 1;
+      }
+      else if(type == 5){
+        user.user_role = 'member';
+        user.admin = 0;
+      }
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+    },
+  });
+}
+
+var timeout = null;
+const activatedTypeButton = ref(null);
+const adminTypeButton = ref(null);
+
+function AdminType() {
+  adminTypeButton.value = adminTypeButton.value === null ? 1 : null;
+}
+
+function ActivatedType(number) {
+  activatedTypeButton.value = activatedTypeButton.value === number ? null : number;
+}
+
+// Watch az activatedTypeButton-ra
+watch(activatedTypeButton, async (newValue, oldValue) => {
+  UsersLoading.value = true;
+  await getAllUser({
+      name: searchQuery.value,
+      activated_type: newValue,
+      admin: adminTypeButton.value, 
+      token: get_user_by_token
+    }, 
+    {
+    onSuccess: (response) => {
+      AllUsers.value = response;
+      UsersLoading.value = false;
+    }
+  })
+});
+
+// Watch az adminTypeButton-ra
+watch(adminTypeButton, async (newValue, oldValue) => {
+  UsersLoading.value = true;
+  await getAllUser({
+      name: searchQuery.value,
+      activated_type: activatedTypeButton.value, 
+      admin: newValue, 
+      token: get_user_by_token
+    }, 
+    {
+    onSuccess: (response) => {
+      AllUsers.value = response;
+      UsersLoading.value = false;
+    }
+  })
+});
+
+watch(searchQuery, async (newValue) => {
+  clearTimeout(timeout);
+
+  if (newValue !== "") {
+    UsersLoading.value = true;
+    timeout = setTimeout( async () => {
+      await getAllUser({
+        name: newValue,
+        activated_type: activatedTypeButton.value, 
+        admin: adminTypeButton.value, 
+        token: get_user_by_token
+      }, 
+      {
+      onSuccess: (response) => {
+        AllUsers.value = response;
+        UsersLoading.value = false;
+      }
+    })
+  }, 300);
+  }else{
+    UsersLoading.value = true;
+    timeout = setTimeout( async () => {
+      await getAllUser({
+        name: null,
+        activated_type: activatedTypeButton.value, 
+        admin: adminTypeButton.value, 
+        token: get_user_by_token
+      }, 
+      {
+      onSuccess: (response) => {
+        AllUsers.value = response;
+        UsersLoading.value = false;
+      }
+    })
+  }, 300);
+  }
+});
 
 const { mutate : getAllReports} = useGetAllReports()
 

@@ -108,7 +108,7 @@ export const useGetAllNotif = () => {
     })
 }
 
-const getAllUser = async (data: {name: string | null,activated_type: number | null, admin: boolean | null, token: string}) => {
+const getAllUser = async (data: {name: string | null, activated_type: number | null, admin: boolean | null, token: string}) => {
     const response = await axiosClient.get('http://localhost:3000/get-all-users', {
         params: data,
         headers: {
@@ -121,6 +121,52 @@ const getAllUser = async (data: {name: string | null,activated_type: number | nu
 export const useGetAllUser = () => {
     return useMutation({
         mutationFn: getAllUser,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}
+
+const setUserNewSettings = async (data: {content: string, id: number, type: number, token: string}) => {
+    const response = await axiosClient.patch('http://localhost:3000/set-user-settings', data, {
+        headers:{
+            token: data.token
+        }
+    });
+    return response.data
+}
+
+export const useSetUserNewSettings = () => {
+    return useMutation({
+        mutationFn: setUserNewSettings,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}
+
+const setNewUserRoles = async (data: {id: number, type: number, token: string}) => {
+    const response = await axiosClient.patch('http://localhost:3000/set-user-roles', data, {
+        headers:{
+            token: data.token
+        }
+    });
+    return response.data
+}
+
+export const useSetUserRoles = () => {
+    return useMutation({
+        mutationFn: setNewUserRoles,
         onMutate: () => {
 
         },

@@ -39,13 +39,20 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     // FULLTEXT index hozzáadása az 'title' és 'content' oszlopokra
-    Community_posts.sync().then(() => {
-        return sequelize.query(`
-            ALTER TABLE community_posts ADD FULLTEXT(title, content);
-        `).catch(err => {
-            console.error('FULLTEXT index létrehozása sikertelen:', err);
-        });
-    });
+    Community_posts.sync().then(async () => {
+        const [results] = await sequelize.query(`
+            SHOW INDEX FROM community_posts WHERE Key_name = 'title';
+        `);
+        if (results.length === 0) {
+            await sequelize.query(`
+                ALTER TABLE community_posts ADD FULLTEXT(title, content);
+            `).catch(err => {
+                console.error('FULLTEXT index létrehozása sikertelen:', err);
+            });
+        } else {
+            console.log('FULLTEXT index már létezik, nem adom hozzá újra.');
+        }
+    });    
 
     return Community_posts;
 };
