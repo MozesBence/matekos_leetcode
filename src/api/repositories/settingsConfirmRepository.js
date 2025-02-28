@@ -276,6 +276,50 @@ class settingsConfirmRepository
             return { success: false, message: "Error deleting content.", error };
         }
     }
+
+    async getALlUser(name, activated_type, admin) {
+        const whereClause = {};
+    
+        if (name) {
+            whereClause.user_name = { [Sequelize.Op.like]: `%${name}%` };
+        }
+    
+        if (activated_type === 0 || activated_type === 2) {
+            whereClause.activated = activated_type;
+        }
+    
+        if (typeof admin === "boolean") {
+            whereClause.admin = admin;
+        }
+    
+        const users = await this.Users.findAll(
+            { 
+                where: whereClause,
+                include: [
+                    {
+                        model: this.User_customization,
+                        attributes: ["profil_picture"],
+                    },
+                ],
+            }
+        );
+
+        users.forEach(user =>{
+            if (user.User_customization.profil_picture != null) {
+                const profileProfPicBuffer = user.User_customization.profil_picture;
+                
+                const profileProfPicMimeType = user.User_customization.profil_picture_type || 'image/jpeg';
+                
+                if (profileProfPicBuffer) {
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    user.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            }
+        });
+
+        return users;
+    }
+    
 }
 
 module.exports = new settingsConfirmRepository(db);

@@ -458,7 +458,7 @@
 
                   <v-main class="d-flex justify-center pa-4">
                     <v-slide-y-transition mode="out-in">
-                      <div :key="activePanel" class="w-100 px-5" style="height: auto; min-height: fit-content;">
+                      <div :key="activePanel" class="w-100 px-5" style="height: auto; min-height: max-content; max-height: max-content;">
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
@@ -580,11 +580,88 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'users'" class="w-100 h-100">
+                          <div v-if="activePanel == 'users'" class="w-100 h-100" style="max-height: 40vh">
                             <h1 class="text-center">Felhasználók</h1>
+                            <div class="d-flex align-center ga-2">
+                              <v-text-field
+                                v-model="searchQuery"
+                                label="Keresés"
+                                clearable
+                                icon="mdi-magnify"
+                                variant="outlined"
+                                hide-details
+                                style="width: 40%;"
+                              >
+                              </v-text-field>
+                              <v-btn elevation="0">admin</v-btn>
+                              <v-btn elevation="0">bannolt</v-btn>
+                              <v-btn elevation="0">nem aktivált</v-btn>
+                            </div>
 
-                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
+                            <div style="border: .1vw solid white; height: auto; min-height: 85%; max-height: 35vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminUsers">
                               
+                              <v-expansion-panels v-for="(user, index) in AllUsers" class="d-flex" elevation="0" style="position: relative;" @update:modelValue="handlePanelToggle">
+                                <v-slide-y-transition mode="out-in">
+                                  <v-expansion-panel style="background-color: rgb(var(--v-theme-profile_bc)); position: relative;" class="mb-2">
+                                    <v-expansion-panel-title class="px-4 py-2">
+                                      <div class="w-100 rounded position-relative align-center d-flex">
+                                        <div class="d-flex flex-row ga-2 my-1 align-center">
+                                          <v-tooltip location="right">
+                                            <template v-slot:activator="{ props }">
+                                              <div 
+                                                v-bind="props" 
+                                                class="d-flex flex-row align-center pa-1 pr-3 rounded-pill" 
+                                                style="width: max-content; cursor: pointer;" 
+                                                :style="{ backgroundColor: user.admin ? 'rgb(var(--v-theme-admin_bc))' : 'rgb(var(--v-theme-community_posts_bc))' }"
+                                              >
+                                                <img 
+                                                  :src="user.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : user.User_customization.profil_picture"  
+                                                  alt="" 
+                                                  style="height: 2rem; width: 2rem; border-radius: 50%;" 
+                                                  class="mr-3"
+                                                >
+                                                <h3 style="font-weight: normal;">{{ user.user_name }}</h3>
+                                              </div>
+                                            </template>
+                                            <span>{{ user.admin ? 'Admin' : 'Member' }}</span>
+                                          </v-tooltip>
+                                        </div>
+                                        <div style="position: absolute; right: 2vw; background-color: rgb(var(--v-theme-error), .2);" class="pa-2 rounded-pill" v-if="user.activated == 2">
+                                          <h4 style="color: rgb(var(--v-theme-error));">BANNOLVA</h4>
+                                        </div>
+                                        <div style="position: absolute; right: 2vw; background-color: rgb(var(--v-theme-warning), .2);" class="pa-2 rounded-pill" v-if="user.activated == 0">
+                                          <h4 style="color: rgb(var(--v-theme-warning));">NEM AKTIVÁLVA</h4>
+                                        </div>
+                                      </div>
+                                    </v-expansion-panel-title>
+                                    <v-expansion-panel-text style="position: relative;">
+                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Név megváltoztatás:</h4>
+                                      <div class="d-flex align-center ga-2 my-2">
+                                        <v-text-field v-model="users_UserName" :label="user.user_name" variant="outlined" hide-details></v-text-field>
+                                        <v-btn variant="flat">változtatás</v-btn>
+                                      </div>
+                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Email megváltoztatás:</h4>
+                                      <div class="d-flex align-center ga-2 my-2">
+                                        <v-text-field v-model="users_UserEmail" :label="user.email" variant="outlined" hide-details></v-text-field>
+                                        <v-btn variant="flat">változtatás</v-btn>
+                                      </div>
+                                      <h4 style="font-weight: normal;" class="mt-1 ml-2">Jelszó megváltoztatás:</h4>
+                                      <div class="d-flex align-center ga-2 my-2">
+                                        <v-text-field v-model="users_UserPassword" label="Felhasználó jelszava"variant="outlined" hide-details></v-text-field>
+                                        <v-btn variant="flat">változtatás</v-btn>
+                                      </div>
+
+                                      <div v-if="user.activated == 0">
+                                        <v-btn variant="flat">User aktiválás</v-btn>
+                                      </div>
+                                    </v-expansion-panel-text>
+                                  </v-expansion-panel>
+                                </v-slide-y-transition>
+                              </v-expansion-panels>
+                              
+                              <div class="d-flex justify-center mx-3 my-5" v-if="UsersLoading">
+                                <v-progress-circular indeterminate></v-progress-circular>
+                              </div>
                             </div>
                           </div>
                         </v-fade-transition>
@@ -871,7 +948,7 @@
                                           </div>
                                         </v-expand-transition>
                                       </v-list>
-                                      <div class="d-flex justify-center w-100 mx-3 my-5" v-if="ReportLoading">
+                                      <div class="d-flex justify-center mx-3 my-5" v-if="ReportLoading">
                                         <v-progress-circular indeterminate></v-progress-circular>
                                       </div>
 
@@ -932,7 +1009,7 @@ import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
@@ -969,10 +1046,16 @@ const otpCode = ref(null);
 const ResponseContent = ref(null);
 const ResponseError = ref(null);
 const ReportLoading = ref(false);
+const UsersLoading = ref(false);
 
 const ReportDelete = ref(false);
 const ReportAccept = ref(false);
 const CloseMessage = ref('');
+const searchQuery = ref('');
+
+const users_UserName = ref('');
+const users_UserEmail = ref('');
+const users_UserPassword = ref('');
 
 const loading = ref(false);
 
@@ -1069,7 +1152,11 @@ function NotifActive(){
   loading.value = false;
 }
 
-function UsersActive(){
+const { mutate : getAllUser} = useGetAllUser()
+
+const AllUsers = ref([]);
+
+const UsersActive = async () =>{
   ProfSettingDraw.value = false;
   EmailSettingDraw.value = false;
   PassSettingDraw.value = false;
@@ -1091,6 +1178,24 @@ function UsersActive(){
   EmailInputDisabled.value = true;
   ConfirmCode.value = false;
   loading.value = false;
+
+  UsersLoading.value = true;
+  await getAllUser({name: null,activated_type: null, admin: null, token: get_user_by_token}, {
+    onSuccess: (response) => {
+      AllUsers.value = response;
+      UsersLoading.value = false;
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+      UsersLoading.value = false;
+    },
+  });
+}
+
+function handlePanelToggle(){
+ users_UserName.value = ''; 
+ users_UserEmail.value = ''; 
+ users_UserPassword.value = '';
 }
 
 const { mutate : getAllReports} = useGetAllReports()
@@ -1121,6 +1226,7 @@ const AdminNotifActive = async () =>{
   loading.value = false;
 
   AllReports.value = [];
+  ReportLoading.value = true;
   await getAllReports(get_user_by_token, {
     onSuccess: (response) => {
       response.forEach((post, index) => {
@@ -1130,9 +1236,11 @@ const AdminNotifActive = async () =>{
             AllReports.value.push(post);
           }
       });
+      ReportLoading.value = false;
     },
     onError: (error) => {
       console.log(error.response.data);
+      ReportLoading.value = false;
     },
   });
 }
@@ -1561,25 +1669,25 @@ export default {
     height: inherit !important; /* vagy adj meg egy kívánt magasságot */
 }
 
-.adminNotif{
+.adminUsers, .adminNotif{
   transition: .3s;
 }
 
-.adminNotif::-webkit-scrollbar {
+.adminUsers::-webkit-scrollbar, .adminNotif::-webkit-scrollbar {
   width: 8px; /* Görgetősáv szélessége */
 }
 
-.adminNotif::-webkit-scrollbar-track {
+.adminUsers::-webkit-scrollbar-track, .adminNotif::-webkit-scrollbar-track {
   background: transparent; /* Háttérszín */
   border-radius: 10px;
 }
 
-.adminNotif::-webkit-scrollbar-thumb {
+.adminUsers::-webkit-scrollbar-thumb, .adminNotif::-webkit-scrollbar-thumb {
   background: rgb(var(--v-theme-profile_bc)); /* Görgetősáv színe */
   border-radius: 10px;
 }
 
-.adminNotif::-webkit-scrollbar-thumb:hover {
+.adminUsers::-webkit-scrollbar-thumb:hover ,  .adminNotif::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.7);
 }
 </style>
