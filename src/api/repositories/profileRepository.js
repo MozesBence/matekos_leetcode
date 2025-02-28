@@ -77,7 +77,7 @@ class profileRepository
 
     async DarkmodeUpload(id, darkmode){
         const User = await this.User_customization.findOne({
-            where:{
+            where: {
                 user_id: id
             }
         });

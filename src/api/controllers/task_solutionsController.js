@@ -45,9 +45,32 @@ const getTasksByCompletionState = async (req,res,next) =>{
 
 }
 
+const submitSolution = async (req, res,next) => {
+    try {
+        const userId = req.user.id;
+        const { taskId, score } = req.body;
+
+        if (!taskId || score === undefined) {
+            return res.status(400).json({ message: "Missing required fields" });
+        }
+
+        const result = await taskSolutionService.submitSolution(userId, taskId, score);
+
+        res.status(201).json({
+            message: "Solution submitted successfully",
+            solutionId: result.insertId
+        });
+
+    } catch (error) {
+        console.error("Error submitting solution:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 module.exports = {
     getTaskState,
     getCompletionRate,
     getSolvedTasksRate,
-    getTasksByCompletionState
+    getTasksByCompletionState,
+    submitSolution
 };

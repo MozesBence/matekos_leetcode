@@ -14,7 +14,7 @@ const fs = require('fs');
 
 const storage = multer.memoryStorage();
 
-const MAX_SIZE = 10 * 1024 * 1024;  // Maximum 10MB
+const MAX_SIZE = 25 * 1024 * 1024;  // Maximum 10MB
 
 const upload = multer({
     storage,

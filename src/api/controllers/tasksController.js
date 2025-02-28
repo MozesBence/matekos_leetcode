@@ -86,6 +86,7 @@ const getTaskByThemes = async (req, res, next) => {
 };
 
 
+
 module.exports = {
   getCardInfo,
   getSpecificCard,
@@ -93,6 +94,6 @@ module.exports = {
   getTaskWithSearch,
   getRandomTask,
   getTasksByDifficult,
-  getTaskByThemes
+  getTaskByThemes,
 };
 

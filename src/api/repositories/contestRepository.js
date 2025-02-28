@@ -1,6 +1,6 @@
 const db = require("../database/dbContext");
 
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
@@ -22,14 +22,17 @@ class contestRepository
                 model: this.User_customization,
                 required: true,
             }],
+            where:{
+                activated: 1
+            }
         });
 
         const UsersOnLeaderboard = [];
 
-        var baseXP = 100;
+        var baseXP = 10;
 
-        const experienceForNextLevel = (level) => {
-            return baseXP * Math.pow(level, 2);
+        const experienceForNextLevel = () => {
+            return baseXP * 5;
         };
         
         const totalXPForLevel = (level) => {
