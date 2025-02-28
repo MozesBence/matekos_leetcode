@@ -46,10 +46,11 @@ exports.registerUser = async (req, res, next) =>
             }
         }
 
-        const result = await logregServices.registerUser(newUser);
-
+        
         try{
-            if(result)
+            const result = await logregServices.registerUser(newUser);
+            
+            if(result && result.id != null)
             {
                 // token generálás
                 const token = jwt.sign(
@@ -57,7 +58,6 @@ exports.registerUser = async (req, res, next) =>
                     process.env.JWT_KEY,
                     { expiresIn: '1h' }
                 );
-        
                 // Verifikációs token
                 const newToken =
                 {
@@ -65,6 +65,7 @@ exports.registerUser = async (req, res, next) =>
                     type: "regisztrálás",
                     user_id: result.id,
                 }
+
                 const token_result = await logregServices.uploadToken(newToken);
                 
                 // Verifikációs link
@@ -155,6 +156,8 @@ exports.successRegister = async (req,res,next) =>{
     const { token } = req.body;
 
     token_result = token != 'null' ? await logregServices.getToken(token) : null;
+
+    console.log(token_result);
 
     try{
         if(token_result == null){

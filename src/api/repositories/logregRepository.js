@@ -35,6 +35,7 @@ class logregRepository
             background_picture_type: null,
             user_id: user_id,
         };
+
         const newUser_custom = await this.User_customization.build(user_custom);
 
         await newUser_custom.save();
@@ -63,6 +64,8 @@ class logregRepository
 
     async uploadToken(tokenz)
     {
+        console.log(tokenz);
+        
         const newToken = await this.Tokenz.build(tokenz);
 
         await newToken.save();

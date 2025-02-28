@@ -265,7 +265,6 @@ onMounted(async () => {
         get_fullUser.value = get_user;
         get_fullUser_customs.value = get_user.User_customization;
         settingsShow.value = get_fullUser.value.id == userId;
-        console.log(settingsShow.value);
         handlePtofilPicters(get_user.User_customization ? { profil_picture: get_user.User_customization.profil_picture, background_picture: get_user.User_customization.background_picture } : { profil_picture: get_user.profil_picture, background_picture: get_user.background_picture })
       },
       onError: (error) => {
