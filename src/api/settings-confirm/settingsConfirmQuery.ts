@@ -107,3 +107,27 @@ export const useGetAllNotif = () => {
         }
     })
 }
+
+const getAllUser = async (data: {name: string | null,activated_type: number | null, admin: boolean | null, token: string}) => {
+    const response = await axiosClient.get('http://localhost:3000/get-all-users', {
+        params: data,
+        headers: {
+            token: data.token,
+        },
+    });    
+    return response.data
+}
+
+export const useGetAllUser = () => {
+    return useMutation({
+        mutationFn: getAllUser,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}

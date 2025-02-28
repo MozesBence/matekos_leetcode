@@ -38,6 +38,10 @@ class settingsConfirmService
     async deleteContent(content_id, content_type){
         return await settingsConfirmRepository.deleteContent(content_id, content_type);
     }
+    
+    async getALlUser(name, activated_type, admin){
+        return await settingsConfirmRepository.getALlUser(name, activated_type, admin);
+    }
 }
 
 module.exports = new settingsConfirmService();

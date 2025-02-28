@@ -33,6 +33,7 @@ const vuetify = createVuetify({
           cards_text_color: colors.grey.lighten5,
           text_color: colors.grey.darken4,
           default_btn_bc: colors.grey.darken4,
+          admin_bc: colors.indigo.darken2,
 
           nav_btn_hover: colors.blue.lighten3,
           nav_btn_active: colors.blue.base,
@@ -75,6 +76,7 @@ const vuetify = createVuetify({
           secondary: colors.indigo.darken3,
           text_color: colors.grey.lighten5,
           default_btn_bc: colors.grey.lighten5,
+          admin_bc: colors.indigo.darken2,
 
           nav_btn_hover: colors.blue.lighten4,
           nav_btn_active: colors.blue.lighten3,
