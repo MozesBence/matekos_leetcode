@@ -2,7 +2,7 @@
 <template>
   <div class="background-video-container">
     <video autoplay loop muted playsinline id="background-video">
-      <source src="../components/background/profile_background.mp4" type="video/mp4" />
+      <source src="../components/background/profile_background.mp4" type="video/mp4"/>
     </video>
     <div class="background-overlay"></div>
   </div>
@@ -11,20 +11,21 @@
   class="d-flex justify-center align-center"
   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
   >
-    <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded-lg">
-      <v-btn 
-      icon
-      @click="goBack" 
-      style="position: absolute; top: .2rem; left: .4rem; z-index: 5; pointer-events: visible;">
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
-      <div class="d-flex justify-center">
+    <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded">
+      <div class="position-absolute" style="width: max-content; left: .5rem; top: .1vw;">
+        <v-btn 
+        icon
+        @click="goBack" 
+        style="z-index: 5; pointer-events: visible;">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+      </div>
+      <div class="d-flex justify-center position-absolute ga-2" style="width: max-content; right: .5rem; top: .1vw;">
         <v-btn
         v-if="settingsShow"
         icon
         @click="handleDarkmodeSwitch"
-        style="position: absolute; top: .2rem; z-index: 5; pointer-events: visible;"
-        :style="{right: !settingsShow ? '.4rem': '4rem'}"
+        style="z-index: 5; pointer-events: visible;"
         >
           <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
         </v-btn>
@@ -33,7 +34,7 @@
         v-if="settingsShow"
         icon
         @click="dialog = true"
-        style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
+        style="z-index: 5; pointer-events: visible;"
         >
           <v-icon>mdi-account-cog</v-icon>
         </v-btn>
@@ -56,7 +57,7 @@
             @click="triggerBackPicFileInput">
             <template v-if="isBackImageAvailable" style="height: 100%;">
               <img 
-                :src="backImage" 
+                :src="backImage"
                 @error="setDefaultBackground"
                 class="background"
                 ref="backgroundImg"
@@ -99,7 +100,7 @@
               />
             </template>
             <template v-else>
-              <v-icon size="64" color="black">mdi-account</v-icon>
+              <img src="/src/components/background/test_profile.jpg"  alt="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
             </template>
           </v-btn>
           <h1 style="position: relative; color: rgb(var(--v-theme-profile_textColor)); font-size: xx-large;">
@@ -335,7 +336,6 @@ const handleProfImageError = () => {
 // Alapértelmezett háttér beállítása
 const setDefaultBackground = (event: Event) => {
   const target = event.target as HTMLImageElement;
-  target.style.backgroundColor = '#333';
   target.style.display = 'none';
   isBackImageAvailable.value = false;
 };
@@ -519,7 +519,7 @@ export default {
   position: relative;
   width: 100%;
   height: 11vw;
-  background-color: #333;
+  background-color: rgb(var(--v-theme-profile_header_bc));
 }
 
 .profile-header img{

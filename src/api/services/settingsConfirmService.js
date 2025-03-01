@@ -50,6 +50,10 @@ class settingsConfirmService
     async setUserRoles(id, type){
         return await settingsConfirmRepository.setUserRoles(id, type);
     }
+
+    async getAllNotifs(id){
+        return await settingsConfirmRepository.getAllNotifs(id);
+    }
 }
 
 module.exports = new settingsConfirmService();

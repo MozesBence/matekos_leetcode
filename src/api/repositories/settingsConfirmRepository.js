@@ -379,6 +379,43 @@ class settingsConfirmRepository
 
         return 'OK'
     }
+
+    async getAllNotifs(id){
+        const notifs = await this.Notification.findAll({
+            where: {
+                user_id: id,
+                type: 0
+            },
+            include: [
+                {
+                    model: this.Users,
+                    as: "ReportedUser",
+                    attributes: ["id","user_name"],
+                    include: [
+                        {
+                            model: this.User_customization,
+                            attributes: ["profil_picture"],
+                        },
+                    ],
+                },
+            ],
+        });
+        
+        notifs.forEach(notif =>{
+            if (notif.ReportedUser.User_customization.profil_picture != null) {
+                const profileProfPicBuffer = notif.ReportedUser.User_customization.profil_picture;
+                
+                const profileProfPicMimeType = notif.ReportedUser.User_customization.profil_picture_type || 'image/jpeg';
+                
+                if (profileProfPicBuffer) {
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    notif.ReportedUser.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            }
+        });
+
+        return notifs;
+    }
 }
 
 module.exports = new settingsConfirmRepository(db);

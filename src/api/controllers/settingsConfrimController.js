@@ -408,3 +408,24 @@ exports.setUserRoles = async (req,res,next) =>{
         next(error)
     }
 }
+
+exports.getAllNotifs = async (req,res,next) =>{
+    const id = req.query.id.id;
+
+    try{
+        const getNotifs = await settingsConfirmService.getAllNotifs(id);
+        
+        if(!getNotifs){
+            const error = new Error("Valami hiba történt az értesítések lekérése közben");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        res.status(200).send(getNotifs);
+    }
+    catch(error){
+        next(error)
+    }
+}

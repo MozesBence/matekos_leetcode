@@ -44,7 +44,8 @@ const vuetify = createVuetify({
           custom_drawer_btn: colors.grey.darken1,
           custom_drawer_icon: colors.grey.darken4,
 
-          profile_bc: colors.grey.lighten1,
+          profile_bc: colors.grey.lighten3,
+          profile_header_bc: colors.grey.lighten2,
           profile_textColor: colors.grey.lighten5,
           profile_cardsColor: colors.grey.lighten2,
 
@@ -88,6 +89,7 @@ const vuetify = createVuetify({
           custom_drawer_icon: colors.grey.lighten5,
 
           profile_bc: colors.grey.darken2,
+          profile_header_bc: colors.grey.darken3,
           profile_textColor: colors.grey.lighten4,
           profile_cardsColor: colors.grey.darken3,
 

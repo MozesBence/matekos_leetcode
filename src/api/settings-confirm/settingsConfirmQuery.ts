@@ -177,3 +177,26 @@ export const useSetUserRoles = () => {
         }
     })
 }
+
+const getAllNotifs = async (id: number) => {
+    const response = await axiosClient.get('http://localhost:3000/get-all-notifs', {
+        params: {
+            id
+        }
+    });
+    return response.data
+}
+
+export const useGetAllNotifs = () => {
+    return useMutation({
+        mutationFn: getAllNotifs,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}

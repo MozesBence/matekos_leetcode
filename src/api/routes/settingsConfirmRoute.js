@@ -20,4 +20,6 @@ router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirm
 
 router.patch('/set-user-roles', [ profileAuth.verifyToken ],  settingsConfirmController.setUserRoles);
 
+router.get('/get-all-notifs',  settingsConfirmController.getAllNotifs);
+
 module.exports = router;

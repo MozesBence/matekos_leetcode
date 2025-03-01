@@ -387,15 +387,15 @@
 
                       <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
                       
-                      <div class="my-2 d-flex justify-center">
+                      <div class="my-2 d-flex justify-center" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'">
                         <v-icon color="custom_drawer_icon" class="mx-2">mdi-shield</v-icon>
                         <h3 style="font-weight: normal;">Admin panel</h3>
                       </div>
 
-                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-divider color="default_btn_bc" style="transition: .3s;" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'"></v-divider>
 
                       <v-expand-transition>
-                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="UsersActive">
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="UsersActive" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'">
                           <v-icon style="flex: 0; text-align: center;">mdi-account-multiple</v-icon>
                           <h4
                             style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
@@ -414,10 +414,10 @@
                         </div>
                       </v-expand-transition>
 
-                      <v-divider inset color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'"></v-divider>
 
                       <v-expand-transition>
-                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="AdminNotifActive">
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="AdminNotifActive" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'">
                           <v-icon style="flex: 0; text-align: center;">mdi-alert-circle</v-icon>
                           <h4
                             style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
@@ -436,7 +436,7 @@
                         </div>
                       </v-expand-transition>
 
-                      <v-divider color="default_btn_bc" style="transition: .3s;"></v-divider>
+                      <v-divider color="default_btn_bc" style="transition: .3s;" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'"></v-divider>
                     </div>
 
                     <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5 position-absolute bottom-0">
@@ -456,9 +456,9 @@
                     <div style="height: 9rem;"></div>
                   </div>
 
-                  <v-main class="d-flex justify-center pa-4" style="height: auto;">
+                  <v-main class="d-flex justify-center py-4 px-2" style="height: auto;">
                     <v-slide-y-transition mode="out-in">
-                      <div :key="activePanel" class="w-100 px-5" style="height: auto;">
+                      <div :key="activePanel" class="w-100" style="height: auto;">
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
@@ -571,17 +571,41 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'notif'" class="w-100 h-100">
+                          <div v-if="activePanel == 'notif'" class="h-100 d-flex flex-column justify-center">
                             <h1 class="text-center">Értesítések</h1>
-                            <div style="border: .1vw solid white; height: 85%;" class="rounded-lg my-5">
+                            <div style="border: .1vw solid white; height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
+                              <div v-for="notif in AllNotifs" v-bind:key="notif.id">
+                                <div style="background-color: rgb(var(--v-theme-profile_bc));" class="rounded py-2 px-2 d-flex">
+                                  <div style="width: 100%;" class="d-flex align-center mr-2">
+                                    <v-icon size="25" class="mr-2">mdi-bell-badge-outline</v-icon>
+                                    <h3 style="font-weight: normal;">{{ notif.notif_content }}</h3>
+                                  </div>
+                                  <v-divider vertical></v-divider>
+                                  <div style="width: max-content;" class="ml-2"> 
+                                    <div class="d-flex flex-row ga-2 align-center">
+                                      <div 
+                                      class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                      style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                      @click="router.push({ name: 'profile', params: { id: notif.ReportedUser.id } })">
+                                        <img :src="notif.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : notif.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <h3 style="font-weight: normal;">{{ notif.ReportedUser.user_name }}</h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div class="d-flex justify-center mx-3 my-5" v-if="NotifsLoading">
+                                <v-progress-circular indeterminate></v-progress-circular>
+                              </div>
                             </div>
                           </div>
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'users'" class="w-100 h-100">
-                            <h1 class="text-center">Felhasználók</h1>
+                            <h1 class="text-center mb-2">Felhasználók</h1>
                             <div class="d-flex align-center ga-2">
                               <v-text-field
                                 v-model="searchQuery"
@@ -598,7 +622,7 @@
                               <v-btn elevation="0" @click="ActivatedType(0)" :style="{backgroundColor: activatedTypeButton == 0 ? 'gray' : 'transparent'}">nem aktivált</v-btn>
                             </div>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminUsers">
+                            <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
                               
                               <v-expansion-panels v-for="(user, index) in AllUsers" class="d-flex" elevation="0" style="position: relative;" @update:modelValue="handlePanelToggle">
                                 <v-slide-y-transition mode="out-in">
@@ -725,9 +749,9 @@
 
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
-                            <h1 class="text-center">Bejelentések</h1>
+                            <h1 class="text-center mt-2">Bejelentések</h1>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 85%; max-height: 40vh; overflow: auto;" class="rounded my-5 pt-2 px-2 d-flex flex-column adminNotif">
+                            <div style="border: .1vw solid white; height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
                               
                               <v-slide-y-transition mode="out-in">
                                 <div class="d-flex justify-center"  v-if="AllReports.length == 0">
@@ -1066,7 +1090,7 @@ import { onMounted, ref, shallowRef } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
@@ -1105,6 +1129,7 @@ const ResponseContent = ref(null);
 const ResponseError = ref(null);
 const ReportLoading = ref(false);
 const UsersLoading = ref(false);
+const NotifsLoading = ref(false);
 
 const ReportDelete = ref(false);
 const ReportAccept = ref(false);
@@ -1186,7 +1211,11 @@ function PassSettingsActive(){
   loading.value = false;
 }
 
-function NotifActive(){
+const { mutate : getAllNotifs} = useGetAllNotifs()
+
+const AllNotifs = ref([]);
+
+const NotifActive = async() =>{
   ProfSettingDraw.value = false;
   EmailSettingDraw.value = false;
   PassSettingDraw.value = false;
@@ -1208,6 +1237,18 @@ function NotifActive(){
   EmailInputDisabled.value = true;
   ConfirmCode.value = false;
   loading.value = false;
+
+  NotifsLoading.value = true;
+  await getAllNotifs({id: get_fullUser.value.id}, {
+    onSuccess: (response) => {
+      AllNotifs.value = response;
+      NotifsLoading.value = false;
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+      NotifsLoading.value = false;
+    },
+  });
 }
 
 const { mutate : getAllUser} = useGetAllUser()
@@ -1263,6 +1304,10 @@ const setNewSetting = async(user,id, model, type) =>{
     onSuccess: (response) => {
       if(type == 1){
         user.user_name = response;
+        if(user.id == get_fullUser.value.id){
+          get_fullUser.value.user_name = response;
+          get_user_name.value = response;
+        }
       }
       else if(type == 2){
         user.email = response;
@@ -1433,6 +1478,8 @@ const AdminNotifActive = async () =>{
           if (post.reportedPost) {
             postsConvertToDisplay(post);
           }else{
+            var createdAt = post.reportedComment.createdAt;
+            post.reportedComment.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
             AllReports.value.push(post);
           }
       });
