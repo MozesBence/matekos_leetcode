@@ -36,7 +36,8 @@ const {
     Task_solutions,
     Daily_Tasks,
     Notification,
-    Advertisement_Cards
+    Advertisement_Cards,
+    DailyQuote
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
@@ -57,6 +58,7 @@ db.Task_solutions = Task_solutions; // Assign Task_solutions to db
 db.Daily_Tasks = Daily_Tasks;
 db.Notification = Notification;
 db.Advertisement_Cards = Advertisement_Cards;
+db.DailyQuote = DailyQuote;
 
 // Initialize database and themes
 const initializeDatabase = async () => {
@@ -71,14 +73,14 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await sequelize.sync({ force: true });
+        await sequelize.sync({ alter: false });
         console.log('Database connected and models synchronized.');
 
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
 
-        await db.Advertisement_Cards.initializeCards()
-        console.log('Advertisements are added')
+        await db.Daily_Tasks.initializeDailyQuote()
+        console.log('Daily task table added')
 
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');

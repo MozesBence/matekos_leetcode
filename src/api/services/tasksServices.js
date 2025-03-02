@@ -43,13 +43,26 @@ class TasksService {
       throw error;
     }
   }
-  async getTaskByThemes(themes){
-    try{
-      return await tasksRepository.getTaskByThemes(themes);
-    }catch(error){
+  async getFilteredTasks({ difficulty, search, themes, state, userId }) {
+    try {
+      difficulty = difficulty !== undefined ? parseInt(difficulty) : undefined;
+      state = state !== undefined ? parseInt(state) : undefined;
+      if (themes) {
+        themes = themes.split(";");
+      }
+      console.log(themes)
+      return await tasksRepository.getFilteredTasks({
+        difficulty,
+        search,
+        themes,
+        state,
+        userId,
+      });
+    } catch (error) {
       throw error;
     }
   }
+  
 }
 
 module.exports = new TasksService();

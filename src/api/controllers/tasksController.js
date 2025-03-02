@@ -70,18 +70,23 @@ const getTasksByDifficult = async (req,res,next) =>{
 
 const getTaskByThemes = async (req, res, next) => {
   try {
-    // Get the themes from the route parameters and split them into an array
     const themes = req.params.themes.split(';');
-
     console.log('Received themes:', themes);
-
-    // Fetch tasks based on the themes
     const filteredTasks = await tasksService.getTaskByThemes(themes);
-    
     res.status(200).json(filteredTasks);
   } catch (error) {
     console.error(`Error in tasks controller: ${error.message}`);
     res.status(500).json({ message: error.message });
+  }
+};
+
+const getFilteredTasks = async (req, res) => {
+  console.log(req.query)
+  try {
+      const tasks = await tasksService.getFilteredTasks(req.query);
+      res.json(tasks);
+  } catch (error) {
+      res.status(500).json({ message: "Error fetching tasks" });
   }
 };
 
@@ -95,5 +100,5 @@ module.exports = {
   getRandomTask,
   getTasksByDifficult,
   getTaskByThemes,
+  getFilteredTasks
 };
-
