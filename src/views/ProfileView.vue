@@ -386,7 +386,9 @@ const handleProfPicUpload = async (event: Event) => {
 
 // Fájl input triggerelése
 const triggerProfPicFileInput = () => {
-  fileProfPicInput.value?.click();
+  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+    fileProfPicInput.value?.click();
+  }
 };
 
 const handlebackPicUpload = async (event: Event) => {
@@ -444,7 +446,9 @@ const handlebackPicUpload = async (event: Event) => {
 };
 
 const triggerBackPicFileInput = () => {
-  fileBackPicInput.value?.click();
+  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+    fileBackPicInput.value?.click();
+  }
 };
 </script>
 
