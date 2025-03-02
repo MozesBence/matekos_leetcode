@@ -1,6 +1,9 @@
 <template>
     <v-card style="background-color: rgb(var(--v-theme-background)); box-shadow: none;">
-      <v-layout style="position: relative; box-shadow: none; height: 100vh;" elevation="0">
+      <v-layout 
+      style="position: relative; box-shadow: none;"
+      :style="{height: drawer ? '100vh' : ''}" 
+      elevation="0">
         <v-app-bar
           color="primary"
           prominent
@@ -175,13 +178,13 @@
 
         <v-navigation-drawer
           v-model="drawer"
-          :location="$vuetify.display.mobile ? 'left' : undefined"
+          :location="isMobile ? 'left' : undefined"
           temporary
           scrim="rgba(0, 0, 0, 1)"
           class="nav_drawer"
         >
           <v-list>
-            <v-container max-height="auto" class="pa-0" v-if="$vuetify.display.smAndDown">
+            <v-container max-height="auto" class="pa-0" v-if="isMobile">
               <v-col justify="space-between" class="mobil-nav-view">
                 <div class="text-center">
                   <v-btn
@@ -2014,5 +2017,6 @@ export default {
   width: 100vw !important;  /* Teljes képernyő szélesség */
   height: 100vh !important; /* Teljes képernyő magasság */
   position: absolute;
+  opacity: .7 !important;
 }
 </style>
