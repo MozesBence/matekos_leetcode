@@ -118,24 +118,79 @@
       style="background-color: transparent; position: relative; top: -21vh;"
       :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
       >
-        <v-container>
-          <v-row justify="space-evenly">
-            <v-col
-              v-for="elevation in 6"
-              :key="elevation"
-              cols="12"
-              md="6"
-            >
-              <v-sheet
-                class="pa-2 rounded-lg"
-                color="profile_cardsColor"
-                height="220"
-                style="transition: .3s;"
-              >
-              </v-sheet>
-            </v-col>
-          </v-row>
-        </v-container>
+      <v-row justify="space-evenly">
+        <v-col
+          v-for="elevation in 1"
+          :key="elevation"
+          cols="12"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+          <div id="chart">
+            <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+          </div>
+          </v-sheet>
+        </v-col>
+      </v-row>
+      <v-row justify="space-evenly">
+        <v-col
+          :key="elevation"
+          cols="12"
+          md="6"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+           
+          </v-sheet>
+        </v-col>
+        <v-col
+          :key="elevation"
+          cols="12"
+          md="6"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+          <h2>Legutobb megkezdett feladat</h2>
+          <v-card>
+            <v-card
+            :color="color"
+            :variant="variant"
+            class="mx-auto"
+          >
+            <v-card-item>
+              <div>
+                <div class="text-overline mb-1">
+                  {{ variant }}
+                </div>
+                <div class="text-h6 mb-1">
+                  1. Határozd meg x értékét: Alapvető Lineáris Egyenlet
+                </div>
+                <div class="text-caption">Greyhound divisely hello coldly fonwderfully</div>
+              </div>
+            </v-card-item>
+    
+            <v-card-actions>
+              <v-btn>
+                Folytatas
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+          </v-card>
+          </v-sheet>
+        </v-col>
+      </v-row>
 
         <div class="pa-4 text-center">
           <v-dialog
@@ -217,7 +272,7 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-
+import VueApexCharts from 'vue3-apexcharts';
 const dialog = shallowRef(false)
 
 // Definiáld az adat típust
@@ -257,6 +312,44 @@ const settingsShow = ref(false);
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 const userId = route.params.id;
+const apexchart = VueApexCharts;
+const series = ref([
+  {
+    name: "Solved tasks",
+    data: [10, 41, 35, 51, 49, 62, 69, 91, 148,5,100,45]
+  }
+]);
+
+
+const chartOptions = ref({
+            chart: {
+              height: 350,
+              type: 'line',
+              zoom: {
+                enabled: false
+              }
+            },
+            dataLabels: {
+              enabled: false
+            },
+            stroke: {
+              curve: 'straight'
+            },
+            title: {
+              text: 'Megoldott feladatok',
+              align: 'left'
+            },
+            grid: {
+              row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
+              },
+            },
+            xaxis: {
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep','Okt','Nov','Dec'],
+            }
+});
+
 
 onMounted(async () => {
   try {

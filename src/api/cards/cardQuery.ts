@@ -2,6 +2,8 @@ import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import queryClient from "@/lib/queryClient";
 import type { Ref } from "vue";
+import axiosClient from "@/lib/axios";
+
 
 // Fetching Cards
 const fetchCards = async (offset: number) => { // Accepts a number, not a Ref
@@ -289,3 +291,5 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
     enabled:false,
   });
 };
+
+
