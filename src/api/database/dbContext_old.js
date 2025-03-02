@@ -140,10 +140,11 @@ const initializeDatabase = async () => {
                     DELETE FROM Daily_Tasks;
                 END IF;
 
-                -- Új random task hozzáadása
-                INSERT INTO Daily_Tasks (task_id)
+                -- Új random task hozzáadása a mai dátummal
+                INSERT INTO Daily_Tasks (task_id, task_date)
                 SELECT 
-                    id AS task_id
+                    id AS task_id,
+                    CURRENT_DATE AS task_date
                 FROM 
                     Tasks
                 ORDER BY RAND()

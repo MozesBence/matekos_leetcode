@@ -1,6 +1,6 @@
 <template>
     <v-card style="background-color: rgb(var(--v-theme-background)); box-shadow: none;">
-      <v-layout style="position: relative; box-shadow: none;" elevation="0">
+      <v-layout style="position: relative; box-shadow: none; height: 100vh;" elevation="0">
         <v-app-bar
           color="primary"
           prominent
@@ -177,6 +177,8 @@
           v-model="drawer"
           :location="$vuetify.display.mobile ? 'left' : undefined"
           temporary
+          scrim="rgba(0, 0, 0, 1)"
+          class="nav_drawer"
         >
           <v-list>
             <v-container max-height="auto" class="pa-0" v-if="$vuetify.display.smAndDown">
@@ -627,6 +629,12 @@
                                 </div>
                               </div>
 
+                              <v-slide-y-transition mode="out-in">
+                                <div class="d-flex justify-center align-center"  v-if="AllNotifs.length == 0">
+                                  <h2 style="font-weight: normal;">Jelenleg egy értesítésed sincs!</h2>
+                                  <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
+                                </div>
+                              </v-slide-y-transition>
                               <div class="d-flex justify-center mx-3 my-5" v-if="NotifsLoading">
                                 <v-progress-circular indeterminate></v-progress-circular>
                               </div>
@@ -637,20 +645,32 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'users'" class="w-100 h-100">
                             <h1 class="text-center mb-2">Felhasználók</h1>
-                            <div class="d-flex align-center ga-2">
+                            <div 
+                              class="d-flex"
+                              :class="{
+                                'flex-column mt-1': isMobile, 
+                                'mt-5 ga-5 align-center': !isMobile
+                              }"
+                            >
                               <v-text-field
                                 v-model="searchQuery"
                                 label="Keresés"
                                 clearable
                                 icon="mdi-magnify"
                                 variant="outlined"
-                                hide-details
-                                style="width: 40%;"
+                                :style="{width: isMobile ? '100%' : '40%'}"
                               >
                               </v-text-field>
-                              <v-btn elevation="0" @click="AdminType()" :style="{backgroundColor: adminTypeButton == 1 ? 'gray' : 'transparent'}">admin</v-btn>
-                              <v-btn elevation="0" @click="ActivatedType(2)" :style="{backgroundColor: activatedTypeButton == 2 ? 'gray' : 'transparent'}">bannolt</v-btn>
-                              <v-btn elevation="0" @click="ActivatedType(0)" :style="{backgroundColor: activatedTypeButton == 0 ? 'gray' : 'transparent'}">nem aktivált</v-btn>
+                              <div
+                              class="d-flex ga-2 position-relative" 
+                              :class="{
+                                'justify-space-around mb-2': isMobile, 
+                              }"
+                              :style="{top: !isMobile ? '-1rem' : ''}">
+                                <v-btn elevation="0" @click="AdminType()" :style="{backgroundColor: adminTypeButton == 1 ? 'gray' : 'transparent'}">admin</v-btn>
+                                <v-btn elevation="0" @click="ActivatedType(2)" :style="{backgroundColor: activatedTypeButton == 2 ? 'gray' : 'transparent'}">bannolt</v-btn>
+                                <v-btn elevation="0" @click="ActivatedType(0)" :style="{backgroundColor: activatedTypeButton == 0 ? 'gray' : 'transparent'}">nem aktivált</v-btn>
+                              </div>
                             </div>
 
                             <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
@@ -693,18 +713,33 @@
                                     </v-expansion-panel-title>
                                     <v-expansion-panel-text style="position: relative;">
                                       <h4 style="font-weight: normal;" class="mt-1 ml-2">Név megváltoztatás (A felhasználó névnek min. 6 és max. 24 karakter lehet!):</h4>
-                                      <div class="d-flex align-center ga-2 my-2">
-                                        <v-text-field v-model="users_UserName" :label="user.user_name" variant="outlined" hide-details></v-text-field>
+                                      <div 
+                                      class="d-flex align-center ga-2 my-2"
+                                      :class="{
+                                        'flex-column mt-1': isMobile
+                                      }"
+                                      >
+                                        <v-text-field v-model="users_UserName" :label="user.user_name" variant="outlined" hide-details :style="{width: isMobile ? '100%' : ''}"></v-text-field>
                                         <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserName, 1)" :disabled="!users_UserName">változtatás</v-btn>
                                       </div>
                                       <h4 style="font-weight: normal;" class="mt-1 ml-2">Email megváltoztatás (A felhasználó eamil címe max. 35 karakter lehet!):</h4>
-                                      <div class="d-flex align-center ga-2 my-2">
-                                        <v-text-field v-model="users_UserEmail" :label="user.email" variant="outlined" hide-details></v-text-field>
+                                      <div 
+                                      class="d-flex align-center ga-2 my-2"
+                                      :class="{
+                                        'flex-column mt-1': isMobile
+                                      }"
+                                      >
+                                        <v-text-field v-model="users_UserEmail" :label="user.email" variant="outlined" hide-details :style="{width: isMobile ? '100%' : ''}"></v-text-field>
                                         <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserEmail, 2)" :disabled="!users_UserEmail">változtatás</v-btn>
                                       </div>
                                       <h4 style="font-weight: normal;" class="ml-2">Jelszó megváltoztatás (A felhasználó jelszava min. 8 és max. 24 karakter lehet!):</h4>
-                                      <div class="d-flex align-center ga-2 my-2">
-                                        <v-text-field v-model="users_UserPassword" label="új jelszó..."variant="outlined" hide-details></v-text-field>
+                                      <div 
+                                      class="d-flex align-center ga-2 my-2"
+                                      :class="{
+                                        'flex-column mt-1': isMobile
+                                      }"
+                                      >
+                                        <v-text-field v-model="users_UserPassword" label="új jelszó..."variant="outlined" hide-details :style="{width: isMobile ? '100%' : ''}"></v-text-field>
                                         <v-btn variant="flat" @click="setNewSetting(user,user.id, users_UserPassword, 3)" :disabled="!users_UserPassword">változtatás</v-btn>
                                       </div>
 
@@ -785,8 +820,8 @@
                             <div style="border: .1vw solid white; height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
                               
                               <v-slide-y-transition mode="out-in">
-                                <div class="d-flex justify-center"  v-if="AllReports.length == 0">
-                                  <h1 style="font-weight: normal;">Jelenleg egy bejelentés sincs!</h1>
+                                <div class="d-flex justify-center align-center"  v-if="AllReports.length == 0">
+                                  <h2 style="font-weight: normal;">Jelenleg egy bejelentés sincs!</h2>
                                   <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
                                 </div>
                               </v-slide-y-transition>
@@ -1973,5 +2008,11 @@ export default {
 
 .adminUsers::-webkit-scrollbar-thumb:hover ,  .adminNotif::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.7);
+}
+
+.nav_drawer .v-overlay__scrim {
+  width: 100vw !important;  /* Teljes képernyő szélesség */
+  height: 100vh !important; /* Teljes képernyő magasság */
+  position: absolute;
 }
 </style>
