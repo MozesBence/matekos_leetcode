@@ -4,6 +4,7 @@ const db = require('../database/dbContext');
 const { Tasks,Themes,Task_solutions } = db;
 const { Op } = require('sequelize');
 const { isConstructorDeclaration } = require('typescript');
+const { stat } = require('fs');
 
 const tasksRepository = {
   
@@ -95,16 +96,25 @@ const tasksRepository = {
   
   async getFilteredTasks({ difficulty, search, themes, state, userId }) {
     try {
-        let whereClause = {};
+        const whereClause = {};
+
+        // Convert themes from a semicolon-separated string to an array (if necessary)
+        if (themes && typeof themes === 'string') {
+            themes = themes.split(';').map(t => t.trim());
+        }
+
+        // Filter by difficulty if provided.
         if (difficulty !== undefined) {
             whereClause.difficulty = difficulty;
         }
 
+        // Filter by search (use Op.like for MySQL, Op.iLike for PostgreSQL)
         if (search) {
-            whereClause.task_title = { [Op.like]: `%${search.toLowerCase()}%` };
+            whereClause.task_title = { [Op.like]: `%${search}%` };
         }
 
-        let taskIdsFromThemes = [];
+        // Retrieve task IDs from themes if any themes are specified.
+        let themeTaskIds = null;
         if (themes && themes.length > 0) {
             const themesWithTasks = await db.Themes.findAll({
                 where: { theme: { [Op.in]: themes } },
@@ -113,45 +123,54 @@ const tasksRepository = {
                     attributes: ['id'],
                 }
             });
-
-            taskIdsFromThemes = themesWithTasks.flatMap(theme => theme.Tasks.map(task => task.id));
+            themeTaskIds = themesWithTasks.flatMap(theme => theme.Tasks.map(task => task.id));
         }
 
-        let taskIdsFromState = [];
+        // Retrieve task IDs based on state filtering if state and userId are provided.
+        let stateTaskIds = null;
         if (state !== undefined && userId) {
             if (state == 2) {
-              console.log('2ben')
+                // Get all tasks the user has solved.
                 const solvedTaskIds = await db.Task_solutions.findAll({
+                    where: { UserId: userId },
                     attributes: ['task_id'],
                     group: ['task_id']
                 });
-                taskIdsFromState = solvedTaskIds.map(ts => ts.task_id);
-                console.log(taskIdsFromState)
+                stateTaskIds = solvedTaskIds.map(ts => ts.task_id);
+
+                // Get all tasks EXCEPT the solved ones.
+                stateTaskIds = await db.Tasks.findAll({
+                    where: { id: { [Op.notIn]: stateTaskIds } },
+                    attributes: ['id'],
+                }).then(tasks => tasks.map(task => task.id));
+
             } else {
-                console.log('masikba')
-                // Solved tasks (in task_solutions)
+                // Get only the tasks the user has attempted in the given state.
                 const solvedTasks = await db.Task_solutions.findAll({
                     where: { state: state, UserId: userId },
                     attributes: ['task_id']
                 });
-                taskIdsFromState = solvedTasks.map(ts => ts.task_id);
-                console.log(taskIdsFromState)
+                stateTaskIds = solvedTasks.map(ts => ts.task_id);
             }
         }
+
+        // Combine filters: if both themes and state filters were applied, take their intersection.
         let finalTaskIds = null;
-        if (taskIdsFromThemes.length > 0 && taskIdsFromState.length > 0) {
-            finalTaskIds = taskIdsFromThemes.filter(id => taskIdsFromState.includes(id));
-        } else if (taskIdsFromThemes.length > 0) {
-            finalTaskIds = taskIdsFromThemes;
-        } else if (taskIdsFromState.length > 0) {
-            finalTaskIds = taskIdsFromState;
+        if (themeTaskIds !== null && stateTaskIds !== null) {
+            finalTaskIds = themeTaskIds.filter(id => stateTaskIds.includes(id));
+        } else if (themeTaskIds !== null) {
+            finalTaskIds = themeTaskIds;
+        } else if (stateTaskIds !== null) {
+            finalTaskIds = stateTaskIds;
         }
 
+        // Apply final filtering based on task IDs
         if (finalTaskIds !== null) {
             whereClause.id = { [Op.in]: finalTaskIds };
         }
 
-        return await Tasks.findAll({
+        // Fetch and return tasks based on filters.
+        return await db.Tasks.findAll({
             where: whereClause,
             order: [['id', 'ASC']],
             limit: 15
@@ -161,7 +180,8 @@ const tasksRepository = {
         console.error('Error fetching filtered tasks:', error);
         throw error;
     }
-}
+},
+
 
 };
 
