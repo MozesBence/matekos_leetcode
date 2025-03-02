@@ -297,11 +297,12 @@
               v-model="dialog"
               max-width="1200"
             >
-              <v-card style="display: flex; flex-direction: column; height: auto;">
+              <v-card style="display: flex; flex-direction: column; height: auto; overflow: hidden;">
                 <v-layout>
                   <div
-                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: max-content; height: auto; transition: .3s;"
+                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: max-content; height: auto; transition: .3s; z-index: 5;"
                   class="d-flex flex-column position-relative"
+                  :style="{left: SettingsMenu ? '-60rem' : '0vw'}"
                   >
                     <div>
                       <div class="my-2 mx-16 d-flex justify-center">
@@ -456,14 +457,27 @@
                     <div style="height: 9rem;"></div>
                   </div>
 
-                  <v-main class="d-flex justify-center py-4 px-2" style="height: auto;">
+                  <v-main 
+                  class="d-flex justify-center py-4 px-2 position-relative" 
+                  style="height: auto; z-index: 3;"
+                  :style="{left: SettingsMenu ? '-19.25rem' : '0vw', width: isMobile ? '100%' : ''}"
+                  >
+                  <v-icon size="30" icon style="position: absolute; left: 1rem; top: 1rem;" v-if="isMobile" @click="SettingsMenu = !SettingsMenu">
+                    mdi-menu
+                  </v-icon>
                     <v-slide-y-transition mode="out-in">
                       <div :key="activePanel" class="w-100" style="height: auto;">
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
 
-                            <div class="d-flex align-center mt-5 ga-5">
+                            <div 
+                              class="d-flex"
+                              :class="{
+                                'flex-column mt-1': isMobile, 
+                                'mt-5 ga-5 align-center': !isMobile
+                              }"
+                            >
                               <v-text-field
                                 clearable
                                 v-model="userNameInput"
@@ -471,12 +485,17 @@
                                 variant="outlined"
                                 :disabled="ProfInputDisabled || ConfirmCode"
                                 placeholder="Felhasználó név..."
-                                :rules="[
-                                  (v) => v.length >= 6 || 'Minimum 6 karakteres név kell.',
-                                  (v) => v.length <= 24 || 'Maximum 24 karakter lehet.'
+                                :rules="[ 
+                                  (v) => (!v || v.length >= 6) || 'Minimum 6 karakteres név kell.', 
+                                  (v) => (!v || v.length <= 24) || 'Maximum 24 karakter lehet.' 
                                 ]"
                               />
-                              <div class="d-flex ga-2" style="margin-top: -2.5vh;">
+                              <div 
+                              class="d-flex ga-2 position-relative" 
+                              :class="{
+                                'justify-space-around': isMobile, 
+                              }"
+                              :style="{top: !isMobile ? '-1rem' : ''}">
                                 <v-btn variant="flat" @click="ProfInputDisabled = false" :disabled="!ProfInputDisabled">Módosítás</v-btn>
                                 <v-expand-transition>
                                   <v-btn
@@ -498,7 +517,13 @@
                           <div v-if="activePanel == 'email'" class="w-100">
                             <h1 class="text-center">Email változtatás</h1>
 
-                            <div class="d-flex align-center mt-5 ga-5">
+                            <div 
+                              class="d-flex"
+                              :class="{
+                                'flex-column mt-1': isMobile, 
+                                'mt-5 ga-5 align-center': !isMobile
+                              }"
+                            >
                               <v-text-field
                               v-model="userEmailInput"
                               clearable
@@ -506,9 +531,13 @@
                               variant="outlined"
                               :disabled="EmailInputDisabled || ConfirmCode"
                               placeholder="Email cím..."
-                              hide-details
                               ></v-text-field>
-                              <div class="d-flex ga-2">
+                              <div 
+                              class="d-flex ga-2 position-relative" 
+                              :class="{
+                                'justify-space-around mt-2': isMobile, 
+                              }"
+                              :style="{top: !isMobile ? '-1rem' : ''}">
                                 <v-btn variant="flat" @click="EmailInputDisabled = false" :disabled="!EmailInputDisabled">Módosítás</v-btn>
                                 <v-btn
                                 :disabled="EmailInputDisabled || !userEmailInput || userNameInput === get_fullUser.email"
@@ -576,7 +605,9 @@
                             <div style="border: .1vw solid white; height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
                               <div v-for="notif in AllNotifs" v-bind:key="notif.id">
-                                <div style="background-color: rgb(var(--v-theme-profile_bc));" class="rounded py-2 px-2 d-flex">
+                                <div 
+                                style="background-color: rgb(var(--v-theme-profile_bc));"
+                                class="rounded py-2 px-2 d-flex align-center">
                                   <div style="width: 100%;" class="d-flex align-center mr-2">
                                     <v-icon size="25" class="mr-2">mdi-bell-badge-outline</v-icon>
                                     <h3 style="font-weight: normal;">{{ notif.notif_content }}</h3>
@@ -1086,15 +1117,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef } from 'vue';
+import { onMounted, ref, shallowRef, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
-import { useTheme } from 'vuetify';
+import { useTheme, useDisplay } from 'vuetify';
 
 const { mutate : ProfileGetUser} = useProfileGetUser()
 
+const { mobile } = useDisplay();
+const isMobile = computed(() => mobile.value);
+watch(isMobile, async (newValue) => {
+  SettingsMenu.value = newValue;
+});
 
 const { currentRoute } = useRouter()
 
@@ -1130,6 +1166,7 @@ const ResponseError = ref(null);
 const ReportLoading = ref(false);
 const UsersLoading = ref(false);
 const NotifsLoading = ref(false);
+const SettingsMenu = ref(false);
 
 const ReportDelete = ref(false);
 const ReportAccept = ref(false);
