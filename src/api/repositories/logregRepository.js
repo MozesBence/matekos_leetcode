@@ -64,8 +64,6 @@ class logregRepository
 
     async uploadToken(tokenz)
     {
-        console.log(tokenz);
-        
         const newToken = await this.Tokenz.build(tokenz);
 
         await newToken.save();
