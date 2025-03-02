@@ -1745,6 +1745,10 @@ onMounted(async () => {
       console.error('Hiba történt a felhasználó lekérésekor:', error);
     }
   }
+
+  if(isMobile.value){
+    SettingsMenu.value = true;
+  }
 });
 
 watch(get_fullUser, (newUser) => {
