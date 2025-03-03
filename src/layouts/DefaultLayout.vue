@@ -465,7 +465,7 @@
                   <v-main 
                   class="d-flex justify-center py-4 px-2 position-relative" 
                   style="height: auto; z-index: 3;"
-                  :style="{left: SettingsMenu ? '-19.25rem' : '0vw', width: isMobile ? '100%' : ''}"
+                  :style="{left: SettingsMenu ? '-16.25em' : '0vw', width: isMobile ? '100%' : ''}"
                   >
                   <v-icon size="30" icon style="position: absolute; left: 1rem; top: 1rem;" v-if="isMobile" @click="SettingsMenu = !SettingsMenu">
                     mdi-menu
@@ -607,7 +607,7 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'notif'" class="h-100 d-flex flex-column justify-center">
                             <h1 class="text-center">Értesítések</h1>
-                            <div style="border: .1vw solid white; height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
                               <div v-for="notif in AllNotifs" v-bind:key="notif.id">
                                 <div 
@@ -676,7 +676,7 @@
                               </div>
                             </div>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
                               
                               <v-expansion-panels v-for="(user, index) in AllUsers" class="d-flex" elevation="0" style="position: relative;" @update:modelValue="handlePanelToggle">
                                 <v-slide-y-transition mode="out-in">
@@ -820,7 +820,7 @@
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
                             <h1 class="text-center mt-2">Bejelentések</h1>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
                               
                               <v-slide-y-transition mode="out-in">
                                 <div class="d-flex justify-center align-center"  v-if="AllReports.length == 0">
