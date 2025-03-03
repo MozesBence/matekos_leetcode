@@ -305,7 +305,7 @@
               <v-card style="display: flex; flex-direction: column; height: auto; overflow: hidden;">
                 <v-layout>
                   <div
-                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: max-content; height: auto; transition: .3s; z-index: 5;"
+                  style="max-width: max-content; border-radius: 0 !important; background-color: rgb(var(--v-theme-settings_drawer_bc)); min-height: max-content; height: auto; transition: .3s; z-index: 5;"
                   class="d-flex flex-column position-relative"
                   :style="{left: SettingsMenu ? '-60rem' : '0vw'}"
                   >
@@ -463,13 +463,16 @@
                   </div>
 
                   <v-main 
-                  class="d-flex justify-center py-4 px-2 position-relative" 
+                  class="d-flex flex-column justify-center py-4 px-2 position-relative" 
                   style="height: auto; z-index: 3;"
-                  :style="{left: SettingsMenu ? '-19.25rem' : '0vw', width: isMobile ? '100%' : ''}"
+                  :style="{left: SettingsMenu ? '-16.25em' : '0vw', width: isMobile ? '100%' : ''}"
                   >
-                  <v-icon size="30" icon style="position: absolute; left: 1rem; top: 1rem;" v-if="isMobile" @click="SettingsMenu = !SettingsMenu">
-                    mdi-menu
-                  </v-icon>
+                  <div v-if="isMobile" style="height: max-content; width: 100%;" class="pl-2">
+                    <v-icon size="30" icon @click="SettingsMenu = !SettingsMenu">
+                      mdi-menu
+                    </v-icon>
+                  </div>
+                  <div style="height: 100%;">
                     <v-slide-y-transition mode="out-in">
                       <div :key="activePanel" class="w-100" style="height: auto;">
                         <v-fade-transition mode="out-in">
@@ -607,7 +610,7 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'notif'" class="h-100 d-flex flex-column justify-center">
                             <h1 class="text-center">Értesítések</h1>
-                            <div style="border: .1vw solid white; height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
                               <div v-for="notif in AllNotifs" v-bind:key="notif.id">
                                 <div 
@@ -676,7 +679,7 @@
                               </div>
                             </div>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminUsers">
                               
                               <v-expansion-panels v-for="(user, index) in AllUsers" class="d-flex" elevation="0" style="position: relative;" @update:modelValue="handlePanelToggle">
                                 <v-slide-y-transition mode="out-in">
@@ -820,7 +823,7 @@
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
                             <h1 class="text-center mt-2">Bejelentések</h1>
 
-                            <div style="border: .1vw solid white; height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
                               
                               <v-slide-y-transition mode="out-in">
                                 <div class="d-flex justify-center align-center"  v-if="AllReports.length == 0">
@@ -1133,6 +1136,7 @@
 
                       </div>
                     </v-slide-y-transition>
+                  </div>
                   </v-main>
                 </v-layout>
                 <v-divider></v-divider>
