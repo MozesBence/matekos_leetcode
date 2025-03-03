@@ -45,27 +45,33 @@ const getTasksByCompletionState = async (req,res,next) =>{
 
 }
 
-const submitSolution = async (req, res,next) => {
+const submitSolution = async (req, res, next) => {
     try {
-        const userId = req.user.id;
-        const { taskId, score } = req.body;
+        console.log('insubm')
+        const { data } = req.params;
 
-        if (!taskId || score === undefined) {
-            return res.status(400).json({ message: "Missing required fields" });
+        if (!data) {
+            return res.status(400).json({ message: "Missing required parameters" });
         }
 
-        const result = await taskSolutionService.submitSolution(userId, taskId, score);
+        const processedData = data.split(';');
+        if (processedData.length !== 3) {
+            return res.status(400).json({ message: "Invalid parameter format" });
+        }
 
-        res.status(201).json({
-            message: "Solution submitted successfully",
-            solutionId: result.insertId
-        });
+        const [userId, taskId, solution] = processedData;
+        console.log("Parsed Data:", { userId, taskId, solution });
 
+        const uploadTask = await task_solutionsService.submitSolution(userId, taskId, solution);
+        
+        res.status(201).json(uploadTask);
     } catch (error) {
         console.error("Error submitting solution:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+
 
 module.exports = {
     getTaskState,
