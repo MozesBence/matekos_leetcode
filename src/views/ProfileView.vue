@@ -265,7 +265,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, shallowRef } from 'vue';
+import { onMounted, ref, watch, shallowRef, inject } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
@@ -298,6 +298,7 @@ const getCookie = (name: string) => {
   return null;
 };
 
+const showError = inject<((msg: string) => void) | undefined>("showError");
 
 var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
 
@@ -362,10 +363,19 @@ onMounted(async () => {
         handlePtofilPicters(get_user.User_customization ? { profil_picture: get_user.User_customization.profil_picture, background_picture: get_user.User_customization.background_picture } : { profil_picture: get_user.profil_picture, background_picture: get_user.background_picture })
       },
       onError: (error) => {
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
-  } catch (error) {
-    console.error('Hiba történt a felhasználó lekérésekor:', error);
+  } catch (error : any) {
+    if (showError) {
+      showError(error.response.data);
+    }else{
+      console.log(error.response.data);
+    }
   }
 });
 
@@ -381,8 +391,12 @@ const handleDarkmodeSwitch = async () => {
   if(get_fullUser.value != null){
     try {
       await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
-    } catch (error) {
-      console.error('Hiba történt a sötét mód váltásakor:', error);
+    } catch (error: any) {
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     }
   }
 };
@@ -471,8 +485,12 @@ const handleProfPicUpload = async (event: Event) => {
       // Profilkép feltöltése
       ProfilePicUpload(ProfPicUploaddata);
 
-    } catch (error) {
-      console.error("Képtömörítési hiba:", error);
+    } catch (error : any) {
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     }
   }
 };
@@ -532,8 +550,12 @@ const handlebackPicUpload = async (event: Event) => {
         isBackImageAvailable.value = true;
         compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
       }
-    } catch (error) {
-      console.error("Képtömörítési hiba:", error);
+    } catch (error: any) {
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     }
   }
 };

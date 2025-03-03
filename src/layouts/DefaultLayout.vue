@@ -848,9 +848,9 @@
                                               <div 
                                               class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                               style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
-                                              @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
-                                                <img :src="report.Reporter.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                                <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
+                                              @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
+                                                <img :src="report.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
                                               </div>
                                             </div>
                                             <v-icon class="ml-2">mdi-arrow-right</v-icon>
@@ -858,9 +858,9 @@
                                               <div 
                                               class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                               style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
-                                              @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
-                                                <img :src="report.ReportedUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                                <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
+                                              @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
+                                                <img :src="report.Reporter.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
                                               </div>
                                             </div>
                                           </div>
@@ -1159,7 +1159,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef, computed } from 'vue';
+import { onMounted, ref, shallowRef, computed, inject } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery'
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
@@ -1182,6 +1182,8 @@ const route = useRoute();
 const dialog = shallowRef(false)
 
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
+
+const showError = inject("showError");
 
 const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
@@ -1364,7 +1366,11 @@ const UsersActive = async () =>{
       UsersLoading.value = false;
     },
     onError: (error) => {
-      console.log(error.response.data);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
       UsersLoading.value = false;
     },
   });
@@ -1397,7 +1403,11 @@ const setNewSetting = async(user,id, model, type) =>{
       handlePanelToggle();
     },
     onError: (error) => {
-      console.log(error.response.data);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
 }
@@ -1433,7 +1443,11 @@ const setUserRoles = async (user, id, type) => {
       }
     },
     onError: (error) => {
-      console.log(error.response.data);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
 }
@@ -1565,7 +1579,11 @@ const AdminNotifActive = async () =>{
       ReportLoading.value = false;
     },
     onError: (error) => {
-      console.log(error.response.data);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
       ReportLoading.value = false;
     },
   });
@@ -1654,7 +1672,11 @@ const ReportClose = async (report,report_id, user_id, content_id, content_type) 
       ReportLoading.value = false;
     },
     onError: (error) => {
-      console.log(error.response.data);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
       ReportLoading.value = false;
     },
   });
@@ -1670,7 +1692,11 @@ const SendConfirmCode = async () => {
       loading.value = false;
     },
     onError: (error) => {
-      console.log(error);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
 }
@@ -1710,7 +1736,11 @@ watch(otpCode, async (newVal) => {
       }
     },
     onError: (error) => {
-      ResponseError.value = error.response.data;
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
   }

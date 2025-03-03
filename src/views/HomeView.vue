@@ -174,8 +174,10 @@
             <div
               v-for="(day, index) in days"
               :key="index"
-              :style="{ backgroundColor: getClass(0), border: checkIfCurrent(day.day) }"
-              class="heatmap-cell"
+              :style="{ backgroundColor: checkIfCurrent(day.day) , cursor: day.day == new Date().getDate() ? 'pointer' : 'default'}"
+              style="opacity: .6;"
+              :class="{ hoverable: day.day == new Date().getDate() }"
+              class="heatmap-cell rounded pa-4 text-center"
               @click="LoadDailyTask(day.day)"
             >
               {{ day.day }}
@@ -219,10 +221,10 @@
     </v-row>
 
     <v-row 
-    class="task_card mx-8 pa-3"
+    class="task_card mx-8 pa-3 cursor-pointer tasks"
     v-for="(card) in tasks" 
     :key="card.id" 
-    style="border-bottom: 1px solid #ccc;"
+    style="border-bottom: 1px solid #ccc; transition: .3s !important;"
     @click="TaskView(card.id)"
   >
     <!-- Task Icon and Status -->
@@ -727,10 +729,10 @@ const getTaskIcon = (taskId: number) => {
     };
     
     const checkIfCurrent = (value: any) => {
-    if (value == new Date().getDate()) {
-      return '2px solid black';
+    if (value == new Date().getDate()) {0
+      return 'rgb(var(--v-theme-heatmap_bc))';
     }
-    return '';
+    return 'rgb(var(--v-theme-heatmap_bc), .3)';
   };
 
 // Watch for changes in task count
@@ -871,12 +873,14 @@ onMounted(async () => {
     margin-top: 20px;
   }
   .heatmap-cell {
-    padding: 10px;
-    text-align: center;
     font-weight: bold;
-    border-radius: 5px;
     color: white;
+    transition: .3s;
   }
+  .hoverable:hover {
+    opacity: 1 !important;
+  }
+
   .red {
     background-color: rgb(185, 98, 98);
   }
@@ -885,5 +889,12 @@ onMounted(async () => {
   }
   .dark-blue {
     background-color: rgb(26, 26, 77);
+  }
+
+  .task{
+    transition: .3s !important;
+  }
+  .tasks:hover{
+    background-color: rgb(var(--v-theme-home_task_card_hover));
   }
 </style>

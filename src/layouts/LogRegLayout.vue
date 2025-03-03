@@ -222,8 +222,7 @@
 
 <script setup lang="ts">
   import { useRouter, useRoute } from 'vue-router';
-  import { ref, computed, defineComponent, provide, nextTick, onMounted } from 'vue'
-
+  import { ref, computed, inject } from 'vue'
   import type { RegisterData } from '@/api/register/register'
   import { useRegisterUser } from '@/api/register/registerQuery'
 
@@ -241,35 +240,11 @@
   import { useDisplay } from 'vuetify';
   import { useTheme } from 'vuetify';
 
-  import ErrorHandler from "@/components/ErrorHandler.vue";
-
-  import { SignJWT, type JWTPayload } from 'jose';
-
   if(getCookie('user') != null){
     deleteCookie('user');
   }
 
-  const errorHandler = ref(null);
-
-  // Provide a showError metódus
-  provide("showError", (msg) => {
-    console.log("belép");
-    // Ellenőrizzük, hogy elérhető-e a referencia
-    if (errorHandler.value) {
-      errorHandler.value.showError(msg);
-    } else {
-      console.log("errorHandler nem található");
-    }
-  });
-  
-  nextTick(() => {
-    console.log("belép");
-    if (errorHandler.value) {
-      errorHandler.value.showError("Statikus hibaüzenet: Hiba történt a bejelentkezés során.");
-    } else {
-      console.log("errorHandler nem található a nextTick-ben");
-    }
-  });
+  const showError = inject<((msg: string) => void) | undefined>("showError");
 
   const route = useRoute();
   const router = useRouter();
@@ -339,8 +314,11 @@
             RegBtnValue.value = 'Email elküldve';
           },
           onError: (err: any) => {
-            errorMessage.value = err.response.data || "Hiba történt a bejelentkezés során.";
-            snackbar.value = true;
+            if (showError) {
+              showError(err.response.data);
+            }else{
+              console.log(err.response.data);
+            }
           },
         }
       );
@@ -360,12 +338,10 @@
       LogindataRef.value.rememberMe = rememberMe.value;
       loginUser(LogindataRef.value, {
         onError: (err: any) => {
-          const showError = inject("showError");
           if (showError) {
-            const errorMessage = err.response?.data || "Hiba történt a bejelentkezés során.";
-            showError(errorMessage);
-          } else {
-            console.log("showError nem található");
+            showError(err.response.data);
+          }else{
+            console.log(err.response.data);
           }
         },
         onSuccess: (token) => {
@@ -417,8 +393,11 @@
       loading.value = true
       setNewPassword(SetNewPassworddataRef.value, {
           onError: (err: any) => {
-            errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
-            snackbar.value = true;
+            if (showError) {
+              showError(err.response.data);
+            }else{
+              console.log(err.response.data);
+            }
           },
         }
       );

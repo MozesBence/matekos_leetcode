@@ -365,7 +365,7 @@
                     <v-expand-transition>
                       <div class="position-relative mx-4 pa-2">
                         <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                          <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                          <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                           <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                         </div>
                         <div>
@@ -497,7 +497,7 @@
                               class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" 
                               style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));"
                               >
-                                <img :src="comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                 <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                               </div>
                               <div>
@@ -1132,7 +1132,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref, reactive, computed, nextTick, watch, watchEffect   } from 'vue';
+import { onMounted, onUnmounted, ref, reactive, computed, nextTick, watch, watchEffect, inject} from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { 
@@ -1151,6 +1151,8 @@ import { useDisplay } from 'vuetify';
 
 const router = useRouter();
 const route = useRoute();
+
+const showError = inject("showError");
 
 // Vuetify beépített breakpoint detektálás
 const { mobile } = useDisplay();
@@ -1193,7 +1195,11 @@ onMounted(async () => {
         },
       });
     } catch (error) {
-      console.error('Hiba történt a felhasználó lekérésekor:', error);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     }
   }
 
@@ -1218,7 +1224,11 @@ onMounted(async () => {
         }
       },
       onError: (error) => {
-        console.error('Hiba történt a posztok lekérésekor:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }
@@ -1245,11 +1255,19 @@ watch(get_fullUser, async (User) => {
         }
       },
       onError: (error) => {
-        console.error('Hiba történt a posztok lekérésekor:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   } catch (error) {
-    console.error('Hiba történt a posztok lekérésekor:', error);
+    if (showError) {
+      showError(error.response.data);
+    }else{
+      console.log(error.response.data);
+    }
   }
 });
 
@@ -1294,7 +1312,11 @@ const SendReport = async (post) =>{
       console.log(response);
     },
     onError: (error) => {
-
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
 
@@ -1360,7 +1382,11 @@ watch(searchQuery, async (newValue) => {
           }
         },
         onError: (error) => {
-          console.error('Hiba történt a posztok lekérésekor:', error);
+          if (showError) {
+            showError(error.response.data);
+          }else{
+            console.log(error.response.data);
+          }
         },
       });
     }, 300);
@@ -1388,7 +1414,11 @@ watch(searchQuery, async (newValue) => {
         }
       },
       onError: (error) => {
-        console.error('Hiba történt a posztok lekérésekor:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }
@@ -1403,7 +1433,11 @@ watchEffect(() => {
       FilterChips.value.push(...tags);
     },
     onError: (error) => {
-      console.error("Hiba történt:", error);
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     }
   });
 });
@@ -1437,7 +1471,11 @@ watch(FilterOpt, async (newVal, oldVal) => {
         }
       },
       onError: (error) => {
-        console.error('Hiba történt a posztok lekérésekor:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }else if(oldVal.length == 1 && newVal.length == 0){
@@ -1463,7 +1501,11 @@ watch(FilterOpt, async (newVal, oldVal) => {
         }
       },
       onError: (error) => {
-        console.error('Hiba történt a posztok lekérésekor:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }
@@ -1500,7 +1542,11 @@ const toggleOption = async (option) => {
             }
           },
           onError: (error) => {
-            console.error('Hiba történt a posztok lekérésekor:', error);
+            if (showError) {
+              showError(error.response.data);
+            }else{
+              console.log(error.response.data);
+            }
           },
         });
         sortOptions.value = [];
@@ -1540,7 +1586,11 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
             }
           },
           onError: (error) => {
-            console.error('Hiba történt a posztok lekérésekor:', error);
+            if (showError) {
+              showError(error.response.data);
+            }else{
+              console.log(error.response.data);
+            }
           },
         }
       );
@@ -1569,7 +1619,11 @@ watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
               }
             },
             onError: (error) => {
-              console.error('Hiba történt a posztok lekérésekor:', error);
+              if (showError) {
+                showError(error.response.data);
+              }else{
+                console.log(error.response.data);
+              }
             },
           }
         );
@@ -1605,7 +1659,11 @@ watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
           }
         },
         onError: (error) => {
-          console.error('Hiba történt a posztok lekérésekor:', error);
+          if (showError) {
+            showError(error.response.data);
+          }else{
+            console.log(error.response.data);
+          }
         },
       }
     );
@@ -1642,7 +1700,11 @@ const checkScroll = async () => {
           }
         },
         onError: (error) => {
-          console.error('Hiba történt a posztok lekérésekor:', error);
+          if (showError) {
+            showError(error.response.data);
+          }else{
+            console.log(error.response.data);
+          }
           PostLoading.value = false;  // Hiba esetén is visszaállítjuk a loadingot
         },
       });
@@ -2113,7 +2175,11 @@ const addPost = async () =>{
         }, false, false);
       },
       onError: (error) => {
-  
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
     loading.value = false;
@@ -2177,7 +2243,11 @@ const compressingFiles = async (mergedArray) => {
             if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
             blob = await response.blob();
           } catch (error) {
-            console.error('Fetch hiba:', error);
+            if (showError) {
+              showError(error.response.data);
+            }else{
+              console.log(error.response.data);
+            }
             continue; // Hibás fájlt kihagyjuk
           }
         } else if (file.file) {
@@ -2188,7 +2258,11 @@ const compressingFiles = async (mergedArray) => {
             try {
               blob = new Blob([file.file], { type: file.type || 'application/octet-stream' });
             } catch (error) {
-              console.error('Blob inicializálási hiba:', error);
+              if (showError) {
+                showError(error.response.data);
+              }else{
+                console.log(error.response.data);
+              }
               continue; // Hibás fájlt kihagyjuk
             }
           }
@@ -2209,7 +2283,11 @@ const compressingFiles = async (mergedArray) => {
               };
               blob = await imageCompression(blob, options);
             } catch (error) {
-              console.error('Tömörítési hiba:', error);
+              if (showError) {
+                showError(error.response.data);
+              }else{
+                console.log(error.response.data);
+              }
               continue; // Hibás fájlt kihagyjuk
             }
           }
@@ -2228,7 +2306,11 @@ const compressingFiles = async (mergedArray) => {
           compressFilesArray.push(file.size);
         }
       } catch (error) {
-        console.error('Fájl feldolgozási hiba:', error);
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       }
     }
   }
@@ -2309,7 +2391,11 @@ const insertImage = () => {
       }
     }
   } else {
-    console.error('Editor div nem található.');
+    if (showError) {
+      showError('Editor div nem található.');
+    }else{
+      console.log('Editor div nem található.');
+    }
   }
 };
 
@@ -2358,7 +2444,11 @@ function downloadFile(file) {
     // Az URL-t felszabadítjuk
     URL.revokeObjectURL(url);
   } catch (error) {
-    console.error('Fájl letöltési hiba:', error);
+    if (showError) {
+      showError(error.response.data);
+    }else{
+      console.log(error.response.data);
+    }
   }
 }
 
@@ -2506,7 +2596,11 @@ const addCommentToPost = async (post) =>{
           post.total_comments = post.total_comments == undefined ? 1 : post.total_comments + 1;
         },
         onError: (error) => {
-
+          if (showError) {
+            showError(error.response.data);
+          }else{
+            console.log(error.response.data);
+          }
         },
       });
   }
@@ -2537,7 +2631,11 @@ const addCommentToComment = async (comment) =>{
         comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
       },
       onError: (error) => {
-
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }
@@ -2569,7 +2667,11 @@ const addLastCommentToComment = async (comment, inner_comment) => {
         comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
       },
       onError: (error) => {
-
+        if (showError) {
+          showError(error.response.data);
+        }else{
+          console.log(error.response.data);
+        }
       },
     });
   }
@@ -2588,7 +2690,11 @@ const loadMoreComments = async (post,type) =>{
       }
     },
     onError: (error) => {
-
+      if (showError) {
+        showError(error.response.data);
+      }else{
+        console.log(error.response.data);
+      }
     },
   });
 }
