@@ -9,8 +9,6 @@ const profileAuth = require("../middlewares/profileAuth");
 route.get("/profile", [ profileAuth.verifyToken ], profileControllers.getFullUser);
 
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const storage = multer.memoryStorage();
 
@@ -23,6 +21,8 @@ const upload = multer({
         if(file != null){
             const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
             // Ellenőrzés
+
+            console.log(file.mimetype);
             
             if (allowedMimeTypes.includes(file.mimetype)) {
                 return cb(null, true); // Elfogadott fájl

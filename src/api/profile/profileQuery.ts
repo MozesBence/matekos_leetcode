@@ -38,7 +38,12 @@ const ProfilePicUpload = async (data: ProfilPicdata) => {
     formData.append('type', data.type.toString());  // type
 
     try {
-        const response = await axiosClient.patch('http://localhost:3000/profile', formData);
+        const response = await axiosClient.patch('http://localhost:3000/profile', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+        return response.data
     } catch (error: any) {
         console.error('Request failed:', error.response ? error.response.data : error.message);
     }

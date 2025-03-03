@@ -131,24 +131,22 @@ const initializeDatabase = async () => {
         const createDailyTaskEventQuery = `
             CREATE EVENT IF NOT EXISTS daily_task_event
             ON SCHEDULE EVERY 1 DAY
-            STARTS CURRENT_DATE + INTERVAL 1 DAY
+            STARTS TIMESTAMP(CURRENT_DATE) -- Holnaptól indul
             DO
             BEGIN
                 -- Ellenőrzés, hogy a hónap első napja van-e
                 IF DAY(CURRENT_DATE) = 1 THEN
-                    -- Tábla kiürítése
                     DELETE FROM Daily_Tasks;
                 END IF;
 
-                -- Új random task hozzáadása a mai dátummal
-                INSERT INTO Daily_Tasks (task_id, task_date)
-                SELECT 
-                    id AS task_id,
-                    CURRENT_DATE AS task_date
-                FROM 
-                    Tasks
-                ORDER BY RAND()
-                LIMIT 1;
+                -- Ha az adott napi id már létezik, akkor nem csinál semmit
+                IF NOT EXISTS (SELECT 1 FROM Daily_Tasks WHERE id = DAY(CURRENT_DATE)) THEN
+                    -- Új random task hozzáadása az aktuális nap id-jával
+                    INSERT INTO Daily_Tasks (id, task_id)
+                    SELECT 
+                        DAY(CURRENT_DATE) AS id,  -- Az aktuális nap sorszáma
+                        (SELECT id FROM Tasks ORDER BY RAND() LIMIT 1) AS task_id; -- Véletlenszerű task kiválasztása
+                END IF;
             END;
         `;
 
