@@ -222,7 +222,7 @@
 
 <script setup lang="ts">
   import { useRouter, useRoute } from 'vue-router';
-  import { ref, computed, defineComponent } from 'vue'
+  import { ref, computed, defineComponent, provide, nextTick, onMounted } from 'vue'
 
   import type { RegisterData } from '@/api/register/register'
   import { useRegisterUser } from '@/api/register/registerQuery'
@@ -241,11 +241,35 @@
   import { useDisplay } from 'vuetify';
   import { useTheme } from 'vuetify';
 
+  import ErrorHandler from "@/components/ErrorHandler.vue";
+
   import { SignJWT, type JWTPayload } from 'jose';
 
   if(getCookie('user') != null){
     deleteCookie('user');
   }
+
+  const errorHandler = ref(null);
+
+  // Provide a showError metódus
+  provide("showError", (msg) => {
+    console.log("belép");
+    // Ellenőrizzük, hogy elérhető-e a referencia
+    if (errorHandler.value) {
+      errorHandler.value.showError(msg);
+    } else {
+      console.log("errorHandler nem található");
+    }
+  });
+  
+  nextTick(() => {
+    console.log("belép");
+    if (errorHandler.value) {
+      errorHandler.value.showError("Statikus hibaüzenet: Hiba történt a bejelentkezés során.");
+    } else {
+      console.log("errorHandler nem található a nextTick-ben");
+    }
+  });
 
   const route = useRoute();
   const router = useRouter();
@@ -336,8 +360,13 @@
       LogindataRef.value.rememberMe = rememberMe.value;
       loginUser(LogindataRef.value, {
         onError: (err: any) => {
-          errorMessage.value = err.message || "Hiba történt a bejelentkezés során.";
-          snackbar.value = true;
+          const showError = inject("showError");
+          if (showError) {
+            const errorMessage = err.response?.data || "Hiba történt a bejelentkezés során.";
+            showError(errorMessage);
+          } else {
+            console.log("showError nem található");
+          }
         },
         onSuccess: (token) => {
           if (rememberMe) {

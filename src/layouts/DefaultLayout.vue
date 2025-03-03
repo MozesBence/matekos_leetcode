@@ -637,7 +637,7 @@
 
                               <v-slide-y-transition mode="out-in">
                                 <div class="d-flex justify-center align-center"  v-if="AllNotifs.length == 0">
-                                  <h2 style="font-weight: normal;">Jelenleg egy értesítésed sincs!</h2>
+                                  <h2 style="font-weight: normal;" class="text-center">Jelenleg egy értesítésed sincs!</h2>
                                   <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
                                 </div>
                               </v-slide-y-transition>
@@ -818,7 +818,7 @@
                             </div>
                           </div>
                         </v-fade-transition>
-
+                        
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
                             <h1 class="text-center mt-2">Bejelentések</h1>
@@ -827,7 +827,7 @@
                               
                               <v-slide-y-transition mode="out-in">
                                 <div class="d-flex justify-center align-center"  v-if="AllReports.length == 0">
-                                  <h2 style="font-weight: normal;">Jelenleg egy bejelentés sincs!</h2>
+                                  <h2 style="font-weight: normal;" class="text-center">Jelenleg egy bejelentés sincs!</h2>
                                   <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
                                 </div>
                               </v-slide-y-transition>
