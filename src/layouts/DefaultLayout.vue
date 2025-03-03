@@ -610,7 +610,7 @@
                         <v-fade-transition mode="out-in">
                           <div v-if="activePanel == 'notif'" class="h-100 d-flex flex-column justify-center">
                             <h1 class="text-center">Értesítések</h1>
-                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: 90%; width: 100%;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
                               <div v-for="notif in AllNotifs" v-bind:key="notif.id">
                                 <div 
