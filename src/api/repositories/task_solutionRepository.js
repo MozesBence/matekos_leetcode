@@ -124,19 +124,30 @@ const task_solutionRepository = {
             const state = await this.CheckSolution(taskId, solution);
     
             if (!exists) {
+                console.log(`New solution submission for User: ${userId}, Task: ${taskId}, State: ${state}`);
+    
                 const newSolution = await Task_solutions.create({
                     UserId: userId,
                     task_id: taskId,
                     state: state
                 });
+    
+                if (state === 1) {
+                    await this.IncreaseExperiencePoints(userId, taskId);
+                }
+    
                 return newSolution;
             } else {
                 const stateChange = await this.StateChange(userId, taskId, state);
+    
                 if (stateChange) {
+                    console.log(`Updating solution state for User: ${userId}, Task: ${taskId}, New State: ${state}`);
+    
                     const [updatedRows] = await Task_solutions.update(
                         { state: state },
                         { where: { UserId: userId, task_id: taskId } }
                     );
+    
                     return updatedRows > 0;
                 }
             }
@@ -159,32 +170,32 @@ const task_solutionRepository = {
             where: { id: taskId },
             attributes: ['solution']
         });
+    
         if (!correctSolution) return 0;
         return solution === correctSolution.solution ? 1 : 0;
     },
     
-    //meg kell csinalni h ellenorizze de ne toltse fel
     async StateChange(userId, taskId, state) {
-        console.log(`StateChange called for User: ${userId}, Task: ${taskId}, State: ${state}`);
+        console.log(`StateChange called for User: ${userId}, Task: ${taskId}, New State: ${state}`);
     
         const prev = await Task_solutions.findOne({
             where: { UserId: userId, task_id: taskId },
             attributes: ['state']
         });
     
-        console.log(`Previous state found:`, prev?.state);
+        console.log(`Previous state:`, prev?.state ?? "No previous solution");
     
-        if (prev && prev.state == 1) {
-            console.log("User already solved it correctly, no XP increase.");
+        if (prev?.state === 1) {
+            console.log("User already solved it correctly before. No XP increase.");
             return false;
         }
     
-        if ((!prev || prev.state != 1) && state == 1) {
+        if (state === 1) { 
             console.log("Correct solution! Increasing experience points...");
             await this.IncreaseExperiencePoints(userId, taskId);
         }
     
-        return prev && prev.state !== state;
+        return prev?.state !== state;
     },
     
     async IncreaseExperiencePoints(userId, taskId) {
@@ -196,7 +207,7 @@ const task_solutionRepository = {
         if (exp > 0) {
             await this.UpdateExperiencePoints(userId, exp);
         } else {
-            console.log(`No experience points found for task ${taskId}`);
+            console.log(`No experience points found for Task ${taskId}. Skipping XP update.`);
         }
     },
     
@@ -206,8 +217,6 @@ const task_solutionRepository = {
             attributes: ['experience_points']
         });
     
-        console.log(`Task ${taskId} found:`, task);
-        
         return task ? task.experience_points : 0;
     },
     
@@ -215,16 +224,17 @@ const task_solutionRepository = {
         try {
             console.log(`Updating XP for User ${userId} by ${exp} points`);
     
-            const result = await Users.increment('experience_point', {
+            await Users.increment('experience_point', {
                 by: exp,
                 where: { id: userId }
             });
     
-            console.log(`Update result:`, result);
+            console.log(`XP successfully updated for User ${userId}`);
         } catch (error) {
             console.error('Error updating experience points:', error);
         }
     }
+    
     
     
     
