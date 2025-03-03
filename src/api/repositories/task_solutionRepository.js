@@ -1,6 +1,8 @@
 const db = require('../database/dbContext');
-const {Task_solutions,Tasks} = db;
+const {Task_solutions,Tasks,Users} = db;
 const sequelize = require('sequelize');
+const tasks = require('../models/tasks');
+
 
 const task_solutionRepository = {
     async getCompletionRate() {
@@ -116,19 +118,115 @@ const task_solutionRepository = {
             });
         }
     },
-    async submitSolution(userId, taskId, state) {
+    async submitSolution(userId, taskId, solution) {
         try {
-            const solution = await Task_solutions.create({
-                UserId: userId,
-                task_id: taskId,
-                state: state
-            });
-            return solution;
+            const exists = await this.CheckExistance(userId, taskId);
+            const state = await this.CheckSolution(taskId, solution);
+    
+            if (!exists) {
+                const newSolution = await Task_solutions.create({
+                    UserId: userId,
+                    task_id: taskId,
+                    state: state
+                });
+                return newSolution;
+            } else {
+                const stateChange = await this.StateChange(userId, taskId, state);
+                if (stateChange) {
+                    const [updatedRows] = await Task_solutions.update(
+                        { state: state },
+                        { where: { UserId: userId, task_id: taskId } }
+                    );
+                    return updatedRows > 0;
+                }
+            }
         } catch (error) {
             console.error("Error saving solution:", error);
             throw error;
         }
+    },
+    
+    async CheckExistance(userId, taskId) {
+        const task = await Task_solutions.findOne({
+            where: { UserId: userId, task_id: taskId },
+            attributes: ['task_id']
+        });
+        return task ? task.task_id : null;
+    },
+    
+    async CheckSolution(taskId, solution) {
+        const correctSolution = await Tasks.findOne({
+            where: { id: taskId },
+            attributes: ['solution']
+        });
+        if (!correctSolution) return 0;
+        return solution === correctSolution.solution ? 1 : 0;
+    },
+    
+    //meg kell csinalni h ellenorizze de ne toltse fel
+    async StateChange(userId, taskId, state) {
+        console.log(`StateChange called for User: ${userId}, Task: ${taskId}, State: ${state}`);
+    
+        const prev = await Task_solutions.findOne({
+            where: { UserId: userId, task_id: taskId },
+            attributes: ['state']
+        });
+    
+        console.log(`Previous state found:`, prev?.state);
+    
+        if (prev && prev.state == 1) {
+            console.log("User already solved it correctly, no XP increase.");
+            return false;
+        }
+    
+        if ((!prev || prev.state != 1) && state == 1) {
+            console.log("Correct solution! Increasing experience points...");
+            await this.IncreaseExperiencePoints(userId, taskId);
+        }
+    
+        return prev && prev.state !== state;
+    },
+    
+    async IncreaseExperiencePoints(userId, taskId) {
+        console.log(`IncreaseExperiencePoints called for User: ${userId}, Task: ${taskId}`);
+    
+        const exp = await this.GetExperiencePoints(taskId);
+        console.log(`Experience points to add: ${exp}`);
+    
+        if (exp > 0) {
+            await this.UpdateExperiencePoints(userId, exp);
+        } else {
+            console.log(`No experience points found for task ${taskId}`);
+        }
+    },
+    
+    async GetExperiencePoints(taskId) {
+        const task = await Tasks.findOne({
+            where: { id: taskId },
+            attributes: ['experience_points']
+        });
+    
+        console.log(`Task ${taskId} found:`, task);
+        
+        return task ? task.experience_points : 0;
+    },
+    
+    async UpdateExperiencePoints(userId, exp) {
+        try {
+            console.log(`Updating XP for User ${userId} by ${exp} points`);
+    
+            const result = await Users.increment('experience_point', {
+                by: exp,
+                where: { id: userId }
+            });
+    
+            console.log(`Update result:`, result);
+        } catch (error) {
+            console.error('Error updating experience points:', error);
+        }
     }
+    
+    
     
 };
 
