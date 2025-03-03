@@ -305,7 +305,7 @@
               <v-card style="display: flex; flex-direction: column; height: auto; overflow: hidden;">
                 <v-layout>
                   <div
-                  style="max-width: max-content; border-radius: 0 !important; background-color: grey; min-height: max-content; height: auto; transition: .3s; z-index: 5;"
+                  style="max-width: max-content; border-radius: 0 !important; background-color: rgb(var(--v-theme-settings_drawer_bc)); min-height: max-content; height: auto; transition: .3s; z-index: 5;"
                   class="d-flex flex-column position-relative"
                   :style="{left: SettingsMenu ? '-60rem' : '0vw'}"
                   >
@@ -463,13 +463,16 @@
                   </div>
 
                   <v-main 
-                  class="d-flex justify-center py-4 px-2 position-relative" 
+                  class="d-flex flex-column justify-center py-4 px-2 position-relative" 
                   style="height: auto; z-index: 3;"
                   :style="{left: SettingsMenu ? '-16.25em' : '0vw', width: isMobile ? '100%' : ''}"
                   >
-                  <v-icon size="30" icon style="position: absolute; left: 1rem; top: 1rem;" v-if="isMobile" @click="SettingsMenu = !SettingsMenu">
-                    mdi-menu
-                  </v-icon>
+                  <div v-if="isMobile" style="height: max-content; width: 100%;" class="pl-2">
+                    <v-icon size="30" icon @click="SettingsMenu = !SettingsMenu">
+                      mdi-menu
+                    </v-icon>
+                  </div>
+                  <div style="height: 100%;">
                     <v-slide-y-transition mode="out-in">
                       <div :key="activePanel" class="w-100" style="height: auto;">
                         <v-fade-transition mode="out-in">
@@ -1133,6 +1136,7 @@
 
                       </div>
                     </v-slide-y-transition>
+                  </div>
                   </v-main>
                 </v-layout>
                 <v-divider></v-divider>
