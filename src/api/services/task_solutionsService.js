@@ -16,8 +16,8 @@ class Task_Solutions {
     async getTasksByCompletionState(state,userId){
         return await task_solutionRepository.getTasksByCompletionState(state,userId);
     }
-    async submitSolution(userId, taskId, score){
-        return await task_solutionRepository.submitSolution(userId, taskId, score);
+    async submitSolution(userId,taskId,solution){
+        return await task_solutionRepository.submitSolution(userId,taskId,solution);
     }
 }
 
