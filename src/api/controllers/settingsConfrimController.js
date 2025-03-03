@@ -288,3 +288,144 @@ exports.getAllNotif = async (req,res,next) =>{
 
     res.status(200).send(all_notif);
 }
+
+exports.getAllUser = async (req,res,next) =>{
+    const {name, activated_type, admin, token} = req.query;
+
+    const secretKey = process.env.JWT_KEY;
+
+    try{
+        var decoded = null;
+        
+        if(token){
+            decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        }else{
+            const error = new Error("Valami hiba történt a felhasználó igazolásában!");
+    
+            error.status = 500;
+    
+            throw error;
+        }
+
+        const adminCheck = await settingsConfirmService.getElseUserById(decoded.id);
+
+        if(!adminCheck){
+            const error = new Error("A felhasználónak nincs ehhez joga!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const get_users = await settingsConfirmService.getALlUser(name, activated_type, admin);
+
+        if(!get_users){
+            const error = new Error("Valami hiba lépett fel a lekérdezés közben!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        res.status(200).send(get_users);
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+exports.setUserSettings = async (req,res,next) =>{
+    const {content, id, type, token} = req.body;
+
+    const secretKey = process.env.JWT_KEY;
+
+    try{
+        var decoded = null;
+        
+        if(token){
+            decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        }else{
+            const error = new Error("Valami hiba történt a felhasználó igazolásában!");
+    
+            error.status = 500;
+    
+            throw error;
+        }
+
+        const adminCheck = await settingsConfirmService.getElseUserById(decoded.id);
+
+        if(!adminCheck){
+            const error = new Error("A felhasználónak nincs ehhez joga!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const setUserSettings = await settingsConfirmService.setUserSettings(content, id, type);
+
+        res.status(200).send(setUserSettings);
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+
+exports.setUserRoles = async (req,res,next) =>{
+    const {id, type, token} = req.body;
+
+    const secretKey = process.env.JWT_KEY;
+
+    try{
+        var decoded = null;
+        
+        if(token){
+            decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
+        }else{
+            const error = new Error("Valami hiba történt a felhasználó igazolásában!");
+    
+            error.status = 500;
+    
+            throw error;
+        }
+
+        const adminCheck = await settingsConfirmService.getElseUserById(decoded.id);
+
+        if(!adminCheck){
+            const error = new Error("A felhasználónak nincs ehhez joga!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        const setUserRoles = await settingsConfirmService.setUserRoles(id, type);
+
+        res.status(200).send(setUserRoles);
+    }
+    catch(error){
+        next(error)
+    }
+}
+
+exports.getAllNotifs = async (req,res,next) =>{
+    const id = req.query.id.id;
+
+    try{
+        const getNotifs = await settingsConfirmService.getAllNotifs(id);
+        
+        if(!getNotifs){
+            const error = new Error("Valami hiba történt az értesítések lekérése közben");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        res.status(200).send(getNotifs);
+    }
+    catch(error){
+        next(error)
+    }
+}

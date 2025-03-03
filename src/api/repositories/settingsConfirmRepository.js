@@ -4,6 +4,10 @@ const { Op, where } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
+const bcrypt = require("bcrypt");
+
+const salt = 10;
+
 class settingsConfirmRepository
 {
     constructor(db)
@@ -275,6 +279,142 @@ class settingsConfirmRepository
         } catch (error) {
             return { success: false, message: "Error deleting content.", error };
         }
+    }
+
+    async getALlUser(name, activated_type, admin) {
+        const whereClause = {};
+    
+        if (name) {
+            whereClause.user_name = { [Sequelize.Op.like]: `%${name}%` };
+        }
+    
+        if (activated_type == 0 || activated_type == 2) {
+            whereClause.activated = activated_type;
+        }
+    
+        if (admin) {
+            whereClause.admin = admin;
+        }
+    
+        const users = await this.Users.findAll(
+            { 
+                where: whereClause,
+                include: [
+                    {
+                        model: this.User_customization,
+                        attributes: ["profil_picture"],
+                    },
+                ],
+            }
+        );
+
+        users.forEach(user =>{
+            if (user.User_customization.profil_picture != null) {
+                const profileProfPicBuffer = user.User_customization.profil_picture;
+                
+                const profileProfPicMimeType = user.User_customization.profil_picture_type || 'image/jpeg';
+                
+                if (profileProfPicBuffer) {
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    user.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            }
+        });
+
+        return users;
+    }
+
+    async setUserSettings(content, id, type){
+        const user = await this.Users.findOne({
+            where:{
+                id: id
+            }
+        });
+
+        if(type == 1){
+            user.user_name = content;
+        }
+        else if(type == 2){
+            user.email = content;
+        }
+        else if(type == 3){
+            user.password = await bcrypt.hash(content, salt);
+        }
+
+        user.save();
+
+        return type == 3 ? user.password : content;
+    }
+    
+    async setUserRoles(id, type){
+        const user = await this.Users.findOne({
+            where:{
+                id: id
+            }
+        });
+
+        if(type == 1){
+            user.activated = 1;
+        }
+        else if(type == 2){
+            user.user_role = 'banned';
+            user.activated = 2;
+            user.admin = 0;
+        }
+        else if(type == 3){
+            user.user_role = 'member';
+            user.activated = 1;
+            user.admin = 0;
+        }
+        else if(type == 4){
+            user.user_role = 'admin';
+            user.admin = 1;
+        }
+        else if(type == 5){
+            user.user_role = 'member';
+            user.admin = 0;
+        }
+
+        user.save();
+
+        return 'OK'
+    }
+
+    async getAllNotifs(id){
+        const notifs = await this.Notification.findAll({
+            where: {
+                user_id: id,
+                type: 0
+            },
+            include: [
+                {
+                    model: this.Users,
+                    as: "ReportedUser",
+                    attributes: ["id","user_name"],
+                    include: [
+                        {
+                            model: this.User_customization,
+                            attributes: ["profil_picture"],
+                        },
+                    ],
+                },
+            ],
+        });
+        
+        notifs.forEach(notif =>{
+            if (notif.ReportedUser.User_customization.profil_picture != null) {
+                const profileProfPicBuffer = notif.ReportedUser.User_customization.profil_picture;
+                
+                const profileProfPicMimeType = notif.ReportedUser.User_customization.profil_picture_type || 'image/jpeg';
+                
+                if (profileProfPicBuffer) {
+                    const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+                    notif.ReportedUser.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+                }
+            }
+        });
+
+        return notifs;
     }
 }
 

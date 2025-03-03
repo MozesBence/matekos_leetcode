@@ -46,10 +46,11 @@ exports.registerUser = async (req, res, next) =>
             }
         }
 
-        const result = await logregServices.registerUser(newUser);
-
+        
         try{
-            if(result)
+            const result = await logregServices.registerUser(newUser);
+            
+            if(result && result.id != null)
             {
                 // token generálás
                 const token = jwt.sign(
@@ -57,7 +58,6 @@ exports.registerUser = async (req, res, next) =>
                     process.env.JWT_KEY,
                     { expiresIn: '1h' }
                 );
-        
                 // Verifikációs token
                 const newToken =
                 {
@@ -65,6 +65,7 @@ exports.registerUser = async (req, res, next) =>
                     type: "regisztrálás",
                     user_id: result.id,
                 }
+
                 const token_result = await logregServices.uploadToken(newToken);
                 
                 // Verifikációs link
@@ -130,7 +131,6 @@ exports.registerUser = async (req, res, next) =>
 
                 //console.log("Email küldésére kész:", mailOptions);
             const email_send = await transporter.sendMail(mailOptions);
-
                             
             if(!email_send){
                 const error = new Error("Hiba törént az email küldése közbe!");
@@ -209,7 +209,6 @@ exports.loginUser = async (req, res, next) =>
 
             throw error;
         }
-
 
         if(user != null && user.activated == 0)
         {

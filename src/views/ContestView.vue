@@ -46,12 +46,12 @@
           <v-card>
             <v-card-title>Leaderboard</v-card-title>
             <v-divider></v-divider>
-            <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0">
-              <v-list-item>
-                <div class="d-flex flex-row align-center mb-1 pa-1 px-3 rounded justify-space-between" 
+            <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0" class="pa-0">
+              <v-list-item class="pa-0 px-2">
+                <div class="d-flex flex-row align-center mb-1 pa-1 px-3 rounded justify-space-between mt-1" 
                     style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
                   <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;" icon elevation="0">
-                    <div style="height: 2rem; width: 2rem; border-radius: 50%; overflow: hidden; position: relative;">
+                    <div style="height: 3rem; width: 3rem; border-radius: 50%; overflow: hidden; position: relative;">
                       <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" 
                           alt="" 
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">

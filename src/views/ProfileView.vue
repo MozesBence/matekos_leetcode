@@ -2,7 +2,7 @@
 <template>
   <div class="background-video-container">
     <video autoplay loop muted playsinline id="background-video">
-      <source src="../components/background/profile_background.mp4" type="video/mp4" />
+      <source src="../components/background/profile_background.mp4" type="video/mp4"/>
     </video>
     <div class="background-overlay"></div>
   </div>
@@ -11,20 +11,21 @@
   class="d-flex justify-center align-center"
   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
   >
-    <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded-lg">
-      <v-btn 
-      icon
-      @click="goBack" 
-      style="position: absolute; top: .2rem; left: .4rem; z-index: 5; pointer-events: visible;">
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
-      <div class="d-flex justify-center">
+    <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded">
+      <div class="position-absolute" style="width: max-content; left: .5rem; top: .1vw;">
+        <v-btn 
+        icon
+        @click="goBack" 
+        style="z-index: 5; pointer-events: visible;">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+      </div>
+      <div class="d-flex justify-center position-absolute ga-2" style="width: max-content; right: .5rem; top: .1vw;">
         <v-btn
         v-if="settingsShow"
         icon
         @click="handleDarkmodeSwitch"
-        style="position: absolute; top: .2rem; z-index: 5; pointer-events: visible;"
-        :style="{right: !settingsShow ? '.4rem': '4rem'}"
+        style="z-index: 5; pointer-events: visible;"
         >
           <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
         </v-btn>
@@ -33,7 +34,7 @@
         v-if="settingsShow"
         icon
         @click="dialog = true"
-        style="position: absolute; top: .2rem; right: .4rem; z-index: 5; pointer-events: visible;"
+        style="z-index: 5; pointer-events: visible;"
         >
           <v-icon>mdi-account-cog</v-icon>
         </v-btn>
@@ -56,7 +57,7 @@
             @click="triggerBackPicFileInput">
             <template v-if="isBackImageAvailable" style="height: 100%;">
               <img 
-                :src="backImage" 
+                :src="backImage"
                 @error="setDefaultBackground"
                 class="background"
                 ref="backgroundImg"
@@ -99,7 +100,7 @@
               />
             </template>
             <template v-else>
-              <v-icon size="64" color="black">mdi-account</v-icon>
+              <img src="/src/components/background/test_profile.jpg"  alt="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
             </template>
           </v-btn>
           <h1 style="position: relative; color: rgb(var(--v-theme-profile_textColor)); font-size: xx-large;">
@@ -117,24 +118,79 @@
       style="background-color: transparent; position: relative; top: -21vh;"
       :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
       >
-        <v-container>
-          <v-row justify="space-evenly">
-            <v-col
-              v-for="elevation in 6"
-              :key="elevation"
-              cols="12"
-              md="6"
-            >
-              <v-sheet
-                class="pa-2 rounded-lg"
-                color="profile_cardsColor"
-                height="220"
-                style="transition: .3s;"
-              >
-              </v-sheet>
-            </v-col>
-          </v-row>
-        </v-container>
+      <v-row justify="space-evenly">
+        <v-col
+          v-for="elevation in 1"
+          :key="elevation"
+          cols="12"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+          <div id="chart">
+            <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+          </div>
+          </v-sheet>
+        </v-col>
+      </v-row>
+      <v-row justify="space-evenly">
+        <v-col
+          :key="elevation"
+          cols="12"
+          md="6"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+           
+          </v-sheet>
+        </v-col>
+        <v-col
+          :key="elevation"
+          cols="12"
+          md="6"
+        >
+          <v-sheet
+            class="pa-2 rounded-lg"
+            color="profile_cardsColor"
+            height="420"
+            style="transition: .3s;"
+          >
+          <h2>Legutobb megkezdett feladat</h2>
+          <v-card>
+            <v-card
+            :color="color"
+            :variant="variant"
+            class="mx-auto"
+          >
+            <v-card-item>
+              <div>
+                <div class="text-overline mb-1">
+                  {{ variant }}
+                </div>
+                <div class="text-h6 mb-1">
+                  1. Határozd meg x értékét: Alapvető Lineáris Egyenlet
+                </div>
+                <div class="text-caption">Greyhound divisely hello coldly fonwderfully</div>
+              </div>
+            </v-card-item>
+    
+            <v-card-actions>
+              <v-btn>
+                Folytatas
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+          </v-card>
+          </v-sheet>
+        </v-col>
+      </v-row>
 
         <div class="pa-4 text-center">
           <v-dialog
@@ -216,7 +272,7 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
 import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-
+import VueApexCharts from 'vue3-apexcharts';
 const dialog = shallowRef(false)
 
 // Definiáld az adat típust
@@ -256,6 +312,44 @@ const settingsShow = ref(false);
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 const userId = route.params.id;
+const apexchart = VueApexCharts;
+const series = ref([
+  {
+    name: "Solved tasks",
+    data: [10, 41, 35, 51, 49, 62, 69, 91, 148,5,100,45]
+  }
+]);
+
+
+const chartOptions = ref({
+            chart: {
+              height: 350,
+              type: 'line',
+              zoom: {
+                enabled: false
+              }
+            },
+            dataLabels: {
+              enabled: false
+            },
+            stroke: {
+              curve: 'straight'
+            },
+            title: {
+              text: 'Megoldott feladatok',
+              align: 'left'
+            },
+            grid: {
+              row: {
+                colors: ['#f3f3f3', 'transparent'],
+                opacity: 0.5
+              },
+            },
+            xaxis: {
+              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep','Okt','Nov','Dec'],
+            }
+});
+
 
 onMounted(async () => {
   try {
@@ -265,7 +359,6 @@ onMounted(async () => {
         get_fullUser.value = get_user;
         get_fullUser_customs.value = get_user.User_customization;
         settingsShow.value = get_fullUser.value.id == userId;
-        console.log(settingsShow.value);
         handlePtofilPicters(get_user.User_customization ? { profil_picture: get_user.User_customization.profil_picture, background_picture: get_user.User_customization.background_picture } : { profil_picture: get_user.profil_picture, background_picture: get_user.background_picture })
       },
       onError: (error) => {
@@ -336,7 +429,6 @@ const handleProfImageError = () => {
 // Alapértelmezett háttér beállítása
 const setDefaultBackground = (event: Event) => {
   const target = event.target as HTMLImageElement;
-  target.style.backgroundColor = '#333';
   target.style.display = 'none';
   isBackImageAvailable.value = false;
 };
@@ -387,7 +479,9 @@ const handleProfPicUpload = async (event: Event) => {
 
 // Fájl input triggerelése
 const triggerProfPicFileInput = () => {
-  fileProfPicInput.value?.click();
+  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+    fileProfPicInput.value?.click();
+  }
 };
 
 const handlebackPicUpload = async (event: Event) => {
@@ -445,7 +539,9 @@ const handlebackPicUpload = async (event: Event) => {
 };
 
 const triggerBackPicFileInput = () => {
-  fileBackPicInput.value?.click();
+  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+    fileBackPicInput.value?.click();
+  }
 };
 </script>
 
@@ -520,7 +616,7 @@ export default {
   position: relative;
   width: 100%;
   height: 11vw;
-  background-color: #333;
+  background-color: rgb(var(--v-theme-profile_header_bc));
 }
 
 .profile-header img{

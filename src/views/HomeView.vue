@@ -796,7 +796,8 @@ onMounted(async ()=>{
 
 
 const UpdatePage = (newPage: number) => {
-  offset.value = newPage;
+  offset.value = 15 *(newPage - 1);
+  console.log('teherbebeaszott offset',offset.value)
   router.push({ query: { page: newPage, per_page: 15 } });
   cardsQuery.refetch();
   window.scrollTo({

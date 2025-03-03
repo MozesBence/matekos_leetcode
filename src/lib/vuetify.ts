@@ -33,6 +33,7 @@ const vuetify = createVuetify({
           cards_text_color: colors.grey.lighten5,
           text_color: colors.grey.darken4,
           default_btn_bc: colors.grey.darken4,
+          admin_bc: colors.lightBlue.lighten3,
 
           nav_btn_hover: colors.blue.lighten3,
           nav_btn_active: colors.blue.base,
@@ -42,8 +43,10 @@ const vuetify = createVuetify({
           home_task_card_hover: colors.grey.lighten2,
           custom_drawer_btn: colors.grey.darken1,
           custom_drawer_icon: colors.grey.darken4,
+          settings_drawer_bc: colors.grey.lighten2,
 
-          profile_bc: colors.grey.lighten1,
+          profile_bc: colors.grey.lighten3,
+          profile_header_bc: colors.grey.lighten2,
           profile_textColor: colors.grey.lighten5,
           profile_cardsColor: colors.grey.lighten2,
 
@@ -75,6 +78,7 @@ const vuetify = createVuetify({
           secondary: colors.indigo.darken3,
           text_color: colors.grey.lighten5,
           default_btn_bc: colors.grey.lighten5,
+          admin_bc: colors.lightBlue.lighten3,
 
           nav_btn_hover: colors.blue.lighten4,
           nav_btn_active: colors.blue.lighten3,
@@ -84,8 +88,10 @@ const vuetify = createVuetify({
           home_task_card_hover: colors.grey.darken3,
           custom_drawer_btn: colors.grey.lighten2,
           custom_drawer_icon: colors.grey.lighten5,
+          settings_drawer_bc: colors.grey.darken2,
 
           profile_bc: colors.grey.darken2,
+          profile_header_bc: colors.grey.darken3,
           profile_textColor: colors.grey.lighten4,
           profile_cardsColor: colors.grey.darken3,
 

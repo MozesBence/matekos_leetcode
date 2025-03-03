@@ -36,7 +36,8 @@ const {
     Task_solutions,
     Daily_Tasks,
     Notification,
-    Advertisement_Cards
+    Advertisement_Cards,
+    DailyQuote
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
@@ -57,6 +58,7 @@ db.Task_solutions = Task_solutions; // Assign Task_solutions to db
 db.Daily_Tasks = Daily_Tasks;
 db.Notification = Notification;
 db.Advertisement_Cards = Advertisement_Cards;
+db.DailyQuote = DailyQuote;
 
 // Initialize database and themes
 const initializeDatabase = async () => {
@@ -77,8 +79,8 @@ const initializeDatabase = async () => {
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
 
-        await db.Advertisement_Cards.initializeCards()
-        console.log('Advertisements are added')
+        await db.Daily_Tasks.initializeDailyQuote()
+        console.log('Daily task table added')
 
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');
@@ -138,10 +140,11 @@ const initializeDatabase = async () => {
                     DELETE FROM Daily_Tasks;
                 END IF;
 
-                -- Új random task hozzáadása
-                INSERT INTO Daily_Tasks (task_id)
+                -- Új random task hozzáadása a mai dátummal
+                INSERT INTO Daily_Tasks (task_id, task_date)
                 SELECT 
-                    id AS task_id
+                    id AS task_id,
+                    CURRENT_DATE AS task_date
                 FROM 
                     Tasks
                 ORDER BY RAND()

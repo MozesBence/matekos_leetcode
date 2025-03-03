@@ -43,7 +43,6 @@ const initializeDatabase = async () => {
             .catch((error) => {
                 console.error('Error syncing database:', error.message);
             });
-            
     } catch (error) {
         console.error('Error initializing database:', error);
     }

@@ -1,6 +1,6 @@
 const db = require("../database/dbContext");
 
-const { Op } = require('sequelize');
+const { Op, where } = require('sequelize');
 
 const { Sequelize, DataTypes } = require('sequelize');
 
@@ -35,6 +35,7 @@ class logregRepository
             background_picture_type: null,
             user_id: user_id,
         };
+
         const newUser_custom = await this.User_customization.build(user_custom);
 
         await newUser_custom.save();
@@ -122,20 +123,23 @@ class logregRepository
 
     async getUser(email, id)
     {
-        return await this.Users.findOne
-        (
-            {
+        return await this.Users.findOne({
+            where: {
                 [Op.or]: [
                     { email: email },
                     { id: id }
                 ]
             }
-        )
+        });        
     }
 
     async activateUser(id)
     {
-        const User = await this.Users.findByPk(id);
+        const User = await this.Users.findOne({
+            where :{
+                id: id
+            }
+        });
 
         User.activated = 1; 
 

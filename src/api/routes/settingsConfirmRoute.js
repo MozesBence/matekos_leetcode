@@ -14,4 +14,12 @@ router.post('/close-report', [ profileAuth.verifyToken ], settingsConfirmControl
 
 router.get('/get-all-notif',  settingsConfirmController.getAllNotif);
 
+router.get('/get-all-users', [ profileAuth.verifyToken ],  settingsConfirmController.getAllUser);
+
+router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirmController.setUserSettings);
+
+router.patch('/set-user-roles', [ profileAuth.verifyToken ],  settingsConfirmController.setUserRoles);
+
+router.get('/get-all-notifs',  settingsConfirmController.getAllNotifs);
+
 module.exports = router;

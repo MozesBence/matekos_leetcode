@@ -5,7 +5,6 @@ exports.verifyToken = (req, res, next) =>
     var token = req.headers["token"];
     var id = req.headers["id"];
 
-
     if(token == undefined && id == undefined)
     {
         res.status(403).send("Access denied");
