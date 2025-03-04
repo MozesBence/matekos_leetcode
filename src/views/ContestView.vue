@@ -1,6 +1,6 @@
 <template>
   <div class="mt-2">
-    <v-container class="hero">
+    <v-container class="hero" style="width: 95%;">
       <v-icon icon="mdi-trophy" color="amber" size="128" class="mb-4"></v-icon>
       <h1>MathSolve kihivás</h1>
       <p>Minden héten kihívás, oldd meg és nézd meg a ranglistán elfoglalt helyezésed!</p>

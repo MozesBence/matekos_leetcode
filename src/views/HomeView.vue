@@ -3,12 +3,12 @@
   <v-container fluid style="display: flex; vertical-align:middle">
     <v-row class="d-flex justify-center align-center" style="overflow-x: auto; margin: 1vw 2vw;">
       <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
-        <v-card class="hero" style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; height:13.5em">
-          <v-card-title class="text-h6 rounded-lg" style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white;">
-            {{ card.title }}
+        <v-card class="hero rounded" style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em;">
+          <v-card-title class="text-h6 rounded" style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white;">
+            <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
-          <v-text class="text-body-2 text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;">
-            {{ card.content }} 
+          <v-text class="text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;">
+            <h4 style="font-weight: normal;">{{ card.content }}</h4>
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
             <v-btn
@@ -18,9 +18,10 @@
             variant="outlined"
             block
             style="width: 4rem;"
+            class="rounded-pill"
             @click="navigate(card.redirect)"
           >
-            {{ card.button_title }}
+            <h3>{{ card.button_title }}</h3>
           </v-btn>
           </v-card-actions>
         </v-card>

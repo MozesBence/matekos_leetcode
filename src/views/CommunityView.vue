@@ -6,7 +6,7 @@
           height: 'max-content',
           maxWidth: '34.5%',
           width: '100%',
-          top: !get_fullUser ? '10.5rem' : '5.3rem'
+          top: !get_fullUser ? '7.9em' : '4.05em'
         }"
         class="ma-2 ml-3 mt-4 rounded"
         v-if="!isMobile"
