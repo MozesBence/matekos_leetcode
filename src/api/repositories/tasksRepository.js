@@ -163,6 +163,7 @@ const tasksRepository = {
             where: Object.keys(whereClause).length > 0 ? whereClause : {},
             order: [['id', 'ASC']],
             limit: 15,
+            attributes:['id','theme_id','difficulty','task_title'],
             offset: Number(offset) || 0,
         });
 
