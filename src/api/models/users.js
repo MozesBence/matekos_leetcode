@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 defaultValue: 0,
             },
+            roll_back_token:{
+                type: DataTypes.INTEGER,
+                allowNull:false,
+                defaultValue:0
+            },
             admin: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
