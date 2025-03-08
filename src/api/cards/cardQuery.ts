@@ -6,6 +6,7 @@ import axiosClient from "@/lib/axios";
 
 
 // Fetching Cards
+/*
 const fetchCards = async (offset: number) => { // Accepts a number, not a Ref
   try {
     const response = await axios.get(`/api/tasks/get-cards-info/${offset}`);
@@ -28,7 +29,7 @@ export const useCards = (offset: Ref<number>) => {
     }
   });
 };
-
+*/
 // Fetching Completion Rates
 const fetchCompletionRates = async () => {
   try {
@@ -291,5 +292,59 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
     enabled:false,
   });
 };
+
+/*
+  const getFilteredTasks = async (req, res) => {
+  console.log(req.query)
+  try {
+      const tasks = await tasksService.getFilteredTasks(req.query);
+      res.json(tasks);
+  } catch (error) {
+      res.status(500).json({ message: "Error fetching tasks" });
+  }
+};
+*/
+const fetchCards = async (filters: Ref<{ difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }>) => {
+  try {
+    const filteredParams = NonEmptyFilters(filters.value);
+
+    const response = await axios.get("/api/tasks/filteredTasks", {
+      params: filteredParams,
+    });
+    console.log(response.data)
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    throw error;
+  }
+};
+
+function NonEmptyFilters(filters: { difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }) {
+  const nonEmptyFilters: Record<string, string | number> = {};
+
+  for (const [key, value] of Object.entries(filters)) {
+    if (typeof value === "string" && value.trim().length > 0) {
+      nonEmptyFilters[key] = value;
+    } else if (typeof value === "number" && !isNaN(value)) {
+      nonEmptyFilters[key] = value;
+    }
+  }
+
+  return nonEmptyFilters;
+}
+
+export const UseFetchCards = (filters: Ref<{ difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }>) => {
+  return useQuery({
+    queryFn: () => fetchCards(filters),
+    queryKey: ['tasks', NonEmptyFilters(filters.value)],
+    onSuccess: (data) => {
+      console.log("Filtered tasks received:", data);
+    },
+    onError: (error) => {
+      console.error("Error occurred while fetching cards by themes:", error);
+    },
+  });
+};
+
 
 

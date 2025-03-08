@@ -94,26 +94,22 @@ const tasksRepository = {
     return tasks;
   },
   
-  async getFilteredTasks({ difficulty, search, themes, state, userId }) {
+  async getFilteredTasks({ difficulty, search, themes, state, userId, offset }) {
     try {
         const whereClause = {};
 
-        // Convert themes from a semicolon-separated string to an array (if necessary)
         if (themes && typeof themes === 'string') {
             themes = themes.split(';').map(t => t.trim());
         }
 
-        // Filter by difficulty if provided.
         if (difficulty !== undefined) {
             whereClause.difficulty = difficulty;
         }
 
-        // Filter by search (use Op.like for MySQL, Op.iLike for PostgreSQL)
         if (search) {
             whereClause.task_title = { [Op.like]: `%${search}%` };
         }
 
-        // Retrieve task IDs from themes if any themes are specified.
         let themeTaskIds = null;
         if (themes && themes.length > 0) {
             const themesWithTasks = await db.Themes.findAll({
@@ -126,11 +122,9 @@ const tasksRepository = {
             themeTaskIds = themesWithTasks.flatMap(theme => theme.Tasks.map(task => task.id));
         }
 
-        // Retrieve task IDs based on state filtering if state and userId are provided.
         let stateTaskIds = null;
         if (state !== undefined && userId) {
             if (state == 2) {
-                // Get all tasks the user has solved.
                 const solvedTaskIds = await db.Task_solutions.findAll({
                     where: { UserId: userId },
                     attributes: ['task_id'],
@@ -138,14 +132,12 @@ const tasksRepository = {
                 });
                 stateTaskIds = solvedTaskIds.map(ts => ts.task_id);
 
-                // Get all tasks EXCEPT the solved ones.
                 stateTaskIds = await db.Tasks.findAll({
                     where: { id: { [Op.notIn]: stateTaskIds } },
                     attributes: ['id'],
                 }).then(tasks => tasks.map(task => task.id));
 
             } else {
-                // Get only the tasks the user has attempted in the given state.
                 const solvedTasks = await db.Task_solutions.findAll({
                     where: { state: state, UserId: userId },
                     attributes: ['task_id']
@@ -154,7 +146,6 @@ const tasksRepository = {
             }
         }
 
-        // Combine filters: if both themes and state filters were applied, take their intersection.
         let finalTaskIds = null;
         if (themeTaskIds !== null && stateTaskIds !== null) {
             finalTaskIds = themeTaskIds.filter(id => stateTaskIds.includes(id));
@@ -164,23 +155,25 @@ const tasksRepository = {
             finalTaskIds = stateTaskIds;
         }
 
-        // Apply final filtering based on task IDs
         if (finalTaskIds !== null) {
             whereClause.id = { [Op.in]: finalTaskIds };
         }
 
-        // Fetch and return tasks based on filters.
-        return await db.Tasks.findAll({
-            where: whereClause,
+        const tasks = await db.Tasks.findAll({
+            where: Object.keys(whereClause).length > 0 ? whereClause : {},
             order: [['id', 'ASC']],
-            limit: 15
+            limit: 15,
+            offset: Number(offset) || 0,
         });
+
+        return tasks;
 
     } catch (error) {
         console.error('Error fetching filtered tasks:', error);
         throw error;
     }
-},
+}
+
 
 
 };

@@ -41,7 +41,7 @@ module.exports = (sequelize, DataTypes) => {
             task: {
                 type: DataTypes.TEXT,
                 allowNull: false, 
-            },
+            }
         },
         {
             sequelize,
@@ -52,7 +52,7 @@ module.exports = (sequelize, DataTypes) => {
     );
     Tasks.initializeTasks = async () => {
         const testTasks = [
-            { id: 1, theme_id: 1, solution: 'x = 3', creator_id: null, difficulty: 0, experience_points: 10, task_title: 'Határozd meg x értékét: Alapvető Lineáris Egyenlet', task: 'Oldd meg x-re: $$x + 5 = 8$$' },
+            { id: 1, theme_id: 1, solution: 'x = 4', creator_id: null, difficulty: 1, experience_points: 5, task_title: 'Logaritmikus egyenlet megoldása a valós számok halmazán', task: 'Oldja meg az alábbi egyenletet a valós számok halmazán!  $$3 + \log_2 (x - 2) = \log_2 (2x + 8)$$'},
             { id: 2, theme_id: 1, solution: 'x = 4', creator_id: null, difficulty: 0, experience_points: 10, task_title: 'Egyszerű Egyenlet Kivonással', task: 'Oldd meg x-re: $$x - 2 = 2$$' },
             { id: 3, theme_id: 2, solution: 'x = 2', creator_id: null, difficulty: 1, experience_points: 20, task_title: 'Lineáris Egyenlet: Változó Mindkét Oldalon', task: 'Oldd meg x-re: $$2x + 4 = 8$$' },
             { id: 4, theme_id: 2, solution: 'x = -2', creator_id: null, difficulty: 1, experience_points: 20, task_title: 'Algebrai Feladat: Oldd meg x-re', task: 'Oldd meg x-re: $$3x - 6 = 0$$' },

@@ -43,20 +43,22 @@ class TasksService {
       throw error;
     }
   }
-  async getFilteredTasks({ difficulty, search, themes, state, userId }) {
+  async getFilteredTasks({ difficulty, search, themes, state, userId, offset }) {
     try {
       difficulty = difficulty !== undefined ? parseInt(difficulty) : undefined;
       state = state !== undefined ? parseInt(state) : undefined;
       if (themes) {
         themes = themes.split(";");
       }
-      console.log(themes)
+      //console.log(themes)
+      console.log(offset)
       return await tasksRepository.getFilteredTasks({
         difficulty,
         search,
         themes,
         state,
         userId,
+        offset
       });
     } catch (error) {
       throw error;

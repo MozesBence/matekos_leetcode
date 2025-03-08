@@ -3,8 +3,8 @@
   <v-container fluid style="display: flex; vertical-align:middle">
     <v-row class="d-flex justify-center align-center" style="overflow-x: auto; margin: 1vw 2vw;">
       <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
-        <v-card class="hero rounded" style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em;">
-          <v-card-title class="text-h6 rounded" style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white;">
+        <v-card class="hero" style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em; border-radius:30px">
+          <v-card-title class="text-h6" style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white; border-radius:30px">
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
           <v-text class="text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;">
@@ -65,47 +65,63 @@
 <!--Nehézség szerinti szűrés kezdete-->
   <v-col cols="6" md="3" class="d-flex align-center justify-center">
     <v-select 
-      v-model="difficulty_Query"
-      clearable
-      label="Nehézség"
-      :items="['Könnyű', 'Közepes', 'Nehéz']"
-      variant="solo"
-      class="responsive-item"
-      hide-details
-      style="height: 56px;"
-    ></v-select>
+  v-model="filterData.difficulty"
+  clearable
+  label="Nehézség"
+  :items="[
+    { text: 'Könnyű', value: 0 },
+    { text: 'Közepes', value: 1 },
+    { text: 'Nehéz', value: 2 }
+  ]"
+  item-title="text" 
+  item-value="value" 
+  variant="solo"
+  class="responsive-item"
+  hide-details
+  style="height: 56px;"
+  
+></v-select>
   </v-col>
 <!--Nehézség szerinti szűrés vége-->
 
 <!--Állapot szetinti szűrés kezdete-->
-  <v-col cols="6" md="3" class="d-flex align-center justify-center">
-    <v-select
-      v-model="state_Query"
-      clearable
-      label="Állapot"
-      :items="['Megkezdetlen', 'Függőben lévő', 'Kész']"
-      variant="solo"
-      class="responsive-item"
-      hide-details
-      style="height: 56px;"
-    ></v-select>
-  </v-col>
+<v-col cols="6" md="3" class="d-flex align-center justify-center">
+  <v-select
+    v-model="filterData.state"
+    clearable
+    label="Állapot"
+    :items="[
+      { text: 'Megkezdetlen', value: 2 },
+      { text: 'Függőben lévő', value: 0 },
+      { text: 'Kész', value: 1 }
+    ]"
+    item-title="text" 
+    item-value="value" 
+    variant="solo"
+    class="responsive-item"
+    hide-details
+    style="height: 56px;"
+    :disabled="!(get_user_email?.length > 0)"
+  ></v-select>
+</v-col>
+
+
 <!--Állapot szetinti szűrés vége-->
 
 <!-- Keresés szerinti szűrés kezdete-->
   <v-col cols="9" md="3" class="d-flex align-center justify-center">
     <v-text-field
-      v-model="searchQuery"
-      prepend-inner-icon="mdi-magnify"
-      clear-icon="mdi-close"
-      hide-details
-      label="Feladat neve"
-      type="text"
-      variant="outlined"
-      clearable
-      @input="filterTasksByCharacters(searchQuery)"
-      style="height: 56px;"
-    ></v-text-field>
+  v-model="filterData.search"
+  prepend-inner-icon="mdi-magnify"
+  clear-icon="mdi-close"
+  hide-details
+  label="Feladat neve"
+  type="text"
+  variant="outlined"
+  clearable
+  @input="filterTasksByCharacters(filterData.search)"
+  style="height: 56px;"
+></v-text-field>
   </v-col>
 <!-- Keresés szerinti szűrés vége-->
 
@@ -184,6 +200,10 @@
               {{ day.day }}
             </div>
           </div>
+          <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >
+            <img src="../assets/rollback.png" alt="" height="24px">
+            <h3>2 db</h3>
+          </div>
 
           </div>      
         </div>
@@ -223,7 +243,7 @@
 
     <v-row 
     class="task_card mx-8 pa-3 cursor-pointer tasks"
-    v-for="(card) in tasks" 
+    v-for="(card) in cardsQuery.data.value" 
     :key="card.id" 
     style="border-bottom: 1px solid #ccc; transition: .3s !important;"
     @click="TaskView(card.id)"
@@ -283,6 +303,39 @@ v-model="pageNumber"
 :length="Math.ceil(allTaskCountQuery.data.value / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
+<v-dialog v-model="dialog" width="auto">
+  <v-card max-width="800">
+    <!-- Custom Title Slot -->
+    <template v-slot:title>
+      <div class="d-flex align-center">
+        <img
+          src="../assets/late.png"
+          alt="Rollback Icon"
+          style="width: 30px; height: 30px; margin-right: 8px;"
+        />
+        <span>Sajnos lejárt az idő!</span>
+      </div>
+    </template>
+
+    <!-- Card Content -->
+    <v-card-text>
+      De van egy megoldás... Használj egy roll back tokent, hogy megoldhasd ezt a feladatot! Ha ezzel a feladattal szakadt meg a sorozatod vissza kaphatod. Fontos 1 hónapban csak 3-at tudsz használni!
+      <br>
+      <br>
+      <div style="display:flex; vertical-align:middle; text-align:left;">
+        <img src="../assets/rollback.png" alt="" height="20" style="margin-right:5px"> 2 db tokened van.
+      </div>
+    </v-card-text>
+
+    <!-- Action Button -->
+    <template v-slot:actions>
+      <v-btn class="ms-auto" text="Vissza" @click="dialog = false"></v-btn>
+      <v-btn>Token felhasználása</v-btn>
+    </template>
+  </v-card>
+</v-dialog>
+
+
 </template>
 
 <script setup lang="ts">
@@ -290,7 +343,7 @@ v-model="pageNumber"
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCards, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
@@ -298,31 +351,40 @@ import router from '@/router';
 import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
-import { number } from 'zod';
+import { any, date, number } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
 
 
 
 
 // Query hooks
+const get_fullUser = ref<any[]>([]);
+const userId = ref(get_fullUser.value.id);
 const offset = ref<number>(0);
+  const filterData = ref({
+  difficulty: null,
+  state: null,
+  themes: '',
+  search: '',
+  UserId: userId.value,
+  offset: 0
+});
+
 const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
-const cardsQuery = useCards(offset);
+const cardsQuery = UseFetchCards(filterData);
 const completion_rates = useCompletionRates();
 const allTaskCountQuery = useAllTaskCount();
 const taskCount = ref(0);
 const quote = UseQuote();
 const { data: cards, isLoading, error } = useGetAllAds();
-
+var dialog = ref(false);
 //----
 const route = useRoute();
 const apexchart = VueApexCharts;
 const selectedThemes = ref<string[]>([]);
 const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
-const get_fullUser = ref<any[]>([]);
-const { data: filteredTasks, refetch: refetchFilteredTasks, isFetching } = useCardsByThemes(selectedThemes);
 const currentYear = new Date().getFullYear();
 const user_id = ref<string | null>(null);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
@@ -337,52 +399,11 @@ const navigate = (redirect: string) => {
   if (!redirect) return; // Safety check
 
   if (redirect.startsWith("/")) {
-    router.push(redirect); // Internal Vue route
+    router.push(redirect);
   } else {
-    window.open(redirect, "_blank"); // External link opens in a new tab
+    window.open(redirect, "_blank");
   }
 };
-const tasks = computed(() => {
-  if (
-    selectedThemes.value.length === 0 &&
-    searchQuery.value === '' &&
-    difficulty_param.value === '' &&
-    state_param.value === ''
-  ) {
-    return cardsQuery.data.value || [];
-  }
-
-  let resultTasks = filteredTasks.value || cardsQuery.data.value || [];
-
-  const mergeAndRemoveDuplicates = (array1: any[], array2: any[]) => {
-    const taskMap = new Map();
-
-    array1.forEach(task => {
-      taskMap.set(task.id, task);
-    });
-
-    array2.forEach(task => {
-      taskMap.set(task.id, task);
-    });
-
-    return Array.from(taskMap.values());
-  };
-
-  if (searchQuery.value) {
-    resultTasks = mergeAndRemoveDuplicates(resultTasks, taskWithSearch.data.value || []);
-  }
-
-  if (difficulty_param.value) {
-    resultTasks = mergeAndRemoveDuplicates(resultTasks, taskByDifficulty.data.value || []);
-  }
-
-  if (state_param.value) {
-    resultTasks = mergeAndRemoveDuplicates(resultTasks, taskByState.data.value || []);
-  }
-  
-  return resultTasks;
-});
-
 
 
 const handleToggle = async (theme: string, isSelected: boolean, toggle: Function) => {
@@ -390,20 +411,23 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
     await themesQuery.refetch();
   }
 
+  let selectedThemes = filterData.value.themes ? filterData.value.themes.split(';') : [];
+
   if (isSelected) {
-    selectedThemes.value = selectedThemes.value.filter(t => t !== theme);
+    selectedThemes = selectedThemes.filter(t => t !== theme);
   } else {
-    selectedThemes.value.push(theme);
+    selectedThemes.push(theme);
   }
+
+  filterData.value.themes = selectedThemes.join(';');
 
   toggle();
 
-  if (selectedThemes.value.length === 0) {
-    await cardsQuery.refetch();
-  } else {
-    await refetchFilteredTasks();
-  }
+  await cardsQuery.refetch();
+  
 };
+
+
 
 // Filter by search query
 const searchQuery = ref('');
@@ -422,10 +446,9 @@ const difficulty_Query = ref(null);
 const difficulty_param = ref('');
 const taskByDifficulty = useTaskByDifficulty(difficulty_param);
 
-watch(difficulty_Query, (newVal) => {
-  console.log("Selected difficulty:", newVal);
-  HandleDifficultyChange(newVal);
-});
+watch(filterData, () => {
+  cardsQuery.refetch(); 
+}, { deep: true });
 
 
 function HandleDifficultyChange(newVal: string | null){
@@ -433,27 +456,11 @@ function HandleDifficultyChange(newVal: string | null){
     difficulty_param.value = ''
     cardsQuery.refetch();
   }else{
-    SetDifficultyValue(newVal);
     taskByDifficulty.refetch();
   }
 }
 
-function SetDifficultyValue(difficulty: string){
-  switch(difficulty){
-    case 'Könnyű':
-      difficulty_param.value = '0'
-      break;
-    case 'Közepes':
-      difficulty_param.value = '1'
-      break;
-    case 'Nehéz':
-      difficulty_param.value = '2'
-      break;
-    default:
-      difficulty_param.value = '';
-      break;
-  }
-}
+
 //-------- End filter by difficulty ---------------
 
 //-------- Filter by completionrate ---------------
@@ -479,27 +486,12 @@ function HandleStateChange(newVal: string | null) {
     cardsQuery.refetch();
   } else {
     console.log(user_id.value);
-    SetStateParamsValue(newVal);
     taskByState.refetch();
   }
+  cardsQuery.refetch();
 }
 
 
-function SetStateParamsValue(state: string){
- switch (state) {
-    case "Függőben lévő":
-    state_param.value = '0';
-      break;
-    case "Kész":
-    state_param.value = '1';
-      break;
-    case "Megkezdetlen":
-    state_param.value = '2';
-      break;
-    default:
-    state_param.value = '';
-  }
-}
 
 //-------- End filter by completionrate ---------------
 
@@ -517,13 +509,27 @@ var dailytask_day = ref(''); // Define the ref properly
 
 const specificTaskquery = useSpecificTask(dailytask_day);
 
-const LoadDailyTask = async (day: any) => {
-    dailytask_day.value = day;
-    console.log(dailytask_day.value);
-    await specificTaskquery.refetch();
-    console.log(specificTaskquery.data.value);
-    TaskView(Number(specificTaskquery.data.value.task_id));
+const LoadDailyTask = async (day: string) => {
+    if(CheckIfCurrentTask(day)){
+      dailytask_day.value = day;
+      console.log(dailytask_day.value);
+      await specificTaskquery.refetch();
+      TaskView(Number(specificTaskquery.data.value.task_id));
+    }else{
+      dialog.value = true;
+      //alert('nono')
+    }
+    
 };
+
+const CheckIfCurrentTask =  (day: string) => {
+  if(Number(day) == new Date().getDate()){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
 };
@@ -668,7 +674,7 @@ const getDaysInMonth = (year: number, month: number): number => {
       return 'Nehéz';
     };
     // Get the user's ID reactively
-const userId = ref(get_fullUser.value.id);
+
 
 // Fetch task state based on user ID
 const task_state = useTaskState(userId);
@@ -799,7 +805,7 @@ onMounted(async ()=>{
 
 
 const UpdatePage = (newPage: number) => {
-  offset.value = 15 *(newPage - 1);
+  filterData.value.offset = 15 *(newPage - 1);
   console.log('teherbebeaszott offset',offset.value)
   router.push({ query: { page: newPage, per_page: 15 } });
   cardsQuery.refetch();
@@ -809,7 +815,6 @@ const UpdatePage = (newPage: number) => {
   behavior: 'smooth'
 });
 };
-
 
 
 onMounted(async () => {
