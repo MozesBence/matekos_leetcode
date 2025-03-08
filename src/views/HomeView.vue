@@ -101,7 +101,7 @@
     class="responsive-item"
     hide-details
     style="height: 56px;"
-    :disabled="!(get_user_email?.length > 0)"
+    :disabled="!get_fullUser.email"
   ></v-select>
 </v-col>
 

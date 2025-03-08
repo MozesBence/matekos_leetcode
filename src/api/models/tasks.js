@@ -4,7 +4,7 @@ const { nullable } = require('zod');
 module.exports = (sequelize, DataTypes) => {
     class Tasks extends Model {}
 
-    Tasks.init(
+Tasks.init(
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -41,6 +41,18 @@ module.exports = (sequelize, DataTypes) => {
             task: {
                 type: DataTypes.TEXT,
                 allowNull: false, 
+            },
+			solution_format:{
+				type: DataTypes.STRING,
+				allowNull: false
+			},
+            first_hint:{
+                type: DataTypes.STRING,
+                allowNull: true
+            },
+            second_hint:{
+                type: DataTypes.STRING,
+                allowNull: true
             }
         },
         {
