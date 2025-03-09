@@ -38,14 +38,81 @@ const tasksRepository = {
     }
   },
 
-  async getTaskCount(){
-    try{
-      return await Tasks.count();
-    }catch(error){
-      console.error('Error fetching specific card count:', error);
-      throw error;
+  async getTaskCount({ difficulty, search, themes, state, userId }) {
+    try {
+        const whereClause = {};
+
+        if (themes && typeof themes === 'string') {
+            themes = themes.split(';').map(t => t.trim());
+        }
+
+        if (difficulty !== undefined) {
+            whereClause.difficulty = difficulty;
+        }
+
+        if (search) {
+            whereClause.task_title = { [Op.like]: `%${search}%` };
+        }
+
+        let themeTaskIds = null;
+        if (themes && themes.length > 0) {
+            const themesWithTasks = await db.Themes.findAll({
+                where: { theme: { [Op.in]: themes } },
+                include: {
+                    model: db.Tasks,
+                    attributes: ['id'],
+                }
+            });
+            themeTaskIds = themesWithTasks.flatMap(theme => theme.Tasks.map(task => task.id));
+        }
+
+        let stateTaskIds = null;
+        if (state !== undefined && userId) {
+            if (state == 2) {
+                const solvedTaskIds = await db.Task_solutions.findAll({
+                    where: { UserId: userId },
+                    attributes: ['task_id'],
+                    group: ['task_id']
+                });
+                stateTaskIds = solvedTaskIds.map(ts => ts.task_id);
+
+                stateTaskIds = await db.Tasks.findAll({
+                    where: { id: { [Op.notIn]: stateTaskIds } },
+                    attributes: ['id'],
+                }).then(tasks => tasks.map(task => task.id));
+
+            } else {
+                const solvedTasks = await db.Task_solutions.findAll({
+                    where: { state: state, UserId: userId },
+                    attributes: ['task_id']
+                });
+                stateTaskIds = solvedTasks.map(ts => ts.task_id);
+            }
+        }
+
+        let finalTaskIds = null;
+        if (themeTaskIds !== null && stateTaskIds !== null) {
+            finalTaskIds = themeTaskIds.filter(id => stateTaskIds.includes(id));
+        } else if (themeTaskIds !== null) {
+            finalTaskIds = themeTaskIds;
+        } else if (stateTaskIds !== null) {
+            finalTaskIds = stateTaskIds;
+        }
+
+        if (finalTaskIds !== null) {
+            whereClause.id = { [Op.in]: finalTaskIds };
+        }
+
+        return await db.Tasks.count({
+            where: Object.keys(whereClause).length > 0 ? whereClause : {},
+        });
+
+    } catch (error) {
+        console.error('Error fetching task count:', error);
+        throw error;
     }
-  },
+},
+
   async getRandomTask() {
     return await Tasks.findOne({
       attributes: ['id'],

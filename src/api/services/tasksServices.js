@@ -15,10 +15,23 @@ class TasksService {
       throw error;
     }
   }
-  async getTaskCount(){
-    try{
-      return await tasksRepository.getTaskCount();
-    }catch(error){
+  async getTaskCount({ difficulty, search, themes, state, userId, offset }){
+    try {
+      difficulty = difficulty !== undefined ? parseInt(difficulty) : undefined;
+      state = state !== undefined ? parseInt(state) : undefined;
+      if (themes) {
+        themes = themes.split(";");
+      }
+      console.log(offset)
+      return await tasksRepository.getTaskCount({
+        difficulty,
+        search,
+        themes,
+        state,
+        userId,
+        offset
+      });
+    } catch (error) {
       throw error;
     }
   }

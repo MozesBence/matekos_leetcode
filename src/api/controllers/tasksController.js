@@ -26,13 +26,11 @@ const getSpecificCard = async (req,res,next) =>{
 }
 
 const getTaskCount = async (req,res,next) => {
-  try{
-    const taskCount = await tasksService.getTaskCount();
-    res.status(200).json(taskCount);
-  }catch(error)
-  {
-    console.log(`Error in tasks controller: ${error.message}`);
-    res.status(500).json({ message: error.message });
+  try {
+      const tasks = await tasksService.getTaskCount(req.query);
+      res.json(tasks);
+  } catch (error) {
+      res.status(500).json({ message: "Error fetching tasks" });
   }
 }
 

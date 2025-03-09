@@ -106,25 +106,30 @@ export const useSolvedTaskRates = (id: Ref<string>) => {
   });
 };
 
-const fetchAllTaskCount = async () => {
-  try {
-    const response = await axios.get(`/api/tasks/taskCount`);
+const fetchAllTaskCount = async (filters: { difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }) => {
+ try {
+    const filteredParams = NonEmptyFilters(filters.value);
+
+    const response = await axios.get("/api/tasks/taskCount", {
+      params: filteredParams,
+    });
+    console.log(response.data)
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching all task count:', error);
+    console.error("Error fetching tasks:", error);
     throw error;
   }
 };
 
-export const useAllTaskCount = () => {
+export const useAllTaskCount = (filters: { difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }) => {
   return useQuery({
-    queryKey: ['allTaskCount'], // Make sure this is an array
-    queryFn: fetchAllTaskCount,
+    queryFn: () => fetchAllTaskCount(filters),
+    queryKey: ['tasksCount', NonEmptyFilters(filters.value)],
     onSuccess: (data) => {
-      console.log('Fetched task count:', data);
+      console.log("Filtered tasks received:", data);
     },
     onError: (error) => {
-      console.error('Error fetching task count:', error);
+      console.error("Error occurred while fetching cards by themes:", error);
     },
   });
 };

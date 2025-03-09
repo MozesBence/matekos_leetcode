@@ -300,7 +300,7 @@ https://laravel-news.com/laravel-pagination
 -->
 <v-pagination 
 v-model="pageNumber" 
-:length="Math.ceil(allTaskCountQuery.data.value / 15)" 
+:length="Math.ceil((allTaskCountQuery.data.value) / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
 <v-dialog v-model="dialog" width="auto">
@@ -343,7 +343,7 @@ v-model="pageNumber"
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useCardsByThemes, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
@@ -374,7 +374,7 @@ const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
 const cardsQuery = UseFetchCards(filterData);
 const completion_rates = useCompletionRates();
-const allTaskCountQuery = useAllTaskCount();
+const allTaskCountQuery = useAllTaskCount(filterData);
 const taskCount = ref(0);
 const quote = UseQuote();
 const { data: cards, isLoading, error } = useGetAllAds();
@@ -424,7 +424,7 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
   toggle();
 
   await cardsQuery.refetch();
-  
+  await allTaskCountQuery.refetch();
 };
 
 
@@ -438,16 +438,18 @@ const filterTasksByCharacters = (chars: string) => {
     taskWithSearch.refetch();
   }else{
     cardsQuery.refetch();
+    allTaskCountQuery.refetch();
   }
 };
 
 //-------- Filter by difficulty ---------------
-const difficulty_Query = ref(null);
+  
 const difficulty_param = ref('');
 const taskByDifficulty = useTaskByDifficulty(difficulty_param);
 
 watch(filterData, () => {
   cardsQuery.refetch(); 
+  allTaskCountQuery.refetch();
 }, { deep: true });
 
 
@@ -484,11 +486,14 @@ function HandleStateChange(newVal: string | null) {
     state_param.value = '';
     console.log(user_id.value);
     cardsQuery.refetch();
+    allTaskCountQuery.refetch();
   } else {
     console.log(user_id.value);
     taskByState.refetch();
+    allTaskCountQuery.refetch();
   }
   cardsQuery.refetch();
+  allTaskCountQuery.refetch();
 }
 
 
@@ -744,10 +749,14 @@ const getTaskIcon = (taskId: number) => {
 
 // Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
-  if (newVal) {
+  console.log("Watch triggered - New Value:", newVal);
+  console.log("Query Data:", allTaskCountQuery.data.value);
+  if (newVal !== undefined) {
     taskCount.value = newVal;
+    console.log("Updated taskCount:", taskCount.value);
   }
 });
+
 
 onMounted(() => {
         days.value = generateDays(currentYear, new Date().getMonth());
