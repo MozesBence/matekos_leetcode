@@ -1,33 +1,52 @@
 <template>
   <!-- Kártyák kezdete -->
-  <v-container fluid style="display: flex; vertical-align:middle">
-    <v-row class="d-flex justify-center align-center" style="overflow-x: auto; margin: 1vw 2vw;">
-      <v-col v-for="(card, index) in cards" :key="index" class="pa-2" cols="12" sm="4" md="4" lg="3">
-        <v-card class="hero" style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em; border-radius:30px">
-          <v-card-title class="text-h6" style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white; border-radius:30px">
+  <v-container fluid style="overflow-x: auto;">
+    <v-row 
+      class="d-flex align-center flex-nowrap overflow-x-auto"
+      style="gap: 1rem; padding: 1vw 2vw; white-space: nowrap;"
+    >
+      <v-col 
+        v-for="(card, index) in cards" 
+        :key="index" 
+        class="pa-2"
+        cols="12" sm="6" md="3" lg="3"
+        :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
+      >
+        <v-card 
+          class="hero" 
+          style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em; border-radius:30px;"
+        >
+          <v-card-title 
+            class="text-h6" 
+            style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white; border-radius:30px"
+          >
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
-          <v-text class="text-center" style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;">
+          <v-text 
+            class="text-center" 
+            style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;"
+          >
             <h4 style="font-weight: normal;">{{ card.content }}</h4>
           </v-text>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
             <v-btn
-            append-icon="mdi-chevron-right"
-            color="white"
-            :text="card.button_title"
-            variant="outlined"
-            block
-            style="width: 4rem;"
-            class="rounded-pill"
-            @click="navigate(card.redirect)"
-          >
-            <h3>{{ card.button_title }}</h3>
-          </v-btn>
+              append-icon="mdi-chevron-right"
+              color="white"
+              :text="card.button_title"
+              variant="outlined"
+              block
+              style="width: 4rem;"
+              class="rounded-pill"
+              @click="navigate(card.redirect)"
+            >
+              <h3>{{ card.button_title }}</h3>
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
   </v-container>
+  
   <!-- Kártyák vége -->
 
   <!-- Téma választó szalag kezdete -->
@@ -510,7 +529,7 @@ const LoadRandomTask = async () => {
     TaskView(randomTaskId.value);
   }
 };
-var dailytask_day = ref(''); // Define the ref properly
+var dailytask_day = ref('');
 
 const specificTaskquery = useSpecificTask(dailytask_day);
 
@@ -522,7 +541,6 @@ const LoadDailyTask = async (day: string) => {
       TaskView(Number(specificTaskquery.data.value.task_id));
     }else{
       dialog.value = true;
-      //alert('nono')
     }
     
 };

@@ -15,8 +15,8 @@ module.exports = (sequelize) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'competitions', // A hivatkozott tábla neve
-                    key: 'id', // Az idegen kulcs hivatkozott oszlopa
+                    model: 'competitions',
+                    key: 'id',
                 },
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',

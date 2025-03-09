@@ -160,9 +160,9 @@ export const useRandomTask = () => {
 };
 
 const fetchTaskWithSearch = async (characters: Ref<string>) => {
-  console.log(characters.value); // This will now print the correct value
+  console.log(characters.value);
   try {
-    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`); // Use characters.value
+    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`);
     console.log(response)
     return response.data;
   } catch (error) {
@@ -319,7 +319,7 @@ const fetchCards = async (filters: Ref<{ difficulty: string; state: string; them
     console.log(response.data)
     return response.data;
   } catch (error) {
-    console.error("Error fetching tasks:", error);
+    console.error("Error taskok fetchelese kozben:", error);
     throw error;
   }
 };
@@ -343,10 +343,10 @@ export const UseFetchCards = (filters: Ref<{ difficulty: string; state: string; 
     queryFn: () => fetchCards(filters),
     queryKey: ['tasks', NonEmptyFilters(filters.value)],
     onSuccess: (data) => {
-      console.log("Filtered tasks received:", data);
+      //console.log("Kapott taskok:", data);
     },
     onError: (error) => {
-      console.error("Error occurred while fetching cards by themes:", error);
+      console.error("Error taskok fetchelese kozben:", error);
     },
   });
 };
