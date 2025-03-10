@@ -73,14 +73,17 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
 
-        await sequelize.sync({ alter: false });
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
+        
+        await sequelize.sync({ force: true });
         console.log('Database connected and models synchronized.');
+        await Users.sync({ force: true });
+        await Community_posts.sync({ force: true });
+
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
 
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
-
-        await db.Daily_Tasks.initializeDailyQuote()
-        console.log('Daily task table added')
 
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');
