@@ -8,16 +8,14 @@ const { stat } = require('fs');
 
 const tasksRepository = {
   
-  async getCardInfo(offset) {
-    
-    if(!Tasks){
-        return 'nem task'
-    }
+  async getsimilarTasks(themeid) {
     try {
       return await Tasks.findAll({
-        distinct: true,
+        where:{
+          theme_id: themeid
+        },
         order: [['id', 'ASC']],
-        offset: number().int().parse(offset),
+        attributes:['id','theme_id','difficulty','task_title'],
         limit: 15,
       });
     } catch (error) {

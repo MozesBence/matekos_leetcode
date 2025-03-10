@@ -352,4 +352,27 @@ export const UseFetchCards = (filters: Ref<{ difficulty: string; state: string; 
 };
 
 
+const getSimilarCards = async (themeid: Number) => {
+  try{
+    console.log(themeid)
+    const response = await axios.get(`/api/tasks/getsimilarTasks/${themeid}`);
+    console.log(response.data)
+    return response.data;
+  }catch(error){
+    console.error('error hasonlo feladatok lekerese kozben',error)
+    throw error;
+  }
+}
 
+export const UseGetSimilarCards = (themeid: Number) => {
+  return useQuery({
+    queryFn: () => getSimilarCards(themeid),
+    queryKey:['similarTasks'],
+    onSuccess: (data) => {
+      //console.log("Kapott taskok:", data);
+    },
+    onError: (error) => {
+      console.error("Error taskok fetchelese kozben:", error);
+    },
+  })
+}

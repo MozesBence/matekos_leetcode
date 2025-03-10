@@ -82,12 +82,22 @@ const getFilteredTasks = async (req, res) => {
   console.log(req.query)
   try {
       const tasks = await tasksService.getFilteredTasks(req.query);
-      res.json(tasks);
+      res.status(200).json(tasks);
   } catch (error) {
       res.status(500).json({ message: "Error fetching tasks" });
   }
 };
 
+
+const getsimilarTasks = async (req,res) => {
+  try{
+    const {themeid} = req.params
+    const similarTasks = await tasksService.getsimilarTasks(themeid);
+    res.status(200).json(similarTasks);
+  }catch(error){
+    res.status(500).json({ message: "Error fetching tasks" });
+  }
+} 
 
 
 module.exports = {
@@ -98,5 +108,6 @@ module.exports = {
   getRandomTask,
   getTasksByDifficult,
   getTaskByThemes,
-  getFilteredTasks
+  getFilteredTasks,
+  getsimilarTasks
 };

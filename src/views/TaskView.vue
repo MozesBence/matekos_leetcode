@@ -71,6 +71,10 @@
                 title="Hasonló feladatok"
                 text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima"
               >
+              <div v-for="card in similarCards.data.value">
+                {{card.difficulty}} {{card.id}} {{card.task_title}} 
+              </div>
+              
               </v-expansion-panel>
             </v-expansion-panels>
             <br>
@@ -80,7 +84,7 @@
                   <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 1.
                 </template>
                 <v-expansion-panel-text>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima.
+                  <div v-mathjax="task?.first_hint"></div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -91,7 +95,7 @@
                   <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 2.
                 </template>
                 <v-expansion-panel-text>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima.
+                  <div v-mathjax="task?.second_hint"></div>
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
@@ -109,12 +113,23 @@
             <v-text-field label="Megoldás" variant="outlined" v-model="solution"></v-text-field>
           </v-row>
           <v-row style="margin-bottom: 1em;">
-            <input type="file" name="Megoldás" id="" />
-          </v-row>
-          <v-row style="margin-bottom: 1em;">
-            <v-btn width="100%" style="background-color: #0091EA; color: white" @click="SubmitTask">
-              Beadás
-            </v-btn>              
+              <!-- Alert (Bottom Fixed Position) -->
+              <v-alert
+                v-if="alertMessage.type"
+                :color="alertMessage.type"
+                :icon="alertMessage.type === 'success' ? '$success' : '$error'"
+                :title="alertMessage.text"
+                class="alert-bottom"
+              ></v-alert>
+          
+              <!-- Submit Button -->
+              <v-btn
+                width="100%"
+                style="background-color: #0091EA; color: white"
+                @click="SubmitTask"
+              >
+                Beadás
+              </v-btn>
             <v-btn width="100%" style="margin-top: 1em;" @click="back">
               Vissza a főoldalra
             </v-btn>
@@ -123,14 +138,15 @@
       </v-row>
     </v-main>
   </v-layout>
+
 </template>
 
 <script lang="ts" setup>
 import { ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { UseGetTaskData } from "@/api/taskSolving/taskSolvingQuery";
-
-
+import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
+import {UseGetSimilarCards} from '@/api/cards/cardQuery'
+const route = useRoute();
 // MathJax Directive
 const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
@@ -148,20 +164,21 @@ const mathjaxDirective = {
 };
 
 const solution = ref('')
-
+const similarCards = UseGetSimilarCards(Number(route.params.id));
 // Reactive state
 const drawer = ref(false);
 const group = ref<string | null>(null);
 
-// Watch group state
-watch(group, () => {
-  drawer.value = false;
+
+const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
+  type: null,
+  text: "",
 });
+
 
 // Task Data
 const isLoading = ref(false);
 const error = ref<any>(null);
-const route = useRoute();
 const router = useRouter();
 const getTaskData = UseGetTaskData(Number(route.params.id));
 var task = ref([]);
@@ -170,6 +187,21 @@ const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
 
+function getCookie(name: string): string | null {
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=');
+    if (key === name) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+}
+
+// Watch group state
+watch(group, () => {
+  drawer.value = false;
+});
 watch(() => getTaskData.data.value, (newVal) => {
   console.log(newVal);
   task.value = newVal;
@@ -185,25 +217,40 @@ const difficultyLabel = (difficulty: number) => {
   return difficulty === 0 ? "Könnyű" : difficulty === 1 ? "Közepes" : "Nehéz";
 };
 
+
+
+const showAlert = (type: "success" | "error", text: string) => {
+  alertMessage.value = { type, text };
+  setTimeout(() => {
+    alertMessage.value = { type: null, text: "" };
+  }, 5000);
+};
+
 const SubmitTask = () => {
-  if (!solution.value.trim()) {
-    alert("Kérlek, írj be egy megoldást!"); 
+ 
+  if(!get_fullUser.value){
+    showAlert('error','Jelentkezz be a feladat megoldásához!')
     return;
   }
+  if (!solution.value.trim()) {
+    showAlert("error", "A megoldás mező üres! Add meg a megoldást a formátum szerint!");
+    return;
+  }
+  
 
   const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
-  const { mutate: submitSolution } = useSubmitSolution();
+  const { mutate: submitSolution } = UseGetTaskData();
+
   submitSolution(payload, {
     onSuccess: () => {
-      alert("Megoldás sikeresen beküldve!");
-      solution.value = ""; 
+      showAlert("success", `A megoldás helyes! Gratulálunk! A jutalmad ${task?.experience_points} XP.`);
+      solution.value = "";
     },
-    onError: (err) => {
-      alert("Hiba történt a megoldás beküldésekor: " + err.message);
+    onError: () => {
+      showAlert("error", "Hibás megoldás! A megoldás hibás vagy nem egyezik meg a formátummal.");
     },
   });
 };
-
 const back = () => {
   router.go(-1);
 };
@@ -266,5 +313,15 @@ v-main {
   background-color: rgb(203, 207, 207);
   border-radius: 15px;
   padding: 2em;
+}
+
+.alert-bottom {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  max-width: 400px;
+  z-index: 1000;
 }
 </style>

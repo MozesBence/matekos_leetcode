@@ -77,6 +77,13 @@ class TasksService {
       throw error;
     }
   }
+  async getsimilarTasks(themeid){
+    try{
+      return await tasksRepository.getsimilarTasks(themeid)
+    }catch(error){
+      throw error;
+    }
+  }
   
 }
 
