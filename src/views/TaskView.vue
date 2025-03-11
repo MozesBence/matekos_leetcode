@@ -42,6 +42,7 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #95cdfc; color: blue"
                 class="d-flex align-center justify-center"
+                v-if="isDailyTask.data.value != null"
               >
                 <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
               </v-chip>
@@ -144,7 +145,8 @@
 import { ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
-import {UseGetSimilarCards} from '@/api/cards/cardQuery'
+import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
+
 const route = useRoute();
 // MathJax Directive
 const mathjaxDirective = {
@@ -185,6 +187,8 @@ const get_user_name = ref<string | null>(null);
 const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
+const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
+
 
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import queryClient from "@/lib/queryClient";
-import type { Ref } from "vue";
+import { renderSlot, type Ref } from "vue";
 import axiosClient from "@/lib/axios";
 
 
@@ -368,6 +368,31 @@ export const UseGetSimilarCards = (themeid: Number) => {
   return useQuery({
     queryFn: () => getSimilarCards(themeid),
     queryKey:['similarTasks'],
+    onSuccess: (data) => {
+      //console.log("Kapott taskok:", data);
+    },
+    onError: (error) => {
+      console.error("Error taskok fetchelese kozben:", error);
+    },
+  })
+}
+
+
+const CheckIfDailyTask = async (taskid:Number) => {
+  try{
+    const response = await axios.get(`http://localhost:5173/api/daily_tasks/checkIfDailyTask/${taskid}`)
+    console.log(response.data)
+    return response.data;
+  }catch(error){
+    console.error('error napi feladat checknel',error)
+    throw error;
+  }
+}
+
+export const UseCheckIfDailyTask = (taskId:Number) => {
+  return useQuery({
+    queryFn: ()=> CheckIfDailyTask(taskId),
+    queryKey:['DailyTaskCheck'],
     onSuccess: (data) => {
       //console.log("Kapott taskok:", data);
     },

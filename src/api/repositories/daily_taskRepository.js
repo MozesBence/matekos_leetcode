@@ -10,7 +10,15 @@ const daily_taskRepository = {
                 id: id
             }
         })
-    }   
+    },
+    async CheckIfDailyTask(taskid){
+        return await Daily_Tasks.findOne(
+            {
+                where:{
+                    task_id:taskid
+                }
+            });
+    }
 }
 
 module.exports = daily_taskRepository;
