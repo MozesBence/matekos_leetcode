@@ -51,8 +51,9 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #FFE082; color: #FF6F00"
                 class="d-flex align-center justify-center"
+                v-if="task?.creator_id != 0"
               >
-                <p class="ma-0">👑 Creator: @Jozsi</p>
+                <p class="ma-0">👑 {{task?.creator_id}}</p>
               </v-chip>
             </v-row>
           </div>
@@ -67,14 +68,12 @@
           <div style="margin-top: 2em;" class="plusItems">
             <br>
             <v-expansion-panels style="border-radius: 15px;">
-              <v-expansion-panel
-                title="Hasonló feladatok"
-                text="Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi, ratione debitis quis est labore voluptatibus! Eaque cupiditate minima"
-              >
-              <div v-for="card in similarCards.data.value">
+              <v-expansion-panel title="Hasonló feladatok">
+                <v-expansion-panel-text>
+                  <div v-for="card in similarCards.data.value">
                 {{card.difficulty}} {{card.id}} {{card.task_title}} 
               </div>
-              
+                </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
             <br>

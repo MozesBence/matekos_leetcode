@@ -7,6 +7,7 @@ import type { Ref } from 'vue';
 const GetTaskData = async (id: number) => {
     console.log(id);
     const response = await axiosClient.get(`/api/tasks/get-one-card/${id}`);
+    console.log(response)
     console.log(response.data)
     return response.data;
 }
