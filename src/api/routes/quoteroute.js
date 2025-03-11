@@ -12,7 +12,7 @@ function SelectLink(){
   {
     return `https://www.citatum.hu/kategoria/matematika/${getRandomNum(1,34)}`;
   }
-  return '`https://www.citatum.hu/kategoria/matematika';
+  return 'https://www.citatum.hu/kategoria/matematika';
   
 }
 router.get('/', async (req, res) => {

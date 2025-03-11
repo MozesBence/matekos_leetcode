@@ -72,7 +72,18 @@
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
                   <div v-for="card in similarCards.data.value">
-                {{card.difficulty}} {{card.id}} {{card.task_title}} 
+                    <v-row>
+                      <v-col cols="6"><v-chip
+                        :color="chipColor(card?.difficulty)"
+                        outlined
+                        small
+                        style="min-width: 10rem; flex-shrink: 0;"
+                        class="d-flex align-center justify-center"
+                      >
+                        <p class="ma-0">{{ difficultyLabel(card?.difficulty) }}</p>
+                      </v-chip></v-col>
+                      <v-col cols="6">{{card.id}}. {{card.task_title}}</v-col>
+                    </v-row>
               </div>
                 </v-expansion-panel-text>
               </v-expansion-panel>

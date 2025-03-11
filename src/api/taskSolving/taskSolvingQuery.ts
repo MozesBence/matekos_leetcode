@@ -15,7 +15,7 @@ const GetTaskData = async (id: number) => {
 export const UseGetTaskData = (id: number | null) => {
     return useQuery({
         queryKey: ['TaskData', id], 
-        queryFn: () => (id ? GetTaskData(id) : Promise.resolve(null)), 
+        queryFn: () => GetTaskData(id) , 
         enabled: !!id,
         staleTime: 0,
         refetchOnMount: true, 
