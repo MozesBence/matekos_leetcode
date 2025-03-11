@@ -14,9 +14,13 @@ const GetTaskData = async (id: number) => {
 
 export const UseGetTaskData = (id: number | null) => {
     return useQuery({
-        queryKey: ['TaskData', id], // Include id in queryKey
-        queryFn: () => (id ? GetTaskData(id) : Promise.resolve(null)), // Pass id properly
-        enabled: !!id, // Only run query if id is valid
+        queryKey: ['TaskData', id], 
+        queryFn: () => (id ? GetTaskData(id) : Promise.resolve(null)), 
+        enabled: !!id,
+        staleTime: 0,
+        refetchOnMount: true, 
+        refetchOnReconnect: true,
+        refetchOnWindowFocus: false,
         onSuccess: (data) => {
             console.log('Task data:', data);
         },
@@ -25,6 +29,7 @@ export const UseGetTaskData = (id: number | null) => {
         },
     });
 };
+
 
 
 const submitSolution = async(data: string) => {

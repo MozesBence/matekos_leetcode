@@ -1,3 +1,4 @@
+const { get } = require('lodash');
 const { Tasks } = require('../database/dbContext');
 const tasksService = require('../services/tasksServices');
 
@@ -100,6 +101,16 @@ const getsimilarTasks = async (req,res) => {
 } 
 
 
+const getSolution = async (req,res) => {
+  try{
+    const {id} = req.params;
+    const solution = await tasksService.getSolution(id);
+    res.status(200).json(solution);
+  }catch(error){
+    res.status(500).json({ message: "Error fetching tasks" });
+  }
+}
+
 module.exports = {
   getCardInfo,
   getSpecificCard,
@@ -109,5 +120,6 @@ module.exports = {
   getTasksByDifficult,
   getTaskByThemes,
   getFilteredTasks,
-  getsimilarTasks
+  getsimilarTasks,
+  getSolution
 };

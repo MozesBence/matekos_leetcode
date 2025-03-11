@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCardInfo, getSpecificCard, getTaskCount, getRandomTask, getTaskWithSearch, getTasksByDifficult,getTaskByThemes, getFilteredTasks,getsimilarTasks} = require('../controllers/tasksController');
+const { getCardInfo, getSpecificCard, getTaskCount, getRandomTask, getTaskWithSearch, getTasksByDifficult,getTaskByThemes, getFilteredTasks,getsimilarTasks,getSolution} = require('../controllers/tasksController');
 
 router.get('/get-cards-info/:offset', getCardInfo);
 router.get('/get-one-card/:id',getSpecificCard)
@@ -11,4 +11,5 @@ router.get('/task-with-difficulty/:difficulty',getTasksByDifficult)
 router.get('/filter-task-by-themes/:themes', getTaskByThemes);
 router.get('/filteredTasks', getFilteredTasks);
 router.get('/getsimilarTasks/:themeid',getsimilarTasks)
+router.get('/solution/:id',getSolution)
 module.exports = router;

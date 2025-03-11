@@ -380,7 +380,7 @@ export const UseGetSimilarCards = (themeid: Number) => {
 
 const CheckIfDailyTask = async (taskid:Number) => {
   try{
-    const response = await axios.get(`http://localhost:5173/api/daily_tasks/checkIfDailyTask/${taskid}`)
+    const response = await axios.get(`/api/daily_tasks/checkIfDailyTask/${taskid}`)
     console.log(response.data)
     return response.data;
   }catch(error){
@@ -400,4 +400,28 @@ export const UseCheckIfDailyTask = (taskId:Number) => {
       console.error("Error taskok fetchelese kozben:", error);
     },
   })
+}
+
+const GetSolution = async (id:Number)=> {
+  try{
+    const response = await axios.get(`/api/tasks/solution/${id}`)
+    return response.data;
+  }catch(error){
+    console.error('error napi feladat checknel',error)
+    throw error;
+  }
+}
+
+export const UseGetSolution = (id:Number) => {
+  return useQuery({
+    queryFn: () => GetSolution(id),
+    queryKey:['solution'],
+    onSuccess: (data) => {
+      //console.log("Kapott taskok:", data);
+    },
+    onError: (error) => {
+      console.error(error);
+    },
+  })
+
 }

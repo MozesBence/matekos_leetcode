@@ -28,7 +28,8 @@ const tasksRepository = {
       return await Tasks.findOne({
         where: {
           id: id
-        }
+        },
+        attributes:['id','theme_id','theme_id','creator_id','difficulty','experience_points','task_title','task','solution_format','first_hint','second_hint'],
       });
     } catch (error) {
       console.error('Error fetching specific card:', error);
@@ -238,6 +239,16 @@ const tasksRepository = {
         console.error('Error fetching filtered tasks:', error);
         throw error;
     }
+},
+
+async getSolution(id){
+  return await Tasks.findOne({
+    where:{
+      id: id
+    },
+    attributes:['solution']
+  })
+
 }
 
 

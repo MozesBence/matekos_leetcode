@@ -84,6 +84,13 @@ class TasksService {
       throw error;
     }
   }
+  async getSolution(id){
+    try{
+      return await tasksRepository.getSolution(id);
+    }catch(error){
+      throw error;
+    }
+  }
   
 }
 
