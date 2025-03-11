@@ -1,6 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const tasks = ref([]);
+
+const fetchTasks = async () => {
+  try {
+    const response = await axios.get('/api/tasks'); // Az API végpontot cseréld le a megfelelő URL-re
+    tasks.value = response.data.map(task => ({
+      id: task.id,
+      name: task.task_title,
+      description: task.task,
+      solution: "" // Kezdőérték a felhasználói válaszhoz
+    }));
+  } catch (error) {
+    console.error('Hiba a feladatok betöltésekor:', error);
+  }
+};
+
+const submitSolutions = () => {
+  tasks.value.forEach(task => {
+    console.log(`Feladat ${task.id} megoldása: ${task.solution}`);
+  });
+};
+
+onMounted(fetchTasks);
 // csak a kinezet miatt van itt
 const tasks = ref([
   { id: 1, name: "Első feladat", description: "Mi az 5 + 3 értéke?", solution: "" },

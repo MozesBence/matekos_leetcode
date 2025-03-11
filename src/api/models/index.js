@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     const Notification = require("./notification")(sequelize,DataTypes);
     const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
     const DailyQuote = require('../models/daily_quote')(sequelize,DataTypes)
+    const Competetions_attendees = require("../models/competetions_attendees")(sequelize,DataTypes);
+    const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
+
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
 
@@ -32,6 +35,16 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 1,
         },
     });
+
+    // challanges részhez a Gergő által javasolt módszer
+    Tasks.belongsTo(Competitions, {
+        foreignKey: "CompetitionID"
+    });
+
+    Competitions.hasMany(Tasks, {
+        foreignKey: "CompetitionID"
+    });
+    
 
     Users.hasOne(User_customization, {
         foreignKey: "user_id",
