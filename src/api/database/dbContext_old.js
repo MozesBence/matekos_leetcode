@@ -75,10 +75,10 @@ const initializeDatabase = async () => {
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await sequelize.sync({ force: true });
-        console.log('Database connected and models synchronized.');
         await Users.sync({ force: true });
         await Community_posts.sync({ force: true });
+        await sequelize.sync({ force: true });
+        console.log('Database connected and models synchronized.');
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
 
@@ -90,6 +90,9 @@ const initializeDatabase = async () => {
         
         await db.Community_tags.initializeTags();
         console.log('Default tags inserted.');
+
+        await db.Advertisement_Cards.initializeCards();
+        console.log('Cards inserted.');
 
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
         console.log("Event Scheduler is enabled.");

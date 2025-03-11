@@ -93,11 +93,6 @@ const router = createRouter({
       component: () => import('../views/RedeemView.vue')
     },
     {
-      path: '/report',
-      name: 'report',
-      component: () => import('../views/ReportView.vue')
-    },
-    {
       path: '/task-submit',
       name: 'task-submit',
       component: () => import('../views/TaskSubmitView.vue')

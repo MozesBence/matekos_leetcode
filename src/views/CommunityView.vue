@@ -340,7 +340,7 @@
                     <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
                     {{ post.total_comments }}
                   </v-btn>
-                  <v-btn text color="community_primary_color" @click="post.showComments = true">
+                  <v-btn text color="community_primary_color" @click="post.showComments = true" v-if="get_user_by_token">
                     Válasz
                   </v-btn>
                   <v-btn v-if="post.user_name == get_UserName && !post.editable" text elevation="0" @click="EditPostOpen(post)">
@@ -363,7 +363,7 @@
                   <div v-if="post.showComments">
                     <!-- Új komment -->
                     <v-expand-transition>
-                      <div class="position-relative mx-4 pa-2">
+                      <div class="position-relative mx-4 pa-2" v-if="get_user_by_token">
                         <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                           <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                           <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
@@ -464,7 +464,7 @@
                           <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
                           {{ comment.total_comments }}
                         </v-btn>
-                        <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)">
+                        <v-btn text color="transparent" elevation="0" @click="prepareReply(comment)" v-if="get_user_by_token">
                           Válasz
                         </v-btn>
                         <v-btn v-if="comment.user_name == get_UserName && !comment.editable" text color="transparent" elevation="0" @click="commentEdit(comment,'commentId'+post.id+''+ index)">
@@ -492,7 +492,7 @@
                         <div v-if="comment.showComments">
                           <!-- Új komment -->
                           <v-expand-transition>
-                            <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply">
+                            <div class="position-relative mx-4 pa-2" v-if="comment.prepareReply && get_user_by_token">
                               <div 
                               class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" 
                               style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));"
@@ -585,7 +585,7 @@
                                     <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
                                     {{ inner_comment.dislike }}
                                   </v-btn>
-                                  <v-btn v-if="inner_comment.user_name != get_UserName" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
+                                  <v-btn v-if="inner_comment.user_name != get_UserName && get_user_by_token" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                     Válasz
                                   </v-btn>
                                   <v-expand-transition>
@@ -2490,34 +2490,38 @@ function fileDelete(index){
 const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
 
 const like = async(post, upload_type) =>{
-  if(post.userReaction != 'like'){
-    if(post.userReaction == 'dislike'){
-      post.dislike = post.dislike - 1;
+  if(get_user_by_token){
+    if(post.userReaction != 'like'){
+      if(post.userReaction == 'dislike'){
+        post.dislike = post.dislike - 1;
+        await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
+      }
+      post.like = post.like + 1;
+      post.userReaction = 'like';
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
+    }else{
+      post.like = post.like - 1;
+      post.userReaction = null;
       await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
     }
-    post.like = post.like + 1;
-    post.userReaction = 'like';
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
-  }else{
-    post.like = post.like - 1;
-    post.userReaction = null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
   }
 }
 
 const dislike = async(post,upload_type) =>{
-  if(post.userReaction != 'dislike'){
-    if(post.userReaction == 'like'){
-      post.like = post.like - 1;
+  if(get_user_by_token){    
+    if(post.userReaction != 'dislike'){
+      if(post.userReaction == 'like'){
+        post.like = post.like - 1;
+        await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
+      }
+      post.dislike = post.dislike + 1;
+      post.userReaction = 'dislike';
+      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
+    }else{
+      post.dislike = post.dislike - 1;
+      post.userReaction = null;
       await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
     }
-    post.dislike = post.dislike + 1;
-    post.userReaction = 'dislike';
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
-  }else{
-    post.dislike = post.dislike - 1;
-    post.userReaction = null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
   }
 }
 
