@@ -9,7 +9,7 @@ const tasks = ref([
 
 const submitSolutions = () => {
   tasks.value.forEach(task => {
-    console.log(Feladat ${task.id} megoldása: ${task.solution});
+    console.log("Feladat ${task.id} megoldása: ${task.solution}");
   });
 };
 </script>
