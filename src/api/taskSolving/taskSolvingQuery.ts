@@ -32,15 +32,14 @@ export const UseGetTaskData = (id: number | null) => {
 
 
 
-const submitSolution = async(data: string) => {
-    const response = await axios.post("/api/task_solution/submit-solution/data")
-    return response.data
-}
+const submitSolution = async (data: string) => {
+    const response = await axios.post(`/api/task_solution/submit-solution/${data}`);
+    return response.data;
+};
 
-
-export const UsesubmitSolution = async (solution: string) => {
+export const UsesubmitSolution = () => {
     return useMutation({
-        mutationFn: submitSolution(solution),
-        mutationKey:['submitSolution']
-    })
-}
+        mutationFn: submitSolution,
+        mutationKey: ['submitSolution']
+    });
+};

@@ -157,6 +157,7 @@ import { ref, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
+import { useProfileGetUser } from '@/api/profile/profileQuery';
 
 const route = useRoute();
 // MathJax Directive
@@ -201,6 +202,7 @@ const userId = ref(get_fullUser.value.id);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 
 
+
 function getCookie(name: string): string | null {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -240,22 +242,21 @@ const showAlert = (type: "success" | "error", text: string) => {
   }, 5000);
 };
 
+const { mutate: submitSolution } = UsesubmitSolution(); // 🚀 Ezt setup-on belül kell létrehozni!
+
 const SubmitTask = () => {
- 
-  if(!get_fullUser.value){
-    showAlert('error','Jelentkezz be a feladat megoldásához!')
+  if (!get_fullUser.value) {
+    showAlert("error", "Jelentkezz be a feladat megoldásához!");
     return;
   }
   if (!solution.value.trim()) {
     showAlert("error", "A megoldás mező üres! Add meg a megoldást a formátum szerint!");
     return;
   }
-  
 
   const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
-  const { mutate: submitSolution } = UseGetTaskData();
 
-  submitSolution(payload, {
+  submitSolution(payload, {  // ✅ Már működni fog, mert setup() belsejében van
     onSuccess: () => {
       showAlert("success", `A megoldás helyes! Gratulálunk! A jutalmad ${task?.experience_points} XP.`);
       solution.value = "";
@@ -265,6 +266,8 @@ const SubmitTask = () => {
     },
   });
 };
+
+
 const back = () => {
   router.go(-1);
 };

@@ -47,7 +47,6 @@ const getTasksByCompletionState = async (req,res,next) =>{
 
 const submitSolution = async (req, res, next) => {
     try {
-        console.log('insubm')
         const { data } = req.params;
 
         if (!data) {
