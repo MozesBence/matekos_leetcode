@@ -73,7 +73,7 @@
             <!--Iconra nyilo dialog vege-->
         </v-row>
         <v-row>
-            <v-textarea label="A feladat szövege" variant="outlined"></v-textarea>
+            <v-textarea label="A feladat szövege" variant="outlined" v-model="Feladat_data.task"></v-textarea>
         </v-row>
         <!--feladat leirasanak vege-->
 
@@ -171,10 +171,10 @@
       <!-- tema valszto vege-->
     <v-row>
         <v-col cols="6">
-            <v-btn style="width: 100%;">Beküldés</v-btn>
+            <v-btn style="width: 100%;" @click="SendTask">Beküldés</v-btn>
         </v-col>
         <v-col cols="6">
-            <v-btn style="width: 100%;"@click="push('/')">Vissza a főoldalra</v-btn>
+            <v-btn style="width: 100%;" @click="push('/')">Vissza a főoldalra</v-btn>
         </v-col>
     </v-row>
 </v-container>
@@ -182,7 +182,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 const themes = UseThemes();
@@ -192,9 +192,14 @@ const Feladat_data = ref({
     solution: null,
     creatorId: null,
     difficulty: null,
-    experiencePoints: null,
+    experiencePoints: 10,
     taskTitle: null,
     task: null
+});
+
+watchEffect(() => {
+    Feladat_data.value.experiencePoints = Feladat_data.value.difficulty === 0 ? 10 :
+                                          Feladat_data.value.difficulty === 1 ? 15 : 25;
 });
 
 const themesSelector = computed(() =>
@@ -210,4 +215,8 @@ const difficultyLevels = [
   { text: "Közepes", value: 2 },
   { text: "Nehéz", value: 3 }
 ];
+
+const SendTask = () => {
+    console.log(Feladat_data.value)
+}
 </script>
