@@ -3,7 +3,7 @@ import axios from "axios";
 
 const Quote = async () => {
     try{
-        const response = await axios.get('/api/quotes');
+        const response = await axios.get('/api/quotes/request-quote');
         return response.data.quote;
     }catch(error){
         console.log(`Error in quote store! Error: ${error}`)
