@@ -242,7 +242,7 @@ const showAlert = (type: "success" | "error", text: string) => {
   }, 5000);
 };
 
-const { mutate: submitSolution } = UsesubmitSolution(); // 🚀 Ezt setup-on belül kell létrehozni!
+const { mutate: submitSolution } = UsesubmitSolution();
 
 const SubmitTask = () => {
   if (!get_fullUser.value) {
@@ -256,9 +256,10 @@ const SubmitTask = () => {
 
   const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
 
-  submitSolution(payload, {  // ✅ Már működni fog, mert setup() belsejében van
+  submitSolution(payload, {  
     onSuccess: () => {
-      showAlert("success", `A megoldás helyes! Gratulálunk! A jutalmad ${task?.experience_points} XP.`);
+      showAlert("success", `A megoldás helyes! Gratulálunk! A jutalmad ${task.value.experience_points} XP.`);
+      console.log(task.value)
       solution.value = "";
     },
     onError: () => {
