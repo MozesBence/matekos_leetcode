@@ -204,7 +204,7 @@
         <div 
           class="d-flex flex-column align-center justify-center"
         >
-          <div class="heatmap">
+        <div class="heatmap">
             <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
           <div class="heatmap-grid">
             <div
@@ -222,6 +222,7 @@
           <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >
             <img src="../assets/rollback.png" alt="" height="24px">
             <h3>2 db</h3>
+            <h3 style="vertical-align: middle; display:flex;"><img src="../assets/fire.png" alt="" height="30" width="30">3 napos sorozat!</h3>
           </div>
 
           </div>      

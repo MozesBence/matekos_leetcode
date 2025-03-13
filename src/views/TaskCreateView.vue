@@ -34,7 +34,7 @@
             <!--Iconra nyilo dialog vege-->
         </v-row>
         <v-row>
-            <v-text-field label="Feladat cím" variant="outlined" v-model="Feladat_data.taskTitle"></v-text-field>
+            <v-text-field label="Feladat cím" variant="outlined" v-model="Task_Data.taskTitle"></v-text-field>
         </v-row>
         <!--feladat cime vege-->
 
@@ -73,7 +73,7 @@
             <!--Iconra nyilo dialog vege-->
         </v-row>
         <v-row>
-            <v-textarea label="A feladat szövege" variant="outlined" v-model="Feladat_data.task"></v-textarea>
+            <v-textarea label="A feladat szövege" variant="outlined" v-model="Task_Data.task"></v-textarea>
         </v-row>
         <!--feladat leirasanak vege-->
 
@@ -106,7 +106,7 @@
             <!--Iconra nyilo dialog vege-->
         </v-row>
         <v-row>
-            <v-text-field label="Megoldás" variant="outlined" v-model="Feladat_data.solution"></v-text-field>
+            <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.solution"></v-text-field>
         </v-row>
         <!--feladat megoldasa-->
 
@@ -148,7 +148,7 @@
                 item-title="text"
                 item-value="value"
                 variant="outlined"
-                v-model="Feladat_data.difficulty"
+                v-model="Task_Data.difficulty"
             ></v-select>
         </v-row>
         <!--nehezseg valaszto vege-->
@@ -165,7 +165,7 @@
                 item-title="text"
                 item-value="value"
                 variant="outlined"
-                v-model="Feladat_data.themeId"
+                v-model="Task_Data.themeId"
             ></v-select>
         </v-row>
       <!-- tema valszto vege-->
@@ -187,7 +187,7 @@ import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 const themes = UseThemes();
 const {push} = useRouter();
-const Feladat_data = ref({
+const Task_Data = ref({
     themeId: null,
     solution: null,
     creatorId: null,
@@ -198,8 +198,8 @@ const Feladat_data = ref({
 });
 
 watchEffect(() => {
-    Feladat_data.value.experiencePoints = Feladat_data.value.difficulty === 0 ? 10 :
-                                          Feladat_data.value.difficulty === 1 ? 15 : 25;
+    Task_Data.value.experiencePoints = Task_Data.value.difficulty === 0 ? 10 :
+                                          Task_Data.value.difficulty === 1 ? 15 : 25;
 });
 
 const themesSelector = computed(() =>
@@ -217,6 +217,7 @@ const difficultyLevels = [
 ];
 
 const SendTask = () => {
-    console.log(Feladat_data.value)
-}
+    
+};
+
 </script>
