@@ -182,9 +182,12 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watchEffect } from "vue";
+import { ref, computed, watchEffect,onMounted } from "vue";
 import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
+import { useProfileGetUser } from '@/api/profile/profileQuery';
+
+import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({
@@ -194,7 +197,8 @@ const Task_Data = ref({
     difficulty: null,
     experiencePoints: 10,
     taskTitle: null,
-    task: null
+    task: null,
+    validated:0
 });
 
 watchEffect(() => {
@@ -216,8 +220,38 @@ const difficultyLevels = [
   { text: "Nehéz", value: 3 }
 ];
 
+
+
+onMounted(async ()=>{
+  const userCookie = getCookie('user');
+        if (userCookie) {
+          try {
+            const userData = JSON.parse(atob(userCookie.split('.')[1]));
+            get_user_name.value = userData.id;
+          } catch (error) {
+            console.error('Error parsing user cookie:', error);
+          }
+        }
+  
+        const get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
+  
+        if (get_user_by_token) {
+          const { mutate: ProfileGetUser } = useProfileGetUser();
+          try {
+            await ProfileGetUser({token: get_user_by_token, id: 0}, {
+              onSuccess: (get_user) => {
+                get_user_name.value = get_user.user_name;
+                get_fullUser.value = get_user;
+              },
+            });
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+          }
+        }
+});
+
 const SendTask = () => {
-    
+    console.log(get_fullUser.value)
 };
 
 </script>

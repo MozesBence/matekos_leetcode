@@ -1,23 +1,19 @@
-// src/stores/userStore.ts
 import { defineStore } from 'pinia';
+import { onMounted, ref } from 'vue';
 
-export const useUserStore = defineStore('userStore', {
-  state: () => ({
-    user: null as { name: string; email: string } | null,
-  }),
-  actions: {
-    fetchUser() {
-      // Simulate a fetch or use real API integration
-      const userCookie = document.cookie.split('; ').find((row) => row.startsWith('user='));
-      if (userCookie) {
-        try {
-          this.user = JSON.parse(decodeURIComponent(userCookie.split('=')[1]));
-        } catch (error) {
-          console.error('Error parsing user cookie:', error);
-        }
-      } else {
-        console.log('No user cookie found');
-      }
-    },
-  },
-});
+export const get_fullUser = ref<any[]>([]);
+export const userId = ref(get_fullUser.value.id);
+export const get_user_name = ref<string | null>(null);
+export const get_user_email = ref<string | null>(null);
+
+export const getCookie = (name: string): string | null => {
+const cookies = document.cookie.split('; ');
+for (const cookie of cookies) {
+  const [key, value] = cookie.split('=');
+  if (key === name) {
+    return decodeURIComponent(value);
+  }
+}
+return null;
+}
+
