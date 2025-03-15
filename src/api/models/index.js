@@ -179,6 +179,21 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "from_user_id",
         as: "ReportedUser" // A bejelentés célpontja (akiről szó van)
     });
+    // Task_solutions should belong to Users and Tasks
+    Task_solutions.belongsTo(Users, {
+        foreignKey: "UserId", // Ensure the foreign key matches the column name
+    });
+
+    Task_solutions.belongsTo(Tasks, {
+        foreignKey: "task_id", // This ensures we can eager-load Tasks from Task_solutions
+    });
+
+    // A Task can have multiple solutions
+    Tasks.hasMany(Task_solutions, {
+        foreignKey: "task_id",
+    });
+
+
 
     Community_posts.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedPost' });
     Community_comments.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedComment' });

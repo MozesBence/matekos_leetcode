@@ -2,6 +2,7 @@ const db = require('../database/dbContext');
 const {Task_solutions,Tasks,Users} = db;
 const sequelize = require('sequelize');
 const tasks = require('../models/tasks');
+const task_solution = require('../models/task_solution');
 
 
 const task_solutionRepository = {
@@ -233,11 +234,56 @@ const task_solutionRepository = {
         } catch (error) {
             console.error('Error updating experience points:', error);
         }
-    }
+    },
+
+    async monthlySolvingRate(userId) {
+        const solutions = await Task_solutions.findAll({
+            attributes: ['submission_date'],
+            where: {
+                UserId: userId,
+                state: 1
+            }
+        });
     
+       
+        const groupedSolutions = solutions.reduce((acc, solution) => {
+            const month = solution.submission_date.toISOString().slice(0, 7);
     
+            if (!acc[month]) {
+                acc[month] = 0;
+            }
     
+            acc[month] += 1;
     
+            return acc;
+        }, {});
+    
+        const result = Object.keys(groupedSolutions).map(month => ({
+            month,
+            solutionCount: groupedSolutions[month]
+        }));
+    
+        return result;
+    },
+    
+    async mostRecentlyTriedTask(userId) {
+        const taskSolution = await Task_solutions.findOne({
+          where: {
+            UserId: userId,
+          },
+          order: [['submission_date', 'DESC']],
+          limit: 1,
+          include: [
+            {
+              model: Tasks,
+              required: true,
+              attributes: ['id', 'task_title', 'difficulty'],
+            },
+          ],
+        });
+      
+        return taskSolution ? taskSolution.Task : null;
+      },
 };
 
 module.exports = task_solutionRepository;

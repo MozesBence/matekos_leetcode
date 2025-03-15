@@ -266,9 +266,7 @@ async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experienc
     validated:validated
 
   });
-}
-
-
+},
 
 };
 

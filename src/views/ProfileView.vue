@@ -148,7 +148,7 @@
             height="420"
             style="transition: .3s;"
           >
-           
+           <h1>Rang:</h1>
           </v-sheet>
         </v-col>
         <v-col

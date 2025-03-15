@@ -97,6 +97,7 @@ class TasksService {
       throw error;
     }
   }
+
 }
 
 module.exports = new TasksService();

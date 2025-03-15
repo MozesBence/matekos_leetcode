@@ -70,6 +70,26 @@ const submitSolution = async (req, res, next) => {
     }
 };
 
+const monthlySolvingRate = async (req,res) => {
+    try{
+      const {userId} = req.query;
+      const task = await task_solutionsService.monthlySolvingRate(userId);
+      res.status(200).json(task)
+    }catch(error){
+      res.status(500).json({ message: "Error a havi statisztika lekerese közben!" });
+    }
+  }
+  
+  const mostRecentlyTriedTask = async (req,res) => {
+    try{
+      const {userId} = req.query;
+      const task = await task_solutionsService.mostRecentlyTriedTask(userId);
+      res.status(200).json(task)
+    }catch(error){
+      res.status(500).json({ message: "Error a legutobbi feladat lekerese kozben!" });
+    }
+  }
+
 
 
 module.exports = {
@@ -77,5 +97,7 @@ module.exports = {
     getCompletionRate,
     getSolvedTasksRate,
     getTasksByCompletionState,
-    submitSolution
+    submitSolution,
+    monthlySolvingRate,
+    mostRecentlyTriedTask,
 };

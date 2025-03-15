@@ -13,11 +13,25 @@ class Task_Solutions {
         return await task_solutionRepository.getSolvedTasksRate(id);
     }
 
-    async getTasksByCompletionState(state,userId){
+async getTasksByCompletionState(state,userId){
         return await task_solutionRepository.getTasksByCompletionState(state,userId);
     }
     async submitSolution(userId,taskId,solution){
         return await task_solutionRepository.submitSolution(userId,taskId,solution);
+    }
+    async monthlySolvingRate(userId) {
+        try{
+          return await task_solutionRepository.monthlySolvingRate(userId);
+        }catch(error){
+          throw error;
+        }
+    }
+    async mostRecentlyTriedTask(userId){
+        try{
+            return await task_solutionRepository.mostRecentlyTriedTask(userId);
+          }catch(error){
+            throw error;
+          }
     }
 }
 

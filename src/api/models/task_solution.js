@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       submission_date: {
         type: DataTypes.DATE,
         allowNull: false,
-        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'), // Let the DB handle this
+        defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
       },
       task_id: {
         type: DataTypes.INTEGER,
@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
       sequelize,
       modelName: 'Task_solutions',
       tableName: 'task_solutions',
-      timestamps: false, // You are manually controlling the timestamps
+      timestamps: false,
     }
   );
   return Task_solutions;

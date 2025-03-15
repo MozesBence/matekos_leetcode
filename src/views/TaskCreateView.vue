@@ -364,7 +364,22 @@ onMounted(async ()=>{
 
 const { mutate: submitTask } = UseSubmitTask(Task_Data);
 
-const SendTask = () => { submitTask(); };
+const SendTask = () => { 
+    if(CheckData() == false){
+        alert('Toltsd ki a mezoket!')
+    }else{
+        submitTask(); 
+    }
+    }
+
+    function CheckData(){
+    const hasNull = Object.values(Task_Data.value).some(value => value === null);
+    
+    if (hasNull) {
+        return false;
+    }
+    return true;
+};
 
 
 
