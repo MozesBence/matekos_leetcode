@@ -249,6 +249,23 @@ async getSolution(id){
     attributes:['solution']
   })
 
+},
+
+async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experiencePoints,solutionFormat,hint1,hint2,validated}){
+  return await Tasks.create({
+    theme_id:themeId,
+    solution:solution,
+    difficulty:difficulty,
+    creator_id:creatorId,
+    experience_points:experiencePoints,
+    task_title:taskTitle,
+    task:task,
+    solution_format:solutionFormat,
+    first_hint:hint1,
+    second_hint:hint2,
+    validated:validated
+
+  });
 }
 
 

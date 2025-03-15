@@ -108,7 +108,45 @@
         <v-row>
             <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.solution"></v-text-field>
         </v-row>
-        <!--feladat megoldasa-->
+        <!--feladat megoldasa vege-->
+
+         <!-- feladat megoldasanak formatuma -->
+         <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+            <h3>A feladat megoldásának formátuma</h3>
+            <!--Iconra nyilo dialog kezdete-->
+            <v-dialog max-width="500">
+                <template v-slot:activator="{ props: taskSolutionFormat }">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskSolutionFormat">
+                </template>
+
+                <template v-slot:default="{ isActive }">
+                    <v-card title="Feladat megoldása:">
+                    <v-card-text>
+                      A formátum egyértelmű utalás legyen arra, hogy hogyan adja meg a megoldó a feladat végeredményét! Fontos, hogy egyenlőre nem lehet
+                      szöveges választ megadni ami nem (igaz/hamis), ha mégis megszegésre kerül ezen kérés a feladat el lesz utasítva!<br>
+                      Példák erre:<br>
+                      <li>A megoldás egy egész szám</li>
+                      <li>A megoldás fromátuma x = 3</li>
+                      <li>A megoldást két tizedes jegyre kerekítse, például 3,14</li>
+                      <li>A megoldás igaz/hamis</li>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn
+                        text="Bezár"
+                        @click="isActive.value = false"
+                        ></v-btn>
+                    </v-card-actions>
+                    </v-card>
+                </template>
+            </v-dialog>
+            <!--Iconra nyilo dialog vege-->
+        </v-row>
+        <v-row>
+            <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.solutionFormat"></v-text-field>
+        </v-row>
+        <!--feladat megoldasanak formatuma vege-->
 
         <!-- nehezseg valaszto választó -->
         <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
@@ -169,6 +207,75 @@
             ></v-select>
         </v-row>
       <!-- tema valszto vege-->
+
+      <!-- feladathoz tartozó segítség (1) -->
+      <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <h3>Első segítség a feladat megoldásához</h3>
+        <!--Iconra nyiló dialog kezdete-->
+        <v-dialog max-width="500">
+            <template v-slot:activator="{ props: taskHint1 }">
+                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1">
+            </template>
+
+            <template v-slot:default="{ isActive }">
+                <v-card title="Feladat megoldása:">
+                <v-card-text>
+                  A segítség arra szolgál, hogy rávezesse a megoldót a megoldásra. A lényeg az, hogy a megoldás ne szerepeljen itt.
+                  A megoldót segíthetjük összefüggésekkel, egy lépés megmutatásával, egy megoldási módszer megnevezésével... <br>
+                  Ha a megoldás szerepel ebben a mezőben akkor a feladat nem lesz jóváhagyva!
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                    text="Bezár"
+                    @click="isActive.value = false"
+                    ></v-btn>
+                </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
+        <!--Iconra nyiló dialog vége-->
+    </v-row>
+    <v-row>
+        <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.hint1"></v-text-field>
+    </v-row>
+    <!--feladathoz tartozó segítség (1) vége-->
+
+     <!-- feladathoz tartozó segítség (2) -->
+     <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <h3>Második segítség a feladat megoldásához</h3>
+        <!--Iconra nyiló dialog kezdete-->
+        <v-dialog max-width="500">
+            <template v-slot:activator="{ props: taskHint1 }">
+                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1">
+            </template>
+
+            <template v-slot:default="{ isActive }">
+                <v-card title="Feladat megoldása:">
+                <v-card-text>
+                  A segítség arra szolgál, hogy rávezesse a megoldót a megoldásra. A lényeg az, hogy a megoldás ne szerepeljen itt.
+                  A megoldót segíthetjük összefüggésekkel, egy lépés megmutatásával, egy megoldási módszer megnevezésével... <br>
+                  Ha a megoldás szerepel ebben a mezőben akkor a feladat nem lesz jóváhagyva!
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+
+                    <v-btn
+                    text="Bezár"
+                    @click="isActive.value = false"
+                    ></v-btn>
+                </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
+        <!--Iconra nyiló dialog vége-->
+    </v-row>
+    <v-row>
+        <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.hint2"></v-text-field>
+    </v-row>
+    <!--feladathoz tartozó segítség (2) vége-->
+
     <v-row>
         <v-col cols="6">
             <v-btn style="width: 100%;" @click="SendTask">Beküldés</v-btn>
@@ -187,17 +294,22 @@ import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 
+
+
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({
-    themeId: null,
-    solution: null,
-    creatorId: null,
-    difficulty: null,
-    experiencePoints: 10,
     taskTitle: null,
     task: null,
+    themeId: null,
+    solution: null,
+    difficulty: null,
+    creatorId: get_fullUser.value.id,
+    experiencePoints: 10,
+    solutionFormat:null,
+    hint1:null,
+    hint2:null,
     validated:0
 });
 
@@ -251,7 +363,7 @@ onMounted(async ()=>{
 });
 
 const SendTask = () => {
-    console.log(get_fullUser.value)
+    console.log(Task_Data.value)
 };
 
 </script>

@@ -23,7 +23,7 @@ Tasks.init(
             creator_id:{
                 type: DataTypes.INTEGER,
                 allowNull:true,
-                defaultValue: nullable
+                defaultValue: null
             },
             difficulty: {
                 type: DataTypes.INTEGER,

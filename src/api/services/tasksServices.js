@@ -63,7 +63,6 @@ class TasksService {
       if (themes) {
         themes = themes.split(";");
       }
-      //console.log(themes)
       console.log(offset)
       return await tasksRepository.getFilteredTasks({
         difficulty,
@@ -91,7 +90,13 @@ class TasksService {
       throw error;
     }
   }
-  
+  async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experiencePoints,solutionFormat,hint1,hint2,validated}){
+    try{
+      return await tasksRepository.submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experiencePoints,solutionFormat,hint1,hint2,validated})
+    }catch(error){
+      throw error;
+    }
+  }
 }
 
 module.exports = new TasksService();

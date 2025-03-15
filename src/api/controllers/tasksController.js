@@ -100,7 +100,6 @@ const getsimilarTasks = async (req,res) => {
   }
 } 
 
-
 const getSolution = async (req,res) => {
   try{
     const {id} = req.params;
@@ -108,6 +107,16 @@ const getSolution = async (req,res) => {
     res.status(200).json(solution);
   }catch(error){
     res.status(500).json({ message: "Error fetching tasks" });
+  }
+}
+
+
+const submitTask = async (req,res) => {
+  try{
+    const task = await tasksService.submitTask(req.query);
+    res.status(201).json(task)
+  }catch(error){
+    res.status(500).json({ message: "Error feladat postolása közben!" });
   }
 }
 
@@ -121,5 +130,6 @@ module.exports = {
   getTaskByThemes,
   getFilteredTasks,
   getsimilarTasks,
-  getSolution
+  getSolution,
+  submitTask
 };
