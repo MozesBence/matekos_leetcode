@@ -175,16 +175,22 @@
                 <div class="text-overline mb-1">
                   {{ variant }}
                 </div>
-                <div class="text-h6 mb-1">
-                  1. Határozd meg x értékét: Alapvető Lineáris Egyenlet
+                <div class="text-h6 mb-1" v-if="mostRecTriedTask.data.value">
+                  {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}
                 </div>
-                <div class="text-caption">Greyhound divisely hello coldly fonwderfully</div>
+                <div class="text-h6 mb-1" v-if="!mostRecTriedTask.data.value">
+                  Jelenleg minden próbálkozásod sikeres volt! A gombra kattintva kaphatsz
+                  egy random feladatot.
+                </div>
               </div>
             </v-card-item>
     
             <v-card-actions>
-              <v-btn>
-                Folytatas
+              <v-btn  v-if="!mostRecTriedTask.data.value" @click="LoadRandomTask">
+                Random task
+              </v-btn>
+              <v-btn  v-if="mostRecTriedTask.data.value" @click="TaskView(mostRecTriedTask.data.value.id)">
+                Folytatás
               </v-btn>
             </v-card-actions>
           </v-card>
@@ -272,8 +278,9 @@ import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
-import { useProfileDarkmodeSwitch,UseGetMonthlySolvingRate } from '@/api/profile/profileQuery'
+import { useProfileDarkmodeSwitch,UseGetMonthlySolvingRate,UseGetMostRecentlyTriedTask } from '@/api/profile/profileQuery'
 import VueApexCharts from 'vue3-apexcharts';
+import {useRandomTask} from '@/api/cards/cardQuery'
 
 const dialog = shallowRef(false)
 
@@ -313,6 +320,7 @@ const settingsShow = ref(false);
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 const userId = route.params.id;
+const mostRecTriedTask = UseGetMostRecentlyTriedTask(Number(userId))
 const solvingRates = UseGetMonthlySolvingRate(Number(userId));
 const apexchart = VueApexCharts;
 
@@ -361,6 +369,21 @@ const chartOptions = ref({
   }
 });
 
+const randomTask = useRandomTask();
+
+const LoadRandomTask = async () => {
+  await randomTask.refetch();
+  console.log(randomTask.data.value.id)
+  if (randomTask.data.value.id !== null) {
+    TaskView(randomTask.data.value.id);
+  }
+};
+
+
+const TaskView = (id: number) => {
+  console.log('Navigating to task with id:', id);
+  router.push({ name: 'task', params: { id } });
+};
 
 
 onMounted(async () => {
@@ -610,6 +633,8 @@ export default {
 </script>
 
 <style>
+
+
 .background-video-container {
   position: absolute;
   width: 100%;

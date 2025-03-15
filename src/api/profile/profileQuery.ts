@@ -104,3 +104,21 @@ export const UseGetMonthlySolvingRate = (userId: Number) => {
     });
 };
 
+const getMostRecentlyTriedTask = async(userId:Number) => {
+    try{
+        const response = await axiosClient.get('/api/task_solution/mostRecentlyTriedTask',{ params: { userId }})
+        return response.data;
+    }catch(error)
+    {
+        console.error(error);
+        return null;
+    }
+}
+
+
+export const UseGetMostRecentlyTriedTask = (userId: Number) => {
+    return useQuery({
+        queryFn: () => getMostRecentlyTriedTask(userId),
+        queryKey: ['mostRecentlyTriedTask', userId],
+    });
+}

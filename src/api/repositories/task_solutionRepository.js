@@ -273,6 +273,7 @@ const task_solutionRepository = {
         const taskSolution = await Task_solutions.findOne({
           where: {
             UserId: userId,
+            state: 0
           },
           order: [['submission_date', 'DESC']],
           limit: 1,

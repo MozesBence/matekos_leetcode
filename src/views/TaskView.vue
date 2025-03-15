@@ -141,7 +141,7 @@
               >
                 Beadás
               </v-btn>
-            <v-btn width="100%" style="margin-top: 1em;" @click="back">
+              <v-btn width="100%" style="margin-top: 1em;" @click="push('/')">
               Vissza a főoldalra
             </v-btn>
           </v-row>
@@ -160,6 +160,11 @@ import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 
 const route = useRoute();
+const router = useRouter(); // Type is inferred, but we can also explicitly type it
+
+const push = (path: string) => {
+  router.push(path);
+};
 // MathJax Directive
 const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
@@ -189,14 +194,9 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
 });
 
 
-// Task Data
-const isLoading = ref(false);
-const error = ref<any>(null);
-const router = useRouter();
 const getTaskData = UseGetTaskData(Number(route.params.id));
 var task = ref([]);
 const get_user_name = ref<string | null>(null);
-const get_user_email = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
@@ -218,6 +218,9 @@ function getCookie(name: string): string | null {
 watch(group, () => {
   drawer.value = false;
 });
+onMounted(async()=>{
+ await getTaskData.refetch();
+})
 watch(() => getTaskData.data.value, (newVal) => {
   console.log(newVal);
   task.value = newVal;

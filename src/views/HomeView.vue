@@ -311,13 +311,7 @@
 </v-row>
   </v-main>
 </v-layout>
-<!--javitani kell!-->
- <!--
-Pagination a lapozashoz, tanstackel chacebe tarolas
-https://laravel.com/docs/11.x/pagination#main-content
-https://laravel-news.com/laravel-pagination
 
--->
 <v-pagination 
 v-model="pageNumber" 
 :length="Math.ceil((allTaskCountQuery.data.value) / 15)" 
