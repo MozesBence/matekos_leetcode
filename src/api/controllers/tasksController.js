@@ -113,7 +113,7 @@ const getSolution = async (req,res) => {
 
 const submitTask = async (req,res) => {
   try{
-    const task = await tasksService.submitTask(req.query);
+    const task = await tasksService.submitTask(req.body);
     res.status(201).json(task)
   }catch(error){
     res.status(500).json({ message: "Error feladat postolása közben!" });

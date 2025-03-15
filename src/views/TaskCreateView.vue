@@ -144,7 +144,7 @@
             <!--Iconra nyilo dialog vege-->
         </v-row>
         <v-row>
-            <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.solutionFormat"></v-text-field>
+            <v-text-field label="Formátum" variant="outlined" v-model="Task_Data.solutionFormat"></v-text-field>
         </v-row>
         <!--feladat megoldasanak formatuma vege-->
 
@@ -238,7 +238,7 @@
         <!--Iconra nyiló dialog vége-->
     </v-row>
     <v-row>
-        <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.hint1"></v-text-field>
+        <v-text-field label="Segítség 1" variant="outlined" v-model="Task_Data.hint1"></v-text-field>
     </v-row>
     <!--feladathoz tartozó segítség (1) vége-->
 
@@ -272,7 +272,7 @@
         <!--Iconra nyiló dialog vége-->
     </v-row>
     <v-row>
-        <v-text-field label="Megoldás" variant="outlined" v-model="Task_Data.hint2"></v-text-field>
+        <v-text-field label="Segítség 2" variant="outlined" v-model="Task_Data.hint2"></v-text-field>
     </v-row>
     <!--feladathoz tartozó segítség (2) vége-->
 
@@ -293,7 +293,7 @@ import { ref, computed, watchEffect,onMounted } from "vue";
 import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-
+import {UseSubmitTask} from '@/api/taskSubmit/taskSubmit'
 
 
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
@@ -362,8 +362,10 @@ onMounted(async ()=>{
         }
 });
 
-const SendTask = () => {
-    console.log(Task_Data.value)
-};
+const { mutate: submitTask } = UseSubmitTask(Task_Data);
+
+const SendTask = () => { submitTask(); };
+
+
 
 </script>
