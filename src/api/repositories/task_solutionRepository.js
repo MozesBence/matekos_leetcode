@@ -245,9 +245,8 @@ const task_solutionRepository = {
             }
         });
     
-       
         const groupedSolutions = solutions.reduce((acc, solution) => {
-            const month = solution.submission_date.toISOString().slice(0, 7);
+            const month = new Date(solution.submission_date).getMonth() + 1;
     
             if (!acc[month]) {
                 acc[month] = 0;
@@ -258,13 +257,17 @@ const task_solutionRepository = {
             return acc;
         }, {});
     
-        const result = Object.keys(groupedSolutions).map(month => ({
-            month,
-            solutionCount: groupedSolutions[month]
-        }));
+        const result = Array.from({ length: 12 }, (_, i) => {
+            const month = i + 1;
+            return {
+                month,
+                solutionCount: groupedSolutions[month] || 0
+            };
+        });
     
         return result;
     },
+    
     
     async mostRecentlyTriedTask(userId) {
         const taskSolution = await Task_solutions.findOne({

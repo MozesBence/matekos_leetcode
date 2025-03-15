@@ -149,6 +149,7 @@
             style="transition: .3s;"
           >
            <h1>Rang:</h1>
+           
           </v-sheet>
         </v-col>
         <v-col
@@ -265,28 +266,27 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref, watch, shallowRef, inject } from 'vue';
+import { onMounted, ref, watch, shallowRef, inject,watchEffect } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfilePicUpload } from '@/api/profile/profileQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { useTheme } from 'vuetify';
 import imageCompression from 'browser-image-compression';
-import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
+import { useProfileDarkmodeSwitch,UseGetMonthlySolvingRate } from '@/api/profile/profileQuery'
 import VueApexCharts from 'vue3-apexcharts';
+
 const dialog = shallowRef(false)
 
-// Definiáld az adat típust
 interface ProfilPicdata {
   id: number
   pic: Blob
   type: number
 }
 
-// Router és Route hook-ok
 const router = useRouter();
 const route = useRoute();
 
-// Cookie lekérdezés
+
 const getCookie = (name: string) => {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -313,43 +313,54 @@ const settingsShow = ref(false);
 const { mutate: ProfileGetUser } = useProfileGetUser();
 
 const userId = route.params.id;
+const solvingRates = UseGetMonthlySolvingRate(Number(userId));
 const apexchart = VueApexCharts;
-const series = ref([
-  {
-    name: "Solved tasks",
-    data: [10, 41, 35, 51, 49, 62, 69, 91, 148,5,100,45]
-  }
-]);
 
+interface SolvingRate {
+  month: string;
+  solutionCount: number;
+}
+
+const series = ref<{ name: string; data: number[] }[]>([]);
+
+watchEffect(() => {
+  if (solvingRates.data?.value) {
+    series.value = [
+      {
+        name: "Solved tasks",
+        data: solvingRates.data.value.map((x: SolvingRate) => x.solutionCount)
+      }
+    ];
+  }
+});
 
 const chartOptions = ref({
-            chart: {
-              height: 350,
-              type: 'line',
-              zoom: {
-                enabled: false
-              }
-            },
-            dataLabels: {
-              enabled: false
-            },
-            stroke: {
-              curve: 'straight'
-            },
-            title: {
-              text: 'Megoldott feladatok',
-              align: 'left'
-            },
-            grid: {
-              row: {
-                colors: ['#f3f3f3', 'transparent'],
-                opacity: 0.5
-              },
-            },
-            xaxis: {
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep','Okt','Nov','Dec'],
-            }
+  chart: {
+    height: 350,
+    type: 'line',
+    zoom: { enabled: false },
+    toolbar: {
+      show: false
+    }
+  },
+  dataLabels: { enabled: false },
+  stroke: { curve: 'straight' },
+  title: { text: 'Megoldott feladatok', align: 'left' },
+  grid: {
+    row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 }
+  },
+  xaxis: {
+    categories: ['Jan', 'Feb', 'Már', 'Ápr', 'May', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec']
+  },
+  yaxis: {
+    labels: {
+      formatter: function (val: number) {
+        return val.toFixed(0);
+      }
+    }
+  }
 });
+
 
 
 onMounted(async () => {

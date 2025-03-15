@@ -72,7 +72,7 @@ const submitSolution = async (req, res, next) => {
 
 const monthlySolvingRate = async (req,res) => {
     try{
-      const {userId} = req.query;
+      const {userId,year} = req.query;
       const task = await task_solutionsService.monthlySolvingRate(userId);
       res.status(200).json(task)
     }catch(error){

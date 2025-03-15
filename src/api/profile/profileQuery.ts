@@ -1,7 +1,8 @@
 import axiosClient from '../../lib/axios'
-import { useMutation } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import type { ProfilPicdata } from "./profile"
+import { userId } from '@/stores/userStore';
 
 const ProfileGetUser = async (data: { token: string | null; id: number }): Promise<any> => {
     try {
@@ -83,3 +84,23 @@ export const useProfileDarkmodeSwitch = () => {
         }
     );
 }
+
+const getMonthlySolvingRate = async (userId: Number) => {
+    try {
+        const response = await axiosClient.get('/api/task_solution/monthlySolvingRate', {
+            params: { userId }
+        });
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+};
+
+export const UseGetMonthlySolvingRate = (userId: Number) => {
+    return useQuery({
+        queryFn: () => getMonthlySolvingRate(userId),
+        queryKey: ['monthlysolverate', userId],
+    });
+};
+

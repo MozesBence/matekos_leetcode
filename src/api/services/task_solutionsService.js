@@ -19,7 +19,7 @@ async getTasksByCompletionState(state,userId){
     async submitSolution(userId,taskId,solution){
         return await task_solutionRepository.submitSolution(userId,taskId,solution);
     }
-    async monthlySolvingRate(userId) {
+    async monthlySolvingRate(userId,year) {
         try{
           return await task_solutionRepository.monthlySolvingRate(userId);
         }catch(error){
