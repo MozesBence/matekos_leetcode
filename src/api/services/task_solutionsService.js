@@ -33,6 +33,13 @@ async getTasksByCompletionState(state,userId){
             throw error;
           }
     }
+    async getDailyTaskStreak(userId){
+        try{
+            return await task_solutionRepository.getDailyTaskStreak(userId);
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 module.exports = new Task_Solutions();

@@ -46,6 +46,11 @@ const router = createRouter({
           name: 'monthly-challange',
           component: () => import('../views/MonthlyChallangeView.vue')
         },
+        {
+          path: '/store',
+          name: 'store',
+          component: () => import('../views/StoreView.vue')
+        },
       ]
     },
     {

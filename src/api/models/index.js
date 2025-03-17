@@ -19,7 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     const DailyQuote = require('../models/daily_quote')(sequelize,DataTypes)
     const Competetions_attendees = require("../models/competetions_attendees")(sequelize,DataTypes);
     const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
-
+    const Transactions = require('../models/transactions')(sequelize,DataTypes);
+    const StoreItems = require('../models/storeItems')(sequelize,DataTypes)
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
 
@@ -35,7 +36,14 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: 1,
         },
     });
-
+    Transactions.belongsTo(StoreItems, {
+        foreignKey: "itemId",
+        onDelete: "CASCADE",
+    });
+    
+    StoreItems.hasMany(Transactions, {
+        foreignKey: "itemId",
+    });
     // challanges részhez a Gergő által javasolt módszer
     Tasks.belongsTo(Competitions, {
         foreignKey: "CompetitionID"
@@ -179,19 +187,19 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "from_user_id",
         as: "ReportedUser" // A bejelentés célpontja (akiről szó van)
     });
-    // Task_solutions should belong to Users and Tasks
+    
     Task_solutions.belongsTo(Users, {
-        foreignKey: "UserId", // Ensure the foreign key matches the column name
+        foreignKey: "UserId",
     });
 
     Task_solutions.belongsTo(Tasks, {
-        foreignKey: "task_id", // This ensures we can eager-load Tasks from Task_solutions
+        foreignKey: "task_id",
     });
 
-    // A Task can have multiple solutions
     Tasks.hasMany(Task_solutions, {
         foreignKey: "task_id",
     });
+
 
 
 
@@ -220,6 +228,8 @@ module.exports = (sequelize, DataTypes) => {
         Daily_Tasks,
         Notification,
         Advertisement_Cards,
-        DailyQuote
+        DailyQuote,
+        Transactions,
+        StoreItems
     };
 };

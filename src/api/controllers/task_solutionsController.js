@@ -90,6 +90,22 @@ const monthlySolvingRate = async (req,res) => {
     }
   }
 
+  const getDailyTaskStreak = async (req, res) => {
+    try {
+        console.log("Request query:", req.query);
+        const { userId } = req.query;
+
+        if (!userId) {
+            return res.status(400).json({ message: "userId is required" });
+        }
+
+        const streak = await task_solutionsService.getDailyTaskStreak(userId);
+        res.status(200).json(streak);
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Error a streak meghatározása közben!" });
+    }
+};
 
 
 module.exports = {
@@ -100,4 +116,5 @@ module.exports = {
     submitSolution,
     monthlySolvingRate,
     mostRecentlyTriedTask,
+    getDailyTaskStreak
 };

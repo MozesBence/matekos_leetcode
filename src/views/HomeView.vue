@@ -510,8 +510,6 @@ function HandleStateChange(newVal: string | null) {
   allTaskCountQuery.refetch();
 }
 
-
-
 //-------- End filter by completionrate ---------------
 
 // Random task handling

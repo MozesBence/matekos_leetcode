@@ -3,6 +3,7 @@ const {Task_solutions,Tasks,Users} = db;
 const sequelize = require('sequelize');
 const tasks = require('../models/tasks');
 const task_solution = require('../models/task_solution');
+const { includes } = require('lodash');
 
 
 const task_solutionRepository = {
@@ -288,6 +289,12 @@ const task_solutionRepository = {
       
         return taskSolution ? taskSolution.Task : null;
       },
-};
+
+
+      async  getDailyTaskStreak(userId) {
+        //rossz
+      }
+      
+};    
 
 module.exports = task_solutionRepository;

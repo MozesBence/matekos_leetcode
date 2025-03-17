@@ -79,7 +79,8 @@ Tasks.init(
                 task: "Egy 5 csúcsú összefüggő gráfnak legalább hány éle van?",
                 solution_format: "Egész szám",
                 first_hint: "Egy fa éleinek száma $n-1$.",
-                second_hint: "Összefüggő gráfban legalább annyi él van, mint egy fában."
+                second_hint: "Összefüggő gráfban legalább annyi él van, mint egy fában.",
+                validated:1
             },
             {
                 id: 2,
@@ -91,7 +92,8 @@ Tasks.init(
                 task: "Oldd meg valós számok halmazán: $x^3 - 6x^2 + 11x - 6 = 0$",
                 solution_format: "Három szám szóközzel",
                 first_hint: "Próbáld megtalálni az egész gyököket az osztók segítségével.",
-                second_hint: "A lehetséges gyökök a konstans tag osztói (±1, ±2, ±3, ±6)."
+                second_hint: "A lehetséges gyökök a konstans tag osztói (±1, ±2, ±3, ±6).",
+                validated:1
             },
             {
                 id: 3,
@@ -103,7 +105,8 @@ Tasks.init(
                 task: "Számítsd ki: $\\int_{0}^{1} (3x^2 + 2x) \\, dx$",
                 solution_format: "Egész szám",
                 first_hint: "Integrálás tagonként: $\\int 3x^2 dx + \\int 2x dx$.",
-                second_hint: "A határozott integrál kiszámítása a határok behelyettesítésével."
+                second_hint: "A határozott integrál kiszámítása a határok behelyettesítésével.",
+                validated:1
             },
             {
                 id: 4,
@@ -115,7 +118,8 @@ Tasks.init(
                 task: "Egy egyenlő oldalú háromszög területe $25\\sqrt{3}$ cm². Mennyi a kerülete?",
                 solution_format: "Egész szám",
                 first_hint: "Az egyenlő oldalú háromszög területe: $\\frac{a^2\\sqrt{3}}{4}$.",
-                second_hint: "Oldd meg az egyenletet $a$-ra, majd számítsd ki a kerületet."
+                second_hint: "Oldd meg az egyenletet $a$-ra, majd számítsd ki a kerületet.",
+                validated:1
             },
             {
                 id: 5,
@@ -127,7 +131,8 @@ Tasks.init(
                 task: "Oldd meg: $3x \\equiv 1 \\pmod{7}$",
                 solution_format: "Egész szám",
                 first_hint: "Keress olyan $x$-et, ahol $3x - 1$ osztható 7-tel.",
-                second_hint: "Próbálkozz $x=0$-tól $6$-ig."
+                second_hint: "Próbálkozz $x=0$-tól $6$-ig.",
+                validated:1
             },
         
             // ### További példák ###
@@ -141,7 +146,8 @@ Tasks.init(
                 task: "Egy kocka felszíne 150 cm². Mennyi a térfogata?",
                 solution_format: "Egész szám",
                 first_hint: "A kocka felszíne: $6a^2$.",
-                second_hint: "Először számold ki az él hosszát."
+                second_hint: "Először számold ki az él hosszát.",
+                validated:1
             },
             {
                 id: 7,
@@ -153,7 +159,8 @@ Tasks.init(
                 task: "Milyen $k$ értékekre lesz az $x^2 + kx + 1 > 0$ egyenlőtlenség minden valós $x$-re igaz?",
                 solution_format: "k<-2 k>2 (szóközzel elválasztva)",
                 first_hint: "A diszkrimináns legyen negatív.",
-                second_hint: "$k^2 - 4 < 0$."
+                second_hint: "$k^2 - 4 < 0$.",
+                validated:1
             },
             {
                 id: 8,
@@ -165,7 +172,8 @@ Tasks.init(
                 task: "Mennyi $\\sin(15°) \\cdot \\sin(75°)$ értéke? (4 tizedesjegy)",
                 solution_format: "Tizedestört",
                 first_hint: "Használd a szorzattá alakító képletet: $\\sin A \\sin B = \\frac{1}{2}[\\cos(A-B) - \\cos(A+B)]$.",
-                second_hint: "$\\cos(60°) = 0.5$ és $\\cos(90°) = 0$."
+                second_hint: "$\\cos(60°) = 0.5$ és $\\cos(90°) = 0$.",
+                validated:1
             },
             {
                 id: 9,
@@ -177,7 +185,8 @@ Tasks.init(
                 task: "Egy számtani sorozat első tagja 3, differenciája 4. Egy mértani sorozat első tagja 2, kvóciense 3. Hányadik tagjuk lesz egyenlő?",
                 solution_format: "Egész szám",
                 first_hint: "Állíts fel egyenletet: $3 + 4(n-1) = 2 \\cdot 3^{n-1}$.",
-                second_hint: "Próbálkozz $n=1, 2, 3, ...$-nel."
+                second_hint: "Próbálkozz $n=1, 2, 3, ...$-nel.",
+                validated:1
             },
             {
                 id: 10,
@@ -189,7 +198,8 @@ Tasks.init(
                 task: "Mennyi eséllyel találunk ki egy 4 jegyű PIN-kódot első próbálkozásra?",
                 solution_format: "Tizedestört (4 tizedesjegy)",
                 first_hint: "Összes lehetséges kód: $10^4$.",
-                second_hint: "Csak egy kedvező eset van."
+                second_hint: "Csak egy kedvező eset van.",
+                validated:1
             },
         ];
     
