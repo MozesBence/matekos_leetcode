@@ -1,6 +1,6 @@
-const { Sequelize, Model, DataTypes } = require("../database/dbContext");
+const { Sequelize, Model } = require('sequelize');
 
-module.exports = (sequelize) => {
+module.exports = (sequelize,DataTypes) => {
     class StoreItems extends Model {}
 
     StoreItems.init(
