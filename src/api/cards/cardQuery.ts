@@ -54,6 +54,7 @@ export const useCompletionRates = () => {
 
 // Fetching Task State
 const fetchTaskState = async (id: number) => {
+  console.log(id)
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
     console.log(response.data)
@@ -67,7 +68,7 @@ const fetchTaskState = async (id: number) => {
 export const useTaskState = (id: Ref<number>) => {
   return useQuery({
     queryKey: ['taskState', id],
-    queryFn: () => fetchTaskState(id),
+    queryFn: () => fetchTaskState(id.value),
     onSuccess: (data) => {
       console.log('Task state fetched successfully:', data);
     },
@@ -244,6 +245,8 @@ export const useTaskByDifficulty = (difficulty: Ref<string>) => {
 
 // Fetching Task by State and User ID
 const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
+  console.log(state.value)
+  console.log(user_id)
   try {
     const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
     console.log(response.data);

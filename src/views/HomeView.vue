@@ -703,6 +703,8 @@ watchEffect(() => {
 });
 
 const getTaskStateForCard = (taskId: number) => {
+  console.log(`taskId: ${taskId}`);
+  console.log(`taskstate data ${task_state.data.value}`)
   if (!task_state.data || !task_state.data.value) {
     console.log('Task state data is not available yet.');
     return null;
@@ -712,7 +714,7 @@ const getTaskStateForCard = (taskId: number) => {
   if (task) {
     console.log(`Found task state for taskId ${taskId}:`, task);
   } else {
-    console.log(`No task found for taskId ${taskId}`);
+   // console.log(`No task found for taskId ${taskId}`);
   }
 
   return task || null;

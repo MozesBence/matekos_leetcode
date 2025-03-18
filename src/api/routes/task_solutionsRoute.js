@@ -11,4 +11,5 @@ router.post("/submit-solution/:data", submitSolution);
 router.get('/monthlySolvingRate',monthlySolvingRate)
 router.get('/mostRecentlyTriedTask',mostRecentlyTriedTask)
 router.get('/dailyTaskStreak',getDailyTaskStreak)
+
 module.exports = router;
