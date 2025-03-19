@@ -482,7 +482,7 @@ function HandleDifficultyChange(newVal: string | null){
 //-------- Filter by completionrate ---------------
 const state_Query = ref(null);
 const state_param = ref('');
-const taskByState = useTaskByState(state_param, user_id);
+const taskByState = useTaskByState(state_param, Number(user_id.value));
 
 watch(() => get_fullUser.value, (newUser) => {
   if (newUser?.id) {
@@ -693,7 +693,7 @@ const getDaysInMonth = (year: number, month: number): number => {
 
 
 // Fetch task state based on user ID
-const task_state = useTaskState(userId);
+const task_state = useTaskState(get_fullUser.value.id);
 
 // Watch for changes in the fetched task state
 watchEffect(() => {

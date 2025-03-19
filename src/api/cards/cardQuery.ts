@@ -54,12 +54,13 @@ export const useCompletionRates = () => {
 
 // Fetching Task State
 const fetchTaskState = async (id: number) => {
-  console.log(id)
+  console.log("state id",id)
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
     console.log(response.data)
     return response.data;
   } catch (error) {
+    console.log("hiba",error)
     console.error('Error occurred while fetching task state:', error);
     throw error;
   }
@@ -245,7 +246,7 @@ export const useTaskByDifficulty = (difficulty: Ref<string>) => {
 
 // Fetching Task by State and User ID
 const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
-  console.log(state.value)
+  console.log(state)
   console.log(user_id)
   try {
     const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
