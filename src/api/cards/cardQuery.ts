@@ -54,28 +54,30 @@ export const useCompletionRates = () => {
 
 // Fetching Task State
 const fetchTaskState = async (id: number) => {
-  console.log("state id",id)
+  console.log("Fetching state for task_id:", id);
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id}`);
-    console.log(response.data)
+    console.log("Response data:", response.data);
     return response.data;
   } catch (error) {
-    console.log("hiba",error)
-    console.error('Error occurred while fetching task state:', error);
+    console.error('Error fetching task state:', error);
     throw error;
   }
 };
 
+
+// Hook to fetch task state based on task ID
 export const useTaskState = (id: Ref<number>) => {
   return useQuery({
-    queryKey: ['taskState', id],
+    queryKey: ['taskState', id.value],
     queryFn: () => fetchTaskState(id.value),
     onSuccess: (data) => {
       console.log('Task state fetched successfully:', data);
     },
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
-    }
+    },
+    enabled: !!id.value, // Ensure that the query only runs when `id` has a valid value
   });
 };
 
@@ -245,21 +247,22 @@ export const useTaskByDifficulty = (difficulty: Ref<string>) => {
 
 
 // Fetching Task by State and User ID
-const fetchTaskByState = async (state:Ref<string>, user_id: Number) => {
-  console.log(state)
-  console.log(user_id)
+const fetchTaskByState = async (state: Ref<string>, user_id: number) => {
+  console.log("Fetching task by state:", state.value, "user_id:", user_id);
   try {
     const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
-    console.log(response.data);
+    console.log("Task by state response:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching task by state:', error);
+    console.error('Error fetching task by state:', error);
+    throw error;
   }
 };
 
+
 export const useTaskByState = (state:Ref<string>, user_id: Number) => {
   return useQuery({
-    queryKey:['task_info',state,user_id],
+    queryKey:['task_info',state.value,user_id],
     queryFn: () => fetchTaskByState(state, user_id),
     onSuccess: (data) => {
       console.log(data);

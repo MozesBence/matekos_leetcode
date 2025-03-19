@@ -693,7 +693,7 @@ const getDaysInMonth = (year: number, month: number): number => {
 
 
 // Fetch task state based on user ID
-const task_state = useTaskState(get_fullUser.value.id);
+const task_state = useTaskState(ref(get_fullUser.value.id));
 
 // Watch for changes in the fetched task state
 watchEffect(() => {
@@ -769,6 +769,7 @@ watch(() => allTaskCountQuery.data.value, (newVal) => {
     console.log("Updated taskCount:", taskCount.value);
   }
 });
+
 
 
 onMounted(() => {
