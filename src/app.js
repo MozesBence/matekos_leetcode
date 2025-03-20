@@ -86,6 +86,9 @@ app.use('/api/daily_tasks',daily_tasks_route);
 const advertisement_cards = require('../src/api/routes/advertisement_cards_routes')
 app.use('/api/ads',advertisement_cards)
 
+const storeItems = require('../src/api/routes/storeItems')
+app.use('/api/store',storeItems)
+
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);
