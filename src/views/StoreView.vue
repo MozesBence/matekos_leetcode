@@ -40,7 +40,14 @@
           </v-card-text>
       
           <v-card-actions>
-            <v-btn color="orange" text="Share">Kiváltom - 5000<img src="../assets/coin.png" alt="" height="20"></v-btn>
+            <v-btn
+            color="orange"
+            :disabled="get_fullUser.currency_count < 5000"
+          >
+            Kiváltom - 5000
+            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
+          </v-btn>
+          
           </v-card-actions>
         </v-card>
         </v-col>
@@ -72,7 +79,13 @@
           </v-card-text>
       
           <v-card-actions>
-            <v-btn color="orange" text="Share">Kiváltom - 5000<img src="../assets/coin.png" alt="" height="20"></v-btn>
+            <v-btn
+            color="orange"
+            :disabled="get_fullUser.currency_count < 5000"
+          >
+            Kiváltom - 5000
+            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
+          </v-btn>
           </v-card-actions>
         </v-card>
         </v-col>
@@ -104,7 +117,13 @@
           </v-card-text>
       
           <v-card-actions>
-            <v-btn color="orange" text="Share">Kiváltom - 5000<img src="../assets/coin.png" alt="" height="20"></v-btn>
+            <v-btn
+            color="orange"
+            :disabled="get_fullUser.currency_count < 5000"
+          >
+            Kiváltom - 5000
+            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
+          </v-btn>
           </v-card-actions>
         </v-card>
         </v-col>
@@ -134,7 +153,13 @@
           </v-card-text>
       
           <v-card-actions>
-            <v-btn color="orange" text="Share">Kiváltom - 5000<img src="../assets/coin.png" alt="" height="20"></v-btn>
+            <v-btn
+            color="orange"
+            :disabled="get_fullUser.currency_count < 5000"
+          >
+            Kiváltom - 5000
+            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
+          </v-btn>
           </v-card-actions>
         </v-card>
         </v-col>
