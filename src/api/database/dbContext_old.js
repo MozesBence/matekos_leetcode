@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
 const mysql = require('mysql2/promise');
+const storeItems = require('../models/storeItems');
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -37,7 +38,9 @@ const {
     Daily_Tasks,
     Notification,
     Advertisement_Cards,
-    DailyQuote
+    DailyQuote,
+    StoreItems,
+    Transactions
 } = require("../models")(sequelize, DataTypes);
 
 db.Users = Users;
@@ -59,7 +62,8 @@ db.Daily_Tasks = Daily_Tasks;
 db.Notification = Notification;
 db.Advertisement_Cards = Advertisement_Cards;
 db.DailyQuote = DailyQuote;
-
+db.StoreItems = StoreItems;
+db.Transactions = Transactions;
 // Initialize database and themes
 const initializeDatabase = async () => {
     try {

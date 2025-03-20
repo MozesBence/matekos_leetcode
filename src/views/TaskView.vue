@@ -52,7 +52,7 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #FFE082; color: #FF6F00"
                 class="d-flex align-center justify-center"
-                v-if="task?.creator_id != 0"
+                v-if="task?.creator_id != null"
               >
                 <p class="ma-0">👑 {{task?.creator_id}}</p>
               </v-chip>
@@ -260,10 +260,8 @@ const SubmitTask = () => {
   const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
 
   submitSolution(payload, {  
-    onSuccess: () => {
-      showAlert("success", `A megoldás helyes! Gratulálunk! A jutalmad ${task.value.experience_points} XP.`);
-      console.log(task.value)
-      solution.value = "";
+    onSuccess: (data) => {
+      console.log(data)
     },
     onError: () => {
       showAlert("error", "Hibás megoldás! A megoldás hibás vagy nem egyezik meg a formátummal.");
