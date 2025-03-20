@@ -4,6 +4,77 @@ const route = express.Router();
 
 const communityControllers = require("../controllers/communityControllers");
 
+/**
+ * @swagger
+ * /community:
+ *   get:
+ *     summary: Posztok lekérése
+ *     tags:
+ *       - Community
+ *     description: Limitált mennyiségű posztok lekérése
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             $ref: '#/components/schemas/get-limited-posts'
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/get-limited-posts'
+ *     responses:
+ *       200:
+ *         description: Limitált mennyiségű posztok lekérése
+ *         content:
+ *           application/json:
+ *              example:
+ *                  posts: "[{id: 1, title: 'Teszt poszt', content: '<div>Teszt kontent<div>', gotEdit: false, createdAt: (timestamp), user_id: 1, Comments: []}]"
+ *                  total_posts: "5"
+ *       400:
+ *         description: Hiba a posztok lekérése közben
+ *         content:
+ *           application/json:
+ *              example:
+ *                  status: "400"
+ *                  message: "Nem sikerült lekérni a posztokat!"
+ * 
+ * components:
+ *   schemas:
+ *     get-limited-posts:
+ *       type: object
+ *       required:
+ *         - id
+ *         - limit
+ *         - offset
+ *         - filter
+ *         - tagsArray
+ *         - search
+ *       properties:
+ *         id:
+ *           type: number | null
+ *           description: A felhasználónak az id-ja
+ *           example: 1
+ *         limit:
+ *           type: number
+ *           description: Amennyi poszt legyen lekérve
+ *           example: 10
+ *         offset:
+ *           type: number
+ *           description: Amennyi poszt idáig le lett kérve
+ *           example: 0
+ *         filter:
+ *           type: Array<Array<string>>
+ *           description: Mi alapján rendezze
+ *           example: [['date']]
+ *         tagsArray:
+ *           type: Array<number>
+ *           description: Posztokhoz hozzárendelhető tagek
+ *           example: secretpassword
+ *         password:
+ *           type: string
+ *           description: Felhasználó jelszava
+ *           example: secretpassword
+ * 
+ */
 route.get("/community", communityControllers.getLimitedPosts);
 
 route.get("/community/get-comments", communityControllers.getLimitedComments);

@@ -36,13 +36,31 @@ const initializeDatabase = async () => {
                 console.error('Unable to connect to the database:', error.message);
             });
       
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         await sequelize.sync({ force: false })
-            .then(() => {
-                console.log('Database synchronized.');
-            })
-            .catch((error) => {
-                console.error('Error syncing database:', error.message);
-            });
+        .then(() => {
+            console.log('Database synchronized.');
+        })
+        .catch((error) => {
+            console.error('Error syncing database:', error.message);
+        });
+
+        await db.Themes.initializeThemes();
+        console.log('Default themes inserted.');
+
+        await db.Tasks.initializeTasks();
+        console.log('Default tasks inserted.');
+        
+        await db.Community_tags.initializeTags();
+        console.log('Default tags inserted.');
+
+        await db.Advertisement_Cards.initializeCards();
+        console.log('Cards inserted.');
+
+        await db.StoreItems.initializeStoreItems();
+        console.log('Store items inserted.');
+    
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
     } catch (error) {
         console.error('Error initializing database:', error);
     }

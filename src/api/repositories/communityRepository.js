@@ -27,9 +27,8 @@ class communityRepository
     }
 
     async getLimitedPost(limit, get_offset, userId, filter, tagsArray, search) {
-      // Gondoskodj arról, hogy a limit egy szám legyen
-      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
-      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+      const parsedLimit = Number(limit) || 10;
+      const offset = Number(get_offset) || 0;
 
     
       if (isNaN(parsedLimit) || parsedLimit <= 0) {
@@ -62,7 +61,6 @@ class communityRepository
             : {})
     };
     
-    // 📌 Először rendezünk, aztán vesszük ki az első 10 elemet
     const orderBy = filter 
       ? (filter[0][0] === 'date'
           ? [['createdAt', filter[0][1] || 'DESC']]
@@ -78,24 +76,21 @@ class communityRepository
           : [['createdAt', 'DESC']]) 
       : [['createdAt', 'DESC']];
   
-      // 📌 Először megszerezzük az ID-kat a helyes sorrendben és limitálva
       const db_postIds = await this.Community_posts.findAll({
-        attributes: ['id'],  // Csak az ID-kat kérjük
+        attributes: ['id'],
         where: whereCondition,
-        order: orderBy,  // Először rendezünk
-        limit: parsedLimit,  // Csak ezután limitálunk
-        offset: offset,  // 🔹 OFFSET ITT VAN
+        order: orderBy,
+        limit: parsedLimit,
+        offset: offset,
       });
 
-        // 📌 Az ID-k kinyerése egy tömbbe
         const ids = db_postIds.map(post => post.id);
 
-        if (ids.length === 0) return [];  // Ha nincs találat, üres tömböt adunk vissza
+        if (ids.length === 0) return [];
 
-        // 📌 Most kérjük le a teljes adatokat CSAK ezekkel az ID-kkal
         const posts = await this.Community_posts.findAll({
-          where: { id: { [Sequelize.Op.in]: ids } },  // Csak az előbb lekérdezett ID-k
-          order: orderBy,  // Ismét rendezzük a megfelelő sorrendben
+          where: { id: { [Sequelize.Op.in]: ids } },
+          order: orderBy,
           attributes: {
               include: [
                   [
@@ -183,8 +178,7 @@ class communityRepository
         });
       
       const postIds = posts.map(post => post.id);
-      
-      // Kommentek számának lekérdezése külön:
+
       const comments = await this.Community_comments.findAll({
         where: {
           post_id: postIds,
@@ -356,7 +350,7 @@ class communityRepository
             const base64Data = `data:${mimeType};base64,${base64File}`;
 
             if (mimeType === 'image/gif' && !base64File.startsWith('R0lGOD')) {
-              return; // Hibás GIF kihagyása
+              return;
             }
 
             if (mimeType.startsWith('image/')) {
@@ -417,25 +411,21 @@ class communityRepository
             }
           }
 
-            // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
             const hasMoreComments = comment.replies.length === parsedLimit;
 
-            // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
             const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
             let hasNewComments = false;
 
             if (lastCommentDate) {
-              // Lekérdezzük, van-e újabb komment a legutolsó dátum után
               const newComments = await this.Community_comments.count({
                 where: {
                   parent_comment_id: comment.id,
                   createdAt: {
-                    [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+                    [Sequelize.Op.gt]: lastCommentDate,
                   },
                 },
               });
 
-              // Ha több mint 0 új komment van, akkor van következő oldal
               hasNewComments = newComments > 0;
             }
 
@@ -506,30 +496,25 @@ class communityRepository
           });
         };
 
-        // A válaszokat hozzárendeljük a kommentekhez
         for (let comment of comments) {
           comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
         }
 
-        // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
         const hasMoreComments = comments.length === parsedLimit;
 
-        // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
         const lastCommentDate = comments[comments.length - 1]?.createdAt;
         let hasNewComments = false;
 
         if (lastCommentDate) {
-          // Lekérdezzük, van-e újabb komment a legutolsó dátum után
           const newComments = await this.Community_comments.count({
             where: {
               post_id: postObj.id,
               createdAt: {
-                [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+                [Sequelize.Op.gt]: lastCommentDate,
               },
             },
           });
-
-          // Ha több mint 0 új komment van, akkor van következő oldal
+l
           hasNewComments = newComments > 0;
         }
 
@@ -572,10 +557,9 @@ class communityRepository
     }
 
     async getLimitedComments(limit, get_offset, id, userId) {
-      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
-      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+      const parsedLimit = Number(limit) || 10;
+      const offset = Number(get_offset) || 0;
     
-      // Kommentek lekérése
       const comments = await this.Community_comments.findAll({
         where: {
           post_id: id,
@@ -656,13 +640,12 @@ class communityRepository
       });
     
       const commentIds = comments.map(comment => comment.id);
-      
-      // Válaszok lekérése
+
       const replies = await this.Community_comments.findAll({
         where: {
           parent_comment_id: commentIds,
         },
-        limit: 10, // Ha szeretnél csak 11 választ, az OK, de ezt szükség esetén lehet változtatni
+        limit: 10,
         include: [
           {
             model: this.Users,
@@ -738,25 +721,21 @@ class communityRepository
           }
         }
 
-        // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
         const hasMoreComments = comment.replies.length === parsedLimit;
 
-        // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
         const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
         let hasNewComments = false;
 
         if (lastCommentDate) {
-          // Lekérdezzük, van-e újabb komment a legutolsó dátum után
           const newComments = await this.Community_comments.count({
             where: {
               parent_comment_id: id,
               createdAt: {
-                [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+                [Sequelize.Op.gt]: lastCommentDate,
               },
             },
           });
 
-          // Ha több mint 0 új komment van, akkor van következő oldal
           hasNewComments = newComments > 0;
         }
 
@@ -826,42 +805,37 @@ class communityRepository
         };
       }));
     
-      // A válaszokat hozzárendeljük a kommentekhez
       for (let comment of comments) {
         comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
       }
 
-      // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
       const hasMoreComments = comments.length === parsedLimit;
 
-      // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
       const lastCommentDate = comments[comments.length - 1]?.createdAt;
       let hasNewComments = false;
 
       if (lastCommentDate) {
-        // Lekérdezzük, van-e újabb komment a legutolsó dátum után
         const newComments = await this.Community_comments.count({
           where: {
             post_id: id,
             createdAt: {
-              [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+              [Sequelize.Op.gt]: lastCommentDate,
             },
           },
         });
 
-        // Ha több mint 0 új komment van, akkor van következő oldal
         hasNewComments = newComments > 0;
       }
 
       return {
         commentsWithreplies,
-        hasMoreComments: hasMoreComments || hasNewComments, // Igaz, ha van több komment
+        hasMoreComments: hasMoreComments || hasNewComments, 
       };
     }
 
     async getLimitedInnerComments(limit, get_offset, id, userId) {
-      const parsedLimit = Number(limit) || 10; // Ha a limit nem szám, alapérték 10
-      const offset = Number(get_offset) || 0; // Ha az offset nem szám, alapérték 0
+      const parsedLimit = Number(limit) || 10;
+      const offset = Number(get_offset) || 0;
       
       const replies = await this.Community_comments.findAll({
         where: {
@@ -969,10 +943,8 @@ class communityRepository
           createdAt: inner_comment.createdAt,
         };
       }));
-      // Ha kevesebb kommentet kaptunk, mint a limit, akkor biztosan nincs több
       const hasMoreComments = replies.length === parsedLimit;
 
-      // Ellenőrizzük, hogy az utolsó komment dátuma alapján van-e újabb komment
       const lastCommentDate = replies[replies.length - 1]?.createdAt;
       let hasNewComments = false;
 
@@ -981,26 +953,23 @@ class communityRepository
           where: {
             parent_comment_id: id,
             createdAt: {
-              [Sequelize.Op.gt]: lastCommentDate, // Az utolsó komment dátuma után
+              [Sequelize.Op.gt]: lastCommentDate,
             },
           },
         });
 
-        // Ha több mint 0 új komment van, akkor van következő oldal
         hasNewComments = newComments > 0;
       }
 
       return {
         commentsWithreplies,
-        hasMoreComments: hasMoreComments || hasNewComments, // Igaz, ha van több komment
+        hasMoreComments: hasMoreComments || hasNewComments,
       };
     }
 
     async postUpload(post, tagIds) {
-      // Poszt létrehozása és mentése
       const newPost = await this.Community_posts.create(post);
     
-      // Ha vannak tagId-k, akkor kapcsoljuk hozzájuk a posztot
       if (tagIds && tagIds.length > 0) {
         await newPost.addCommunity_tags(tagIds);
       }
@@ -1145,11 +1114,10 @@ class communityRepository
   async chipsDelete(postId, none_existingFiles) { 
     try {
       for (const id of none_existingFiles) {
-        // Töröljük a PostTags táblából azokat a kapcsolatokat, ahol a postId és a megadott tagek szerepelnek
         await this.Community_posts.sequelize.models.PostTags.destroy({
             where: {
-                CommunityPostId: postId,  // Csak az adott postId-hoz tartozókat nézzük
-                CommunityTagId: id  // Csak a törlendő tageket nézzük
+                CommunityPostId: postId,
+                CommunityTagId: id
             }
         });
       }

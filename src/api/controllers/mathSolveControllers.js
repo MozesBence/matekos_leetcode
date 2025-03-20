@@ -1,20 +1,20 @@
 const mathSolveServices = require("../services/mathSolveServices");
 
-const bcrypt = require("bcrypt");
-
-const salt = 10;
-
-const jwt = require("jsonwebtoken");
-
-const nodemailer = require('nodemailer');
-
-const multer = require("multer");
-
-// Set up multer storage to store file in memory (as a buffer)
-const storage = multer.memoryStorage();  // Use diskStorage if you want to save to disk
-const upload = multer({ storage: storage });
-
 exports.getUsers = async (req, res, next) =>
 {
-    res.status(200).send(await mathSolveServices.getUsers());
+    try{
+        const get_users = await mathSolveServices.getUsers();
+    
+        if(!get_users){
+            const error = new Error('Hiba történt a felhasználók lekérése közben!')
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).send(get_users);
+    }catch(error){
+        next(error);
+    }
 }

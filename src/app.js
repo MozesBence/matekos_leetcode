@@ -10,9 +10,49 @@ app.use(express.urlencoded({ extended: true }));
 
 const errorHandler = require("./api/middlewares/errorHandler");
 
-// Enable CORS for all origins (for development):
-app.use(cors());
+const swaggerUi = require('swagger-ui-express');
 
+const swaggerJsdoc = require('swagger-jsdoc');
+
+const options = 
+{ 
+  definition: 
+  {
+    openapi: '3.0.0',
+    info: {
+      title: 'MathSolve API',
+      version: '1.0.0',
+    },
+  },
+  apis: ["./api/routes/*.js", "./api/models/index.js"],
+};
+
+const customDisableTryItOutPlugin = () => {
+  return {
+    statePlugins: {
+      spec: {
+        wrapSelectors: {
+          allowTryItOutFor: (ori, system) => (path, method) => {
+            const operation = system.specSelectors.getOperation(path, method);
+            // Ezek a log üzenetek a böngésző fejlesztői konzoljában jelennek meg,
+            // mivel a plugin a Swagger UI kliensoldalán fut.
+            console.log(`Ellenőrzés ${method.toUpperCase()} ${path}:`, operation && operation.get("x-disable-try-it-out"));
+            if (operation && operation.get("x-disable-try-it-out") === true) {
+              return false;
+            }
+            return ori(path, method);
+          }
+        }
+      }
+    }
+  };
+};
+
+const openapiSpecification = swaggerJsdoc(options);
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification, {
+  customPlugins: [ customDisableTryItOutPlugin ]
+}));
 // Or allow only a specific origin:
 app.use(cors({
   origin: 'http://localhost:5173'
