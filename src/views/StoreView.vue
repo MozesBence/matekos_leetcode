@@ -15,155 +15,39 @@
   </div>
   
     <v-row>
-   
-        <!--Kartya 1 kezdete-->
-        <v-col cols="12" sm="6" lg="3">
-          <v-card
-          class="mx-auto centered-row"
-          max-width="400"
-          style="padding: 1em;"
+        <v-col cols="12" sm="6" lg="3" v-for="(item,index) in items.data.value" 
+        :key="index">
+        <v-card
+        class="mx-auto centered-row"
+        max-width="400"
+        style="padding: 1em;"
+      >
+        <img
+          class="align-end text-white"
+          height="200"
+          src="../assets/Tshirt_item.png"
+          cover
         >
-          <img
-            class="align-end text-white"
-            height="200"
-            src="../assets/Tshirt_item.png"
-            cover
-          >
-          <v-card-subtitle class="pt-4">
-            Math Solve póló
-          </v-card-subtitle>
-      
-          <v-card-text>
-            <div>Tavaszi kollekció</div>
-      
-            <div>Limitált kiadás, a készlet erejéig kiváltható</div>
-          </v-card-text>
-      
-          <v-card-actions>
-            <v-btn
-            color="orange"
-            :disabled="get_fullUser.currency_count < 5000"
-          >
-            Kiváltom - 5000
-            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
-          </v-btn>
-          
-          </v-card-actions>
-        </v-card>
-        </v-col>
-        <!--Kartya 1 vege-->
-
-        <!--Kartya 2 kezdete-->
-        <v-col cols="12" sm="6" lg="3">
-          <v-card
-          class="mx-auto centered-row"
-          max-width="400"
-          style="padding: 1em;"
+        <v-card-subtitle class="pt-4">
+          {{item.name}}
+        </v-card-subtitle>
+    
+        <v-card-text>
+          <div>{{item.description}}</div>
+        </v-card-text>
+    
+        <v-card-actions>
+          <v-btn
+          color="orange"
+          :disabled="get_fullUser.currency_count < item.price"
         >
-          <img
-            class="align-end text-white"
-            height="200"
-            src="../assets/Notebook_item.png"
-            cover
-          >
-            
-      
-          <v-card-subtitle class="pt-4">
-            Math Solve füzet
-          </v-card-subtitle>
-      
-          <v-card-text>
-            <div>Tavaszi kollekció</div>
-      
-            <div>Limitált kiadás, a készlet erejéig kiváltható</div>
-          </v-card-text>
-      
-          <v-card-actions>
-            <v-btn
-            color="orange"
-            :disabled="get_fullUser.currency_count < 5000"
-          >
-            Kiváltom - 5000
-            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
-          </v-btn>
-          </v-card-actions>
-        </v-card>
+          Kiváltom - {{item.price}}
+          <img src="../assets/coin.png" alt="" height="20">
+        </v-btn>
+        
+        </v-card-actions>
+      </v-card>
         </v-col>
-        <!--Kartya 2 vege-->
-
-        <!--Kartya 3 kezdete-->
-        <v-col cols="12" sm="6" lg="3">
-          <v-card
-          class="mx-auto centered-row"
-          max-width="400"
-          style="padding: 1em;"
-        >
-          <img
-            class="align-end text-white"
-            height="200"
-            src="../assets/Mug_item.png"
-            cover
-          >
-            
-      
-          <v-card-subtitle class="pt-4">
-            Math Solve bögre
-          </v-card-subtitle>
-      
-          <v-card-text>
-            <div>Tavaszi kollekció</div>
-      
-            <div>Limitált kiadás, a készlet erejéig kiváltható</div>
-          </v-card-text>
-      
-          <v-card-actions>
-            <v-btn
-            color="orange"
-            :disabled="get_fullUser.currency_count < 5000"
-          >
-            Kiváltom - 5000
-            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
-          </v-btn>
-          </v-card-actions>
-        </v-card>
-        </v-col>
-        <!--Kartya 3 vege-->
-
-        <!--Kartya 4 kezdete-->
-        <v-col cols="12" sm="6" lg="3">
-          <v-card
-          class="mx-auto centered-row"
-          max-width="400"
-          style="padding: 1em;"
-        >
-          <img
-            class="align-end text-white"
-            height="200"
-            src="../assets/rollback.png"
-            cover
-          >
-            
-      
-          <v-card-subtitle class="pt-4">
-            Math Solve visszaugró token
-          </v-card-subtitle>
-      
-          <v-card-text>      
-            <div>Ha lemaradtál egy napi feladatról visszatérhetsz rá, a token segítségével!</div>
-          </v-card-text>
-      
-          <v-card-actions>
-            <v-btn
-            color="orange"
-            :disabled="get_fullUser.currency_count < 5000"
-          >
-            Kiváltom - 5000
-            <img src="../assets/coin.png" alt="" height="20" v-if="get_fullUser.currency_count < 5000" />
-          </v-btn>
-          </v-card-actions>
-        </v-card>
-        </v-col>
-        <!--Kartya 4 vege-->
     </v-row>
 </v-container>
 </template>
@@ -174,6 +58,9 @@ import { ref, computed, watchEffect,onMounted } from "vue";
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseFetchStoreItems} from '../api/storeItems/storeItemQuery'
 const items = UseFetchStoreItems();
+onMounted(() =>{
+  items.refetch();
+})
   onMounted(async ()=>{
   const userCookie = getCookie('user');
         if (userCookie) {

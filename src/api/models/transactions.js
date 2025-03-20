@@ -39,7 +39,7 @@ module.exports = (sequelize,DataTypes) => {
         },
         amount: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
             validate: {
                 isInt: {
                     msg: "Az összegnek egész számnak kell lennie."
@@ -48,7 +48,7 @@ module.exports = (sequelize,DataTypes) => {
                     args: [1],
                     msg: "Az összegnek legalább 1-nek kell lennie."
                 }
-            }
+            },
         },
     }, 
     {

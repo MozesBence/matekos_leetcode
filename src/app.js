@@ -89,6 +89,9 @@ app.use('/api/ads',advertisement_cards)
 const storeItems = require('./api/routes/storeItemsRoute')
 app.use('/api/store',storeItems)
 
+const transactionsRoute = require('./api/routes/transactionRoute')
+app.use('/api/transactions', transactionsRoute)
+
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);
