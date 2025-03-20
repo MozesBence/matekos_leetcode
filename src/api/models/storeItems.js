@@ -28,6 +28,11 @@ module.exports = (sequelize,DataTypes) => {
                 allowNull: false,
                 defaultValue: 100,
             },
+            amount: {
+                type: DataTypes.INTEGER,
+                allowNull:true,
+                defaultValue:null
+            }
         },
         {
             sequelize,
@@ -45,24 +50,27 @@ module.exports = (sequelize,DataTypes) => {
                     "Ha lemaradsz egy napi feladatról, megoldhatod ennek segítségével. Egy hónapban csak 3-at lehet felhasználni!",
                 picture: "nincs",
                 price: 100,
+                amount: null
             },
             {
                 name: "Math Solve póló",
                 description: "Egyedi mintás póló, tőlünk neked, ingyen!",
                 picture: "sasa",
                 price: 12000,
+                amount: 2000
             },
             {
                 name: "Math Solve bögre",
                 description: "Egyedi mintás bögre, tőlünk neked, ingyen!",
                 picture: "sasa",
                 price: 9000,
+                amount: 5000
             },
             {
                 name: "Math Solve füzet",
                 description: "Egyedi mintás füzet, tőlünk neked, ingyen!",
                 picture: "sasa",
-                price: 5500,
+                price: 15000,
             },
         ];
 
