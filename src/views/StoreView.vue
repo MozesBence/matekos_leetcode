@@ -13,7 +13,9 @@
 
   </h3>
   </div>
+  
     <v-row>
+   
         <!--Kartya 1 kezdete-->
         <v-col cols="12" sm="6" lg="3">
           <v-card
@@ -27,8 +29,6 @@
             src="../assets/Tshirt_item.png"
             cover
           >
-            
-      
           <v-card-subtitle class="pt-4">
             Math Solve póló
           </v-card-subtitle>
@@ -172,7 +172,8 @@
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 import { ref, computed, watchEffect,onMounted } from "vue";
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-
+import {UseFetchStoreItems} from '../api/storeItems/storeItemQuery'
+const items = UseFetchStoreItems();
   onMounted(async ()=>{
   const userCookie = getCookie('user');
         if (userCookie) {
