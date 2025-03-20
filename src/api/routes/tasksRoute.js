@@ -11,6 +11,4 @@ router.get('/getsimilarTasks/:themeid',getsimilarTasks)
 router.get('/solution/:id',getSolution)
 router.post('/submitTask',submitTask)
 
-
-
 module.exports = router;
