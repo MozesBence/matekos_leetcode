@@ -140,7 +140,7 @@ exports.registerUser = async (req, res, next) =>
                 throw error;
             }
 
-            res.status(201).json({ message: 'User registered and verification email sent.'});
+            res.status(201).send('A felhasználó regisztrálva lett és az email el lett küldve!');
         };
         }catch(error){
             next(error);
@@ -295,13 +295,8 @@ exports.forgetPassword = async (req, res, next) =>{
             `,
         };
 
-        try {
-            await transporter.sendMail(mailOptions);
-            res.status(201).json({ message: 'User registered and verification email sent.'});
-        } catch (error) {
-            console.error('Error sending email:', error);
-            res.status(500).send('User registered, but failed to send verification email.');
-        }
+        await transporter.sendMail(mailOptions);
+        res.status(200).send('Új jelszó kérelem el lett küldve a emailre!');
     }
     catch(error){
         next(error);

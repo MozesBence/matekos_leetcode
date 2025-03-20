@@ -3,19 +3,52 @@ const communityService = require("../services/communityService");
 exports.getLimitedPosts = async (req, res, next) => {
     const { limit, offset, id, filter, tagsArray, search } = req.query;
 
-    const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, tagsArray, search);
+    try{
+        const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, tagsArray, search);
 
-    const get_postsCount = await communityService.getPostCount();
+        if(!get_posts){
+            const error = new Error("Nem sikerült lekérni a posztokat!");
 
-    res.status(200).json(get_posts == null ? 'null' : {posts: get_posts, total_posts: get_postsCount});
+            error.status = 400;
+
+            throw error;
+        }
+    
+        const get_postsCount = await communityService.getPostCount();
+
+        
+        if(!get_postsCount){
+            const error = new Error("Nem sikerült lekérni posztok darabszámát!");
+
+            error.status = 400;
+
+            throw error;
+        }
+    
+        res.status(200).json(get_posts == null ? 'null' : {posts: get_posts, total_posts: get_postsCount});
+    }catch(error){
+        next(error);
+    }
 };
 
 exports.getLimitedComments = async (req, res, next) => {
     const { limit, offset, id, type, userId } = req.query;
 
-    const get_comments = type == 1 ? await communityService.getLimitedComments(limit, offset, id, userId) : await communityService.getLimitedInnerComments(limit, offset, id, userId);
+    try{
+        const get_comments = type == 1 ? await communityService.getLimitedComments(limit, offset, id, userId) : await communityService.getLimitedInnerComments(limit, offset, id, userId);
 
-    res.status(200).json(get_comments == null ? 'null' : {comments: get_comments.commentsWithreplies, hasMore: get_comments.hasMoreComments });
+        if(!get_comments){
+            const error = new Error("Nem sikerült lekérni a kommenteket!");
+
+            error.status = 400;
+
+            throw error;
+        }
+    
+        res.status(200).json(get_comments == null ? 'null' : {comments: get_comments.commentsWithreplies, hasMore: get_comments.hasMoreComments });
+    }catch(error){
+        next(error);
+    }
 };
 
 
