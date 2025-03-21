@@ -80,7 +80,7 @@ export const useCommunityEditPost = () => {
 }
 
 const CommunityGetLimitedPosts = async (data: {limit: number, offset: number , id: number | null, filter: Array<Array<string>> | null, tagsArray: Array<number> | null, search: string | null}) => {
-  const response = await axiosClient.get('http://localhost:3000/community', {
+  const response = await axiosClient.get('http://localhost:3000/community', { 
     params: data,
   });
 

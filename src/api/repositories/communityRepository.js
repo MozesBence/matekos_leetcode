@@ -514,7 +514,6 @@ class communityRepository
               },
             },
           });
-l
           hasNewComments = newComments > 0;
         }
 

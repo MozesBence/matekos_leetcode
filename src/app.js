@@ -27,52 +27,14 @@ const options =
   apis: ["./api/routes/*.js", "./api/models/index.js"],
 };
 
-const customDisableTryItOutPlugin = () => {
-  return {
-    statePlugins: {
-      spec: {
-        wrapSelectors: {
-          allowTryItOutFor: (ori, system) => (path, method) => {
-            const operation = system.specSelectors.getOperation(path, method);
-            // Ezek a log üzenetek a böngésző fejlesztői konzoljában jelennek meg,
-            // mivel a plugin a Swagger UI kliensoldalán fut.
-            console.log(`Ellenőrzés ${method.toUpperCase()} ${path}:`, operation && operation.get("x-disable-try-it-out"));
-            if (operation && operation.get("x-disable-try-it-out") === true) {
-              return false;
-            }
-            return ori(path, method);
-          }
-        }
-      }
-    }
-  };
-};
-
 const openapiSpecification = swaggerJsdoc(options);
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification, {
-  customPlugins: [ customDisableTryItOutPlugin ]
-}));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+
 // Or allow only a specific origin:
 app.use(cors({
-  origin: 'http://localhost:5173'
+  origin: '*'
 }));
-
-app.get('/drive-video', async (req, res) => {
-  const videoUrl = 'https://drive.google.com/uc?export=download&id=1nQVWypom79l5_KIWB5BRtF4S733jDufo'; // Google Drive link
-  try {
-    const response = await fetch(videoUrl);
-    if (!response.ok) {
-      throw new Error('Failed to load video');
-    }
-    res.setHeader('Content-Type', 'video/mp4');
-    response.body.pipe(res); // Stream video to the client
-  } catch (error) {
-    res.status(500).send('Error loading video');
-  }
-});
-
-const mathSolveRoutes = require("./api/routes/mathSolveRoute");
 
 /*Theme routes*/
 const themeRoutes = require('../src/api/routes/themeRoute');
@@ -86,8 +48,6 @@ app.use('/api/tasks',tasksRoutes);
 
 const quoteRoute = require('./api/routes/quoteroute');
 app.use('/api/quotes', quoteRoute);
-
-app.use("/", mathSolveRoutes);
 
 /*LogReg routes */
 const logregRoute = require('../src/api/routes/logregRoute')

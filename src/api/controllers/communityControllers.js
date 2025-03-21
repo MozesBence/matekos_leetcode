@@ -3,6 +3,8 @@ const communityService = require("../services/communityService");
 exports.getLimitedPosts = async (req, res, next) => {
     const { limit, offset, id, filter, tagsArray, search } = req.query;
 
+    console.log(limit, offset, id, filter, tagsArray, search);
+
     try{
         const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, tagsArray, search);
 
@@ -16,15 +18,6 @@ exports.getLimitedPosts = async (req, res, next) => {
     
         const get_postsCount = await communityService.getPostCount();
 
-        
-        if(!get_postsCount){
-            const error = new Error("Nem sikerült lekérni posztok darabszámát!");
-
-            error.status = 400;
-
-            throw error;
-        }
-    
         res.status(200).json(get_posts == null ? 'null' : {posts: get_posts, total_posts: get_postsCount});
     }catch(error){
         next(error);
