@@ -1,9 +1,10 @@
 const db = require("../database/dbContext");
 
 const TransactionRepository = {
-    async purchaseItem({ userId, currency, itemId, amount }) {
+    async purchaseItem({ userId, currency, itemId, amount,price }) {
         try {
-            await this.deductCurrency({ userId, amount });
+            await this.deductCurrency({ userId, amount, price });
+            this.AddItem({userId,itemId,amount,price});
             return await db.Transactions.create({
                 UserId: userId,
                 currency: currency,
@@ -15,7 +16,7 @@ const TransactionRepository = {
         }
     },
 
-    async deductCurrency({ userId, amount }) {
+    async deductCurrency({ userId, amount,price }) {
         try {
             const user = await db.Users.findOne({
                 where: { id: userId },
@@ -26,7 +27,7 @@ const TransactionRepository = {
                 throw new Error('Nincs ilyen user');
             }
 
-            const newCurrencyCount = user.currency_count - amount;
+            const newCurrencyCount = user.currency_count - price * amount;
 
             
             if (newCurrencyCount < 0) {
@@ -43,6 +44,33 @@ const TransactionRepository = {
             );
         } catch (error) {
             throw error;
+        }
+    },
+    async AddItem({ userId, itemId, amount }) {
+        const item = await db.StoreItems.findOne({
+            where: {
+                id: itemId
+            },
+            attributes: ['name']
+        });
+    
+        if (!item) {
+            throw new Error("Item not found.");
+        }
+    
+        switch (item.name) {
+            case "Időfordító Zseton":
+                await db.Users.update(
+                    {
+                        roll_back_token: db.sequelize.literal(`roll_back_token + ${amount}`)
+                    },
+                    {
+                        where: {
+                            id: userId
+                        }
+                    }
+                );
+                break;
         }
     }
 };
