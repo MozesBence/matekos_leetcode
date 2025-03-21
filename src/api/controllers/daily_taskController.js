@@ -4,11 +4,17 @@ const getDailyTask = async (req, res, next) => {
     try {
         const { id } = req.params;
 
-        const card = await daily_taskServices.getDailyTask(id);
+        const task = await daily_taskServices.getDailyTask(id);
 
-        if(!card)
+        if(!task){
+            const error = new Error("Nem sikerült lekérni a napi feladatot!");
 
-        res.status(200).json(card);
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).json(task);
     } catch (error) {
         next(error);
     }
@@ -17,11 +23,20 @@ const getDailyTask = async (req, res, next) => {
 const CheckIfDailyTask = async (req,res) => {
     try{
         const {taskid} = req.params;
-        const val = await daily_taskServices.CheckIfDailyTask(taskid)
-        res.status(200).json(val);
+
+        const check = await daily_taskServices.CheckIfDailyTask(taskid)
+
+        if(!check){
+            const error = new Error("Nem sikerült leellenőrizni a feladatot!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).json(check);
     }catch(error){
-        console.log(`error in daily tasks controller! ${error}`);
-        res.status(500).json({ message: error.message });
+        next(error);
     }
 }
 

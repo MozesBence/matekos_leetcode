@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const fetchThemes = async () => {
     try {
-        const response = await axios.get('/api/themes');
+        const response = await axios.get('http://localhost:3000/themes');
         return response.data;
     } catch (error) {
         console.error(`Error in theme store! Error ${error}`);

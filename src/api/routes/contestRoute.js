@@ -13,8 +13,8 @@ const contestController = require("../controllers/contestController");
  *       - Contest
  *     description: Ranglista lekérése
  *     responses:
- *       201:
- *         description: Sikeres Poszt / Komment reportolása
+ *       200:
+ *         description: Sikeres ranglista lekérés
  *         content:
  *           application/json:
  *              example:

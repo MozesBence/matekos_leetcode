@@ -8,30 +8,30 @@ const { getDailyTask,CheckIfDailyTask } = require('../controllers/daily_taskCont
  *   get:
  *     summary: Napi feladat
  *     tags:
- *       - Dilay tasks
+ *       - Daily tasks
  *     description: Napi feladat lekérése 
  *     parameters:
- *       - in: path
- *         name: id
+ *       - in: headers
+ *         name: token
  *         required: true
  *         schema:
- *           type: integer
- *           description: A napi feladat azonosítója
- *           example: 1
+ *           type: string
+ *           description: A felhasználó tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     responses:
- *       201:
- *         description: Sikeres regisztráció
+ *       200:
+ *         description: Sikeres lekérés
  *         content:
  *           application/json:
  *              example:
  *                  task_id: "1"
  *       400:
- *         description: Hiba a felhasználó regisztrálása közben
+ *         description: Hiba a napi feladat lekérése közben!
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Nem sikerült a regisztráció!"
+ *                  message: "Nem sikerült a lekérni a napi feladatot!"
  */
 router.get('/get-daily-task/:id', getDailyTask);
 
@@ -41,30 +41,30 @@ router.get('/get-daily-task/:id', getDailyTask);
  *   get:
  *     summary: Napi feladat ellenörzés
  *     tags:
- *       - Dilay tasks
+ *       - Daily tasks
  *     description: Leellenörzi hogy a feladat az a napi feladatok között bent van-e
  *     parameters:
  *       - in: path
- *         name: taskId
+ *         name: taskid
  *         required: true
  *         schema:
  *           type: integer
- *           description: A feladat id-ja
+ *           description: A feladat azonosítója
  *           example: 1
  *     responses:
- *       201:
- *         description: Sikeres regisztráció
+ *       200:
+ *         description: Sikeres ellenörzés
  *         content:
  *           application/json:
  *              example:
- *                  message: "A felhasználó regisztrálva lett és az email el lett küldve!"
+ *                  task: "{id: 1, theme_id: 1, solution: 'megoldás', creator_id: null, difficulty: 1, experience_points: 10, task_title: Teszt feladat, solution_format: Egész szám, first_hint: 'Első segítség', second_hint: 'Második segítség', validated: null, CompetitionID: null}"
  *       400:
- *         description: Hiba a felhasználó regisztrálása közben
+ *         description: Hiba a feladat ellenörzése közben
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Nem sikerült a regisztráció!"
+ *                  message: "Nem sikerült leellenőrizni a feladatot!"
  */
 router.get('/checkIfDailyTask/:taskid', CheckIfDailyTask)
 

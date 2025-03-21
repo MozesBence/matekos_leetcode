@@ -2,17 +2,13 @@ const db = require("../database/dbContext");
 
 const TransactionRepository = {
     async purchaseItem({ userId, currency, itemId, amount }) {
-        try {
-            await this.deductCurrency({ userId, amount });
-            return await db.Transactions.create({
-                UserId: userId,
-                currency: currency,
-                itemId: itemId,
-                amount: amount
-            });
-        } catch (error) {
-            throw error;
-        }
+        await this.deductCurrency({ userId, amount });
+        return await db.Transactions.create({
+            UserId: userId,
+            currency: currency,
+            itemId: itemId,
+            amount: amount
+        });
     },
 
     async deductCurrency({ userId, amount }) {

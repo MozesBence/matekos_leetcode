@@ -38,7 +38,7 @@ app.use(cors({
 
 /*Theme routes*/
 const themeRoutes = require('../src/api/routes/themeRoute');
-app.use('/api/themes', themeRoutes);
+app.use('/', themeRoutes);
 /*------------*/
 
 /*Task routes */

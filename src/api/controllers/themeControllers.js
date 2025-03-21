@@ -1,17 +1,24 @@
 const themeRepository = require('../repositories/themeRepository');
 
-const getAllThemesController = async (req, res) => {
+const getAllThemesController = async (req, res, next) => {
   try {
     const themes = await themeRepository.getAllThemes();
+
+    if(!themes){
+      const error = new Error("Nem sikerült lekérni a feladat témáit!");
+
+      error.status = 400;
+
+      throw error;
+    }
 
     const uniqueThemes = themes.filter((theme, index, self) =>
       index === self.findIndex((t) => t.id === theme.id)
     );
 
     res.status(200).json(uniqueThemes);
-  } catch (error) {
-    console.error('Error in controller:', error.message);
-    res.status(500).json({ message: error.message });
+  }catch(error){
+    next(error);
   }
 };
 

@@ -89,25 +89,6 @@ export const useCloseReport = () => {
     })
 }
 
-const getAllNotif = async () => {
-    const response = await axiosClient.get('http://localhost:3000/get-all-notif');
-    return response.data
-}
-
-export const useGetAllNotif = () => {
-    return useMutation({
-        mutationFn: getAllNotif,
-        onMutate: () => {
-
-        },
-        onSuccess: (response) => {
-        },
-        onError: (error) => {
-
-        }
-    })
-}
-
 const getAllUser = async (data: {name: string | null, activated_type: number | null, admin: boolean | null, token: string}) => {
     const response = await axiosClient.get('http://localhost:3000/get-all-users', {
         params: data,

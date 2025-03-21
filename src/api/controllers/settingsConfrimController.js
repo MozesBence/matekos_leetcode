@@ -15,12 +15,20 @@ const salt = 10;
 
 exports.sendConfirmCode = async (req, res, next) =>
 {
-    const { email, user_name, id } = req.query;
+    const {id, email, user_name } = req.query;
     
     try{
 
         if(email == null){
             const error = new Error("Nincs megadva email cím!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        if(user_name == null){
+            const error = new Error("Nem található a felhasználó neve!");
 
             error.status = 400;
 
@@ -282,13 +290,6 @@ exports.closeReport = async (req,res,next) =>{
     }
 }
 
-exports.getAllNotif = async (req,res,next) =>{
-    const id = req.query;
-    const all_notif = await settingsConfirmService.getAllnotif(id);
-
-    res.status(200).send(all_notif);
-}
-
 exports.getAllUser = async (req,res,next) =>{
     const {name, activated_type, admin, token} = req.query;
 
@@ -402,7 +403,15 @@ exports.setUserRoles = async (req,res,next) =>{
 
         const setUserRoles = await settingsConfirmService.setUserRoles(id, type);
 
-        res.status(200).send(setUserRoles);
+        if(!setUserRoles){
+            const error = new Error("Nem sikerült megváltoztatni a felhasználónak a jogosultságát!");
+    
+            error.status = 400;
+    
+            throw error;
+        }
+
+        res.status(200).send("A felhasználónak a jogosultsága megváltozott!");
     }
     catch(error){
         next(error)

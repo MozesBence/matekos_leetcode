@@ -2,6 +2,29 @@ const express = require('express');
 const router = express.Router();
 const { getAllThemesController } = require('../controllers/themeControllers');
 
-router.get('/', getAllThemesController);
+/**
+ * @swagger
+ * /themes:
+ *   get:
+ *     summary: Feladat témái
+ *     tags:
+ *       - Themes
+ *     description: Feladat témái lekérése
+ *     responses:
+ *       200:
+ *         description: Sikeres lekérés
+ *         content:
+ *           application/json:
+ *              example:
+ *                  user: "{id: 1, theme: 'Egyenletek'}"
+ *       400:
+ *         description: Hiba a feladat témái lekérése közben
+ *         content:
+ *           application/json:
+ *              example:
+ *                  status: "400"
+ *                  message: "Nem sikerült lekérni a feladat témáit!"
+ */
+router.get('/themes', getAllThemesController);
 
 module.exports = router;

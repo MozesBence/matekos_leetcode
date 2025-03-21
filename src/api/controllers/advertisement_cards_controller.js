@@ -3,9 +3,18 @@ const advertisement_cards_service = require('../services/advertisement_cards_ser
 const getAds = async (req,res,next) => {
     try{
         const data = await advertisement_cards_service.getAds();
+
+        if(!data){
+            const error = new Error("Nem sikerült lekérni a kártyák adatait!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
         res.status(200).json(data)
     }catch(error){
-        res.status(500).json({ message: error.message })
+        next(error);
     }
 }
 module.exports = {

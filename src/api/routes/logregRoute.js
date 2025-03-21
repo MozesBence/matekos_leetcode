@@ -106,7 +106,7 @@ route.post("/register", logregControllers.registerUser);
  *           schema:
  *             $ref: '#/components/schemas/activate_User'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres aktiválás
  *         content:
  *           application/json:
@@ -152,12 +152,12 @@ route.post("/success-register", logregControllers.successRegister);
  *           schema:
  *             $ref: '#/components/schemas/login_User'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres bejelentkezés
  *         content:
  *           application/json:
  *              example:
- *                  token: "Az oldal által generált token, pl.: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c"
+ *                  token: Az oldal által generált token, pl.: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *       400:
  *         description: Hiba a felhasználó bejelentkezése közben
  *         content:
@@ -208,7 +208,7 @@ route.post("/login", logregControllers.loginUser);
  *           schema:
  *             $ref: '#/components/schemas/forget-password'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres jelszó kérelem
  *         content:
  *           application/json:

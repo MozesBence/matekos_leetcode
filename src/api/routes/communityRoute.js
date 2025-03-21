@@ -51,7 +51,7 @@ const communityControllers = require("../controllers/communityControllers");
  *       properties:
  *         id:
  *           type: number | null
- *           description: A felhasználónak az id-ja
+ *           description: A felhasználónak az azonosítója
  *           example: 1
  *         limit:
  *           type: number
@@ -122,7 +122,7 @@ route.get("/community", communityControllers.getLimitedPosts);
  *       properties:
  *         id:
  *           type: number
- *           description: A posztnak az id-ja
+ *           description: A posztnak az azonosítója
  *           example: 1
  *         limit:
  *           type: number
@@ -224,7 +224,7 @@ const upload = multer({
  *       properties:
  *         id:
  *           type: number
- *           description: A felhasználónak az id-ja
+ *           description: A felhasználónak az azonosítója
  *           example: 1
  *         title:
  *           type: string
@@ -288,11 +288,11 @@ route.post("/community", upload.array('files', 10), communityControllers.postUpl
  *       properties:
  *         post_id:
  *           type: number
- *           description: A posztnak az id-ja
+ *           description: A posztnak az azonosítója
  *           example: 1
  *         user_id:
  *           type: number
- *           description: A felhasználónak az id-ja
+ *           description: A felhasználónak az azonosítója
  *           example: 1
  *         upload_type:
  *           type: string
@@ -362,7 +362,7 @@ route.post("/community/post-like", communityControllers.postLike);
  *           example: 1
  *         user_id:
  *           type: number
- *           description: A felhasználónak az id-ja
+ *           description: A felhasználónak az azonosítója
  *           example: 1
  *         type:
  *           type: number
@@ -389,7 +389,7 @@ route.post("/community/post-comment", communityControllers.postComment);
  *           schema:
  *             $ref: '#/components/schemas/community-comment-edit'
  *     responses:
- *       201:
+ *       200:
  *         description: Sikeres komment szerkeztés
  *         content:
  *           application/json:
@@ -417,7 +417,7 @@ route.post("/community/post-comment", communityControllers.postComment);
  *           example: "Módosított teszt komment"
  *         comment_id:
  *           type: number
- *           description: A módosítani kívánt komment id-ja
+ *           description: A módosítani kívánt komment azonosítója
  *           example: 1
  * 
  */
@@ -441,7 +441,7 @@ route.patch("/community/comment-edit", communityControllers.commentEdit);
  *           schema:
  *             $ref: '#/components/schemas/community-post-edit'
  *     responses:
- *       201:
+ *       200:
  *         description: Sikeres komment szerkeztés
  *         content:
  *           application/json:
@@ -470,7 +470,7 @@ route.patch("/community/comment-edit", communityControllers.commentEdit);
  *       properties:
  *         id:
  *           type: number
- *           description: A posztnak az id-ja
+ *           description: A posztnak az azonosítója
  *           example: 1
  *         title:
  *           type: string
@@ -516,7 +516,7 @@ route.patch("/community/post-edit",upload.array("files", 10), communityControlle
  *           schema:
  *             $ref: '#/components/schemas/community-comment-upload'
  *     responses:
- *       201:
+ *       200:
  *         description: Sikeres tagek lekérése
  *         content:
  *           application/json:
@@ -557,12 +557,12 @@ route.get("/community/tags", communityControllers.getTags);
  *              example:
  *                  message: "El lett küldve a bejelentés!"
  *       400:
- *         description: Hiba a poszt / komment szerkeztése közben
+ *         description: Hiba a poszt / komment reportolása közben
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Sikertelen volt a comment szekeztésének mentése közben!"
+ *                  message: "Sikertelen volt a poszt / komment reportolásának feltöltése közben!"
  * 
  * components:
  *   schemas:
@@ -586,7 +586,7 @@ route.get("/community/tags", communityControllers.getTags);
  *           example: 'Teszt bejelentés'
  *         content_type:
  *           type: boolean
- *           description: Poszt vagy kontent-e
+ *           description: Az érték ami eldönti hogy poszt vagy komment-e
  *           example: false
  *         user_id:
  *           type: number
@@ -598,7 +598,7 @@ route.get("/community/tags", communityControllers.getTags);
  *           example: 2
  *         content_id:
  *           type: number
- *           description: Poszt / komment id-ja
+ *           description: Poszt / komment azonosítója
  *           example: 1
  */
 route.post("/community/reports", communityControllers.sendReports);

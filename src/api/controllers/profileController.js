@@ -64,7 +64,6 @@ exports.profilPicUpload = async (req, res, next) => {
     }
 
     try {
-        // Fájl feltöltésének logikája
         var upload_result;
 
         console.log(blob);
@@ -75,10 +74,16 @@ exports.profilPicUpload = async (req, res, next) => {
             upload_result = await profileService.DarkmodeUpload(id, darkmode);
         }
 
-        // Válasz küldése
-        res.status(200).json({ message: 'Profilkép sikeresen feltöltve!', result: upload_result });
+        if(!upload_result){
+            const error = new Error("Nem sikerült feltölteni a profil / háttér képet!");
+
+            error.status = 404;
+
+            throw error;
+        }
+
+        res.status(200).send('Profilkép sikeresen feltöltve!');
     } catch (error) {
-        console.error('Hiba a profilkép feltöltésekor:', error);
-        res.status(500).json({ message: 'Hiba történt a profil frissítése közben.' });
+        next(error)
     }
 };
