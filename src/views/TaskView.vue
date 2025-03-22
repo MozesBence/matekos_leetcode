@@ -218,15 +218,14 @@ function getCookie(name: string): string | null {
 watch(group, () => {
   drawer.value = false;
 });
-onMounted(async()=>{
- await getTaskData.refetch();
-})
+
 watch(() => getTaskData.data.value, (newVal) => {
   console.log(newVal);
   task.value = newVal;
   console.log(task.value)
-  theme_id.value = task.value.theme_id;
-  theme.refetch();
+  theme.refetch()
+  getTaskData.refetch();
+
 });
 
 // Helper functions
@@ -287,20 +286,23 @@ onMounted(async () => {
     }
   }
 
-  const get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
-
+  // Fetch user profile
+  const get_user_by_token = getCookie('user') || null;
   if (get_user_by_token) {
     const { mutate: ProfileGetUser } = useProfileGetUser();
-    try {
-      await ProfileGetUser({token: get_user_by_token, id: 0}, {
-        onSuccess: (get_user) => {
-          get_user_name.value = get_user.user_name;
-          get_fullUser.value = get_user;
-        },
-      });
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
+    await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+      onSuccess: (get_user) => {
+        get_user_name.value = get_user.user_name;
+        get_fullUser.value = get_user;
+      },
+    });
+  }
+
+  // Fetch task data and then theme data
+  await getTaskData.refetch();
+  if (getTaskData.data.value && getTaskData.data.value.theme_id) {
+    theme_id.value = getTaskData.data.value.theme_id;
+    await theme.refetch();
   }
 });
 

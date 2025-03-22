@@ -399,11 +399,11 @@ const CheckIfDailyTask = async (taskid:Number) => {
 export const UseCheckIfDailyTask = (taskId:Number) => {
   return useQuery({
     queryFn: ()=> CheckIfDailyTask(taskId),
-    queryKey:['DailyTaskCheck'],
+    queryKey:['DailyTaskCheck',taskId],
     onSuccess: (data) => {
-      //console.log("Kapott taskok:", data);
     },
     onError: (error) => {
+      console.log("Kapott taskok:", data);
       console.error("Error taskok fetchelese kozben:", error);
     },
   })
