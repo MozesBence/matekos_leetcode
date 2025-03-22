@@ -51,6 +51,11 @@ const router = createRouter({
           name: 'store',
           component: () => import('../views/StoreView.vue')
         },
+        {
+          path:'/task-creation',
+          name:'task-creation',
+          component: () => import('../views/TaskCreateView.vue')
+        }
       ]
     },
     {
@@ -107,11 +112,7 @@ const router = createRouter({
       name: 'task',
       component: () => import('../views/TaskView.vue')
     },
-    {
-      path:'/task-creation',
-      name:'task-creation',
-      component: () => import('../views/TaskCreateView.vue')
-    }
+
   ]
 })
 
