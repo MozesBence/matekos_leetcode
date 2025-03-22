@@ -1,4 +1,6 @@
+const { isAwaitKeyword } = require('typescript');
 const tasksService = require('../services/tasksServices');
+const { off } = require('process');
 
 const getCardInfo = async (req, res) => {
   try {
@@ -86,6 +88,17 @@ const submitTask = async (req,res) => {
   }
 }
 
+const getUnvalidatedTasks = async(req,res,next) => {
+  try{
+    const {offset} = req.params;
+    console.log(offset)
+    const tasks = await tasksService.getUnvalidatedTasks(offset)
+    res.status(200).json(tasks)
+  }catch(error){
+    //res.status(500).json({ message: "Error a nem validált feladatok lekérése közben!" });
+    next(error);
+  }
+}
 
 
 module.exports = {
@@ -97,4 +110,5 @@ module.exports = {
   getsimilarTasks,
   getSolution,
   submitTask,
+  getUnvalidatedTasks
 };

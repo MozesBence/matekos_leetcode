@@ -3,8 +3,9 @@ const { Sequelize } = require('sequelize');
 const db = require('../database/dbContext');
 const { Tasks,Themes,Task_solutions } = db;
 const { Op } = require('sequelize');
-const { isConstructorDeclaration } = require('typescript');
+const { isConstructorDeclaration, isAwaitKeyword } = require('typescript');
 const { stat } = require('fs');
+const { ADDRGETNETWORKPARAMS } = require('dns');
 
 const tasksRepository = {
   
@@ -270,10 +271,17 @@ async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experienc
     first_hint:hint1,
     second_hint:hint2,
     validated:validated
-
   });
 },
-
+async getUnvalidatedTasks(offset){
+  return await Tasks.findAll({
+    where:{
+      validated:0
+    },
+    limit:20,
+    offset:parseInt(offset,10),
+  })
+}
 };
 
 module.exports = tasksRepository;
