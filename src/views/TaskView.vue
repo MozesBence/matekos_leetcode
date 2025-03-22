@@ -34,7 +34,7 @@
                 style="min-width: 10rem; flex-shrink: 0;"
                 class="d-flex align-center justify-center"
               >
-                <p class="ma-0">Exponenciális és logaritmusos feladatok</p>
+                <p class="ma-0">{{theme.data.value?.theme}}</p>
               </v-chip>
               <!-- Chip 3 -->
               <v-chip
@@ -63,7 +63,7 @@
             <h3>A feladat leírása:</h3>
             <div v-mathjax="task?.task"></div>
             <h3>Megoldás formatuma:</h3>
-            <p>x = 1</p>
+            <p>{{task?.solution_format}}</p>
           </div>
           
           <div style="margin-top: 2em;" class="plusItems">
@@ -158,10 +158,10 @@ import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-
+import {UseGetThemeById} from '@/api/themes/themeQuery'
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
-
+const theme_id = ref(0);
 const push = (path: string) => {
   router.push(path);
 };
@@ -200,7 +200,7 @@ const get_user_name = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
-
+const theme = UseGetThemeById(theme_id)
 
 
 function getCookie(name: string): string | null {
@@ -225,6 +225,8 @@ watch(() => getTaskData.data.value, (newVal) => {
   console.log(newVal);
   task.value = newVal;
   console.log(task.value)
+  theme_id.value = task.value.theme_id;
+  theme.refetch();
 });
 
 // Helper functions

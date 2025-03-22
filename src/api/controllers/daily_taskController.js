@@ -20,7 +20,7 @@ const getDailyTask = async (req, res, next) => {
     }
 };
 
-const CheckIfDailyTask = async (req,res) => {
+const CheckIfDailyTask = async (req,res,next) => {
     try{
         const {taskid} = req.params;
 

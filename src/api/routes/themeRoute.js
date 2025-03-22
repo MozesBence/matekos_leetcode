@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAllThemesController } = require('../controllers/themeControllers');
+const { getAllThemesController,getThemeById } = require('../controllers/themeControllers');
 
 /**
  * @swagger
@@ -26,5 +26,7 @@ const { getAllThemesController } = require('../controllers/themeControllers');
  *                  message: "Nem sikerült lekérni a feladat témáit!"
  */
 router.get('/themes', getAllThemesController);
+
+router.get('/getThemeById/:theme_id',getThemeById)
 
 module.exports = router;

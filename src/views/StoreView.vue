@@ -29,7 +29,7 @@
             <v-btn
               color="orange"
               :disabled="get_fullUser.currency_count < item.price"
-              @click="openPurchaseDialog(item)" 
+              @click="openPurchaseDialog(item)"
             >
               Kiváltom - {{ item.price }}
               <img src="../assets/coin.png" alt="" height="20" />
@@ -38,48 +38,55 @@
         </v-card>
       </v-col>
     </v-row>
+
+    <!-- Purchase Confirmation Dialog -->
+    <v-dialog v-model="dialog" max-width="400" persistent>
+      <v-card>
+        <v-card-title class="headline">Biztosan kiváltod ezt a tételt?</v-card-title>
+        <v-card-text>
+          Tétel ára: {{ purchaseData.price }} <img src="../assets/coin.png" alt="" height="20" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn @click="dialog = false">Mégsem</v-btn>
+          <v-btn @click="handleConfirmPurchase">Igen, Kiváltom</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="successDialog" max-width="400" persistent>
+      <v-card class="d-flex flex-column align-center justify-center text-center">
+        <v-card-title class="headline">{{ successStatus ? 'Sikeres vásárlás' : 'Sikertelen vásárlás' }}</v-card-title>
+        <v-card-text>
+          {{ SuccessMessage }}
+          <v-icon :color="successStatus ? 'green' : 'red'" size="120">
+            {{ successStatus ? 'mdi-check' : 'mdi-close' }}
+          </v-icon>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn @click="CloseStateDialog">Ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    
+
   </v-container>
-
-  <v-dialog v-model="dialog" max-width="400" persistent>
-    <v-card title="Biztosan kiváltod ezt a tételt?">
-      <v-card-text>
-        Tétel ára: {{ purchaseData.price }} <img src="../assets/coin.png" alt="" height="20" />
-      </v-card-text>
-      <template v-slot:actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="dialog = false">Mégsem</v-btn>
-        <v-btn @click="confirmPurchase">Igen, Kiváltom</v-btn>
-      </template>
-    </v-card>
-  </v-dialog>
-
-  <v-dialog v-model="successDialog" max-width="400" persistent>
-    <v-card>
-      <v-card-title class="headline">Sikeres vásárlás</v-card-title>
-      <v-card-text>
-        A vásárlás sikeresen megtörtént!
-      </v-card-text>
-      <v-card-actions>
-        <v-btn @click="successDialog = false">Ok</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
 </template>
 
-
-
 <script lang="ts" setup>
-import { get_fullUser, getCookie, get_user_name } from '@/stores/userStore';
+import { get_fullUser, getCookie, get_user_name, fetchUserData } from '@/stores/userStore';
 import { ref, onMounted } from 'vue';
-import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { useProfileGetUser } from '@/api/profile/profileQuery'; // Import the hook
 import { UseFetchStoreItems } from '../api/storeItems/storeItemQuery';
 import { UsePurchaseItem } from '@/api/redeemItem/purchaseItemQuery';
 
-var dialog = ref(false);
+// State variables
+const dialog = ref(false);
 const successDialog = ref(false);
+const successStatus = ref(false);
+const SuccessMessage = ref('');
+
 const items = UseFetchStoreItems();
-
-
 const purchaseData = ref({
   userId: get_fullUser.value?.id ?? null,
   currency: 'gold',
@@ -94,54 +101,42 @@ const openPurchaseDialog = (item) => {
   dialog.value = true;
 };
 
-const { mutate: confirmPurchase } = UsePurchaseItem(purchaseData); 
+const { mutate: confirmPurchase } = UsePurchaseItem(purchaseData);
 
-const handleConfirmPurchase = () => {
-  console.log("Confirmed purchase", purchaseData.value);
-  confirmPurchase();
-  dialog.value = false;
+const handleConfirmPurchase = async () => {
+  console.log("Confirmed purchase", purchaseData);
+  
+  try {
+    await confirmPurchase(purchaseData);
+
+    dialog.value = false;
+
+    successStatus.value = true;
+    SuccessMessage.value = 'A vásárlás sikeresen megtörtént!';
+    successDialog.value = true;
+
+    // Refetch store items and user data
+    await items.refetch();
+    await fetchUserData(useProfileGetUser); // Pass the hook here
+
+  } catch (error) {
+    successStatus.value = false;
+    SuccessMessage.value = 'Valami hiba történt a vásárlás során.';
+    successDialog.value = true;
+
+    console.error("Transaction failed:", error);
+  }
+};
+
+const CloseStateDialog = async () => {
+  successDialog.value = false;
 };
 
 onMounted(async () => {
   items.refetch();
-
-  const userCookie = getCookie('user');
-  if (userCookie) {
-    try {
-      const userData = JSON.parse(atob(userCookie.split('.')[1]));
-      get_user_name.value = userData.id;
-    } catch (error) {
-      console.error('Error parsing user cookie:', error);
-    }
-  }
-
-  const get_user_by_token =
-    getCookie('user') != null &&
-    getCookie('user') != 'undefined' &&
-    typeof getCookie('user') != 'object'
-      ? getCookie('user')
-      : null;
-
-  if (get_user_by_token) {
-    const { mutate: ProfileGetUser } = useProfileGetUser();
-    try {
-      await ProfileGetUser(
-        { token: get_user_by_token, id: 0 },
-        {
-          onSuccess: (get_user) => {
-            get_user_name.value = get_user.user_name;
-            get_fullUser.value = get_user;
-          },
-        }
-      );
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
-  }
+  await fetchUserData(useProfileGetUser); // Pass the hook here
 });
 </script>
-
-
 
 
 <style scoped>
