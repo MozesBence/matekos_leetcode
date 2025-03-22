@@ -262,13 +262,27 @@ const SubmitTask = () => {
 
   submitSolution(payload, {  
     onSuccess: (data) => {
-      console.log(data)
+      console.log(payload);
+      console.log(data);  // Log the response data
+      const state = data.state;  // Access the 'state' value
+      console.log("State:", state);  // This will log the state (1 in your example)
+      
+      // Handle the state returned from the backend
+      if (state === 1) {
+        showAlert("success", "Feladat sikeresen megoldva!");
+      } else if(state === 0){
+        showAlert("error", "A feladat nem lett sikeresen megoldva.");
+      } else {
+        showAlert("error", "HIBA történt a megoldás feldolgozása közben.");
+      }
     },
     onError: () => {
       showAlert("error", "Hibás megoldás! A megoldás hibás vagy nem egyezik meg a formátummal.");
     },
   });
 };
+
+
 
 
 const back = () => {

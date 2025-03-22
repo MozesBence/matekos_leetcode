@@ -122,51 +122,58 @@ const task_solutionRepository = {
     },
     async submitSolution(userId, taskId, solution) {
         try {
-            const exists = await this.CheckExistance(userId, taskId);
             const state = await this.CheckSolution(taskId, solution);
+            const currentTimestamp = new Date();
     
-            if (!exists) {
-                console.log(`New solution submission for User: ${userId}, Task: ${taskId}, State: ${state}`);
+            const existingSolution = await Task_solutions.findOne({
+                where: { UserId: userId, task_id: taskId }
+            });
     
+            if (!existingSolution) {
+                // Full uj rekord hozzaadasa a dbhez ha jo/ ha rossz
                 const newSolution = await Task_solutions.create({
                     UserId: userId,
                     task_id: taskId,
-                    state: state
+                    state: state,
+                    submission_date: currentTimestamp
                 });
     
+                // ha helyes a megoldas xp plussz
                 if (state === 1) {
                     await this.IncreaseExperiencePoints(userId, taskId);
                 }
     
                 return newSolution;
             } else {
-                const stateChange = await this.StateChange(userId, taskId, state);
-    
-                if (stateChange) {
-                    console.log(`Updating solution state for User: ${userId}, Task: ${taskId}, New State: ${state}`);
-    
-                    const [updatedRows] = await Task_solutions.update(
-                        { state: state },
-                        { where: { UserId: userId, task_id: taskId } }
-                    );
-    
-                    return updatedRows > 0;
+                if (state === 1) {
+                    if (existingSolution.state === 1) {
+                        // ha mar alapbol jo volt, csak a datumot frissiti
+                        await Task_solutions.update(
+                            { submission_date: currentTimestamp },
+                            { where: { UserId: userId, task_id: taskId } }
+                        );
+                    } else {
+                        // ha hibas problakozas volt de most jo akkor update
+                        await Task_solutions.update(
+                            { state: 1, submission_date: currentTimestamp },
+                            { where: { UserId: userId, task_id: taskId } }
+                        );
+                        // xp plussz
+                        await this.IncreaseExperiencePoints(userId, taskId);
+                    }
+                    return { state: 1, message: "Solution is correct." };
+                } else {
+                    // hibas megoldas vissza state
+                    return { state: 0, message: "Solution is incorrect." };
                 }
             }
         } catch (error) {
-            console.error("Error saving solution:", error);
             throw error;
         }
-    },
+    }
+    ,    
     
-    async CheckExistance(userId, taskId) {
-        const task = await Task_solutions.findOne({
-            where: { UserId: userId, task_id: taskId },
-            attributes: ['task_id']
-        });
-        return task ? task.task_id : null;
-    },
-    
+    //valasz ellenorzese
     async CheckSolution(taskId, solution) {
         const correctSolution = await Tasks.findOne({
             where: { id: taskId },
@@ -177,42 +184,15 @@ const task_solutionRepository = {
         return solution === correctSolution.solution ? 1 : 0;
     },
     
-    async StateChange(userId, taskId, state) {
-        console.log(`StateChange called for User: ${userId}, Task: ${taskId}, New State: ${state}`);
-    
-        const prev = await Task_solutions.findOne({
-            where: { UserId: userId, task_id: taskId },
-            attributes: ['state']
-        });
-    
-        console.log(`Previous state:`, prev?.state ?? "No previous solution");
-    
-        if (prev?.state === 1) {
-            console.log("User already solved it correctly before. No XP increase.");
-            return false;
-        }
-    
-        if (state === 1) { 
-            console.log("Correct solution! Increasing experience points...");
-            await this.IncreaseExperiencePoints(userId, taskId);
-        }
-    
-        return prev?.state !== state;
-    },
-    
+    //lekeri az adott feladat xp-jet (azonositas taskid alapjan) es utanna frissiti a usernel a kapott mennyiseggel
     async IncreaseExperiencePoints(userId, taskId) {
-        console.log(`IncreaseExperiencePoints called for User: ${userId}, Task: ${taskId}`);
-    
         const exp = await this.GetExperiencePoints(taskId);
-        console.log(`Experience points to add: ${exp}`);
-    
         if (exp > 0) {
             await this.UpdateExperiencePoints(userId, exp);
-        } else {
-            console.log(`No experience points found for Task ${taskId}. Skipping XP update.`);
         }
     },
     
+    //experience_point-ok lekerese
     async GetExperiencePoints(taskId) {
         const task = await Tasks.findOne({
             where: { id: taskId },
@@ -222,21 +202,18 @@ const task_solutionRepository = {
         return task ? task.experience_points : 0;
     },
     
+    //experienc_point-ok frissitese
     async UpdateExperiencePoints(userId, exp) {
         try {
-            console.log(`Updating XP for User ${userId} by ${exp} points`);
-    
             await Users.increment('experience_point', {
                 by: exp,
                 where: { id: userId }
             });
-    
-            console.log(`XP successfully updated for User ${userId}`);
         } catch (error) {
-            console.error('Error updating experience points:', error);
+           throw error;
         }
     },
-
+    
     async monthlySolvingRate(userId) {
         const solutions = await Task_solutions.findAll({
             attributes: ['submission_date'],
