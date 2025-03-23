@@ -363,7 +363,7 @@ v-model="pageNumber"
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useRandomTask,useTaskState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';

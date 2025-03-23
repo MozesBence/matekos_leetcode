@@ -140,32 +140,6 @@ export const useRandomTask = () => {
   });
 };
 
-const fetchTaskWithSearch = async (characters: Ref<string>) => {
-  console.log(characters.value);
-  try {
-    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`);
-    console.log(response)
-    return response.data;
-  } catch (error) {
-    console.error('Error occurred while fetching task with these characters:', error);
-    throw error;
-  }
-};
-
-
-export const useTaskWithSearch = (characters: Ref<string>) => {
-  return useQuery({
-    queryKey: ['tasks', characters.value], // Correct
-    queryFn: () => fetchTaskWithSearch(characters),
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task with search characters:', error);
-    },
-    enabled: false,
-  });
-};
 
 // Fetching Specific Task by Day
 const fetchSpecificTask = async (day: Ref<string>) => {
@@ -191,34 +165,6 @@ export const useSpecificTask = (day: Ref<string>) => {
       console.error('Error occurred while fetching specific task:', error);
     },
     enabled:false,
-  });
-};
-
-// Fetching Task by Difficulty
-// Function to fetch tasks by difficulty
-const fetchTaskByDifficulty = async (difficulty: Ref<string>) => {
-  try {
-    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty.value}`);
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error occurred while fetching tasks with this difficulty:', error);
-    throw new Error('Failed to fetch tasks');
-  }
-};
-
-// Hook to use the query for tasks by difficulty
-export const useTaskByDifficulty = (difficulty: Ref<string>) => {
-  return useQuery({
-    queryKey: ['difficulty_level', difficulty.value],
-    queryFn: () => fetchTaskByDifficulty(difficulty),
-    onSuccess: (data) => {
-      console.log("Fetched tasks:", data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task with difficulty:', error);
-    },
-    enabled: false,  // Disable automatic fetching, refetch manually after setting difficulty
   });
 };
 
@@ -254,17 +200,7 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
   });
 };
 
-/*
-  const getFilteredTasks = async (req, res) => {
-  console.log(req.query)
-  try {
-      const tasks = await tasksService.getFilteredTasks(req.query);
-      res.json(tasks);
-  } catch (error) {
-      res.status(500).json({ message: "Error fetching tasks" });
-  }
-};
-*/
+
 const fetchCards = async (filters: Ref<{ difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }>) => {
   try {
     const filteredParams = NonEmptyFilters(filters.value);
