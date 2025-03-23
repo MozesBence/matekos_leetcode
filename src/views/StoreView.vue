@@ -7,7 +7,7 @@
       <h3
         style="align-items: center; vertical-align: middle; text-align: center; display: flex;"
       >
-        Aranyak száma: {{ get_fullUser.currency_count }}
+        Aranyak száma: {{ formatCurrency(get_fullUser.currency_count) }}
         <img height="20" src="../assets/coin.png" />
       </h3>
     </div>
@@ -131,7 +131,20 @@ const handleConfirmPurchase = async () => {
 const CloseStateDialog = async () => {
   successDialog.value = false;
 };
+function formatCurrency(currency: number): string {
+  if(currency == 0){
+    return '0';
+  }
+  const units = ['E', 'M', 'MLRD'];
+  let index = -1;
 
+  while (currency >= 1000 && index < units.length - 1) {
+    currency /= 1000;
+    index++;
+  }
+
+  return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
+}
 onMounted(async () => {
   items.refetch();
   await fetchUserData(useProfileGetUser); // Pass the hook here

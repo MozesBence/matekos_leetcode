@@ -641,7 +641,10 @@ const getDaysInMonth = (year: number, month: number): number => {
       return 'Nehéz';
     };
 
-function formatCurrency(currency: number): string {
+    function formatCurrency(currency: number): string {
+  if(currency == 0){
+    return '0';
+  }
   const units = ['E', 'M', 'MLRD'];
   let index = -1;
 
@@ -652,8 +655,6 @@ function formatCurrency(currency: number): string {
 
   return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
 }
-
-
 
     const cardCompRate = (
   CompArray: { task_id: number; completionRate: number }[] | undefined,
