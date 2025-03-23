@@ -92,6 +92,8 @@ app.use('/api/store',storeItems)
 const transactionsRoute = require('./api/routes/transactionRoute')
 app.use('/api/transactions', transactionsRoute)
 
+const user_data_route = require('./api/routes/userdataRoute')
+app.use('/api/userdata',user_data_route)
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);

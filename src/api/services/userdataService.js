@@ -7,6 +7,13 @@ class UserInfo {
             throw error;
         }
     }
+    async getRollBackTokensCount(userId){
+        try{
+            return await userRepository.getRollBackTokensCount(userId);
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 module.exports = new UserInfo();

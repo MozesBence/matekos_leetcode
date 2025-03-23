@@ -221,7 +221,7 @@
           </div>
           <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >
             <img src="../assets/rollback.png" alt="" height="24px">
-            <h3>2 db</h3>
+            <h3>{{roll_back_token_count.data.value.roll_back_token}} db</h3>
             <h3 style="vertical-align: middle; display:flex;"><img src="../assets/fire.png" alt="" height="30" width="30">3 napos sorozat!</h3>
           </div>
 
@@ -367,7 +367,7 @@ import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
 import { any, date, number } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
-
+import {UsegetRollBackTokenCount} from '../api/mainPage/mainPageQuery'
 
 
 
@@ -407,7 +407,7 @@ const monthsNames = [
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-
+const roll_back_token_count = UsegetRollBackTokenCount(user_id);
 
 const navigate = (redirect: string) => {
   if (!redirect) return; // Safety check

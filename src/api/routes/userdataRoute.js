@@ -1,6 +1,6 @@
-const express = require('express');
+ const express = require('express');
 const router = express.Router();
-const {getUserData} = require('../controllers/userdataController');
+const {getUserData,getRollBackTokensCount} = require('../controllers/userdataController');
 
 /**
  * @swagger
@@ -34,5 +34,5 @@ const {getUserData} = require('../controllers/userdataController');
  *                  message: "Nem sikerült a lekérni a felhasználó statisztikáit!"
  */
 router.get('/mainpage', getUserData);
-
+router.get('/wayBackTokens',getRollBackTokensCount)
 module.exports = router;
