@@ -5,31 +5,7 @@ import { renderSlot, type Ref } from "vue";
 import axiosClient from "@/lib/axios";
 
 
-// Fetching Cards
-/*
-const fetchCards = async (offset: number) => { // Accepts a number, not a Ref
-  try {
-    const response = await axios.get(`/api/tasks/get-cards-info/${offset}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error occurred while fetching cards: ${error}`);
-    throw error; // Ensure error propagates correctly
-  }
-};
 
-export const useCards = (offset: Ref<number>) => {
-  return useQuery({
-    queryFn: () => fetchCards(offset.value),
-    queryKey: ['cards', offset.value],
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching card data:', error);
-    }
-  });
-};
-*/
 // Fetching Completion Rates
 const fetchCompletionRates = async () => {
   try {
@@ -43,6 +19,7 @@ const fetchCompletionRates = async () => {
 export const useCompletionRates = () => {
   return useQuery({
     queryFn: fetchCompletionRates,
+    queryKey:['completionRates'],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -77,6 +54,7 @@ export const useTaskState = (id: Ref<number>) => {
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
     },
+    enabled:false
   });
 };
 
@@ -244,34 +222,6 @@ export const useTaskByDifficulty = (difficulty: Ref<string>) => {
   });
 };
 
-
-// Fetching Task by State and User ID
-const fetchTaskByState = async (state: Ref<string>, user_id: number) => {
-  console.log("Fetching task by state:", state.value, "user_id:", user_id);
-  try {
-    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
-    console.log("Task by state response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching task by state:', error);
-    throw error;
-  }
-};
-
-
-export const useTaskByState = (state:Ref<string>, user_id: Number) => {
-  return useQuery({
-    queryKey:['task_info',state.value,user_id],
-    queryFn: () => fetchTaskByState(state, user_id),
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task by state:', error);
-    },
-    enabled: false,
-  });
-};
 
 const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
   console.log('Selected Theme IDs:', themeIds);

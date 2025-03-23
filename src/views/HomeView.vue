@@ -363,7 +363,7 @@ v-model="pageNumber"
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
@@ -443,73 +443,12 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
 };
 
 
-
-// Filter by search query
-const searchQuery = ref('');
-const taskWithSearch = useTaskWithSearch(searchQuery);
-const filterTasksByCharacters = (chars: string) => {
-  if(chars.length > 0){
-    searchQuery.value = chars;
-    taskWithSearch.refetch();
-  }else{
-    cardsQuery.refetch();
-    allTaskCountQuery.refetch();
-  }
-};
-
-//-------- Filter by difficulty ---------------
-  
-const difficulty_param = ref('');
-const taskByDifficulty = useTaskByDifficulty(difficulty_param);
-
 watch(filterData, () => {
   cardsQuery.refetch(); 
   allTaskCountQuery.refetch();
 }, { deep: true });
 
 
-function HandleDifficultyChange(newVal: string | null){
-  if(newVal == null){
-    difficulty_param.value = ''
-    cardsQuery.refetch();
-  }else{
-    taskByDifficulty.refetch();
-  }
-}
-
-
-//-------- End filter by difficulty ---------------
-
-//-------- Filter by completionrate ---------------
-const state_Query = ref(null);
-const state_param = ref('');
-const taskByState = useTaskByState(state_param, Number(user_id.value));
-
-watch(() => get_fullUser.value, (newUser) => {
-  if (newUser?.id) {
-    user_id.value = String(newUser.id);
-    taskByState.refetch();
-  }
-}, { immediate: true });
-
-watch(state_Query, (newVal) => {
-  HandleStateChange(newVal);
-});
-
-function HandleStateChange(newVal: string | null) {
-  if (newVal == null) {
-    state_param.value = '';
-    console.log(user_id.value);
-    cardsQuery.refetch();
-    allTaskCountQuery.refetch();
-  } else {
-    console.log(user_id.value);
-    taskByState.refetch();
-    allTaskCountQuery.refetch();
-  }
-  cardsQuery.refetch();
-  allTaskCountQuery.refetch();
-}
 
 //-------- End filter by completionrate ---------------
 
@@ -718,13 +657,6 @@ function formatCurrency(currency: number): string {
   return found ? found.completionRate : "Na";
 };
 
-
-
-    const getClass = (value: number) => {
-      if (value == -1) return '#E57373';
-      if (value == 1) return '#A5D6A7';
-      return '#00A1FF';
-    };
     
     const checkIfCurrent = (value: any) => {
     if (value == new Date().getDate()) {0

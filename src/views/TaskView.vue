@@ -230,7 +230,6 @@ watch(() => getTaskData.data.value, (newVal) => {
   console.log(task.value)
   theme.refetch()
   getTaskData.refetch();
-
 });
 
 // Helper functions
@@ -288,12 +287,6 @@ const SubmitTask = () => {
 };
 
 
-
-
-const back = () => {
-  router.go(-1);
-};
-
 onMounted(async () => {
   const userCookie = getCookie('user');
   if (userCookie) {
@@ -324,6 +317,8 @@ onMounted(async () => {
     await theme.refetch();
   }
 });
+
+
 
 </script>
 
