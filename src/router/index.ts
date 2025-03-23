@@ -112,7 +112,11 @@ const router = createRouter({
       name: 'task',
       component: () => import('../views/TaskView.vue')
     },
-
+    {
+      path:'/bum',
+      name:'bum',
+      component: () => import('../views/Bumview.vue')
+    }
   ]
 })
 

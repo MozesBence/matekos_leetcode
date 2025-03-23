@@ -183,7 +183,7 @@ const mathjaxDirective = {
 };
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
-  window.location.reload();
+  //window.location.reload();
 };
 
 const solution = ref('')

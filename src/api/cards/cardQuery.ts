@@ -77,7 +77,6 @@ export const useTaskState = (id: Ref<number>) => {
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
     },
-    enabled: !!id.value, // Ensure that the query only runs when `id` has a valid value
   });
 };
 
