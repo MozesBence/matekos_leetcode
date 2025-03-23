@@ -79,13 +79,14 @@ import { ref, onMounted } from 'vue';
 import { useProfileGetUser } from '@/api/profile/profileQuery'; // Import the hook
 import { UseFetchStoreItems } from '../api/storeItems/storeItemQuery';
 import { UsePurchaseItem } from '@/api/redeemItem/purchaseItemQuery';
+import { watch } from 'vue';
 
 // State variables
 const dialog = ref(false);
 const successDialog = ref(false);
 const successStatus = ref(false);
 const SuccessMessage = ref('');
-
+const profileMutation = useProfileGetUser();
 const items = UseFetchStoreItems();
 const purchaseData = ref({
   userId: get_fullUser.value?.id ?? null,
@@ -114,11 +115,8 @@ const handleConfirmPurchase = async () => {
     successStatus.value = true;
     SuccessMessage.value = 'A vásárlás sikeresen megtörtént!';
     successDialog.value = true;
-
-    // Refetch store items and user data
     await items.refetch();
-    await fetchUserData(useProfileGetUser); // Pass the hook here
-
+    await fetchUserData(profileMutation);
   } catch (error) {
     successStatus.value = false;
     SuccessMessage.value = 'Valami hiba történt a vásárlás során.';
@@ -146,9 +144,12 @@ function formatCurrency(currency: number): string {
 
   return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
 }
+
+
+
 onMounted(async () => {
   items.refetch();
-  await fetchUserData(useProfileGetUser); // Pass the hook here
+  await fetchUserData(useProfileGetUser);
 });
 </script>
 
