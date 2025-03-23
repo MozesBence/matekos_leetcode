@@ -369,7 +369,7 @@ const SendTask = () => {
     if(CheckData() == false){
         alert('Toltsd ki a mezoket!')
     }else{
-        submitTask(); 
+        submitTask();
     }
     }
 

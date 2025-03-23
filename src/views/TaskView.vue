@@ -71,18 +71,18 @@
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
-                  <div v-for="card in similarCards.data.value">
-                    <v-row>
-                      <v-col cols="6"><v-chip
+                  <div v-for="card in similarCards.data.value" style="background-color: #212121; border-radius:15px; width:100%; padding:10px">
+                    <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
+                      <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
                         outlined
                         small
-                        style="min-width: 10rem; flex-shrink: 0;"
+                        style="min-width: 5rem; flex-shrink: 0;"
                         class="d-flex align-center justify-center"
                       >
                         <p class="ma-0">{{ difficultyLabel(card?.difficulty) }}</p>
                       </v-chip></v-col>
-                      <v-col cols="6">{{card.id}}. {{card.task_title}}</v-col>
+                      <v-col cols="9" class="d-flex align-center justify-center">{{card.id}}. {{card.task_title}}</v-col>
                     </v-row>
               </div>
                 </v-expansion-panel-text>
@@ -159,6 +159,7 @@ import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQ
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
+//import {TaskView} from '@/stores/taskLoader'
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
 const theme_id = ref(0);
@@ -179,6 +180,10 @@ const mathjaxDirective = {
       window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
     }
   }
+};
+const TaskView = (id: number) => {
+  router.push({ name: 'task', params: { id } });
+  window.location.reload();
 };
 
 const solution = ref('')

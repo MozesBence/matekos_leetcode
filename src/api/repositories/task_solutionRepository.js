@@ -124,7 +124,7 @@ const task_solutionRepository = {
         try {
             const state = await this.CheckSolution(taskId, solution);
             const currentTimestamp = new Date();
-    
+            const dailyTask = await this.CheckIfDailyTask(taskId) 
             const existingSolution = await Task_solutions.findOne({
                 where: { UserId: userId, task_id: taskId }
             });
@@ -141,6 +141,9 @@ const task_solutionRepository = {
                 // ha helyes a megoldas xp plussz
                 if (state === 1) {
                     await this.IncreaseExperiencePoints(userId, taskId);
+                    if(dailyTask){
+                        await this.IncreaseCurrencyCount(userId);
+                    }
                 }
     
                 return newSolution;
@@ -160,6 +163,9 @@ const task_solutionRepository = {
                         );
                         // xp plussz
                         await this.IncreaseExperiencePoints(userId, taskId);
+                        if(dailyTask){
+                            await this.IncreaseCurrencyCount(userId);
+                        }
                     }
                     return { state: 1, message: "Solution is correct." };
                 } else {
@@ -170,9 +176,17 @@ const task_solutionRepository = {
         } catch (error) {
             throw error;
         }
-    }
-    ,    
+    },   
     
+    //megnezi, hogy az adott task napi feladat-e (true/false)
+    async CheckIfDailyTask(taskId){
+        const val = await db.Daily_Tasks.findOne({
+            where:{
+                task_id:taskId
+            }
+        });
+        return val != null;
+    },
     //valasz ellenorzese
     async CheckSolution(taskId, solution) {
         const correctSolution = await Tasks.findOne({
@@ -191,7 +205,15 @@ const task_solutionRepository = {
             await this.UpdateExperiencePoints(userId, exp);
         }
     },
-    
+    //noveljuk a user currency_countjat (mindig 10-el napi task megoldasajert ennyi jar) 
+    async IncreaseCurrencyCount(userId){
+        return await db.Users.increment('currency_count',{
+            by: 10,
+            where:{
+                id:userId
+            }
+        });
+    },
     //experience_point-ok lekerese
     async GetExperiencePoints(taskId) {
         const task = await Tasks.findOne({
