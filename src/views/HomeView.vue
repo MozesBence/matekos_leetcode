@@ -221,7 +221,7 @@
           </div>
           <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >
             <img src="../assets/rollback.png" alt="" height="24px">
-            <h3>{{roll_back_token_count.data.value.roll_back_token}} db</h3>
+            <h3>{{roll_back_token_count_query.data.value?.roll_back_token}}</h3>
             <h3 style="vertical-align: middle; display:flex;"><img src="../assets/fire.png" alt="" height="30" width="30">3 napos sorozat!</h3>
           </div>
 
@@ -402,12 +402,12 @@ const get_user_email = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
 const user_id = ref<string | null>(null);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
+const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
 const monthsNames = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-const roll_back_token_count = UsegetRollBackTokenCount(user_id);
 
 const navigate = (redirect: string) => {
   if (!redirect) return; // Safety check
@@ -548,6 +548,7 @@ const CheckIfCurrentTask =  (day: string) => {
 
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
+  window.location.reload();
 };
 
 watch(() => randomTask.data.value, (newVal) => {
@@ -826,7 +827,12 @@ onMounted(async ()=>{
         }
 });
 
-
+watch(user_id, async (newUserId) => {
+  if (newUserId) {
+    console.log('Fetching roll back token count for userId:', newUserId);
+    await roll_back_token_count_query.refetch(); // Trigger query when user_id changes
+  }
+});
 const UpdatePage = (newPage: number) => {
   filterData.value.offset = 15 *(newPage - 1);
   console.log('teherbebeaszott offset',offset.value)
@@ -838,6 +844,7 @@ const UpdatePage = (newPage: number) => {
   behavior: 'smooth'
 });
 };
+
 
 
 onMounted(async () => {
