@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {purchaseItem} = require('../controllers/transactionController')
+const {purchaseItem,useRollBackToken} = require('../controllers/transactionController')
 
 /**
  * @swagger
@@ -26,5 +26,6 @@ const {purchaseItem} = require('../controllers/transactionController')
  *                  message: "Nem sikerült megvásárolni az adott terméket!"
  */
 router.post('/purchaseItem',purchaseItem)
+//router.post('/useRollBackToken',useRollBackToken)
 
 module.exports = router;

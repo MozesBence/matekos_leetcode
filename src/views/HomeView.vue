@@ -193,7 +193,7 @@
           <h3 
             style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
             >
-            Aranyak száma: {{get_fullUser.currency_count}}
+            Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}
             <img height="20" src="../assets/coin.png">
           </h3>
         </div>
@@ -721,6 +721,17 @@ const getTaskStateForCard = (taskId: number) => {
   return task || null;
 };
 
+function formatCurrency(currency: number): string {
+  const units = ['E', 'M', 'MLRD'];
+  let index = -1;
+
+  while (currency >= 1000 && index < units.length - 1) {
+    currency /= 1000;
+    index++;
+  }
+
+  return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
+}
 
 
 // Computed property to handle async task state for icons
