@@ -37,7 +37,7 @@
               block
               style="width: 4rem;"
               class="rounded-pill"
-              @click="TaskView(card.id)"
+              @click="navigate(card.redirect)"
             >
               <h3>{{ card.button_title }}</h3>
             </v-btn>
@@ -172,7 +172,7 @@
     </v-list-item>
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
+      style="text-align: center; height: 12em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
       >
         <div 
           style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
@@ -190,18 +190,14 @@
             <strong>{{ currentLevel }}. szint</strong>
           </template>
         </v-progress-linear>
-          <h3 
-            style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
-            >
+          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
             Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}
             <img height="20" src="../assets/coin.png">
-          </h3>
-          <h3 
-          style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
-          >
+          </h4>
+          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
           Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
           <img src="../assets/rollback.png" alt="" height="24px">
-        </h3>
+        </h4>
         </div>
       </v-list-item>
 
@@ -225,8 +221,8 @@
               {{ day.day }}
             </div>
           </div>
-          <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >            
-            <h3 style="vertical-align: middle; display:flex;"><img src="../assets/fire.png" alt="" height="30" width="30">3 napos sorozat!</h3>
+          <div style="justify-content:center; display:flex; margin-top:1em; margin-bottom:1em vertical-align:middle;">            
+            <h3 style="vertical-align:middle; display:flex; justify-content:center;display:flex;"><img src="../assets/fire.png" alt="" height="25" width="25">3 napos sorozat!</h3>
           </div>
 
           </div>      
@@ -249,7 +245,7 @@
     </v-list>
   </v-navigation-drawer>
   
-  <v-main class="d-block align-center justify-center" style="height: auto;">
+  <v-main class="d-block align-center justify-center" style="height: 160vh">
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="1">
         <span>Státusz</span>
@@ -265,13 +261,13 @@
       </v-col>
     </v-row>
     <v-row 
+    v-if="cardsQuery.data && cardsQuery.data.value && cardsQuery.data.value.length > 0"
     class="task_card mx-8 pa-3 cursor-pointer tasks"
     v-for="(card) in cardsQuery.data.value" 
     :key="card.id" 
     style="border-bottom: 1px solid #ccc; transition: .3s !important;"
     @click="TaskView(card.id)"
   >
-    <!-- Task Icon and Status -->
     <!-- Task Icon and Status -->
     <v-col 
       class="d-flex align-center justify-center" 
@@ -289,32 +285,36 @@
       <span v-else>&nbsp;</span>
     </v-col>
     
-<!-- Task Title -->
-<v-col class="d-flex align-center justify-center" cols="10" sm="6"  style="text-align: left;">
-  <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
-</v-col>
-
-<v-col class="d-flex align-center justify-center" cols="6" sm="2">
-  {{ cardCompRate(completion_rates.data?.value ?? [], Number(card.id)) !== "Na" 
-      ? `${cardCompRate(completion_rates.data?.value ?? [], Number(card.id))}%` 
-      : "N/A" 
-  }}
-</v-col>
-
-
-<!-- Difficulty -->
-<v-col class="d-flex align-center justify-center" cols="6" sm="2">
-  <v-chip 
-    :color="chipColor(card.difficulty)" 
-    outlined 
-    small
-    style="width: 5rem;"
-    class="d-flex align-center justify-center"
-  >
-    <p class="ma-0">{{ difficultyLabel(card.difficulty) }}</p>
-  </v-chip>
-</v-col>
-</v-row>
+    <!-- Task Title -->
+    <v-col class="d-flex align-center justify-center" cols="10" sm="6" style="text-align: left;">
+      <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
+    </v-col>
+  
+    <!-- Completion Rate -->
+    <v-col class="d-flex align-center justify-center" cols="6" sm="2">
+      {{ cardCompRate(completion_rates.data?.value ?? [], Number(card.id)) !== "Na" 
+          ? `${cardCompRate(completion_rates.data?.value ?? [], Number(card.id))}%` 
+          : "N/A" 
+      }}
+    </v-col>
+  
+    <!-- Difficulty -->
+    <v-col class="d-flex align-center justify-center" cols="6" sm="2">
+      <v-chip 
+        :color="chipColor(card.difficulty)" 
+        outlined 
+        small
+        style="width: 5rem;"
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0">{{ difficultyLabel(card.difficulty) }}</p>
+      </v-chip>
+    </v-col>
+  </v-row>
+  
+  <v-row v-else style="display: flex; vertical-align:middle;justify-content:center;">
+    <h4>A megadott szűrési feltételekkel nem található feladat!</h4>
+  </v-row>
   </v-main>
 </v-layout>
 
@@ -448,6 +448,16 @@ watch(filterData, () => {
   allTaskCountQuery.refetch();
 }, { deep: true });
 
+
+const navigate = (redirect: string) => {
+  if (!redirect) return; // Safety check
+
+  if (redirect.startsWith("/")) {
+    router.push(redirect);
+  } else {
+    window.open(redirect, "_blank");
+  }
+};
 
 
 //-------- End filter by completionrate ---------------

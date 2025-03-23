@@ -196,6 +196,7 @@ const tasksRepository = {
         }
 
         let stateTaskIds = null;
+        console.log(state)
         if (state !== undefined && userId) {
             if (state == 2) {
                 const solvedTaskIds = await db.Task_solutions.findAll({
