@@ -7,7 +7,7 @@
       <h3
         style="align-items: center; vertical-align: middle; text-align: center; display: flex;"
       >
-        Aranyak száma: {{ formatCurrency(get_fullUser.currency_count) }}
+        Aranyak száma: {{ get_fullUser?.currency_count }}
         <img height="20" src="../assets/coin.png" />
       </h3>
     </div>
@@ -132,6 +132,7 @@ const CloseStateDialog = async () => {
   successDialog.value = false;
 };
 function formatCurrency(currency: number): string {
+  console.log(currency)
   if(currency == 0){
     return '0';
   }
