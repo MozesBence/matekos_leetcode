@@ -353,7 +353,7 @@ const task_solutionRepository = {
             attributes:['streak']
         })
     },
-    async getMaxStreak(){
+    async getMaxStreak(userId){
         return await db.Users.findOne({
             where:{
                 id:userId
