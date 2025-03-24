@@ -1,17 +1,12 @@
 <template>
   <v-layout>
-    <!-- App Bar -->
-    <v-app-bar color="primary" :absolute="false">
-      <v-spacer></v-spacer>
-      <v-btn icon="mdi-dots-vertical" variant="text"></v-btn>
-    </v-app-bar>
     <!-- Main Content -->
-    <v-main style="padding-top: 64px;">
+    <v-main>
       <v-row style="height: 100vh; padding: 0.5em;">
         <!-- Left Column: Task Details -->
-        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
+        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card))">
           <br>
-          <div class="taskInfo">
+          <div class="taskInfo" style="">
             <h1 style="text-align: left; width: 100%;">
               {{ task?.id }}. {{ task?.task_title }}
             </h1>

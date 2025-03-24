@@ -61,6 +61,7 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 defaultValue: 0,
             },
+            
             streak: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
@@ -71,6 +72,7 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 defaultValue:0
             }
+            
         },
         {
             sequelize,
