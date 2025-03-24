@@ -155,7 +155,6 @@ const task_solutionRepository = {
                             { submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
                             );
-                           // await this.IncreaseCurrencyCount(userId);
                     } else {
                         // ha hibas problakozas volt de most jo akkor update
                         await Task_solutions.update(
@@ -209,7 +208,7 @@ const task_solutionRepository = {
     //noveljuk a user currency_countjat (mindig 10-el napi task megoldasajert ennyi jar) 
     async IncreaseCurrencyCount(userId){
         return await db.Users.increment('currency_count',{
-            by: 10000000000000,
+            by: 10,
             where:{
                 id:userId
             }
@@ -291,9 +290,30 @@ const task_solutionRepository = {
       },
 
 
-      async  getDailyTaskStreak(userId) {
-        //rossz
-      }
+      async getDailyTaskStreak(userId) {
+        const result = await Task_solutions.findAll({
+            where: { UserId: userId, state: 1 },
+            attributes: ['submission_date'],
+            include: [
+                {
+                    model: db.Tasks,
+                    attributes: ['id'],
+                    required: true,
+                    include: [
+                        {
+                            model: db.Daily_Tasks,
+                            attributes: ['id'],
+                            required: true
+                        }
+                    ]
+                }
+            ],
+            order:[["submission_date","ASC"]]
+        });
+        return result.map(task => task.dataValues);
+    }
+    
+    
       
 };    
 

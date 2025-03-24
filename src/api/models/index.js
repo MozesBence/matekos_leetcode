@@ -192,15 +192,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "UserId",
     });
 
-    Task_solutions.belongsTo(Tasks, {
-        foreignKey: "task_id",
-    });
-
-    Tasks.hasMany(Task_solutions, {
-        foreignKey: "task_id",
-    });
-
-
+    Task_solutions.belongsTo(Tasks, { foreignKey: "task_id" });
+    Tasks.hasMany(Task_solutions, { foreignKey: "task_id" });
+    
+    
+    Tasks.hasOne(Daily_Tasks, { foreignKey: "task_id" });
+    Daily_Tasks.belongsTo(Tasks, { foreignKey: "task_id" });
 
 
     Community_posts.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedPost' });

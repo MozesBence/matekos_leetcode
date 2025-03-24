@@ -102,8 +102,9 @@ const monthlySolvingRate = async (req,res) => {
         const streak = await task_solutionsService.getDailyTaskStreak(userId);
         res.status(200).json(streak);
     } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ message: "Error a streak meghatározása közben!" });
+        //console.error("Error:", error);
+        console.log(error)
+        next(error)
     }
 };
 

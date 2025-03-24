@@ -375,7 +375,6 @@ import { useRoute, useRouter } from 'vue-router';
 import {UsegetRollBackTokenCount} from '../api/mainPage/mainPageQuery'
 
 
-
 // Query hooks
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
