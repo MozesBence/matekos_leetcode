@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/vue-query";
 import axios from "axios";
 import { type Ref, ref, watch, onMounted } from 'vue';
 
-// Fetch function to get the RollBack token count
 const getRollBackTokenCount = async (userId: Number) => {
   console.log("Fetching rollback tokens for userId:", userId);
   try {
@@ -19,17 +18,43 @@ const getRollBackTokenCount = async (userId: Number) => {
 
 // Custom hook to use the query
 export const UsegetRollBackTokenCount = (userId: Ref<Number | null>) => {
-  // Make sure the userId is set before triggering the query
   return useQuery({
     queryKey: ['rollBackTokenCount', userId.value],
     queryFn: () => {
       if (userId.value !== null) {
         return getRollBackTokenCount(userId.value);
       } else {
-        // Return an empty or default value if userId is null
-        return Promise.resolve({}); // Return an empty object or appropriate default value
+        return Promise.resolve({});
       }
     },
-    enabled: !!userId.value, // Only fetch if userId is available
+    enabled: !!userId.value,
   });
 };
+
+
+const getDailyStreak = async(userId: number) => {
+  console.log("streak", userId)
+  try {
+    const response = await axios.get('/api/task_solution/dailyTaskStreak', {
+      params: { userId }
+    })
+    console.log(response.data)
+    return response.data;
+  } catch(error) {
+    throw error;
+  }
+}
+
+export const UseGetDailyStreak = (userId: Ref<number | null>) => {
+  return useQuery({
+    queryFn: () => {
+      if(userId.value != null) {
+        return getDailyStreak(userId.value)
+      } else {
+        return Promise.resolve({});
+      }
+    },
+    queryKey: ['userStreak', userId.value],
+    enabled: !!userId.value,
+  })
+}

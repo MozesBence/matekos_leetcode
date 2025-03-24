@@ -221,8 +221,8 @@
               {{ day.day }}
             </div>
           </div>
-          <div style="justify-content:center; display:flex; margin-top:1em; margin-bottom:1em vertical-align:middle;">            
-            <h3 style="vertical-align:middle; display:flex; justify-content:center;display:flex;"><img src="../assets/fire.png" alt="" height="25" width="25">3 napos sorozat!</h3>
+          <div style="justify-content:center; display:flex; margin-top:1em; margin-bottom:1em vertical-align:middle;" v-if="get_fullUser.email">            
+            <h3 style="vertical-align:middle; display:flex; justify-content:center;display:flex;"><img src="../assets/fire.png" alt="" height="25" width="25">{{dailyStreak.data.value?.streak}} napos sorozat!</h3>
           </div>
 
           </div>      
@@ -372,7 +372,7 @@ import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
 import { useRoute, useRouter } from 'vue-router';
-import {UsegetRollBackTokenCount} from '../api/mainPage/mainPageQuery'
+import {UsegetRollBackTokenCount,UseGetDailyStreak} from '../api/mainPage/mainPageQuery'
 
 
 // Query hooks
@@ -387,7 +387,6 @@ const offset = ref<number>(0);
   UserId: userId.value,
   offset: 0
 });
-
 const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
 const cardsQuery = UseFetchCards(filterData);
@@ -403,6 +402,7 @@ const apexchart = VueApexCharts;
 const get_user_name = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
 const user_id = ref<string | null>(null);
+const dailyStreak = UseGetDailyStreak(user_id);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
 const task_state = useTaskState(user_id);
@@ -718,6 +718,8 @@ watch(user_id, async (newUserId) => {
   if (newUserId) {
     console.log('Fetching roll back token count for userId:', newUserId);
     await roll_back_token_count_query.refetch();
+    await dailyStreak.refetch()
+    console.log('streak',dailyStreak.data.value?.streak)
     //await task_state.refetch();
   }
 });
@@ -761,8 +763,10 @@ watch(user_id, async (newVal) => {
     await Promise.all([
       cardsQuery.refetch(),
       task_state.refetch(),
-      roll_back_token_count_query.refetch()
+      roll_back_token_count_query.refetch(),
+      dailyStreak.refetch()
     ]);
+    console.log('streak',dailyStreak.data.value?.streak)
   }
 }, { immediate: true });
 

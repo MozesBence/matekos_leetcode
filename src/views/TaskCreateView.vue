@@ -284,6 +284,15 @@
             <v-btn style="width: 100%;" @click="push('/')">Vissza a főoldalra</v-btn>
         </v-col>
     </v-row>
+
+    <v-alert
+  v-if="showAlertForEmptyData"
+  density="compact"
+  text="A feladat feltöltéséhez töltsön ki minden mezőt! Az irányelveket is ajánlatos megtekinteni, melyet az i betűkre kattintva érhet el."
+  title="Fontos!"
+  type="warning"
+  class="center-alert"
+></v-alert>
 </v-container>
 
 </template>
@@ -312,7 +321,7 @@ const Task_Data = ref({
     hint2:null,
     validated:0
 });
-
+const showAlertForEmptyData = ref(false);
 watchEffect(() => {
     Task_Data.value.experiencePoints = Task_Data.value.difficulty === 0 ? 10 :
                                           Task_Data.value.difficulty === 1 ? 15 : 25;
@@ -366,22 +375,35 @@ onMounted(async ()=>{
 const { mutate: submitTask } = UseSubmitTask(Task_Data);
 
 const SendTask = () => { 
-    if(CheckData() == false){
-        alert('Toltsd ki a mezoket!')
-    }else{
+    if (CheckData() == false) {
+        showAlertForEmptyData.value = true;
+        setTimeout(() => {
+            showAlertForEmptyData.value = false;
+        }, 3000);
+    } else {
         submitTask();
     }
-    }
+};
+
 
     function CheckData(){
     const hasNull = Object.values(Task_Data.value).some(value => value === null);
-    
     if (hasNull) {
         return false;
     }
     return true;
 };
 
-
-
 </script>
+
+
+<style scoped>
+.center-alert {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+  }
+  
+</style>
