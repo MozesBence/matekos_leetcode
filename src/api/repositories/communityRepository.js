@@ -1088,7 +1088,7 @@ class communityRepository
       throw new Error("A post nem található!");
     }
 
-    post.content = title;
+    post.title = title;
     post.content = content;
     post.gotEdit = true;
   

@@ -195,29 +195,6 @@
       </v-card-text>
     </v-card>
   </div>
-
-  <v-snackbar
-    v-model="snackbar"
-    :timeout="2000"
-    color="white"
-    :location="dynamicLocation"
-    :style="dynamicStyle"
-    justify-space-between
-    :max-width="'15vw'"
-  >
-    <div class="d-flex justify-space-between align-center w-auto" style="gap: 1.2vw;">
-      <span style="font-size: 1.5vh;" class="text-center">{{ errorMessage }}</span>
-      <v-btn
-        color="red"
-        @click="snackbar = false"
-        icon="mdi-close" 
-        class="rounded-circle"
-        size="x-small"
-      >
-      </v-btn>
-    </div>
-  </v-snackbar>
-
 </template>
 
 <script setup lang="ts">
@@ -324,11 +301,6 @@
       );
     }
   };
-
-  const errorMessage = ref('');
-  
-  const snackbar = ref(false);
-   
   const { mutate : loginUser} = useLoginUser() //, isPending
   
   const rememberMe = ref(false);
@@ -375,8 +347,11 @@
       loading.value = true
       forgetPassword(ForgetPassworddataRef.value, {
           onError: (err: any) => {
-            errorMessage.value = err.response.data || "Hiba történt a bejelentkezés során.";
-            snackbar.value = true;
+            if (showError) {
+              showError(err.response.data);
+            }else{
+              console.log(err.response.data);
+            }
           },
         }
       );
