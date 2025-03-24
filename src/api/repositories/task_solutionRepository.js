@@ -310,11 +310,57 @@ const task_solutionRepository = {
             ],
             order:[["submission_date","ASC"]]
         });
+        await this.ComputeStreak(result.map(task => task.dataValues));
         return result.map(task => task.dataValues);
+    },
+
+    async ComputeStreak(solution) {
+        let streak = 0;
+        let longestStreak = 0;
+        let missedDays = 0;
+    
+        let smDateMap = solution.map(item => new Date(item.submission_date).getUTCDate());
+    
+        let prevDay = null;
+    
+        smDateMap.forEach(currentDay => {
+            if (prevDay === null) {
+                streak = 1;
+                longestStreak = 1;
+            } else {
+                if (currentDay - prevDay === 1) {
+                    streak++;
+                    longestStreak = Math.max(longestStreak, streak);
+                } else if (currentDay - prevDay > 1) {
+                    streak = 0;
+                    missedDays++;
+                }
+                if (streak === 0) {
+                    streak = 1;
+                }
+            }
+    
+            prevDay = currentDay;
+        });
+    
+        console.log(`Streak: ${streak}, Longest Streak: ${longestStreak}, Missed Days: ${missedDays}`);
+    },
+    async getStreak(userId){
+        return await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['streak']
+        })
+    },
+    async getMaxStreak(userId){
+        return await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['max_streak']
+        })
     }
-    
-    
-      
 };    
 
 module.exports = task_solutionRepository;
