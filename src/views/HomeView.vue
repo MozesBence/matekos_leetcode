@@ -172,7 +172,7 @@
     </v-list-item>
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 10em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
+      style="text-align: center; height: 12em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
       >
         <div 
           style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
@@ -190,12 +190,14 @@
             <strong>{{ currentLevel }}. szint</strong>
           </template>
         </v-progress-linear>
-          <h3 
-            style="align-items: center; vertical-align:middle; text-align:center; display:flex;"
-            >
-            Aranyak száma: {{get_fullUser.currency_count}}
+          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
+            Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}
             <img height="20" src="../assets/coin.png">
-          </h3>
+          </h4>
+          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
+          Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
+          <img src="../assets/rollback.png" alt="" height="24px">
+        </h4>
         </div>
       </v-list-item>
 
@@ -219,10 +221,8 @@
               {{ day.day }}
             </div>
           </div>
-          <div style="align-items:start; display:flex; margin-top:1em; vertical-align:middle;" >
-            <img src="../assets/rollback.png" alt="" height="24px">
-            <h3>2 db</h3>
-            <h3 style="vertical-align: middle; display:flex;"><img src="../assets/fire.png" alt="" height="30" width="30">3 napos sorozat!</h3>
+          <div style="justify-content:center; display:flex; margin-top:1em; margin-bottom:1em vertical-align:middle;">            
+            <h3 style="vertical-align:middle; display:flex; justify-content:center;display:flex;"><img src="../assets/fire.png" alt="" height="25" width="25">3 napos sorozat!</h3>
           </div>
 
           </div>      
@@ -245,7 +245,7 @@
     </v-list>
   </v-navigation-drawer>
   
-  <v-main class="d-block align-center justify-center" style="height: auto;">
+  <v-main class="d-block align-center justify-center" style="height: 160vh">
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="1">
         <span>Státusz</span>
@@ -260,8 +260,8 @@
         <span>Nehézség</span>
       </v-col>
     </v-row>
-
     <v-row 
+    v-if="cardsQuery.data && cardsQuery.data.value && cardsQuery.data.value.length > 0"
     class="task_card mx-8 pa-3 cursor-pointer tasks"
     v-for="(card) in cardsQuery.data.value" 
     :key="card.id" 
@@ -269,46 +269,52 @@
     @click="TaskView(card.id)"
   >
     <!-- Task Icon and Status -->
-    <v-col v-if="task_state.data" class="d-flex align-center justify-center" cols="2" style="min-height: 100%;">
-      <v-icon 
-        v-if="getTaskStateForCard(card.id)" 
-        :color="getTaskStateForCard(card.id)?.state === 0 ? 'yellow' : 'green'" 
-        small
-      >
-        {{ getTaskStateForCard(card.id)?.state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
-      </v-icon>
+    <v-col 
+      class="d-flex align-center justify-center" 
+      cols="2" 
+      style="min-height: 100%;"
+    >
+      <template v-if="taskStateMap[card.id]">
+        <v-icon 
+          :color="taskStateMap[card.id].state === 0 ? 'yellow' : 'green'" 
+          small
+        >
+          {{ taskStateMap[card.id].state === 0 ? 'mdi-clock-outline' : 'mdi-check-circle' }}
+        </v-icon>
+      </template>
       <span v-else>&nbsp;</span>
     </v-col>
     
-
-    
-
-<!-- Task Title -->
-<v-col class="d-flex align-center justify-center" cols="10" sm="6"  style="text-align: left;">
-  <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
-</v-col>
-
-<v-col class="d-flex align-center justify-center" cols="6" sm="2">
-  {{ cardCompRate(completion_rates.data?.value ?? [], Number(card.id)) !== "Na" 
-      ? `${cardCompRate(completion_rates.data?.value ?? [], Number(card.id))}%` 
-      : "N/A" 
-  }}
-</v-col>
-
-
-<!-- Difficulty -->
-<v-col class="d-flex align-center justify-center" cols="6" sm="2">
-  <v-chip 
-    :color="chipColor(card.difficulty)" 
-    outlined 
-    small
-    style="width: 5rem;"
-    class="d-flex align-center justify-center"
-  >
-    <p class="ma-0">{{ difficultyLabel(card.difficulty) }}</p>
-  </v-chip>
-</v-col>
-</v-row>
+    <!-- Task Title -->
+    <v-col class="d-flex align-center justify-center" cols="10" sm="6" style="text-align: left;">
+      <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
+    </v-col>
+  
+    <!-- Completion Rate -->
+    <v-col class="d-flex align-center justify-center" cols="6" sm="2">
+      {{ cardCompRate(completion_rates.data?.value ?? [], Number(card.id)) !== "Na" 
+          ? `${cardCompRate(completion_rates.data?.value ?? [], Number(card.id))}%` 
+          : "N/A" 
+      }}
+    </v-col>
+  
+    <!-- Difficulty -->
+    <v-col class="d-flex align-center justify-center" cols="6" sm="2">
+      <v-chip 
+        :color="chipColor(card.difficulty)" 
+        outlined 
+        small
+        style="width: 5rem;"
+        class="d-flex align-center justify-center"
+      >
+        <p class="ma-0">{{ difficultyLabel(card.difficulty) }}</p>
+      </v-chip>
+    </v-col>
+  </v-row>
+  
+  <v-row v-else style="display: flex; vertical-align:middle;justify-content:center;">
+    <h4>A megadott szűrési feltételekkel nem található feladat!</h4>
+  </v-row>
   </v-main>
 </v-layout>
 
@@ -357,7 +363,7 @@ v-model="pageNumber"
 router.push({ query: { page: 1, per_page: 15 } });
 
 // Imports
-import { useAllTaskCount, useRandomTask, useTaskWithSearch, useTaskByDifficulty,useTaskState,useTaskByState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
+import { useAllTaskCount, useRandomTask,useTaskState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
@@ -365,10 +371,8 @@ import router from '@/router';
 import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
-import { any, date, number } from 'zod';
 import { useRoute, useRouter } from 'vue-router';
-
-
+import {UsegetRollBackTokenCount} from '../api/mainPage/mainPageQuery'
 
 
 // Query hooks
@@ -394,30 +398,26 @@ const quote = UseQuote();
 const { data: cards, isLoading, error } = useGetAllAds();
 var dialog = ref(false);
 //----
-const route = useRoute();
+
 const apexchart = VueApexCharts;
-const selectedThemes = ref<string[]>([]);
 const get_user_name = ref<string | null>(null);
-const get_user_email = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
 const user_id = ref<string | null>(null);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
+const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
+const task_state = useTaskState(user_id);
+const taskStateMap = computed(() => {
+  if (!Array.isArray(task_state.data.value)) return {};
+  return task_state.data.value.reduce((acc, task) => ({
+    ...acc,
+    [task.task_id]: task
+  }), {});
+});
 const monthsNames = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
-
-
-const navigate = (redirect: string) => {
-  if (!redirect) return; // Safety check
-
-  if (redirect.startsWith("/")) {
-    router.push(redirect);
-  } else {
-    window.open(redirect, "_blank");
-  }
-};
 
 
 const handleToggle = async (theme: string, isSelected: boolean, toggle: Function) => {
@@ -442,73 +442,22 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
 };
 
 
-
-// Filter by search query
-const searchQuery = ref('');
-const taskWithSearch = useTaskWithSearch(searchQuery);
-const filterTasksByCharacters = (chars: string) => {
-  if(chars.length > 0){
-    searchQuery.value = chars;
-    taskWithSearch.refetch();
-  }else{
-    cardsQuery.refetch();
-    allTaskCountQuery.refetch();
-  }
-};
-
-//-------- Filter by difficulty ---------------
-  
-const difficulty_param = ref('');
-const taskByDifficulty = useTaskByDifficulty(difficulty_param);
-
 watch(filterData, () => {
   cardsQuery.refetch(); 
   allTaskCountQuery.refetch();
 }, { deep: true });
 
 
-function HandleDifficultyChange(newVal: string | null){
-  if(newVal == null){
-    difficulty_param.value = ''
-    cardsQuery.refetch();
-  }else{
-    taskByDifficulty.refetch();
-  }
-}
+const navigate = (redirect: string) => {
+  if (!redirect) return; // Safety check
 
-
-//-------- End filter by difficulty ---------------
-
-//-------- Filter by completionrate ---------------
-const state_Query = ref(null);
-const state_param = ref('');
-const taskByState = useTaskByState(state_param, Number(user_id.value));
-
-watch(() => get_fullUser.value, (newUser) => {
-  if (newUser?.id) {
-    user_id.value = String(newUser.id);
-    taskByState.refetch();
-  }
-}, { immediate: true });
-
-watch(state_Query, (newVal) => {
-  HandleStateChange(newVal);
-});
-
-function HandleStateChange(newVal: string | null) {
-  if (newVal == null) {
-    state_param.value = '';
-    console.log(user_id.value);
-    cardsQuery.refetch();
-    allTaskCountQuery.refetch();
+  if (redirect.startsWith("/")) {
+    router.push(redirect);
   } else {
-    console.log(user_id.value);
-    taskByState.refetch();
-    allTaskCountQuery.refetch();
+    window.open(redirect, "_blank");
   }
-  cardsQuery.refetch();
-  allTaskCountQuery.refetch();
-}
+};
+
 
 //-------- End filter by completionrate ---------------
 
@@ -548,6 +497,7 @@ const CheckIfCurrentTask =  (day: string) => {
 
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
+//  window.location.reload();
 };
 
 watch(() => randomTask.data.value, (newVal) => {
@@ -689,49 +639,21 @@ const getDaysInMonth = (year: number, month: number): number => {
       if (difficulty === 1) return 'Közepes';
       return 'Nehéz';
     };
-    // Get the user's ID reactively
 
-
-// Fetch task state based on user ID
-const task_state = useTaskState(ref(get_fullUser.value.id));
-
-// Watch for changes in the fetched task state
-watchEffect(() => {
-  if (task_state.data.value) {
-    console.log('Task state has been updated:', task_state.data.value);
+    function formatCurrency(currency: number): string {
+  if(currency == 0){
+    return '0';
   }
-});
+  const units = ['E', 'M', 'MLRD'];
+  let index = -1;
 
-const getTaskStateForCard = (taskId: number) => {
-  console.log(`taskId: ${taskId}`);
-  console.log(`taskstate data ${task_state.data.value}`)
-  if (!task_state.data || !task_state.data.value) {
-    console.log('Task state data is not available yet.');
-    return null;
+  while (currency >= 1000 && index < units.length - 1) {
+    currency /= 1000;
+    index++;
   }
 
-  const task = task_state.data.value.find((task) => task.task_id === taskId);
-  if (task) {
-    console.log(`Found task state for taskId ${taskId}:`, task);
-  } else {
-   // console.log(`No task found for taskId ${taskId}`);
-  }
-
-  return task || null;
-};
-
-
-
-// Computed property to handle async task state for icons
-const getTaskIcon = (taskId: number) => {
-  const taskState = task_state.data.value?.find(task => task.task_id === taskId);
-  if (taskState) {
-    return taskState.state === 0
-      ? { icon: 'mdi-clock-outline', color: 'yellow' }
-      : { icon: 'mdi-check-circle', color: 'green' };
-  }
-  return { icon: '', color: '' };
-};
+  return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
+}
 
     const cardCompRate = (
   CompArray: { task_id: number; completionRate: number }[] | undefined,
@@ -745,13 +667,6 @@ const getTaskIcon = (taskId: number) => {
   return found ? found.completionRate : "Na";
 };
 
-
-
-    const getClass = (value: number) => {
-      if (value == -1) return '#E57373';
-      if (value == 1) return '#A5D6A7';
-      return '#00A1FF';
-    };
     
     const checkIfCurrent = (value: any) => {
     if (value == new Date().getDate()) {0
@@ -798,35 +713,14 @@ onMounted(async () => {
   await quote.refetch();
 })
 
-onMounted(async ()=>{
-  const userCookie = getCookie('user');
-        if (userCookie) {
-          try {
-            const userData = JSON.parse(atob(userCookie.split('.')[1]));
-            get_user_name.value = userData.id;
-          } catch (error) {
-            console.error('Error parsing user cookie:', error);
-          }
-        }
-  
-        const get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
-  
-        if (get_user_by_token) {
-          const { mutate: ProfileGetUser } = useProfileGetUser();
-          try {
-            await ProfileGetUser({token: get_user_by_token, id: 0}, {
-              onSuccess: (get_user) => {
-                get_user_name.value = get_user.user_name;
-                get_fullUser.value = get_user;
-              },
-            });
-          } catch (error) {
-            console.error('Error fetching user profile:', error);
-          }
-        }
+
+watch(user_id, async (newUserId) => {
+  if (newUserId) {
+    console.log('Fetching roll back token count for userId:', newUserId);
+    await roll_back_token_count_query.refetch();
+    //await task_state.refetch();
+  }
 });
-
-
 const UpdatePage = (newPage: number) => {
   filterData.value.offset = 15 *(newPage - 1);
   console.log('teherbebeaszott offset',offset.value)
@@ -838,23 +732,58 @@ const UpdatePage = (newPage: number) => {
   behavior: 'smooth'
 });
 };
-
-
 onMounted(async () => {
-  watch(() => get_fullUser.value, (newUser) => {
-    if (newUser && newUser.id) {
-      user_id.value = String(newUser.id);
-      solvedTaskStatesQuery.refetch();
-    }
-  }, { immediate: true });
+  days.value = generateDays(currentYear, new Date().getMonth());
+  const initializeUser = async () => {
+    const userCookie = getCookie('user');
+    if (!userCookie) return;
 
-  watch(() => solvedTaskStatesQuery.data, (newData) => {
-    if (newData) {
-      console.log('New task rates:', newData.value);
-      series.value = newData.value.countpercenct;
+    try {
+      const userData = JSON.parse(atob(userCookie.split('.')[1]));
+      get_user_name.value = userData.id;
+      const { mutate: ProfileGetUser } = useProfileGetUser();
+      await ProfileGetUser({ token: userCookie, id: 0 }, {
+        onSuccess: (user) => {
+          get_fullUser.value = user;
+          user_id.value = String(user.id);
+        }
+      });
+    } catch (error) {
+      console.error('Initialization error:', error);
     }
-  }, { deep: true });
+  };
+
+  await initializeUser();
 });
+
+watch(user_id, async (newVal) => {
+  if (newVal) {
+    await Promise.all([
+      cardsQuery.refetch(),
+      task_state.refetch(),
+      roll_back_token_count_query.refetch()
+    ]);
+  }
+}, { immediate: true });
+
+
+
+
+  onMounted(async () => {
+    watch(() => get_fullUser.value, (newUser) => {
+      if (newUser && newUser.id) {
+        user_id.value = String(newUser.id);
+        solvedTaskStatesQuery.refetch();
+      }
+    }, { immediate: true });
+
+    watch(() => solvedTaskStatesQuery.data, (newData) => {
+      if (newData) {
+        console.log('New task rates:', newData.value);
+        series.value = newData.value.countpercenct;
+      }
+    }, { deep: true });
+  });
 
 </script>
 

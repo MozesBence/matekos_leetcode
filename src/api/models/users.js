@@ -61,6 +61,16 @@ module.exports = (sequelize, DataTypes) => {
                 },
                 defaultValue: 0,
             },
+            streak: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue:0
+            },
+            max_streak:{
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                defaultValue:0
+            }
         },
         {
             sequelize,

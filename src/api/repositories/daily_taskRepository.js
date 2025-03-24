@@ -12,13 +12,20 @@ const daily_taskRepository = {
         })
     },
     async CheckIfDailyTask(taskid){
-        return await Daily_Tasks.findOne(
-            {
-                where:{
-                    task_id:taskid
+        try {
+            const task = await db.Daily_Tasks.findOne({
+                where: {
+                    task_id: taskid
                 }
             });
+            console.log("Task found:", task); // Log the task to check if it is found
+            return task; // Return the task or null
+        } catch (error) {
+            console.error("Error in CheckIfDailyTask service:", error);
+            throw new Error("Database query failed.");
+        }
     }
+    
 }
 
 module.exports = daily_taskRepository;

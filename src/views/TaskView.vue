@@ -34,7 +34,7 @@
                 style="min-width: 10rem; flex-shrink: 0;"
                 class="d-flex align-center justify-center"
               >
-                <p class="ma-0">Exponenciális és logaritmusos feladatok</p>
+                <p class="ma-0">{{theme.data.value?.theme}}</p>
               </v-chip>
               <!-- Chip 3 -->
               <v-chip
@@ -63,7 +63,7 @@
             <h3>A feladat leírása:</h3>
             <div v-mathjax="task?.task"></div>
             <h3>Megoldás formatuma:</h3>
-            <p>x = 1</p>
+            <p>{{task?.solution_format}}</p>
           </div>
           
           <div style="margin-top: 2em;" class="plusItems">
@@ -71,18 +71,18 @@
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
-                  <div v-for="card in similarCards.data.value">
-                    <v-row>
-                      <v-col cols="6"><v-chip
+                  <div v-for="card in similarCards.data.value" style="background-color: #212121; border-radius:15px; width:100%; padding:10px">
+                    <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
+                      <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
                         outlined
                         small
-                        style="min-width: 10rem; flex-shrink: 0;"
+                        style="min-width: 5rem; flex-shrink: 0;"
                         class="d-flex align-center justify-center"
                       >
                         <p class="ma-0">{{ difficultyLabel(card?.difficulty) }}</p>
                       </v-chip></v-col>
-                      <v-col cols="6">{{card.id}}. {{card.task_title}}</v-col>
+                      <v-col cols="9" class="d-flex align-center justify-center">{{card.id}}. {{card.task_title}}</v-col>
                     </v-row>
               </div>
                 </v-expansion-panel-text>
@@ -158,10 +158,11 @@ import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
-
+import {UseGetThemeById} from '@/api/themes/themeQuery'
+//import {TaskView} from '@/stores/taskLoader'
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
-
+const theme_id = ref(0);
 const push = (path: string) => {
   router.push(path);
 };
@@ -179,6 +180,10 @@ const mathjaxDirective = {
       window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
     }
   }
+};
+const TaskView = (id: number) => {
+  router.push({ name: 'task', params: { id } });
+  //window.location.reload();
 };
 
 const solution = ref('')
@@ -200,7 +205,7 @@ const get_user_name = ref<string | null>(null);
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
-
+const theme = UseGetThemeById(theme_id)
 
 
 function getCookie(name: string): string | null {
@@ -218,13 +223,13 @@ function getCookie(name: string): string | null {
 watch(group, () => {
   drawer.value = false;
 });
-onMounted(async()=>{
- await getTaskData.refetch();
-})
+
 watch(() => getTaskData.data.value, (newVal) => {
   console.log(newVal);
   task.value = newVal;
   console.log(task.value)
+  theme.refetch()
+  getTaskData.refetch();
 });
 
 // Helper functions
@@ -261,7 +266,19 @@ const SubmitTask = () => {
 
   submitSolution(payload, {  
     onSuccess: (data) => {
-      console.log(data)
+      console.log(payload);
+      console.log(data);  // Log the response data
+      const state = data.state;  // Access the 'state' value
+      console.log("State:", state);  // This will log the state (1 in your example)
+      
+      // Handle the state returned from the backend
+      if (state === 1) {
+        showAlert("success", "Feladat sikeresen megoldva!");
+      } else if(state === 0){
+        showAlert("error", "A feladat nem lett sikeresen megoldva.");
+      } else {
+        showAlert("error", "HIBA történt a megoldás feldolgozása közben.");
+      }
     },
     onError: () => {
       showAlert("error", "Hibás megoldás! A megoldás hibás vagy nem egyezik meg a formátummal.");
@@ -269,10 +286,6 @@ const SubmitTask = () => {
   });
 };
 
-
-const back = () => {
-  router.go(-1);
-};
 
 onMounted(async () => {
   const userCookie = getCookie('user');
@@ -285,22 +298,27 @@ onMounted(async () => {
     }
   }
 
-  const get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
-
+  // Fetch user profile
+  const get_user_by_token = getCookie('user') || null;
   if (get_user_by_token) {
     const { mutate: ProfileGetUser } = useProfileGetUser();
-    try {
-      await ProfileGetUser({token: get_user_by_token, id: 0}, {
-        onSuccess: (get_user) => {
-          get_user_name.value = get_user.user_name;
-          get_fullUser.value = get_user;
-        },
-      });
-    } catch (error) {
-      console.error('Error fetching user profile:', error);
-    }
+    await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+      onSuccess: (get_user) => {
+        get_user_name.value = get_user.user_name;
+        get_fullUser.value = get_user;
+      },
+    });
+  }
+
+  // Fetch task data and then theme data
+  await getTaskData.refetch();
+  if (getTaskData.data.value && getTaskData.data.value.theme_id) {
+    theme_id.value = getTaskData.data.value.theme_id;
+    await theme.refetch();
   }
 });
+
+
 
 </script>
 

@@ -22,7 +22,25 @@ const getAllThemesController = async (req, res, next) => {
   }
 };
 
+
+const getThemeById = async (req, res, next) => {
+  try {
+    const { theme_id } = req.params;
+    const theme = await themeRepository.getThemeById(theme_id);
+    
+    if (!theme) {
+      return res.status(404).json({ message: "Téma nem található!" });
+    }
+
+    res.status(200).json(theme);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 module.exports = {
   getAllThemesController,
+  getThemeById
 };
 

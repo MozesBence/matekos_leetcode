@@ -305,7 +305,7 @@ const Task_Data = ref({
     themeId: null,
     solution: null,
     difficulty: null,
-    creatorId: get_fullUser.value.id,
+    creatorId: null,
     experiencePoints: 10,
     solutionFormat:null,
     hint1:null,
@@ -354,6 +354,7 @@ onMounted(async ()=>{
               onSuccess: (get_user) => {
                 get_user_name.value = get_user.user_name;
                 get_fullUser.value = get_user;
+                Task_Data.value.creatorId = get_fullUser.value.id
               },
             });
           } catch (error) {
@@ -368,7 +369,7 @@ const SendTask = () => {
     if(CheckData() == false){
         alert('Toltsd ki a mezoket!')
     }else{
-        submitTask(); 
+        submitTask();
     }
     }
 

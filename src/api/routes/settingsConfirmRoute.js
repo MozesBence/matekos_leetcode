@@ -20,14 +20,16 @@ const profileAuth = require("../middlewares/profileAuth");
  *           type: integer
  *         description: A felhasználó emailje amire a megerősító kód küldve lesz
  *         example: 1
+ *       - in: headers
  *         name: email
  *         required: true
  *         schema:
  *           type: string
  *         description: A napi feladat azonosítója
  *         example: example@gmail.com
- *         required: true
+ *       - in: headers
  *         name: user_name
+ *         required: true
  *         schema:
  *           type: string
  *         description: A felhasználó neve

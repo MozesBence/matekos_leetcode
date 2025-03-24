@@ -5,31 +5,7 @@ import { renderSlot, type Ref } from "vue";
 import axiosClient from "@/lib/axios";
 
 
-// Fetching Cards
-/*
-const fetchCards = async (offset: number) => { // Accepts a number, not a Ref
-  try {
-    const response = await axios.get(`/api/tasks/get-cards-info/${offset}`);
-    return response.data;
-  } catch (error) {
-    console.error(`Error occurred while fetching cards: ${error}`);
-    throw error; // Ensure error propagates correctly
-  }
-};
 
-export const useCards = (offset: Ref<number>) => {
-  return useQuery({
-    queryFn: () => fetchCards(offset.value),
-    queryKey: ['cards', offset.value],
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching card data:', error);
-    }
-  });
-};
-*/
 // Fetching Completion Rates
 const fetchCompletionRates = async () => {
   try {
@@ -43,6 +19,7 @@ const fetchCompletionRates = async () => {
 export const useCompletionRates = () => {
   return useQuery({
     queryFn: fetchCompletionRates,
+    queryKey:['completionRates'],
     onSuccess: (data) => {
       console.log(data);
     },
@@ -77,7 +54,7 @@ export const useTaskState = (id: Ref<number>) => {
     onError: (error) => {
       console.error('Error occurred while fetching task state:', error);
     },
-    enabled: !!id.value, // Ensure that the query only runs when `id` has a valid value
+    enabled:false
   });
 };
 
@@ -163,32 +140,6 @@ export const useRandomTask = () => {
   });
 };
 
-const fetchTaskWithSearch = async (characters: Ref<string>) => {
-  console.log(characters.value);
-  try {
-    const response = await axios.get(`/api/tasks/task-with-search/${characters.value}`);
-    console.log(response)
-    return response.data;
-  } catch (error) {
-    console.error('Error occurred while fetching task with these characters:', error);
-    throw error;
-  }
-};
-
-
-export const useTaskWithSearch = (characters: Ref<string>) => {
-  return useQuery({
-    queryKey: ['tasks', characters.value], // Correct
-    queryFn: () => fetchTaskWithSearch(characters),
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task with search characters:', error);
-    },
-    enabled: false,
-  });
-};
 
 // Fetching Specific Task by Day
 const fetchSpecificTask = async (day: Ref<string>) => {
@@ -217,62 +168,6 @@ export const useSpecificTask = (day: Ref<string>) => {
   });
 };
 
-// Fetching Task by Difficulty
-// Function to fetch tasks by difficulty
-const fetchTaskByDifficulty = async (difficulty: Ref<string>) => {
-  try {
-    const response = await axios.get(`/api/tasks/task-with-difficulty/${difficulty.value}`);
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error occurred while fetching tasks with this difficulty:', error);
-    throw new Error('Failed to fetch tasks');
-  }
-};
-
-// Hook to use the query for tasks by difficulty
-export const useTaskByDifficulty = (difficulty: Ref<string>) => {
-  return useQuery({
-    queryKey: ['difficulty_level', difficulty.value],
-    queryFn: () => fetchTaskByDifficulty(difficulty),
-    onSuccess: (data) => {
-      console.log("Fetched tasks:", data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task with difficulty:', error);
-    },
-    enabled: false,  // Disable automatic fetching, refetch manually after setting difficulty
-  });
-};
-
-
-// Fetching Task by State and User ID
-const fetchTaskByState = async (state: Ref<string>, user_id: number) => {
-  console.log("Fetching task by state:", state.value, "user_id:", user_id);
-  try {
-    const response = await axios.get(`/api/task_solution/task-by-completion-state/${state.value}/${user_id}`);
-    console.log("Task by state response:", response.data);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching task by state:', error);
-    throw error;
-  }
-};
-
-
-export const useTaskByState = (state:Ref<string>, user_id: Number) => {
-  return useQuery({
-    queryKey:['task_info',state.value,user_id],
-    queryFn: () => fetchTaskByState(state, user_id),
-    onSuccess: (data) => {
-      console.log(data);
-    },
-    onError: (error) => {
-      console.error('Error occurred while fetching task by state:', error);
-    },
-    enabled: false,
-  });
-};
 
 const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
   console.log('Selected Theme IDs:', themeIds);
@@ -305,17 +200,7 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
   });
 };
 
-/*
-  const getFilteredTasks = async (req, res) => {
-  console.log(req.query)
-  try {
-      const tasks = await tasksService.getFilteredTasks(req.query);
-      res.json(tasks);
-  } catch (error) {
-      res.status(500).json({ message: "Error fetching tasks" });
-  }
-};
-*/
+
 const fetchCards = async (filters: Ref<{ difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }>) => {
   try {
     const filteredParams = NonEmptyFilters(filters.value);
@@ -399,11 +284,11 @@ const CheckIfDailyTask = async (taskid:Number) => {
 export const UseCheckIfDailyTask = (taskId:Number) => {
   return useQuery({
     queryFn: ()=> CheckIfDailyTask(taskId),
-    queryKey:['DailyTaskCheck'],
+    queryKey:['DailyTaskCheck',taskId],
     onSuccess: (data) => {
-      //console.log("Kapott taskok:", data);
     },
     onError: (error) => {
+      console.log("Kapott taskok:", data);
       console.error("Error taskok fetchelese kozben:", error);
     },
   })

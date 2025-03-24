@@ -20,25 +20,17 @@ const getDailyTask = async (req, res, next) => {
     }
 };
 
-const CheckIfDailyTask = async (req,res) => {
-    try{
-        const {taskid} = req.params;
-
-        const check = await daily_taskServices.CheckIfDailyTask(taskid)
-
-        if(!check){
-            const error = new Error("Nem sikerült leellenőrizni a feladatot!");
-
-            error.status = 400;
-
-            throw error;
-        }
-
+const CheckIfDailyTask = async (req, res, next) => {
+    try {
+        const { taskid } = req.params;
+        const check = await daily_taskServices.CheckIfDailyTask(taskid);
         res.status(200).json(check);
-    }catch(error){
-        next(error);
+    } catch (error) {
+        console.error("Error in CheckIfDailyTask controller:", error);
+        next(error); // Pass to error handler
     }
-}
+};
+
 
 module.exports = {
     getDailyTask,
