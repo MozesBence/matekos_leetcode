@@ -344,11 +344,23 @@ const task_solutionRepository = {
         });
     
         console.log(`Streak: ${streak}, Longest Streak: ${longestStreak}, Missed Days: ${missedDays}`);
+    },
+    async getStreak(userId){
+        return await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['streak']
+        })
+    },
+    async getMaxStreak(){
+        return await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['max_streak']
+        })
     }
-    
-    
-    
-      
 };    
 
 module.exports = task_solutionRepository;
