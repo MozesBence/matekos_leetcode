@@ -182,6 +182,8 @@ const TaskView = (id: number) => {
 };
 
 const solution = ref('')
+
+//EZT JAVITANI KELL IDE TASKNAK A THEMEID-JE KELL NEM A SAJAT IDJE!!!!!!!!!!!!!!!!
 const similarCards = UseGetSimilarCards(Number(route.params.id));
 // Reactive state
 const drawer = ref(false);
