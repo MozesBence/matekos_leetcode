@@ -104,9 +104,9 @@ class TasksService {
       throw error;
     }
   }
-  async updateTaskValidationState(taskId){
+  async updateTaskValidationState(taskId,validity){
     try{
-      return await tasksRepository.updateTaskValidationState(taskId);
+      return await tasksRepository.updateTaskValidationState(taskId,validity);
     }catch(error){
       throw error;
     }

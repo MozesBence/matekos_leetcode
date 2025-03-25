@@ -1,8 +1,6 @@
 import axiosClient from '@/lib/axios';
 import { useQuery } from '@tanstack/vue-query';
-import axios from 'axios';
-import { UseQuote } from '../quote/QuoteQuery';
-import { type Ref } from 'vue';
+import { computed, type Ref } from 'vue';
 const fetchThemes = async () => {
     try {
         const response = await axiosClient.get('/themes');
@@ -33,9 +31,10 @@ const getThemeById = async (theme_id:Number) => {
         throw error;
     }
 }
-export const UseGetThemeById = (id:Ref<Number>) => {
+export const UseGetThemeById = (id: Ref<number | null>) => {
     return useQuery({
-        queryFn: () => getThemeById(id.value),
-        queryKey: ['currentTheme',id.value]
-    })
-}
+        queryFn: () => id.value ? getThemeById(id.value) : Promise.resolve(null), 
+        queryKey: ['currentTheme', id],
+        enabled: computed(() => id.value !== null && id.value !== 0),
+    });
+};

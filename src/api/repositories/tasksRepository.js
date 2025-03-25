@@ -284,12 +284,34 @@ async getUnvalidatedTasks(offset){
     offset:parseInt(offset,10),
   })
 },
-async updateTaskValidationState(taskId) {
-  return await Tasks.update(
+async updateTaskValidationState(taskId, validity) {
+  console.log("Received in repo:", { taskId, validity });
+  try{
+    if (validity == '0') {
+      return this.deleteTaskFromTasks(taskId);
+    }else{
+      return this.updateToValidated(taskId);
+    }
+  }catch(error){
+    throw error;
+  }
+
+},
+
+
+async updateToValidated(taskId) {
+  return Tasks.update(
     { validated: 1 },
     { where: { id: taskId } }
   );
+},
+
+async deleteTaskFromTasks(taskId) {
+  return Tasks.destroy({
+    where: { id: taskId }
+  });
 }
+
 
 };
 
