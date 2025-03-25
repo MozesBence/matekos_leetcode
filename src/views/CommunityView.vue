@@ -1,19 +1,19 @@
 <template>
   <main>
-    <v-container fluid class="d-flex justify-end" style="margin-right: 0; width: 100%; position: relative;" :style="{maxWidth: isMobile ? '100%' : '65%'}">
-      <v-navigation-drawer
+    <v-container fluid class="d-flex" style="margin-right: 0; width: 100%; position: relative;">
+      <div
         :style="{
           height: 'max-content',
           maxWidth: '34.5%',
           width: '100%',
-          top: !get_fullUser ? '7.9em' : '4.05em'
+          top: 'inherite',
         }"
-        class="ma-2 ml-3 mt-4 rounded"
+        class="mr-3 rounded"
         v-if="!isMobile"
       >
-        <v-list>
+        <v-list class="rounded">
           <v-list-item>
-            <div class="d-flex align-center justify-center ga-2 pa-2">
+            <div class="d-flex align-center justify-center ga-2 pa-2 rounded">
               <v-text-field
                 v-model="searchQuery"
                 label="Keresés"
@@ -119,7 +119,8 @@
             </div>
           </v-list-item>
         </v-list>
-      </v-navigation-drawer>
+      </div>
+
         <v-row>
           <v-col
           v-if="isMobile"

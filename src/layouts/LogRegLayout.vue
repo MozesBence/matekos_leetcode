@@ -246,11 +246,20 @@ ConfPasswordValue.value = isSetNewPassword ? "Új jelszó megerősítése" : "Je
 
 // <------- Api hívások ------->
 
+// Api hívás - felhasználói aktiválás
 const { mutate: UserActivation } = useUserActivation()
+
+// Api hívás - regisztráció
 const { mutate: registerUser } = useRegisterUser(loading, RegBtnValue)
-const { mutate: loginUser} = useLoginUser() 
-const { mutate: forgetPassword} = useForgetPassword(loading, ForgetBtnValue)
-const { mutate: setNewPassword} = useSetNewPassword(loading, SetBtnValue)
+
+// Api hívás - bejelentkezés
+const { mutate: loginUser } = useLoginUser() 
+
+// Api hívás - elfelejtett jelszó
+const { mutate: forgetPassword } = useForgetPassword(loading, ForgetBtnValue)
+
+// Api hívás - új jelszó beállítása
+const { mutate: setNewPassword } = useSetNewPassword(loading, SetBtnValue)
 
 // <------- Api hívások ------->
 
