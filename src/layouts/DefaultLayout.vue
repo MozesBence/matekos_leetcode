@@ -1131,25 +1131,25 @@ import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme, useDisplay } from 'vuetify';
 
-const { mutate : ProfileGetUser} = useProfileGetUser()
-
+// Képernyő méret / eszköz
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
 watch(isMobile, async (newValue) => {
   SettingsMenu.value = newValue;
 });
 
+// Router és route hookok
 const { currentRoute } = useRouter()
-
 const router = useRouter();
 const route = useRoute();
 
-const dialog = shallowRef(false)
-
-var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
-
+// Üzenetkezelés
 const showError = inject("showError");
+const showSucces = inject("showSucces");
 
+// <------- Változók ------->
+const dialog = shallowRef(false)
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
 const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
 const PassSettingDraw = ref(false);
@@ -1159,11 +1159,9 @@ const PostDraw = ref(false);
 const UsersDraw = ref(false);
 const AdminNotifDraw = ref(false);
 const activePanel = ref('profile');
-
 const ProfInputDisabled = ref(true);
 const EmailInputDisabled = ref(true);
 const ConfirmCode = ref(false);
-
 const userNameInput = ref('');
 const userEmailInput = ref('');
 const CurrentPasswordInput = ref('');
@@ -1176,17 +1174,44 @@ const ReportLoading = ref(false);
 const UsersLoading = ref(false);
 const NotifsLoading = ref(false);
 const SettingsMenu = ref(false);
-
 const ReportDelete = ref(false);
 const ReportAccept = ref(false);
 const CloseMessage = ref('');
 const searchQuery = ref('');
-
 const users_UserName = ref('');
 const users_UserEmail = ref('');
 const users_UserPassword = ref('');
-
 const loading = ref(false);
+const AllNotifs = ref([]);
+const AllUsers = ref([]);
+var timeout = null;
+const activatedTypeButton = ref(null);
+const adminTypeButton = ref(null);
+const AllReports = ref([]);const get_fullUser = ref(null);
+const get_fullUser_customs = ref(null);
+const get_user_name = ref(null);
+const ProfImage = ref(null);
+const theme = useTheme();
+const DarkmodeChange = ref(false);
+const profileImage = ref("");
+// <------- Változók ------->
+
+// <------- Api hívások ------->
+
+// Api hívás - közösségi címkék kezelése
+const { mutate : ProfileGetUser} = useProfileGetUser()
+const { mutate : getAllNotifs} = useGetAllNotifs()
+const { mutate : getAllUser} = useGetAllUser()
+const { mutate : setUserNewSettings} = useSetUserNewSettings()
+const { mutate : setNewUserRoles} = useSetUserRoles()
+const { mutate : getAllReports} = useGetAllReports()
+const { mutate : closeReport} = useCloseReport()
+const { mutate : getSettingsConfirm} = useGetSettingsConfirm()
+const { mutate : setNewSettings} = useSetSettings()
+const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
+
+
+// <------- Api hívások ------->
 
 function ProfSettingsActive(){
   ProfSettingDraw.value = true;
@@ -1257,10 +1282,6 @@ function PassSettingsActive(){
   loading.value = false;
 }
 
-const { mutate : getAllNotifs} = useGetAllNotifs()
-
-const AllNotifs = ref([]);
-
 const NotifActive = async() =>{
   ProfSettingDraw.value = false;
   EmailSettingDraw.value = false;
@@ -1296,10 +1317,6 @@ const NotifActive = async() =>{
     },
   });
 }
-
-const { mutate : getAllUser} = useGetAllUser()
-
-const AllUsers = ref([]);
 
 const UsersActive = async () =>{
   ProfSettingDraw.value = false;
@@ -1347,8 +1364,6 @@ function handlePanelToggle(){
  users_UserPassword.value = '';
 }
 
-const { mutate : setUserNewSettings} = useSetUserNewSettings()
-
 const setNewSetting = async(user,id, model, type) =>{
   await setUserNewSettings({content: model, id: id, type: type, token: get_user_by_token}, {
     onSuccess: (response) => {
@@ -1376,8 +1391,6 @@ const setNewSetting = async(user,id, model, type) =>{
     },
   });
 }
-
-const { mutate : setNewUserRoles} = useSetUserRoles()
 
 const setUserRoles = async (user, id, type) => {
   await setNewUserRoles({id: id, type: type, token: get_user_by_token}, {
@@ -1417,10 +1430,6 @@ const setUserRoles = async (user, id, type) => {
   });
 }
 
-var timeout = null;
-const activatedTypeButton = ref(null);
-const adminTypeButton = ref(null);
-
 function AdminType() {
   adminTypeButton.value = adminTypeButton.value === null ? 1 : null;
 }
@@ -1429,7 +1438,6 @@ function ActivatedType(number) {
   activatedTypeButton.value = activatedTypeButton.value === number ? null : number;
 }
 
-// Watch az activatedTypeButton-ra
 watch(activatedTypeButton, async (newValue, oldValue) => {
   UsersLoading.value = true;
   await getAllUser({
@@ -1446,7 +1454,6 @@ watch(activatedTypeButton, async (newValue, oldValue) => {
   })
 });
 
-// Watch az adminTypeButton-ra
 watch(adminTypeButton, async (newValue, oldValue) => {
   UsersLoading.value = true;
   await getAllUser({
@@ -1500,10 +1507,6 @@ watch(searchQuery, async (newValue) => {
   }, 300);
   }
 });
-
-const { mutate : getAllReports} = useGetAllReports()
-
-const AllReports = ref([]);
 
 const AdminNotifActive = async () =>{
   ProfSettingDraw.value = false;
@@ -1627,8 +1630,6 @@ function ReportCloseOpen(model){
   }
 }
 
-const { mutate : closeReport} = useCloseReport()
-
 const ReportClose = async (report,report_id, user_id, content_id, content_type) => {
   ReportLoading.value = true;
   await closeReport({id: report_id, user_id: user_id, admin_id: get_fullUser.value.id, content: CloseMessage.value, content_id: ReportDelete.value ? content_id : null, content_type: ReportDelete.value ? content_type : null, token: get_user_by_token}, {
@@ -1647,8 +1648,6 @@ const ReportClose = async (report,report_id, user_id, content_id, content_type) 
   });
 }
 
-const { mutate : getSettingsConfirm} = useGetSettingsConfirm()
-
 const SendConfirmCode = async () => {
   loading.value = true;
   await getSettingsConfirm({email: get_fullUser.value.email, user_name: get_user_name.value, id: get_fullUser.value.id}, {
@@ -1665,8 +1664,6 @@ const SendConfirmCode = async () => {
     },
   });
 }
-
-const { mutate : setNewSettings} = useSetSettings()
 
 watch(otpCode, async (newVal) => {
   ResponseError.value = null;
@@ -1711,17 +1708,6 @@ watch(otpCode, async (newVal) => {
   }
 });
 
-const get_fullUser = ref(null);
-const get_fullUser_customs = ref(null);
-const get_user_name = ref(null);
-const ProfImage = ref(null);
-
-const theme = useTheme();
-
-// A useProfileDarkmodeSwitch hook a setup() részben
-const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
-const DarkmodeChange = ref(false);
-
 onMounted(async () => {
   if(get_user_by_token){
     try {
@@ -1758,7 +1744,6 @@ watch(get_fullUser, (newUser) => {
   }
 });
 
-// A sötét mód váltásának kezelése
 const handleDarkmodeSwitch = async () => {
   DarkmodeChange.value = !DarkmodeChange.value;
 
@@ -1775,8 +1760,6 @@ const handleDarkmodeSwitch = async () => {
   }
 };
 
-const profileImage = ref("");
-
 const handleProfilePic = () => {
   const base64Image = get_fullUser_customs.value.profil_picture;
 
@@ -1785,7 +1768,6 @@ const handleProfilePic = () => {
   }
 };
 
-// Cookie-k kezelése
 function getCookie(name){
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {

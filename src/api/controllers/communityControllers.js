@@ -2,8 +2,9 @@ const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
     const { limit, offset, id, filter, tagsArray, search } = req.query;
+    
+    const Tags = tagsArray ? JSON.parse(tagsArray) : [];
 
-    const Tags =  tagsArray ? JSON.parse(tagsArray) : [];
 
     try{
         const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, Tags, search);
