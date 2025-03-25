@@ -2,7 +2,7 @@
   <!-- Kártyák kezdete -->
   <v-container fluid style="overflow-x: auto;">
     <v-row 
-      class="d-flex align-center flex-nowrap overflow-x-auto"
+      class="d-flex align-center flex-nowrap overflow-x-auto cardStyle"
       style="gap: 1rem; padding: 1vw 2vw; white-space: nowrap;"
     >
       <v-col 
@@ -13,8 +13,8 @@
         :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
       >
         <v-card 
-          class="hero" 
-          style="position: relative; display: flex; flex-direction: column; overflow: hidden; padding: .5vw 1vw; min-height: 15em; border-radius:30px;"
+          class="hero position-relative d-flex flex-column pa-2 rounded-lg" 
+          style="overflow: hidden; min-height: 22vh;"
         >
           <v-card-title 
             class="text-h6" 
@@ -858,5 +858,24 @@ watch(user_id, async (newVal) => {
   }
   .tasks:hover{
     background-color: rgb(var(--v-theme-home_task_card_hover));
+  }
+
+  .cardStyle::-webkit-scrollbar {
+    width: 3px;
+    height: 8px;
+  }
+
+  .cardStyle::-webkit-scrollbar-track {
+    background: transparent; /* Háttérszín */
+    border-radius: 10px;
+  }
+
+  .cardStyle::-webkit-scrollbar-thumb{
+    background: rgb(var(--v-theme-profile_bc)); /* Görgetősáv színe */
+    border-radius: 10px;
+  }
+
+  .cardStyle::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.7);
   }
 </style>
