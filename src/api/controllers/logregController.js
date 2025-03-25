@@ -306,18 +306,18 @@ exports.forgetPassword = async (req, res, next) =>{
 exports.setNewPassword = async (req, res, next) =>{
     const { token, password } = req.body;
 
-    const token_result = await logregServices.getUseridThroughToken(token);
-
     try
     {
-        if(token == 'null')
+        if(token == 'null' || token == null)
         {
-            const error = new Error("Rossz az elérési útvonal!");
-
-            error.status = 400;
-
-            throw error;
+                const error = new Error("Rossz az elérési útvonal!");
+                
+                error.status = 400;
+                
+                throw error;
         }
+        
+        const token_result = await logregServices.getUseridThroughToken(token);
 
         if(token_result.user_id == null)
         {
