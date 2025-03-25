@@ -285,13 +285,13 @@
         </v-col>
     </v-row>
 
-    <v-alert
-  v-if="showAlertForEmptyData"
-  density="compact"
-  text="A feladat feltöltéséhez töltsön ki minden mezőt! Az irányelveket is ajánlatos megtekinteni, melyet az i betűkre kattintva érhet el."
-  title="Fontos!"
-  type="warning"
-  class="center-alert"
+
+<v-alert
+v-if="alertMessage.type"
+:color="alertMessage.type"
+:icon="alertMessage.type === 'success' ? '$success' : '$error'"
+:title="alertMessage.text"
+class="center-alert"
 ></v-alert>
 </v-container>
 
@@ -321,6 +321,13 @@ const Task_Data = ref({
     hint2:null,
     validated:0
 });
+
+const alertMessage = ref<{ type: "success" | "warning" | "error" | null; text: string }>({
+    type: null,
+    text: "",
+});
+
+
 const showAlertForEmptyData = ref(false);
 watchEffect(() => {
     Task_Data.value.experiencePoints = Task_Data.value.difficulty === 0 ? 10 :
@@ -375,14 +382,26 @@ onMounted(async ()=>{
 const { mutate: submitTask } = UseSubmitTask(Task_Data);
 
 const SendTask = () => { 
-    if (CheckData() == false) {
-        showAlertForEmptyData.value = true;
-        setTimeout(() => {
-            showAlertForEmptyData.value = false;
-        }, 3000);
+    if (!CheckData()) {
+        showAlert("warning", "Töltsön ki minden mezőt, hogy feladata beküldésre kerüljön!");
     } else {
-        submitTask();
+        submitTask(undefined, {
+            onSuccess: () => {
+                showAlert("success", "A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!");
+            },
+            onError: (error) => {
+                showAlert("error", `Error: ${error.message || "Hiba a feltöltés közben!"}`);
+            }
+        });
     }
+};
+
+
+const showAlert = (type: "success" | 'warning' | "error", text: string) => {
+  alertMessage.value = { type, text };
+  setTimeout(() => {
+    alertMessage.value = { type: null, text: "" };
+  }, 5000);
 };
 
 
