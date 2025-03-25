@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getCardInfo, getSpecificCard, getTaskCount, getRandomTask, getFilteredTasks,getsimilarTasks,getSolution,submitTask,getUnvalidatedTasks} = require('../controllers/tasksController');
+const { getCardInfo, getSpecificCard, getTaskCount, getRandomTask, getFilteredTasks,getsimilarTasks,getSolution,submitTask,getUnvalidatedTasks, updateTaskValidationState} = require('../controllers/tasksController');
 
 router.get('/get-cards-info/:offset', getCardInfo);
 
@@ -18,6 +18,9 @@ router.get('/solution/:id',getSolution);
 
 router.get('/unvalidatedTasks/:offset',getUnvalidatedTasks)
 
+router.get('/validateTask/:taskId',updateTaskValidationState)
+
 router.post('/submitTask',submitTask);
+
 
 module.exports = router;

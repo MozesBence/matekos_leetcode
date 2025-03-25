@@ -100,6 +100,16 @@ const getUnvalidatedTasks = async(req,res,next) => {
   }
 }
 
+const updateTaskValidationState = async(req,res,next) => {
+  try{
+    const {taskId} = req.params;
+    const resp = await tasksService.updateTaskValidationState(taskId);
+    res.status(204).json(resp)
+  }catch(error){
+    next(error)
+  }
+}
+
 
 module.exports = {
   getCardInfo,
@@ -110,5 +120,6 @@ module.exports = {
   getsimilarTasks,
   getSolution,
   submitTask,
-  getUnvalidatedTasks
+  getUnvalidatedTasks,
+  updateTaskValidationState
 };

@@ -104,6 +104,13 @@ class TasksService {
       throw error;
     }
   }
+  async updateTaskValidationState(taskId){
+    try{
+      return await tasksRepository.updateTaskValidationState(taskId);
+    }catch(error){
+      throw error;
+    }
+  }
 
 }
 
