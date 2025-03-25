@@ -6,6 +6,7 @@ const { Op } = require('sequelize');
 const { isConstructorDeclaration, isAwaitKeyword } = require('typescript');
 const { stat } = require('fs');
 const { ADDRGETNETWORKPARAMS } = require('dns');
+const { update } = require('lodash');
 
 const tasksRepository = {
   
@@ -282,7 +283,14 @@ async getUnvalidatedTasks(offset){
     limit:20,
     offset:parseInt(offset,10),
   })
+},
+async updateTaskValidationState(taskId) {
+  return await Tasks.update(
+    { validated: 1 },
+    { where: { id: taskId } }
+  );
 }
+
 };
 
 module.exports = tasksRepository;
