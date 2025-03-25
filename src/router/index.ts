@@ -55,6 +55,16 @@ const router = createRouter({
           path:'/task-creation',
           name:'task-creation',
           component: () => import('../views/TaskCreateView.vue')
+        },
+        {
+          path: '/task/:id',
+          name: 'task',
+          component: () => import('../views/TaskView.vue')
+        },
+        {
+          path:'/approve-task/:taskid',
+          name:'approve-task',
+          component: () => import('../views/ApproveView.vue')
         }
       ]
     },
@@ -107,11 +117,7 @@ const router = createRouter({
       name: 'task-submit',
       component: () => import('../views/TaskSubmitView.vue')
     },
-    {
-      path: '/task/:id',
-      name: 'task',
-      component: () => import('../views/TaskView.vue')
-    },
+
     {
       path:'/bum',
       name:'bum',

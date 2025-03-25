@@ -1,4 +1,4 @@
-const { Model } = require('sequelize');
+    const { Model } = require('sequelize');
 const { nullable } = require('zod');
 
 module.exports = (sequelize, DataTypes) => {

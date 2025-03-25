@@ -5,7 +5,7 @@ import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 import { type ThemeDefinition } from 'vuetify'
-import colors from 'vuetify/util/colors'
+import colors, { blue, purple } from 'vuetify/util/colors'
 
 const vuetify = createVuetify({
   components,
@@ -65,6 +65,8 @@ const vuetify = createVuetify({
           community_filter_bc: colors.grey.lighten3,
 
           contest_cards_background: colors.grey.lighten2,
+
+          info_label_background: blue.lighten1
         },
       },
       darkTheme: {
@@ -110,7 +112,16 @@ const vuetify = createVuetify({
           community_createpost_editor_area_border: colors.grey.lighten5,
           community_filter_bc: colors.grey.darken2,
 
-          contest_cards_background: colors.grey.darken2,
+          /*TaskView*/
+          task_solving_left_drawer: colors.grey.darken2,
+          task_solving_right_drawer: colors.grey.darken3,
+          /*-----*/
+
+          /*TaskCreateView*/
+          info_label_background: blue.accent4
+          /*-------------*/
+
+
         },
       },
     },

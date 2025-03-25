@@ -20,9 +20,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="AboutOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p>2023-ban egy évvégi beadandó keretin belül kezdtük el tervezni, majd a projektmunka során megjött az ihlet,
-              hogy vigyük tovább szakmai vizsgának, amit 2024 szeptemberében kezdtünk el megcsinálni. Itt a már meglévő beadandónkat
-              kellett átírni.</p>
+            <p>Projektünk 2023 végén indult, amikor egy év végi beadandó keretében elkezdtük a tervezést. A munka során arra jutottunk, hogy szakmai vizsgánk témájaként folytassuk, így 2024 szeptemberében megkezdtük a kidolgozást. Az alapötlet már adott volt: egy olyan oldal létrehozása, amely lehetőséget biztosít a felhasználóknak a matematika gyakorlására egy bevált formula mentén. Célunk, hogy ne csupán egyéni élményt kínáljunk, hanem egy közösséget is építsünk, melyet versenyekkel, közösségi felületekkel és a jövőben további kreatív funkciókkal kívánunk támogatni.</p>
           </div>
         </v-expand-transition>
       </section>
@@ -42,9 +40,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="WhyOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p>Szerettünk volna egy olyan beadandót csinálni, ami diáktársaink segítségére lehet a későbbiekben,
-              és innen jött a matek-infó közötti kapocs, amit próbálunk a leghatékonyabban diáktársaink részére átadni mint gyakorlófelület.
-              Ezért lett a név MathSolve.</p>
+            <p>A MathSolve név mögött az az elképzelés áll, hogy hidat építsünk a matematika és az informatika között, segítve diáktársainkat abban, hogy a tanulás élménye ne csupán egyéni, hanem közösségi kaland is legyen. Eredeti célunk egy olyan beadandó létrehozása volt, amely a gyakorlás mellett az információ átadásának hatékonyságát is szem előtt tartja, így született meg a MathSolve koncepciója. Ezzel a névvel azt kívántuk kifejezni, hogy a matek megoldása nemcsak az egyéni fejlődés, hanem a közös tudásépítés eszköze is lehet.</p>
           </div>
         </v-expand-transition>
       </section>
