@@ -59,7 +59,7 @@
                           <v-spacer></v-spacer>
                           <v-btn
                             text="A feladat visszautasítása"
-                            @click="DenyTask"
+                            @click="DenyTask()"
                             style="background-color: #C62828;"
                           ></v-btn>
                           <v-btn
@@ -150,10 +150,12 @@ const DenyTask = async () => {
     Validation(undefined, {
         onSuccess: () => {
             showAlert("success", "A feladatot sikeresen visszautasította!");
-        },
+           
+          },
         onError: (error) => {
             showAlert("error", `Error: ${error.message || "Hiba validálás közben!"}`);
-        }
+            
+          }
     });
 };
 

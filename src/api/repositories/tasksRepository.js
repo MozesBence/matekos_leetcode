@@ -287,7 +287,7 @@ async getUnvalidatedTasks(offset){
 async updateTaskValidationState(taskId, validity) {
   console.log("Received in repo:", { taskId, validity });
   try{
-    if (validity === '0') {
+    if (validity == '0') {
       return this.deleteTaskFromTasks(taskId);
     }else{
       return this.updateToValidated(taskId);
