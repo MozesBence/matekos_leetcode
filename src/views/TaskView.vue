@@ -37,7 +37,7 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #95cdfc; color: blue"
                 class="d-flex align-center justify-center"
-                v-if="isDailyTask.data.value != null"
+                v-if="DailyTaskCheck()"
               >
                 <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
               </v-chip>
@@ -315,7 +315,13 @@ onMounted(async () => {
   }
 });
 
-
+const DailyTaskCheck = async() => {
+  var currentDate = new Date();
+  var taskDate = await isDailyTask.data.value?.id;
+  console.log('date',currentDate.getDay())
+  console.log('date',isDailyTask.data.value?.id)
+  return isDailyTask.data.value != null && currentDate.getDay() == taskDate
+}
 
 </script>
 
