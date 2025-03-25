@@ -9,7 +9,7 @@
   <main 
   style="height: auto; background-color: transparent; position: relative; z-index: 2;" 
   class="d-flex justify-center align-center"
-  :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
+
   >
     <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded">
       <div class="position-absolute" style="width: max-content; left: .5rem; top: .1vw;">

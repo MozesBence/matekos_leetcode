@@ -1,16 +1,16 @@
 <template>
-  <v-layout>
+  <v-layout   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}">
     <!-- Main Content -->
     <v-main>
       <v-row style="height: 100vh; padding: 0.5em;">
         <!-- Left Column: Task Details -->
-        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card))">
+        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <br>
-          <div class="taskInfo" style="">
+          <div class="taskInfo" style="background-color: rgb(var(--v-theme-task_solving_right _drawer))">
             <h1 style="text-align: left; width: 100%;">
               {{ task?.id }}. {{ task?.task_title }}
             </h1>
-            <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap;">
+            <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap; ">
               <!-- Chip 1: Difficulty -->
               <v-chip
                 :color="chipColor(task?.difficulty)"
@@ -54,14 +54,14 @@
             </v-row>
           </div>
 
-          <div style="margin-top: 2em;" class="taskDisplay">
+          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer))" class="taskDisplay">
             <h3>A feladat leírása:</h3>
             <div v-mathjax="task?.task"></div>
             <h3>Megoldás formatuma:</h3>
             <p>{{task?.solution_format}}</p>
           </div>
           
-          <div style="margin-top: 2em;" class="plusItems">
+          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer)" class="plusItems">
             <br>
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
@@ -111,7 +111,7 @@
           </div>
         </v-col>
 
-        <v-col cols="12" md="6" style="padding: 2em;">
+        <v-col cols="12" md="6" style="padding: 2em; background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <v-row style="margin-bottom: 1em;margin-top: 1em;">
             <h1>Megoldás:</h1>
           </v-row>

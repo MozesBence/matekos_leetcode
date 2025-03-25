@@ -1,11 +1,11 @@
 <template>
     <v-container>
-    <v-row style="display: flex; vertical-align: middle; text-align: center; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+    <v-row style="display: flex; vertical-align: middle; text-align: center; justify-content: center; margin-top: 20px; margin-bottom: 20px; height:auto; max-height:40em; min-height:10em;vertical-align:middle;display:flex; justify-content:center; align-items:center;" class="hero">
         <h1>Feladat beküldés</h1>
     </v-row>
 
         <!-- feladat cime -->
-        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: rgb(var(--v-theme-info_label_background)); border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
             <h3>A feladat címe</h3>
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
@@ -39,7 +39,7 @@
         <!--feladat cime vege-->
 
         <!--feladat leirasa-->
-        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <v-row class="titleRow">
             <h3>A feladat leírása</h3>
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
@@ -78,7 +78,7 @@
         <!--feladat leirasanak vege-->
 
         <!-- feladat megoldasa -->
-        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <v-row class="titleRow">
             <h3>A feladat megoldása</h3>
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
@@ -111,7 +111,7 @@
         <!--feladat megoldasa vege-->
 
          <!-- feladat megoldasanak formatuma -->
-         <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+         <v-row class="titleRow">
             <h3>A feladat megoldásának formátuma</h3>
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
@@ -149,7 +149,7 @@
         <!--feladat megoldasanak formatuma vege-->
 
         <!-- nehezseg valaszto választó -->
-        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <v-row class="titleRow">
             <h3>A feladat nehézsége</h3>
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
@@ -192,7 +192,7 @@
         <!--nehezseg valaszto vege-->
 
         <!-- tema valszto -->
-        <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+        <v-row class="titleRow">
             <h3>A feladat témája</h3>
         </v-row>
         <v-row>
@@ -209,7 +209,7 @@
       <!-- tema valszto vege-->
 
       <!-- feladathoz tartozó segítség (1) -->
-      <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+      <v-row class="titleRow">
         <h3>Első segítség a feladat megoldásához</h3>
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
@@ -243,7 +243,7 @@
     <!--feladathoz tartozó segítség (1) vége-->
 
      <!-- feladathoz tartozó segítség (2) -->
-     <v-row style="vertical-align: middle; display: flex; align-items: center; background-color: #B3E5FC; border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px;">
+     <v-row class="titleRow">
         <h3>Második segítség a feladat megoldásához</h3>
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
@@ -405,5 +405,32 @@ const SendTask = () => {
     transform: translateX(-50%);
     z-index: 9999;
   }
+
   
+  .hero {
+    background: linear-gradient(120deg, #6a11cb, #2575fc, #00d2ff, #6a11cb, #2575fc, #00d2ff);
+    background-size: 400% 400%;
+    animation: gradient-animation 8s ease-in-out infinite;
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .titleRow{
+    vertical-align: middle; display: flex; align-items: center; background-color: rgb(var(--v-theme-info_label_background)); border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px; padding-left:1em;
+  }
 </style>
