@@ -306,6 +306,7 @@ import {UseSubmitTask} from '@/api/taskSubmit/taskSubmit'
 
 
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
+import router from "@/router";
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({

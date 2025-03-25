@@ -100,15 +100,18 @@ const getUnvalidatedTasks = async(req,res,next) => {
   }
 }
 
-const updateTaskValidationState = async(req,res,next) => {
-  try{
-    const {taskId} = req.params;
-    const resp = await tasksService.updateTaskValidationState(taskId);
-    res.status(204).json(resp)
-  }catch(error){
-    next(error)
+const updateTaskValidationState = async (req, res, next) => {
+  try {
+    console.log("Received query:", req.query);
+    const { taskId, validity } = req.query;
+    const resp = await tasksService.updateTaskValidationState(taskId, validity);
+    res.status(204).json(resp);
+  } catch (error) {
+    console.error("Controller Error:", error);
+    next(error);
   }
-}
+};
+
 
 
 module.exports = {
