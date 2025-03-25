@@ -6,23 +6,20 @@
       elevation="0">
         <v-app-bar
           color="primary"
-          prominent
           elevation="0"
         >
-          <v-app-bar-nav-icon v-if="$vuetify.display.smAndDown"  variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+          <v-app-bar-nav-icon v-if="isMobile"  variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
           <div class="site-title">
             <span class="title"  style="color: rgb(var(--v-theme-site_title));" :style="{ fontFamily: currentFont, fontSize: fontSize }">{{ displayedText }}</span>
           </div>
 
-          <v-container max-width="auto" v-if="$vuetify.display.mdAndUp">
-            <v-row justify="space-evenly" style="background-color: transparent;">
+          <div style="width: 70%; margin: auto;">
+            <v-row justify="space-around" style="background-color: transparent;" v-if="!isMobile">
               <v-hover v-slot="{ isHovering, props }">
                 <div class="text-center">
                   <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                     <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                       <v-btn
@@ -43,9 +40,7 @@
               <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -66,9 +61,7 @@
             <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -89,9 +82,7 @@
             <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="12"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -110,9 +101,9 @@
                 </div>
               </v-hover>
             </v-row>
-          </v-container>
+          </div>
 
-          <div class="nav-right-content">
+          <div class="d-flex position-fixed ga-1" style="right: .2em">
             <v-hover v-slot="{ isHovering, props }">
               <v-card
                 elevation="0"
@@ -177,82 +168,56 @@
         </v-app-bar>
 
         <v-navigation-drawer
-          v-model="drawer"
-          :location="isMobile ? 'left' : undefined"
-          temporary
-          scrim="rgba(0, 0, 0, 1)"
-          class="nav_drawer"
+        v-model="drawer"
+        :location="isMobile ? 'left' : undefined"
+        scrim="rgba(0, 0, 0, 1)"
+        class="pt-2"
+        v-if="isMobile"
+        style="transition: all .3s;"
         >
-          <v-list>
-            <v-container max-height="auto" class="pa-0" v-if="isMobile">
-              <v-col justify="space-between" class="mobil-nav-view">
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-home"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
-                    :class="{'btn-active': currentRoute.name === 'home'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Főoldal</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-information"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'about' && router.push({ name: 'about' })"
-                    :class="{'btn-active': currentRoute.name === 'about'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Rólunk</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-trophy"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'contest' && router.push({ name: 'contest' })"
-                    :class="{'btn-active': currentRoute.name === 'contest'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Versenyek</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-account-group"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'community' && router.push({ name: 'community' })"
-                    :class="{'btn-active': currentRoute.name === 'community'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Közösségi</p>
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-container>
-          </v-list>
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          @click="router.push({ name: 'home' })"
+          :class="{'btn-active': currentRoute.name === 'home'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-home</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Főoldal</h2>
+          </div>
+
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          @click="currentRoute.name !== 'about' && router.push({ name: 'about' })"
+          :class="{'btn-active': currentRoute.name === 'about'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32"> mdi-information</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Rólunk</h2>
+          </div>
+
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          @click="currentRoute.name !== 'contest' && router.push({ name: 'contest' })"
+          :class="{'btn-active': currentRoute.name === 'contest'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-trophy</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Versenyek</h2>
+          </div>
+
+          <div
+            class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+            @click="currentRoute.name !== 'community' && router.push({ name: 'community' })"
+            :class="{'btn-active': currentRoute.name === 'community'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-account-group</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Közösségi</h2>
+          </div>
         </v-navigation-drawer>
   
         <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden; --v-layout-left: 0px !important;" elevation="0">
@@ -1950,21 +1915,6 @@ export default {
   overflow-x: visible;
 }
 
-.nav-right-content{
-  position: fixed;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-around;
-  right: .2vw;
-}
-
-.mobil-nav-view{
-  display: flex;
-  flex-direction: column;
-  gap: 2vw;
-}
-
 .btn-active{
   background-color: rgb(var(--v-theme-nav_btn_active));
   color: rgb(var(--v-theme-primary)) !important;
@@ -2051,10 +2001,4 @@ export default {
   background: rgba(255, 255, 255, 0.7);
 }
 
-.nav_drawer .v-overlay__scrim {
-  width: 100vw !important;  /* Teljes képernyő szélesség */
-  height: 100vh !important; /* Teljes képernyő magasság */
-  position: absolute;
-  opacity: .7 !important;
-}
 </style>
