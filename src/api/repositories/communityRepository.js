@@ -30,52 +30,46 @@ class communityRepository
       const parsedLimit = Number(limit) || 10;
       const offset = Number(get_offset) || 0;
 
-    
       if (isNaN(parsedLimit) || parsedLimit <= 0) {
         throw new Error('The limit parameter must be a positive integer.');
       }
 
       const whereCondition = {
-        ...(tagsArray && tagsArray.length > 0 
-            ? {
-                id: {
-                    [Sequelize.Op.in]: Sequelize.literal(`(
-                        SELECT CommunityPostId 
-                        FROM posttags 
-                        WHERE CommunityTagId IN (${tagsArray.join(',')}) 
-                        GROUP BY CommunityPostId 
-                        HAVING COUNT(DISTINCT CommunityTagId) = ${tagsArray.length}
-                    )`)
-                }
-            }
-            : {}),
-        ...(search
-            ? {
-                [Sequelize.Op.or]: search.split(' ').map(term => ({
-                    [Sequelize.Op.or]: [
-                        { title: { [Sequelize.Op.like]: `%${term}%` } },
-                        { content: { [Sequelize.Op.like]: `%${term}%` } }
-                    ]
-                }))
-            }
-            : {})
-    };
-    
-    const orderBy = filter 
-      ? (filter[0][0] === 'date'
-          ? [['createdAt', filter[0][1] || 'DESC']]
-          : filter[0][0] === 'popularity'
-          ? [
+        ...(tagsArray && tagsArray.length > 0 ? {
+          id: {
+            [Sequelize.Op.in]: Sequelize.literal(`(
+              SELECT CommunityPostId 
+              FROM posttags 
+              WHERE CommunityTagId IN (${tagsArray.join(',')}) 
+              GROUP BY CommunityPostId 
+              HAVING COUNT(DISTINCT CommunityTagId) = ${tagsArray.length}
+            )`)
+          }
+        } : {}),
+        ...(search ? {
+          [Sequelize.Op.or]: search.split(' ').map(term => ({
+            [Sequelize.Op.or]: [
+              { title: { [Sequelize.Op.like]: `%${term}%` } },
+              { content: { [Sequelize.Op.like]: `%${term}%` } }
+            ]
+          }))
+        } : {})
+      };
+
+      const orderBy = filter && filter.length === 2
+        ? (filter[0] === 'date'
+          ? [['createdAt', filter[1] || 'DESC']]
+          : filter[0] === 'popularity'
+            ? [
               [Sequelize.literal(`(
-                  SELECT COUNT(*) FROM Community_likes 
-                  WHERE Community_likes.entity_id = Community_posts.id 
-                  AND Community_likes.entity_type = 'post' 
-                  AND Community_likes.like_type = 'like'
-              )`), filter[0][1] || 'DESC']]
-          
-          : [['createdAt', 'DESC']]) 
-      : [['createdAt', 'DESC']];
-  
+                SELECT COUNT(*) FROM Community_likes 
+                WHERE Community_likes.entity_id = Community_posts.id 
+                AND Community_likes.entity_type = 'post' 
+                AND Community_likes.like_type = 'like'
+              )`), filter[1] || 'DESC']]
+            : [['createdAt', 'DESC']])
+        : [['createdAt', 'DESC']];
+
       const db_postIds = await this.Community_posts.findAll({
         attributes: ['id'],
         where: whereCondition,
@@ -84,105 +78,94 @@ class communityRepository
         offset: offset,
       });
 
-        const ids = db_postIds.map(post => post.id);
+      const ids = db_postIds.map(post => post.id);
+      if (ids.length === 0) return [];
 
-        if (ids.length === 0) return [];
-
-        const posts = await this.Community_posts.findAll({
-          where: { id: { [Sequelize.Op.in]: ids } },
-          order: orderBy,
-          attributes: {
-              include: [
-                  [
-                      Sequelize.literal(`(
-                          SELECT COUNT(*) 
-                          FROM Community_comments 
-                          WHERE Community_comments.post_id = Community_posts.id
-                      )`),
-                      'total_comments'
-                  ],
-                  [
-                      Sequelize.literal(`(
-                          SELECT COUNT(*) FROM Community_likes 
-                          WHERE Community_likes.entity_id = Community_posts.id 
-                          AND Community_likes.entity_type = 'post' 
-                          AND Community_likes.like_type = 'like'
-                      )`),
-                      'total_likes'
-                  ]
-              ]
-          },
+      const posts = await this.Community_posts.findAll({
+        where: { id: { [Sequelize.Op.in]: ids } },
+        order: orderBy,
+        attributes: {
           include: [
-              { model: this.Community_files },
-              {
-                  model: this.Users, 
-                  attributes: ['id', 'user_name'],
-                  include: [
-                      {
-                          model: this.User_customization,
-                          attributes: ['profil_picture'],
-                      },
-                  ],
-              },
-              {
-                  model: this.Community_likes,
-                  required: false,
-                  where: { entity_type: 'post' },
-                  attributes: [
-                      [
-                          Sequelize.literal(`(
-                              SELECT COUNT(*) FROM Community_likes 
-                              WHERE Community_likes.entity_id = Community_posts.id 
-                              AND Community_likes.entity_type = 'post' 
-                              AND Community_likes.like_type = 'like'
-                          )`),
-                          'total_likes',
-                      ],
-                      [
-                          Sequelize.literal(`(
-                              SELECT COUNT(*) FROM Community_likes 
-                              WHERE Community_likes.entity_id = Community_posts.id 
-                              AND Community_likes.entity_type = 'post' 
-                              AND Community_likes.like_type = 'dislike'
-                          )`),
-                          'total_dislikes',
-                      ],
-                      ...(userId
-                          ? [
-                              [
-                                  Sequelize.literal(`COALESCE((  
-                                      SELECT like_type  
-                                      FROM Community_likes  
-                                      WHERE Community_likes.entity_id = Community_posts.id  
-                                      AND Community_likes.entity_type = 'post'  
-                                      AND Community_likes.user_id = ${userId}  
-                                      LIMIT 1  
-                                  ), 'no_reaction')`),
-                                  'user_reacted',
-                              ],
-                          ]
-                          : []),
-                  ],
-              },
-              {
-                  model: this.Community_comments,
-                  required: false
-              },
-              {
-                  model: this.Community_tags,
-                  through: { attributes: [] },
-                  attributes: ['id', 'tag'],
-                  required: tagsArray && tagsArray.length > 0,
-              }
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) 
+                FROM Community_comments 
+                WHERE Community_comments.post_id = Community_posts.id
+              )`),
+              'total_comments'
+            ],
+            [
+              Sequelize.literal(`(
+                SELECT COUNT(*) FROM Community_likes 
+                WHERE Community_likes.entity_id = Community_posts.id 
+                AND Community_likes.entity_type = 'post' 
+                AND Community_likes.like_type = 'like'
+              )`),
+              'total_likes'
+            ]
           ]
-        });
-      
-      const postIds = posts.map(post => post.id);
-
-      const comments = await this.Community_comments.findAll({
-        where: {
-          post_id: postIds,
         },
+        include: [
+          { model: this.Community_files },
+          {
+            model: this.Users,
+            attributes: ['id', 'user_name'],
+            include: [{ model: this.User_customization, attributes: ['profil_picture'] }]
+          },
+          {
+            model: this.Community_likes,
+            required: false,
+            where: { entity_type: 'post' },
+            attributes: [
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_posts.id 
+                  AND Community_likes.entity_type = 'post' 
+                  AND Community_likes.like_type = 'like'
+                )`),
+                'total_likes'
+              ],
+              [
+                Sequelize.literal(`(
+                  SELECT COUNT(*) FROM Community_likes 
+                  WHERE Community_likes.entity_id = Community_posts.id 
+                  AND Community_likes.entity_type = 'post' 
+                  AND Community_likes.like_type = 'dislike'
+                )`),
+                'total_dislikes'
+              ],
+              ...(userId ? [
+                [
+                  Sequelize.literal(`COALESCE((  
+                    SELECT like_type  
+                    FROM Community_likes  
+                    WHERE Community_likes.entity_id = Community_posts.id  
+                    AND Community_likes.entity_type = 'post'  
+                    AND Community_likes.user_id = ${userId}  
+                    LIMIT 1  
+                  ), 'no_reaction')`),
+                  'user_reacted'
+                ]
+              ] : [])
+            ]
+          },
+          {
+            model: this.Community_comments,
+            required: false
+          },
+          {
+            model: this.Community_tags,
+            through: { attributes: [] },
+            attributes: ['id', 'tag'],
+            required: tagsArray && tagsArray.length > 0
+          }
+        ]
+      });
+
+      const postIds = posts.map(post => post.id);
+      const comments = await this.Community_comments.findAll({
+        where: { post_id: postIds },
         limit: 10,
         order: [['createdAt', 'DESC']],
         attributes: {
@@ -193,20 +176,15 @@ class communityRepository
                 FROM Community_comments AS replies
                 WHERE replies.parent_comment_id = Community_comments.id
               )`),
-              'total_replies',
-            ],
-          ],
+              'total_replies'
+            ]
+          ]
         },
         include: [
           {
             model: this.Users,
             attributes: ['id', 'user_name'],
-            include: [
-              {
-                model: this.User_customization,
-                attributes: ['profil_picture'],
-              },
-            ],
+            include: [{ model: this.User_customization, attributes: ['profil_picture'] }]
           },
           {
             model: this.Community_likes,
@@ -221,7 +199,7 @@ class communityRepository
                   AND Community_likes.entity_type = 'comment' 
                   AND Community_likes.like_type = 'like'
                 )`),
-                'total_likes',
+                'total_likes'
               ],
               [
                 Sequelize.literal(`(
@@ -231,49 +209,39 @@ class communityRepository
                   AND Community_likes.entity_type = 'comment' 
                   AND Community_likes.like_type = 'dislike'
                 )`),
-                'total_dislikes',
+                'total_dislikes'
               ],
-              ...(userId
-                ? [
-                    [
-                      Sequelize.literal(`COALESCE((  
-                        SELECT like_type  
-                        FROM Community_likes  
-                        WHERE Community_likes.entity_id = Community_comments.id  
-                        AND Community_likes.entity_type = 'comment'  
-                        AND Community_likes.user_id = ${userId}  
-                        LIMIT 1  
-                      ), 'no_reaction')`),
-                      'user_reacted',
-                    ],
-                  ]
-                : []),
-            ],
+              ...(userId ? [
+                [
+                  Sequelize.literal(`COALESCE((  
+                    SELECT like_type  
+                    FROM Community_likes  
+                    WHERE Community_likes.entity_id = Community_comments.id  
+                    AND Community_likes.entity_type = 'comment'  
+                    AND Community_likes.user_id = ${userId}  
+                    LIMIT 1  
+                  ), 'no_reaction')`),
+                  'user_reacted'
+                ]
+              ] : [])
+            ]
           },
           {
             model: this.Community_comments,
-            as: 'replies',
-          },
-        ],
+            as: 'replies'
+          }
+        ]
       });
 
       const commentIds = comments.map(comment => comment.id);
-      
       const replies = await this.Community_comments.findAll({
-        where: {
-          parent_comment_id: commentIds,
-        },
+        where: { parent_comment_id: commentIds },
         limit: 10,
         include: [
           {
             model: this.Users,
             attributes: ['id', 'user_name'],
-            include: [
-              {
-                model: this.User_customization,
-                attributes: ['profil_picture'],
-              },
-            ],
+            include: [{ model: this.User_customization, attributes: ['profil_picture'] }]
           },
           {
             model: this.Community_likes,
@@ -288,7 +256,7 @@ class communityRepository
                   AND Community_likes.entity_type = 'comment' 
                   AND Community_likes.like_type = 'like'
                 )`),
-                'total_likes',
+                'total_likes'
               ],
               [
                 Sequelize.literal(`(
@@ -298,54 +266,47 @@ class communityRepository
                   AND Community_likes.entity_type = 'comment' 
                   AND Community_likes.like_type = 'dislike'
                 )`),
-                'total_dislikes',
+                'total_dislikes'
               ],
-              ...(userId
-                ? [
-                    [
-                      Sequelize.literal(`COALESCE((  
-                        SELECT like_type  
-                        FROM Community_likes  
-                        WHERE Community_likes.entity_id = Community_comments.id  
-                        AND Community_likes.entity_type = 'comment'  
-                        AND Community_likes.user_id = ${userId}  
-                        LIMIT 1  
-                      ), 'no_reaction')`),
-                      'user_reacted',
-                    ],
-                  ]
-                : []),
-            ],
-          },
-        ],
+              ...(userId ? [
+                [
+                  Sequelize.literal(`COALESCE((  
+                    SELECT like_type  
+                    FROM Community_likes  
+                    WHERE Community_likes.entity_id = Community_comments.id  
+                    AND Community_likes.entity_type = 'comment'  
+                    AND Community_likes.user_id = ${userId}  
+                    LIMIT 1  
+                  ), 'no_reaction')`),
+                  'user_reacted'
+                ]
+              ] : [])
+            ]
+          }
+        ]
       });
-      
+
       for (let comment of comments) {
         comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
       }
 
       const postsWithComments = posts.map(post => {
         const postJSON = post.toJSON();
-        
         postJSON.Community_comments = comments.filter(comment => comment.post_id === post.id);
-      
         return postJSON;
       });
 
       const postsWithBase64Files = await Promise.all(postsWithComments.map(async (postObj) => {
-
         postObj.userReaction = null;
         postObj.newComment = "";
         postObj.showComments = false;
-      
         postObj.images = [];
         postObj.files = [];
-      
+
         if (postObj.Community_files && postObj.Community_files.length > 0) {
           postObj.Community_files.forEach(file => {
             const fileBuffer = file.file;
             const mimeType = file.file_type || 'application/octet-stream';
-      
             const base64File = Buffer.from(fileBuffer).toString('base64');
             const base64Data = `data:${mimeType};base64,${base64File}`;
 
@@ -373,62 +334,51 @@ class communityRepository
 
         if (postObj.User.User_customization.profil_picture != null) {
           const profileProfPicBuffer = postObj.User.User_customization.profil_picture;
-          
           const profileProfPicMimeType = postObj.User.User_customization.profil_picture_type || 'image/jpeg';
-          
+
           if (profileProfPicBuffer) {
             const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
             postObj.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
           }
         }
-      
-        let userReaction = null;
 
+        let userReaction = null;
         if (postObj.Community_likes && postObj.Community_likes.length > 0) {
-          const userLike = postObj.Community_likes[0].user_reacted;
-          userReaction = userLike ? userLike : null;
+          userReaction = postObj.Community_likes[0].user_reacted;
         }
 
-        var Comments = [];
+        const Comments = [];
 
         for (const comment of postObj.Community_comments) {
-
           let userReactionForComment = null;
-          
           if (comment.Community_likes && comment.Community_likes.length > 0) {
-            const userLike = comment.Community_likes[0].dataValues.user_reacted;
-            userReactionForComment = userLike ? userLike : null;
+            userReactionForComment = comment.Community_likes[0].dataValues.user_reacted;
           }
 
           if (comment.User.User_customization.profil_picture != null) {
             const profileProfPicBuffer = comment.User.User_customization.profil_picture;
-            
             const profileProfPicMimeType = comment.User.User_customization.profil_picture_type || 'image/jpeg';
-            
+
             if (profileProfPicBuffer) {
               const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
               comment.User.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
             }
           }
 
-            const hasMoreComments = comment.replies.length === parsedLimit;
+          const hasMoreComments = comment.replies.length === parsedLimit;
+          const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
+          let hasNewComments = false;
 
-            const lastCommentDate = comment.replies[comment.replies.length - 1]?.createdAt;
-            let hasNewComments = false;
+          if (lastCommentDate) {
+            const newComments = await this.Community_comments.count({
+              where: {
+                parent_comment_id: comment.id,
+                createdAt: { [Sequelize.Op.gt]: lastCommentDate }
+              }
+            });
 
-            if (lastCommentDate) {
-              const newComments = await this.Community_comments.count({
-                where: {
-                  parent_comment_id: comment.id,
-                  createdAt: {
-                    [Sequelize.Op.gt]: lastCommentDate,
-                  },
-                },
-              });
-
-              hasNewComments = newComments > 0;
-            }
-
+            hasNewComments = newComments > 0;
+          }
 
           Comments.push({
             id: comment.id,
@@ -446,31 +396,26 @@ class communityRepository
             prepareReply: false,
             gotEdit: comment.gotEdit,
             editable: false,
-            comments: comment.replies == undefined ? [] : comment.replies.map(inner_comment => {
+            comments: comment.replies ? comment.replies.map(inner_comment => {
               let inner_userReactionForComment = null;
-
               let inner_User = {};
 
               if (inner_comment.Community_likes && inner_comment.Community_likes.length > 0) {
-                const userLike = inner_comment.Community_likes[0].dataValues.user_reacted;
-                inner_userReactionForComment = userLike ? userLike : null;
+                inner_userReactionForComment = inner_comment.Community_likes[0].dataValues.user_reacted;
               }
 
               let inner_prof = null;
-
               if (inner_comment.User.User_customization.profil_picture != null) {
                 const profileProfPicBuffer = inner_comment.User.User_customization.profil_picture;
-                
                 const profileProfPicMimeType = inner_comment.User.User_customization.profil_picture_type || 'image/jpeg';
 
-                
                 if (profileProfPicBuffer) {
                   const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
                   inner_prof = `data:${profileProfPicMimeType};base64,${base64Image}`;
                 }
               }
 
-              inner_User = {id: inner_comment.User.id, user_name: inner_comment.User.user_name, User_customization : {profil_picture: inner_prof}};
+              inner_User = { id: inner_comment.User.id, user_name: inner_comment.User.user_name, User_customization: { profil_picture: inner_prof } };
 
               return {
                 id: inner_comment.id,
@@ -487,65 +432,32 @@ class communityRepository
                 gotEdit: inner_comment.gotEdit,
                 editable: false,
                 userReaction: inner_userReactionForComment,
-                createdAt: inner_comment.createdAt,
+                createdAt: inner_comment.createdAt
               };
-            }),
+            }) : [],
             createdAt: comment.createdAt,
             commentLimit: 10,
-            hasMoreComments: hasMoreComments || hasNewComments,
+            hasMoreComments: hasMoreComments || hasNewComments
           });
-        };
-
-        for (let comment of comments) {
-          comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
         }
 
-        const hasMoreComments = comments.length === parsedLimit;
-
-        const lastCommentDate = comments[comments.length - 1]?.createdAt;
-        let hasNewComments = false;
-
-        if (lastCommentDate) {
-          const newComments = await this.Community_comments.count({
-            where: {
-              post_id: postObj.id,
-              createdAt: {
-                [Sequelize.Op.gt]: lastCommentDate,
-              },
-            },
-          });
-          hasNewComments = newComments > 0;
-        }
-
-        const FinalPost = {
-          id: postObj.id,
-          title: postObj.title,
-          content: postObj.content,
-          createdAt: postObj.createdAt,
-          user_id: postObj.user_id,
-          user_name: postObj.User.user_name,
-          files: postObj.files,
+        const hasMoreComments = Comments.length === parsedLimit;
+        return {
+          ...postObj,
           comments: Comments,
-          total_comments: postObj.total_comments,
-          User: postObj.User,
-          like: Number(postObj.Community_likes[0]?.total_likes) ?? null,
-          dislike: Number(postObj.Community_likes[0]?.total_dislikes) ?? null,
-          userReaction: userReaction,
-          newComment: '',
-          showComments: false,
-          images: postObj.images,
-          gotEdit: postObj.gotEdit,
-          editable: false,
+          hasMoreComments: hasMoreComments,
+          total_likes: postObj.total_likes ?? null,
+          total_comments: postObj.total_comments ?? null,
+          userReaction,
+          user_name: postObj.User.user_name,
+          post_file_name: postObj.file_name,
+          profile_picture: postObj.User.User_customization.profil_picture,
           files: postObj.files,
-          tags: postObj.Community_tags.map(tag => tag.tag),
-          limitedComments: 10,
-          commentLimit: 10,
-          hasMoreComments: hasMoreComments || hasNewComments, 
-        }
-
-        return FinalPost;
+          likes: postObj.Community_likes,
+          tags: postObj.Community_tags.map(c=> c.tag)
+        };
       }));
-      
+
       return postsWithBase64Files.reverse();
     }
     
@@ -634,69 +546,60 @@ class communityRepository
           {
             model: this.Community_comments,
             as: 'replies',
-          },
-        ],
-      });
-    
-      const commentIds = comments.map(comment => comment.id);
-
-      const replies = await this.Community_comments.findAll({
-        where: {
-          parent_comment_id: commentIds,
-        },
-        limit: 10,
-        include: [
-          {
-            model: this.Users,
-            attributes: ['id', 'user_name'],
             include: [
               {
-                model: this.User_customization,
-                attributes: ['profil_picture'],
+                model: this.Users,
+                attributes: ['id', 'user_name'],
+                include: [
+                  {
+                    model: this.User_customization,
+                    attributes: ['profil_picture'],
+                  },
+                ],
               },
-            ],
-          },
-          {
-            model: this.Community_likes,
-            required: false,
-            where: { entity_type: 'comment' },
-            attributes: [
-              [
-                Sequelize.literal(`(
-                  SELECT COUNT(*) 
-                  FROM Community_likes 
-                  WHERE Community_likes.entity_id = Community_comments.id 
-                  AND Community_likes.entity_type = 'comment' 
-                  AND Community_likes.like_type = 'like'
-                )`),
-                'total_likes',
-              ],
-              [
-                Sequelize.literal(`(
-                  SELECT COUNT(*) 
-                  FROM Community_likes 
-                  WHERE Community_likes.entity_id = Community_comments.id 
-                  AND Community_likes.entity_type = 'comment' 
-                  AND Community_likes.like_type = 'dislike'
-                )`),
-                'total_dislikes',
-              ],
-              ...(userId
-                ? [
-                    [
-                      Sequelize.literal(`COALESCE((  
-                        SELECT like_type  
-                        FROM Community_likes  
-                        WHERE Community_likes.entity_id = Community_comments.id  
-                        AND Community_likes.entity_type = 'comment'  
-                        AND Community_likes.user_id = ${userId}  
-                        LIMIT 1  
-                      ), 'no_reaction')`),
-                      'user_reacted',
-                    ],
-                  ]
-                : []),
-            ],
+              {
+                model: this.Community_likes,
+                required: false,
+                where: { entity_type: 'comment' },
+                attributes: [
+                  [
+                    Sequelize.literal(`(
+                      SELECT COUNT(*) 
+                      FROM Community_likes 
+                      WHERE Community_likes.entity_id = Community_comments.id 
+                      AND Community_likes.entity_type = 'comment' 
+                      AND Community_likes.like_type = 'like'
+                    )`),
+                    'total_likes',
+                  ],
+                  [
+                    Sequelize.literal(`(
+                      SELECT COUNT(*) 
+                      FROM Community_likes 
+                      WHERE Community_likes.entity_id = Community_comments.id 
+                      AND Community_likes.entity_type = 'comment' 
+                      AND Community_likes.like_type = 'dislike'
+                    )`),
+                    'total_dislikes',
+                  ],
+                  ...(userId
+                    ? [
+                        [
+                          Sequelize.literal(`COALESCE((  
+                            SELECT like_type  
+                            FROM Community_likes  
+                            WHERE Community_likes.entity_id = Community_comments.id  
+                            AND Community_likes.entity_type = 'comment'  
+                            AND Community_likes.user_id = ${userId}  
+                            LIMIT 1  
+                          ), 'no_reaction')`),
+                          'user_reacted',
+                        ],
+                      ]
+                    : []),
+                ],
+              },
+            ]
           },
         ],
       });
@@ -754,7 +657,7 @@ class communityRepository
           prepareReply: false,
           gotEdit: comment.gotEdit,
           editable: false,
-          comments: comment.replies == undefined ? [] : comment.replies.map(inner_comment => {
+          comments: comment.replies == undefined && comment.replies.length != 0 ? [] : comment.replies.map(inner_comment => {
             let inner_userReactionForComment = null;
 
             let inner_User = {};
@@ -789,8 +692,8 @@ class communityRepository
               post_id: inner_comment.post_id,
               linkAuthor: inner_comment.linkAuthor,
               parent_comment_id: inner_comment.parent_comment_id,
-              like: Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null,
-              dislike: Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null,
+              like: inner_comment.Community_likes.length != 0 ? Number(inner_comment.Community_likes[0]?.dataValues.total_likes) ?? null: null,
+              dislike: inner_comment.Community_likes.length != 0 ?  Number(inner_comment.Community_likes[0]?.dataValues.total_dislikes) ?? null: null,
               prepareReply: false,
               gotEdit: inner_comment.gotEdit,
               editable: false,
@@ -803,16 +706,12 @@ class communityRepository
           hasMoreComments: hasMoreComments || hasNewComments
         };
       }));
-    
-      for (let comment of comments) {
-        comment.replies = replies.filter(reply => reply.parent_comment_id === comment.id);
-      }
-
+      
       const hasMoreComments = comments.length === parsedLimit;
-
+      
       const lastCommentDate = comments[comments.length - 1]?.createdAt;
       let hasNewComments = false;
-
+      
       if (lastCommentDate) {
         const newComments = await this.Community_comments.count({
           where: {
@@ -822,10 +721,10 @@ class communityRepository
             },
           },
         });
-
+        
         hasNewComments = newComments > 0;
       }
-
+      
       return {
         commentsWithreplies,
         hasMoreComments: hasMoreComments || hasNewComments, 

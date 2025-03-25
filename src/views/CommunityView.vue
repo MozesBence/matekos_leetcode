@@ -645,7 +645,7 @@
                               </div>
                             </div>
                           </v-expand-transition>
-                          <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.total_comments > comment.commentLimit && comment.hasMoreComments">
+                          <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="comment.comments.length < comment.total_comments">
                             <v-divider class=""></v-divider>
                             <v-btn
                               elevation="0"
@@ -666,7 +666,7 @@
                       </v-expand-transition>
                     </div>
 
-                    <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.total_comments > post.commentLimit && post.hasMoreComments">
+                    <div class="align-center d-flex justify-center mb-4 pa-4 position-relative" v-if="post.comments.length < post.total_comments">
                       <v-divider class=""></v-divider>
                       <v-btn
                         elevation="0"
@@ -829,7 +829,7 @@
   
           <v-card-actions>
             <v-btn color="success" :disabled="!ReportSelected" @click="SendReport(true)">Küldés</v-btn>
-            <v-btn text @click="AlertClose">Mégse</v-btn>
+            <v-btn text @click="showAlert = false;">Mégse</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -1149,15 +1149,19 @@ import {
 import imageCompression from 'browser-image-compression';
 import { useDisplay } from 'vuetify';
 
+// Router és route hookok
 const router = useRouter();
 const route = useRoute();
 
+// Üzenetkezelés
 const showError = inject("showError");
+const showSucces = inject("showSucces");
 
-// Vuetify beépített breakpoint detektálás
+// Képernyő méret / eszköz
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
 
+// Cookie kezelés
 const getCookie = (name) => {
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -1169,161 +1173,18 @@ const getCookie = (name) => {
   return null;
 };
 
+// <------- Változók ------->
+
 var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
-
 const get_fullUser = ref(null);
-
 const get_UserName = ref('Betöltés...');
-
 const posts_limit = ref(10);
 const total_posts = ref(null);
 const PostLoading = ref(true);
-
-
-const { mutate: ProfileGetUser } = useProfileGetUser();
-const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
-
-onMounted(async () => {
-  if (get_user_by_token != null) {
-    try {
-      await ProfileGetUser({token: get_user_by_token, id: 0}, {
-        onSuccess: (get_user) => {
-          get_UserName.value = get_user.user_name;
-          get_fullUser.value = get_user;
-        },
-        onError: (error) => {
-        },
-      });
-    } catch (error) {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    }
-  }
-
-  if(get_user_by_token == null){
-    await CommunityGetLimitedPosts({
-      limit: posts_limit.value,
-      offset: posts.length,
-      id: null,
-      filter: null,
-      tagsArray: null,
-      search: null
-    }, {
-      onSuccess: (posts_array) => {
-        PostLoading.value = false;
-        total_posts.value = posts_array.total_posts;
-        if (posts_array.posts != null) {
-          posts_array.posts.forEach((post, index) => {
-            setTimeout(() => {
-              postsConvertToDisplay(post, true, false);
-            });
-          });
-        }
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  }
-});
-watch(get_fullUser, async (User) => {
-  try {
-    await CommunityGetLimitedPosts({
-      limit: posts_limit.value,
-      offset: posts.length,
-      id: User.id == null ? null : User.id,
-      filter: null,
-      tagsArray: null,
-      search: null
-    }, {
-      onSuccess: (posts_array) => {
-        PostLoading.value = false;
-        total_posts.value = posts_array.total_posts;
-        if (posts_array.posts != null) {
-          posts_array.posts.forEach((post, index) => {
-            setTimeout(() => {
-              postsConvertToDisplay(post, true, false);
-            });
-          });
-        }
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  } catch (error) {
-    if (showError) {
-      showError(error.response.data);
-    }else{
-      console.log(error.response.data);
-    }
-  }
-});
-
-
-function formatDate(date) {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // hónap, 2 számjegyre
-  const day = date.getDate().toString().padStart(2, '0'); // nap, 2 számjegyre
-  const hours = date.getHours().toString().padStart(2, '0'); // óra, 2 számjegyre
-  const minutes = date.getMinutes().toString().padStart(2, '0'); // perc, 2 számjegyre
-  
-  return `${year}-${month}-${day} ${hours}:${minutes}`;
-}
-
 const showAlert = ref(false);
 const ReportSelected = ref(null);
 const SelectedReportArray = ref(null);
 const SelectedReportArrayType = ref(true);
-
-function AlertOpen(array,igaze){
-  showAlert.value = true;
-  ReportSelected.value = null;
-  SelectedReportArray.value = array;
-  SelectedReportArrayType.value = igaze;
-}
-
-function AlertClose(){
-  showAlert.value = false;
-}
-
-const { mutate: CommunityReports } = useSendReports();
-const SendReport = async (post) =>{
-  await CommunityReports({
-    type: true,
-    notif_content: ReportSelected.value, 
-    content_type: SelectedReportArrayType.value, 
-    user_id: SelectedReportArray.value.User.id, 
-    from_user_id: get_fullUser.value.id, 
-    content_id: SelectedReportArray.value.id
-  }, {
-    onSuccess: (response) => {
-      console.log(response);
-    },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    },
-  });
-
-  AlertClose();
-}
-
-// Állapotok és változók
 const activeBold = ref(false);
 const activeItalic = ref(false);
 const activeStrikethrough = ref(false);
@@ -1342,373 +1203,214 @@ const showEditPost = ref(false);
 const showPostDial = ref(false);
 const defaultPostSave = ref(null);
 const saveEditingChips = ref([]);
-
 const newPost = reactive({ title: "", images: ref([]), files: ref([]) });
 const editingPost = reactive({ title: "", images: ref([]), files: ref([]), content: "" });
-
-// Posts tömb
 const posts = reactive([]);
-
 const showCreatePost = ref(false);
-
 const searchQuery = ref("");
 let timeout = null;
+const FilterChips = ref([]);
+const FilterOpt = ref([]);
+const FilterOptForCreate = ref([]);
+const sortOptions = ref([]);
+const sortOptionForPop = ref('');
+let execCommandCheckInterval = null;
+const loading = ref(false);
 
-watch(searchQuery, async (newValue) => {
-  clearTimeout(timeout);
+// <------- Változók ------->
 
-  if (newValue !== "") {
-    timeout = setTimeout( async () => {
-      posts.length = 0;
-      PostLoading.value = true;
-      const newArray = FilterOpt.value.map(num => num + 1);
-      await CommunityGetLimitedPosts({
-        limit: posts_limit.value,
-        offset: posts.length,
-        id: get_fullUser.value == null ? null : get_fullUser.value.id,
-        filter: [[sortOptions.value, (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-        tagsArray: newArray.length > 0 ? newArray : null,
-        search: newValue
-      }, {
-        onSuccess: (posts_array) => {
-          PostLoading.value = false;
-          total_posts.value = posts_array.total_posts;
-          if (posts_array.posts != null) {
-            posts_array.posts.forEach((post, index) => {
-              setTimeout(() => {
-                postsConvertToDisplay(post, true, false);
-              });
-            });
-          }
-        },
-        onError: (error) => {
-          if (showError) {
-            showError(error.response.data);
-          }else{
-            console.log(error.response.data);
-          }
-        },
+// <------- Api hívások ------->
+
+// Api hívás - közösségi címkék kezelése
+const mutation = useCommunityTags();
+
+// Api hívás - felhasználói profil lekérése
+const { mutate: ProfileGetUser } = useProfileGetUser();
+
+// Api hívás - közösségi bejegyzések lekérése
+const { mutate: CommunityGetLimitedPosts } = useGetCommunityPost();
+
+// Api hívás - jelentések küldése
+const { mutate: CommunityReports } = useSendReports();
+
+// Api hívás - bejegyzés módosítása
+const { mutate: CommunityEditPostUpload } = useCommunityEditPost();
+
+// Api hívás - új bejegyzés feltöltése
+const { mutate: CommunityPostUpload } = useCommunityPost(loading);
+
+// Api hívás - like/dislike művelet egy bejegyzésen
+const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
+
+// Api hívás - komment módosítása
+const { mutate: CommunityCommentEdit } = useCommentEdit();
+
+// Api hívás - új komment hozzáadása bejegyzéshez
+const { mutate: CommunityCommentForPost } = useCommentForPost();
+
+// Api hívás - limitált kommentek lekérése
+const { mutate: CommunityGetLimitedComments } = useGetCommunityComments();
+
+// <------- Api hívások ------->
+
+// <------- Függvények | figyelők ------->
+
+onMounted(async () => {
+  if (get_user_by_token != null) {
+    try {
+      await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+        onSuccess: (get_user) => { get_UserName.value = get_user.user_name; get_fullUser.value = get_user; },
+        onError: (error) => {showError ? showError(error.response.data) : console.log(error.response.data);},
       });
-    }, 300);
-  }else{
-    posts.length = 0;
-    PostLoading.value = true;
-    const newArray = FilterOpt.value.map(num => num + 1);
+    } catch (error) {
+      showError ? showError(error.response.data) : console.log(error.response.data);
+    }
+  } else {
     await CommunityGetLimitedPosts({
       limit: posts_limit.value,
       offset: posts.length,
-      id: get_fullUser.value == null ? null : get_fullUser.value.id,
-      filter: [[sortOptions.value, (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-      tagsArray: newArray.length > 0 ? newArray : null,
+      id: null,
+      filter: null,
+      tagsArray: null,
       search: null
     }, {
       onSuccess: (posts_array) => {
         PostLoading.value = false;
         total_posts.value = posts_array.total_posts;
-        if (posts_array.posts != null) {
-          posts_array.posts.forEach((post, index) => {
-            setTimeout(() => {
-              postsConvertToDisplay(post, true, false);
-            });
-          });
-        }
+        posts_array.posts && posts_array.posts.forEach(post => setTimeout(() => postsConvertToDisplay(post, true, false)));
       },
       onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
+        showError ? showError(error.response.data) : console.log(error.response.data);
+      }
     });
   }
 });
 
-const mutation = useCommunityTags();
-
-watchEffect(() => {
-  mutation.mutate(undefined, {
-    onSuccess: (response) => {
-      const tags = response.map(item => item.tag);
-      FilterChips.value.push(...tags);
+watch(get_fullUser, async (User) => {
+  CommunityGetLimitedPosts({
+    limit: posts_limit.value,
+    offset: posts.length,
+    id: User.id,
+    filter: null,
+    tagsArray: null,
+    search: null
+  }, {
+    onSuccess: (posts_array) => {
+      PostLoading.value = false;
+      total_posts.value = posts_array.total_posts;
+      posts_array.posts && posts_array.posts.forEach(post =>
+        setTimeout(() => postsConvertToDisplay(post, true, false))
+      );
     },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    }
+    onError: (error) =>
+      showError ? showError(error.response.data) : console.log(error.response.data)
   });
 });
 
-const FilterChips = ref([]);
+function formatDate(date) {
+  return `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')} ${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+}
 
-const FilterOpt = ref([]);
-const FilterOptForCreate = ref([]);
+function AlertOpen(array,igaze){
+  showAlert.value = true;
+  ReportSelected.value = null;
+  SelectedReportArray.value = array;
+  SelectedReportArrayType.value = igaze;
+}
 
-watch(FilterOpt, async (newVal, oldVal) => {
-  if(newVal.length != 0){
-    posts.length = 0;
-    PostLoading.value = true;
-    await CommunityGetLimitedPosts({
-      limit: posts_limit.value,
-      offset: posts.length,
-      id: get_fullUser.value == null ? null : get_fullUser.value.id,
-      filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-      tagsArray: newVal.map(num => num + 1),
-      search: searchQuery.value
-    }, {
-      onSuccess: (posts_array) => {
-        PostLoading.value = false;
-        total_posts.value = posts_array.total_posts;
-        if (posts_array.posts != null) {
-          posts_array.posts.forEach((post, index) => {
-            setTimeout(() => {
-              postsConvertToDisplay(post, true, false);
-            });
-          });
-        }
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  }else if(oldVal.length == 1 && newVal.length == 0){
-    posts.length = 0;
-    PostLoading.value = true;
-    await CommunityGetLimitedPosts({
-      limit: posts_limit.value,
-      offset: posts.length,
-      id: get_fullUser.value == null ? null : get_fullUser.value.id,
-      filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-      tagsArray: null,
-      search: searchQuery.value
-    }, {
-      onSuccess: (posts_array) => {
-        PostLoading.value = false;
-        total_posts.value = posts_array.total_posts;
-        if (posts_array.posts != null) {
-          posts_array.posts.forEach((post, index) => {
-            setTimeout(() => {
-              postsConvertToDisplay(post, true, false);
-            });
-          });
-        }
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  }
-});
+const SendReport = async (post) => {
+  await CommunityReports({
+    type: true,
+    notif_content: ReportSelected.value,
+    content_type: SelectedReportArrayType.value,
+    user_id: SelectedReportArray.value.User.id,
+    from_user_id: get_fullUser.value.id,
+    content_id: SelectedReportArray.value.id
+  }, {
+    onSuccess: console.log,
+    onError: (error) => showError ? showError(error.response.data) : console.log(error.response.data)
+  });
 
-const sortOptions = ref([]); // Tömb, amely tartalmazza a kiválasztott értékeket
-
-const toggleOption = async (option) => {
-  if(sortOptions.value.length == 0){
-    sortOptions.value.push(option);
-  }else{
-    if(sortOptions.value[0] == option){
-      if(sortOptions.value[0] != null){
-        posts.length = 0;
-        PostLoading.value = true;
-        const newArray = FilterOpt.value.map(num => num + 1);
-        await CommunityGetLimitedPosts({
-          limit: posts_limit.value,
-          offset: posts.length,
-          id: get_fullUser.value == null ? null : get_fullUser.value.id,
-          filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-          tagsArray: newArray.length > 0 ? newArray : null,
-          search: searchQuery.value
-        }, {
-          onSuccess: (posts_array) => {
-            PostLoading.value = false;
-            total_posts.value = posts_array.total_posts;
-            if (posts_array.posts != null) {
-              posts_array.posts.forEach((post, index) => {
-                setTimeout(() => {
-                  postsConvertToDisplay(post, true, false);
-                });
-              });
-            }
-          },
-          onError: (error) => {
-            if (showError) {
-              showError(error.response.data);
-            }else{
-              console.log(error.response.data);
-            }
-          },
-        });
-        sortOptions.value = [];
-      }
-    }
-    else{
-      sortOptions.value[0] = option;
-    }
-  }
+  showAlert.value = false;
 };
 
-const sortOptionForPop = ref(''); // Alapértelmezett érték
+watchEffect(() => {
+  mutation.mutate(undefined, {
+    onSuccess: (response) => FilterChips.value.push(...response.map(item => item.tag)),
+    onError: (error) => showError ? showError(error.response.data) : console.log(error.response.data)
+  });
+});
 
-watch(sortOptionForPop, async (newSortOption, oldSortOption) => {
-    const newArray = FilterOpt.value.map(num => num + 1);
-    if (newSortOption === 'popularity') {
-      posts.length = 0;
-      PostLoading.value = false;
-      await CommunityGetLimitedPosts({
-        limit: posts_limit.value,
-        offset: posts.length,
-        id: get_fullUser.value == null ? null : get_fullUser.value.id,
-        filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'DESC' : 'ASC']],
-        tagsArray: newArray.length > 0 ? newArray : null,
-        search: searchQuery.value
-        }, 
-        {
-          onSuccess: (posts_array) => {
-            PostLoading.value = false;
-            total_posts.value = posts_array.total_posts;
-            if (posts_array.posts != null) {
-              posts_array.posts.forEach((post, index) => {
-                setTimeout(() => {
-                  postsConvertToDisplay(post, true, false);
-                });
-              });
-            }
-          },
-          onError: (error) => {
-            if (showError) {
-              showError(error.response.data);
-            }else{
-              console.log(error.response.data);
-            }
-          },
-        }
-      );
-    } else if (newSortOption === 'date') {
-      posts.length = 0;
-      PostLoading.value = false;
-      if (sortOptionForPop.value != null) {
-        await CommunityGetLimitedPosts({
-          limit: posts_limit.value,
-          offset: posts.length,
-          id: get_fullUser.value == null ? null : get_fullUser.value.id,
-          filter: [[sortOptions.value[0], sortOptions.value[0] == 'date' ? 'ASC' : 'DESC']],
-          tagsArray: newArray.length > 0 ? newArray : null,
-          search: searchQuery.value
-          }, 
-          {
-            onSuccess: (posts_array) => {
-              PostLoading.value = false;
-              total_posts.value = posts_array.total_posts;
-              if (posts_array.posts != null) {
-                posts_array.posts.forEach((post, index) => {
-                  setTimeout(() => {
-                    postsConvertToDisplay(post, true, false);
-                  });
-                });
-              }
-            },
-            onError: (error) => {
-              if (showError) {
-                showError(error.response.data);
-              }else{
-                console.log(error.response.data);
-              }
-            },
-          }
-        );
-      }
-    }
-  }
-);
+const fetchPosts = async ({ search = null, tags = null, sort = null } = {}) => {
+  posts.length = 0;
+  PostLoading.value = true;
 
-// Figyeljük a sortOptions változását
-watch(sortOptions.value, async (newSortOptions, oldSortOptions) => {
-  if (sortOptionForPop.value != null) {
-    const newArray = FilterOpt.value.map(num => num + 1);
-    posts.length = 0;
-    PostLoading.value = false;
-    await CommunityGetLimitedPosts({
-      limit: posts_limit.value,
-      offset: posts.length,
-      id: get_fullUser.value == null ? null : get_fullUser.value.id,
-      filter: [[newSortOptions[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-      tagsArray: newArray.length > 0 ? newArray : null,
-      search: searchQuery.value
-      }, 
-      {
-        onSuccess: (posts_array) => {
-          PostLoading.value = false;
-          total_posts.value = posts_array.total_posts;
-          if (posts_array.posts != null) {
-            posts_array.posts.forEach((post, index) => {
-              setTimeout(() => {
-                postsConvertToDisplay(post, true, false);
-              });
-            });
-          }
-        },
-        onError: (error) => {
-          if (showError) {
-            showError(error.response.data);
-          }else{
-            console.log(error.response.data);
-          }
-        },
-      }
-    );
+  await CommunityGetLimitedPosts({
+    limit: posts_limit.value,
+    offset: posts.length,
+    id: get_fullUser.value?.id || null,
+    filter: [sortOptions.value[0], sort],
+    tagsArray: tags?.length ? JSON.stringify(tags.map(num => num + 1)) : null,
+    search
+  }, {
+    onSuccess: (posts_array) => {
+      PostLoading.value = false;
+      total_posts.value = posts_array.total_posts;
+      posts_array.posts?.forEach(post => setTimeout(() => postsConvertToDisplay(post, true, false)));
+    },
+    onError: (error) => showError ? showError(error.response.data) : console.log(error.response.data)
+  });
+};
+
+watch(searchQuery, async (newValue) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => fetchPosts({ search: newValue, tags: FilterOpt.value }), 300);
+});
+
+watch(FilterOpt, async (newVal, oldVal) => {
+  if (newVal.length || (oldVal.length && !newVal.length)) {
+    fetchPosts({ search: searchQuery.value, tags: newVal });
   }
 });
 
+const toggleOption = async (option) => {
+  if (!sortOptions.value.length) {
+    sortOptions.value = [option];
+  } else if (sortOptions.value[0] === option) {
+    sortOptions.value = [];
+  } else {
+    sortOptions.value[0] = option;
+  }
+  fetchPosts({ search: searchQuery.value, tags: FilterOpt.value });
+};
+
+watch(sortOptionForPop, async (newSortOption) => {
+  fetchPosts({ 
+    search: searchQuery.value, 
+    tags: FilterOpt.value, 
+    sort: newSortOption === 'date' ? 'DESC' : 'ASC'
+  });
+});
+
+watch(sortOptions, async (newSortOptions) => {
+  if (sortOptionForPop.value[0]) {
+    fetchPosts({ search: searchQuery.value, tags: FilterOpt.value, sort: sortOptionForPop.value[0] === 'date' ? 'ASC' : 'DESC' });
+  }
+}, { deep: true });
+
 const checkScroll = async () => {
-  if(total_posts.value != posts.length){
-    if (PostLoading.value) return;
-    
-    const scrollPosition = window.innerHeight + window.scrollY;
-    const pageHeight = document.documentElement.scrollHeight;
-  
-    if (scrollPosition >= pageHeight) {
-      PostLoading.value = true;
-      const newArray = FilterOpt.value.map(num => num + 1);
-      await CommunityGetLimitedPosts({
-        limit: posts_limit.value,
-        offset: posts.length,
-        id: get_fullUser.value == null ? null : get_fullUser.value.id,
-        filter: [[sortOptions.value[0], (sortOptionForPop.value == 'popularity'? "ASC" : "DESC")]],
-        tagsArray: newArray.length > 0 ? newArray : null,
-        search: searchQuery.value
-      }, {
-        onSuccess: (posts_array) => {
-          total_posts.value = posts_array.total_posts;
-          if (posts_array.posts != null) {
-            posts_array.posts.forEach((post, index) => {
-              setTimeout(() => {
-                postsConvertToDisplay(post, true, true);
-              });
-            });
-            PostLoading.value = false;
-          }
-        },
-        onError: (error) => {
-          if (showError) {
-            showError(error.response.data);
-          }else{
-            console.log(error.response.data);
-          }
-          PostLoading.value = false;  // Hiba esetén is visszaállítjuk a loadingot
-        },
-      });
-    }
+  if (total_posts.value === posts.length || PostLoading.value) return;
+
+  if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight) {
+    PostLoading.value = true;
+
+    await fetchPosts({
+      search: searchQuery.value,
+      tags: FilterOpt.value,
+      sort: sortOptions.value[0] === 'date' ? 'DESC' : 'ASC'
+    });
+
+    PostLoading.value = false;
   }
 };
 
@@ -1749,119 +1451,126 @@ watch(showEditPost, async (newVal) => {
   }
 });
 
-const { mutate: CommunityEditPostUpload } = useCommunityEditPost();
+const EditPostConf = async () => {
+  const editor = document.querySelector(".editor");
+  if (!editor) return;
 
-const EditPostConf = async () =>{
-  var editor = document.getElementsByClassName("editor")[0];
-  let htmlContent = editor.innerHTML;
+  const htmlContent = editor.innerHTML.trim();
+  if (!htmlContent || htmlContent === "<br>") return;
 
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = htmlContent;
 
-  const imgElements = Array.from(tempDiv.querySelectorAll("img")); // Átalakítjuk tömbbé
+  const imgElements = [...tempDiv.querySelectorAll("img")];
+  imgElements.forEach(img => img.removeAttribute("src"));
 
-  var none_existingFiles = [];
-
-  imgElements.forEach(img => {
-    img.removeAttribute("src");
-  });
-
-  for (let i = 0; i < editingPost.images.length; i++) {
-    const found = imgElements.some(img => img.id === (i + 1).toString());
-    if(!found){
-      editingPost.images.splice(i,1);
-    }
-  }
+  //Nem létező képek kiszűrése
+  editingPost.images = editingPost.images.filter((_, i) =>
+    imgElements.some(img => img.id === (i + 1).toString())
+  );
 
   const cleanedHtmlContent = tempDiv.innerHTML;
+  const changedFiles = [...editingPost.images, ...editingPost.files];
+  const defaultFiles = [...defaultPostSave.value.images, ...defaultPostSave.value.files];
 
-  const changed_mergedArray = [...editingPost.images, ...editingPost.files];
-  const def_mergedArray = [...defaultPostSave.value.images, ...defaultPostSave.value.files];
+  const [changedCompressed, defaultCompressed] = await Promise.all([
+    compressingFiles(changedFiles),
+    compressingFiles(defaultFiles)
+  ]);
 
-  const changed_compressingFilesArray = await compressingFiles(changed_mergedArray);
-  const def_compressingFilesArray = await compressingFiles(def_mergedArray);
+  //Új fájlok keresése
+  const newFiles = changedCompressed.filter(changedFile =>
+    typeof changedFile !== 'number' &&
+    changedFile &&
+    !defaultCompressed.some(f => f && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)
+  );
 
-  var new_files = [];
+  //Törölt fájlok keresése
+  const noneExistingFiles = defaultCompressed
+    .map((file, i) => (changedCompressed.some(f => f && f.name === file.name && f.size === file.size && f.type === file.type) ? null : defaultCompressed[i + 1]))
+    .filter(Boolean);
 
-  changed_compressingFilesArray.filter(changedFile => {
-    if(typeof changedFile != 'number' && changedFile != undefined){
-      if (!def_compressingFilesArray.some(f => f != undefined && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
-        new_files.push(changedFile);
-      }
+  //Címkék különbsége
+  const newChips = FilterOptForCreate.value.filter(c => !saveEditingChips.value.includes(c)).map(x => x + 1);
+  const noneChips = saveEditingChips.value.filter(c => !FilterOptForCreate.value.includes(c)).map(x => x + 1);
+
+  //Ha nincs érdemi változás, nem kell frissíteni
+  if (
+    defaultPostSave.value.title === editingPost.title &&
+    defaultPostSave.value.content === editor.value &&
+    JSON.stringify(defaultPostSave.value.files) === JSON.stringify(editingPost.files) &&
+    JSON.stringify(defaultPostSave.value.images) === JSON.stringify(editingPost.images)
+  ) return;
+
+  //Post frissítés API hívás
+  await CommunityEditPostUpload({
+    id: defaultPostSave.value.id,
+    title: editingPost.title,
+    content: cleanedHtmlContent,
+    files: newFiles,
+    none_files: noneExistingFiles,
+    new_Chips: newChips.length ? newChips : [],
+    none_Chips: noneChips.length ? noneChips : []
+  }, {
+    onSuccess: async () => {
+      const post = posts.find(c => c.id === defaultPostSave.value.id);
+      if (!post) return;
+
+      //Fájlok frissítése
+      post.files = [
+        ...post.files,
+        ...await Promise.all(editingPost.files.map(async file => {
+          if (typeof file.file === 'object') {
+            const fileRes = await fileToBase64(file.file);
+            return reactive({
+              file: fileRes,
+              file_name: file.name,
+              file_size: file.size,
+              file_type: file.type,
+              id: null,
+              name: file.name,
+              post_id: defaultPostSave.value.id
+            });
+          }
+          return null;
+        })).then(arr => arr.filter(Boolean))
+      ];
+
+      //Képek frissítése
+      post.images = [
+        ...post.images,
+        ...editingPost.images.filter(img =>
+          !post.images.some(existing => existing.file_name === img.name && existing.id !== null)
+        ).map(img => reactive({
+          file: img.url,
+          file_name: img.name,
+          file_size: img.size,
+          file_type: img.type,
+          id: null,
+          name: img.name,
+          post_id: defaultPostSave.value.id
+        }))
+      ];
+
+      //Törölt fájlok eltávolítása
+      post.images = post.images.filter(img => !noneExistingFiles.includes(img.id));
+      post.files = post.files.filter(file => !noneExistingFiles.includes(file.id));
+
+      //Egyéb frissítések
+      post.title = editingPost.title;
+      post.content = cleanedHtmlContent;
+      post.tags = FilterOptForCreate.value.map(i => FilterChips.value[i]);
+      post.gotEdit = true;
+
+      showSucces ? showSucces("A post sikeresen módosítva lett!") : console.log("A post sikeresen módosítva lett!");
+    },
+    onError: (error) =>{
+      showError ? showError(error.response.data) : console.log(error.response.data);
     }
   });
-  
-  def_compressingFilesArray.filter(changedFile => {
-    if(typeof changedFile != 'number' && changedFile != undefined){
-      if (!changed_compressingFilesArray.some(f => f != undefined && f.name === changedFile.name && f.size === changedFile.size && f.type === changedFile.type)) {
-        none_existingFiles.push(def_compressingFilesArray[def_compressingFilesArray.indexOf(changedFile)+1]);
-      }
-    }
-  });
 
-  const new_Chips = FilterOptForCreate.value.filter(c=> !saveEditingChips.value.includes(c)).map(x => x +1);
-  const none_Chips = saveEditingChips.value.filter(c=> !FilterOptForCreate.value.includes(c)).map(x => x +1);
-
-  const def_postId =  Number(defaultPostSave.value.id);
-
-  if(editor.innerHTML != "" && editor.innerHTML != "<br>" && (defaultPostSave.value.title != editingPost.title || defaultPostSave.value.content != editor.value || defaultPostSave.value.files != editingPost.files || defaultPostSave.value.images != editingPost.images)){
-    await CommunityEditPostUpload({id: defaultPostSave.value.id, title: editingPost.title , content: cleanedHtmlContent, files: new_files, none_files: none_existingFiles, new_Chips: new_Chips.length > 0 ? new_Chips : [], none_Chips: none_Chips.length > 0 ? none_Chips : []}, {
-      onSuccess : async (response) =>{
-        const post = posts.find(c => c.id == def_postId);
-
-        for (let i = 0; i < editingPost.files.length; i++) {
-          if(typeof editingPost.files[i].file == 'object'){
-            const file_res = await fileToBase64(editingPost.files[i].file);
-            const obj = reactive({
-              file: file_res,
-              file_name: editingPost.files[i].name,
-              file_size: editingPost.files[i].size,
-              file_type: editingPost.files[i].type,
-              id: null,
-              name: editingPost.files[i].name,
-              post_id: Number(defaultPostSave.value.id)
-            });
-            post.files = [...post.files, obj];
-          }
-        }
-
-        for (let i = 0; i < editingPost.images.length; i++) {
-          const image = post.images.find(c=> c.file_name == editingPost.images[i].name && c.id != null);
-          if(image == undefined){
-            const obj = reactive({
-              file: editingPost.images[i].url,
-              file_name: editingPost.images[i].name,
-              file_size: editingPost.images[i].size,
-              file_type: editingPost.images[i].type,
-              id: null,
-              name: editingPost.images[i].name,
-              post_id: Number(defaultPostSave.value.id)
-            });
-            post.images = [...post.images, obj];
-          }
-        }
-
-        for (let i = 0; i < none_existingFiles.length; i++) {
-          const image = post.images.find(c=> c.id == none_existingFiles[i]);
-          const file = post.files.find(c=> c.id == none_existingFiles[i]);
-          if(image != undefined){
-            post.images.splice(post.images.indexOf(image),1);
-          }
-          if(file != undefined){
-            post.files.splice(post.files.indexOf(file),1);
-          }
-        }
-
-        post.title = editingPost.title;
-        post.content = htmlContent;
-        post.tags = FilterOptForCreate.value.map(i => FilterChips.value[i]);
-        post.gotEdit = true;
-      }
-    });
-
-    ShowPostClose();
-  }
-}
+  ShowPostClose();
+};
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -1874,7 +1583,6 @@ function fileToBase64(file) {
   });
 }
 
-
 function ShowPostClose(){
   showPostDial.value = false;
   showCreatePost.value = false;
@@ -1884,7 +1592,6 @@ function ShowPostClose(){
   saveEditingChips.value = [];
 }
 
-// Methods
 function toggleBold() {
   document.execCommand('bold');
   activeBold.value = !activeBold.value;
@@ -1971,6 +1678,7 @@ function createLink() {
     activeLink.value = false;
   }
 }
+
 function isLink(text) {
   try {
     const url = new URL(text);
@@ -2009,89 +1717,40 @@ const handleImageUpload = async (event) => {
           insertImage();
         }
       }
-
-      // Kép beszúrása a kurzor helyére
     };
     
     reader.readAsDataURL(file);
   } else {
-    alert('A fájl nem megfelelő típusú vagy túl nagy (max 1MB).');
+    showError ? showError('A fájl nem megfelelő típusú vagy túl nagy (max 1MB).') : console.log('A fájl nem megfelelő típusú vagy túl nagy (max 1MB).');
   }
 };
 
-function checkSelection(){
-  const editor = document.getElementsByClassName("editor")[0];
-  if (document.activeElement === editor) {
-    const selection = document.getSelection();
-    if (selection.rangeCount > 0) {
-      const selectedRange = selection.getRangeAt(0);
-      const parentElement = selectedRange.startContainer.parentElement;
-      const computedStyle = window.getComputedStyle(parentElement);
+function checkSelection() {
+  const editor = document.querySelector(".editor");
+  if (document.activeElement !== editor) return;
 
-      // Ellenőrizzük, hogy a szülő elem tartalmazza-e a 'font-weight: bold' stílust
-      if(parentElement){
-        if (computedStyle.fontWeight == 700) {
-          activeBold.value = true;
-        } else {
-          activeBold.value = false;
-        }
-  
-        if (computedStyle.fontStyle  == 'italic') {
-          activeItalic.value = true;
-        } else {
-          activeItalic.value = false;
-        }
-  
-        if (computedStyle.textDecorationLine == 'line-through') {
-          activeStrikethrough.value = true;
-        } else {
-          activeStrikethrough.value = false;
-        }
+  const selection = document.getSelection();
+  if (!selection.rangeCount) return;
 
-        if (computedStyle.textDecorationLine == 'underline' && selectedRange.commonAncestorContainer.parentElement.tagName != 'A') {
-          activeUnderline.value = true;
-        } else {
-          activeUnderline.value = false;
-        }
+  const selectedRange = selection.getRangeAt(0);
+  const parent = selectedRange.startContainer.parentElement;
+  if (!parent) return;
 
-        if(computedStyle.textAlign == 'start' || computedStyle.textAlign == 'left'){
-          activeAlignLeft.value = true;
-          activeAlignCenter.value = false;
-          activeAlignRight.value = false;
-        }else if(computedStyle.textAlign == 'center'){;
-          activeAlignLeft.value = false;
-          activeAlignCenter.value = true;
-          activeAlignRight.value = false;
-        }else if(computedStyle.textAlign == 'right'){
-          activeAlignLeft.value = false;
-          activeAlignCenter.value = false;
-          activeAlignRight.value = true;
-        }
+  const computedStyle = window.getComputedStyle(parent);
+  const ancestor = selectedRange.commonAncestorContainer.parentElement;
 
-        const orderlistParentElement = selectedRange.commonAncestorContainer.parentElement.parentElement;
-        if (orderlistParentElement.tagName == 'OL') {
-          activeOrderedList.value = true;
-        }else{
-          activeOrderedList.value = false;
-        }
-
-        if (orderlistParentElement.tagName == 'UL') {
-          activeUnorderedList.value = true;
-        }else{
-          activeUnorderedList.value = false;
-        }
-
-        if (selectedRange.commonAncestorContainer.parentElement.tagName == 'A') {
-          activeLink.value = true;
-        }else{
-          activeLink.value = false;
-        }
-      }
-    }
-  }
+  activeBold.value = computedStyle.fontWeight == "700";
+  activeItalic.value = computedStyle.fontStyle == "italic";
+  activeStrikethrough.value = computedStyle.textDecorationLine == "line-through";
+  activeUnderline.value = computedStyle.textDecorationLine == "underline" && ancestor.tagName !== "A";
+  activeAlignLeft.value = ["start", "left"].includes(computedStyle.textAlign);
+  activeAlignCenter.value = computedStyle.textAlign == "center";
+  activeAlignRight.value = computedStyle.textAlign == "right";
+  activeOrderedList.value = ancestor?.parentElement?.tagName == "OL";
+  activeUnorderedList.value = ancestor?.parentElement?.tagName == "UL";
+  activeLink.value = ancestor.tagName == "A";
 }
 
-let execCommandCheckInterval = null;
 function startMonitoring() {
   if (!execCommandCheckInterval) {
     execCommandCheckInterval = setInterval(() => {
@@ -2099,6 +1758,7 @@ function startMonitoring() {
     }, 200);
   }
 }
+
 function stopMonitoring() {
   if (execCommandCheckInterval) {
     clearInterval(execCommandCheckInterval);
@@ -2122,345 +1782,219 @@ watch(showEditPost, (newValue) => {
   }
 });
 
-const loading = ref(false);
-const { mutate: CommunityPostUpload } = useCommunityPost(loading);
-const addPost = async () =>{
-  const editor = document.getElementsByClassName("editor")[0];
-  let htmlContent = editor.innerHTML;
+const addPost = async () => {
+  const editor = document.querySelector(".editor");
+  if (!editor || !newPost.title || !editor.innerHTML || !get_fullUser.value?.id) return;
 
-  // Létrehozunk egy ideiglenes DOM elemet a HTML tartalommal
+  loading.value = true;
+
+  // Tisztított HTML tartalom
   const tempDiv = document.createElement("div");
-  tempDiv.innerHTML = htmlContent;
+  tempDiv.innerHTML = editor.innerHTML;
+  tempDiv.querySelectorAll("img").forEach(img => img.removeAttribute("src"));
 
-  // Az összes <img> elem `src` attribútumát eltávolítjuk
-  const imgElements = tempDiv.querySelectorAll("img");
-  imgElements.forEach(img => {
-    img.removeAttribute("src"); // Törli az `src` attribútumot
-  });
-
-  // A módosított HTML tartalom
   const cleanedHtmlContent = tempDiv.innerHTML;
+  const compressedFiles = await compressingFiles([...newPost.images, ...newPost.files]);
+  const tagsArray = FilterOptForCreate.value.map(num => num + 1);
 
-  const mergedArray = [...newPost.images, ...newPost.files];
-
-  const compressingFilesArray = await compressingFiles(mergedArray);
-
-  const newArray = FilterOptForCreate.value.map(num => num + 1);
-
-  if(get_fullUser.value.id && newPost.title && htmlContent){
-    loading.value = true;
-    await CommunityPostUpload({id: get_fullUser.value.id, title: newPost.title, content: cleanedHtmlContent, files: compressingFilesArray, chips: newArray}, {
+  await CommunityPostUpload(
+    {
+      id: get_fullUser.value.id,
+      title: newPost.title,
+      content: cleanedHtmlContent,
+      files: compressedFiles,
+      chips: tagsArray,
+    },
+    {
       onSuccess: (response) => {
         loading.value = false;
-        postsConvertToDisplay({
-          id: response.id,
-          user_name: get_UserName.value,
-          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
-          createdAt: formatDate(new Date()),
-          content: cleanedHtmlContent,
-          title: newPost.title,
-          like: 0,
-          dislike: 0,
-          userReaction: null,
-          newComment: "",
-          gotEdit: false,
-          editable: false,
-          comments: [],
-          files: newPost.files,
-          images: newPost.images,
-          tags: FilterOptForCreate.value.map(i => FilterChips.value[i]),
-          commentLimit: 10,
-          showComments: false,
-          total_comments: 0,
-        }, false, false);
+        postsConvertToDisplay(
+          {
+            id: response.id,
+            user_name: get_UserName.value,
+            User: {
+              id: get_fullUser.value.id,
+              user_name: get_UserName.value,
+              User_customization: { profil_picture: get_fullUser.value.User_customization.profil_picture },
+            },
+            createdAt: formatDate(new Date()),
+            content: cleanedHtmlContent,
+            title: newPost.title,
+            like: 0,
+            dislike: 0,
+            userReaction: null,
+            newComment: "",
+            gotEdit: false,
+            editable: false,
+            comments: [],
+            files: [...newPost.files],
+            images: [...newPost.images],
+            tags: FilterOptForCreate.value.map(i => FilterChips.value[i]),
+            commentLimit: 10,
+            showComments: false,
+            total_comments: 0,
+          },
+          false,
+          false
+        );
+        showSucces ? showSucces("A post sikeresen fel lett töltve!") : console.log("A post sikeresen fel lett töltve!");
       },
       onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
+        loading.value = false;
+        showError ? showError(error.response.data) : console.log(error.response.data);
       },
-    });
-    loading.value = false;
-  }
+    }
+  );
 };
 
-function postsConvertToDisplay(array, igaze, alulra){
+function postsConvertToDisplay(array, formatDateFlag, appendToEnd) {
+  array.createdAt = formatDateFlag ? array.createdAt.replace(/T/, " ").split(".")[0].slice(0, -3) : array.createdAt;
+  array.comments.forEach(comment => {
+    comment.createdAt = comment.createdAt.replace(/T/, " ").split(".")[0].slice(0, -3);
+    comment.comments.forEach(inner => (inner.createdAt = inner.createdAt.replace(/T/, " ").split(".")[0].slice(0, -3)));
+  });
+
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = array.content;
 
-  var createdAt = array.createdAt;
-  if(igaze){
-    array.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
-  }
-
-  array.comments.forEach(comment =>{
-    comment.createdAt = comment.createdAt.split('T')[0] + " " + comment.createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+comment.createdAt.split('T')[1].split('.')[0].split(':')[1];
-
-    comment.comments.forEach(inner_comment =>{
-      inner_comment.createdAt = inner_comment.createdAt.split('T')[0] + " " + inner_comment.createdAt.split('T')[1].split('.')[0].split(':')[0] +':'+inner_comment.createdAt.split('T')[1].split('.')[0].split(':')[1];});
+  tempDiv.querySelectorAll("img").forEach((img, index) => {
+    if (array.images[index]) {
+      img.setAttribute("src", array.images[index].url || array.images[index].file);
+    }
   });
 
-  const imgElements = tempDiv.querySelectorAll("img");
-
-  if(imgElements){
-    imgElements.forEach((img) => {
-      const id = Number(img.id)-1;
-      if (array.images[id]) {
-        img.setAttribute("src", (array.images[id].url != null ? array.images[id].url : array.images[id].file)); // Az `src` attribútumot beállítjuk
-      }
-    });
-  }
-  
   array.content = tempDiv.innerHTML;
 
-  if(alulra && posts.filter(c=> c.id == array.id).length == 0){
-    posts.push(array);
-  }else if(!alulra && posts.filter(c=> c.id == array.id).length == 0){
-    posts.unshift(array);
+  if (!posts.some(post => post.id === array.id)) {
+    appendToEnd ? posts.push(array) : posts.unshift(array);
   }
-  
-  newPost.files = [];
-  newPost.images = [];
-  newPost.title = "";
-  
+
+  Object.assign(newPost, { files: [], images: [], title: "" });
+
   ShowPostClose();
 }
 
 const compressingFiles = async (mergedArray) => {
-  const compressFilesArray = [];
+  const compressedFiles = [];
 
   for (const file of mergedArray) {
-    if (file) {
-      let blob;
+    if (!file) continue;
 
-      try {
-        if (file.url) {
-          // Ha a fájlnak van URL-je
-          try {
-            const response = await fetch(file.url);
-            if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
-            blob = await response.blob();
-          } catch (error) {
-            if (showError) {
-              showError(error.response.data);
-            }else{
-              console.log(error.response.data);
-            }
-            continue; // Hibás fájlt kihagyjuk
-          }
-        } else if (file.file) {
-          // Feltöltött fájl
-          if (file.file instanceof Blob) {
-            blob = file.file;
-          } else {
-            try {
-              blob = new Blob([file.file], { type: file.type || 'application/octet-stream' });
-            } catch (error) {
-              if (showError) {
-                showError(error.response.data);
-              }else{
-                console.log(error.response.data);
-              }
-              continue; // Hibás fájlt kihagyjuk
-            }
-          }
-        }
-
-        if (!blob) {
-          console.warn('A blob nem inicializálható:', file);
-          continue; // Hibás fájlt kihagyjuk
-        }
-
-        if (file.type && file.type.startsWith('image/')) {
-          // Ha nem GIF, akkor tömörítés
-          if (file.type !== 'image/gif') {
-            try {
-              const options = {
-                maxSizeMB: 0.1,
-                useWebWorker: true,
-              };
-              blob = await imageCompression(blob, options);
-            } catch (error) {
-              if (showError) {
-                showError(error.response.data);
-              }else{
-                console.log(error.response.data);
-              }
-              continue; // Hibás fájlt kihagyjuk
-            }
-          }
-        }
-        
-        // Ha GIF, állítsuk be kifejezetten image/gif típusra
-        const fileType = file.name.split('.').pop() === 'gif' ? 'image/gif' : blob.type;
-        
-        // Blob-ból File objektum létrehozása fájlnévvel
-        const fileWithMetadata = new File([blob], file.name || `file_${Date.now()}`, { type: fileType });
-
-        compressFilesArray.push(fileWithMetadata);
-        if(showEditPost.value){
-          compressFilesArray.push(file.id);
-          compressFilesArray.push(file.type);
-          compressFilesArray.push(file.size);
-        }
-      } catch (error) {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
+    let blob;
+    try {
+      if (file.url) {
+        const response = await fetch(file.url);
+        if (!response.ok) throw new Error(`HTTP hiba: ${response.status}`);
+        blob = await response.blob();
+      } else if (file.file instanceof Blob) {
+        blob = file.file;
+      } else {
+        blob = new Blob([file.file], { type: file.type || "application/octet-stream" });
       }
+
+      if (!blob) continue;
+
+      if (file.type?.startsWith("image/") && file.type !== "image/gif") {
+        blob = await imageCompression(blob, { maxSizeMB: 0.1, useWebWorker: true });
+      }
+
+      const fileType = file.name.endsWith(".gif") ? "image/gif" : blob.type;
+      const compressedFile = new File([blob], file.name || `file_${Date.now()}`, { type: fileType });
+
+      compressedFiles.push(compressedFile);
+      if (showEditPost.value) compressedFiles.push(file.id, file.type, file.size);
+    } catch (error) {
+      showError ? showError(error.response?.data || error) : console.log(error);
     }
   }
 
-  return compressFilesArray;
+  return compressedFiles;
 };
 
 nextTick(() => {
-  const editor = document.getElementsByClassName("editor")[0];
+  const editor = document.querySelector(".editor");
+  if (!editor) return;
 
-  if (editor) {
-    editor.addEventListener("dragover", (event) => {
-      event.preventDefault();
-    });
-
-    editor.addEventListener("drop", (event) => {
-      event.preventDefault();
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        const file = files[0];
-        const reader = new FileReader();
-
-        reader.onload = (e) => {
-          insertImage();
-        };
-
-        reader.readAsDataURL(file);
-      }
-    });
-  }
+  editor.addEventListener("dragover", (event) => event.preventDefault());
+  editor.addEventListener("drop", (event) => {
+    event.preventDefault();
+    if (event.dataTransfer.files.length) {
+      const reader = new FileReader();
+      reader.onload = insertImage;
+      reader.readAsDataURL(event.dataTransfer.files[0]);
+    }
+  });
 });
 
-// Kép beszúrása
 const insertImage = () => {
-  const editor = document.getElementsByClassName("editor")[0]; 
+  const editor = document.querySelector(".editor");
+  if (!editor) return showError ? showError("Editor div nem található.") : console.log("Editor div nem található.");
 
-  if (editor) {
-    const selection = window.getSelection();
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
 
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      
-      // Ellenőrizzük, hogy a kurzor az editor-ban van
-      if(showCreatePost.value){
-        if (editor.contains(range.startContainer)) {
-          const img = document.createElement('img');
-          img.src = newPost.images[newPost.images.length-1].url;
-          img.alt = 'Uploaded ' + newPost.images.length+'. Image';
-          img.id = newPost.images.length;
-          img.style.maxWidth = '100%';
-          img.style.height = '20vh';
-          img.style.display = 'block';
-  
-          range.deleteContents();
-          range.insertNode(img);
-  
-          range.setStartAfter(img);
-          range.setEndAfter(img);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      }else if(showEditPost){
-        const img = document.createElement('img');
-        img.src = editingPost.images[editingPost.images.length-1].url;
-        img.alt = 'Uploaded ' + editingPost.images.length+'. Image';
-        img.id = editingPost.images.length;
-        img.style.maxWidth = '100%';
-        img.style.height = '20vh';
-        img.style.display = 'block';
+  const range = selection.getRangeAt(0);
+  if (!editor.contains(range.startContainer)) return;
 
-        range.deleteContents();
-        range.insertNode(img);
+  const imagesArray = showCreatePost.value ? newPost.images : editingPost.images;
+  const lastImage = imagesArray[imagesArray.length - 1];
+  if (!lastImage) return;
 
-        range.setStartAfter(img);
-        range.setEndAfter(img);
-        selection.removeAllRanges();
-        selection.addRange(range);
-      }
-    }
-  } else {
-    if (showError) {
-      showError('Editor div nem található.');
-    }else{
-      console.log('Editor div nem található.');
-    }
-  }
+  const img = Object.assign(document.createElement("img"), {
+    src: lastImage.url,
+    alt: `Uploaded ${imagesArray.length}. Image`,
+    id: imagesArray.length,
+    style: "max-width: 100%; height: 20vh; display: block;",
+  });
+
+  range.deleteContents();
+  range.insertNode(img);
+  range.setStartAfter(img);
+  range.setEndAfter(img);
+  selection.removeAllRanges();
+  selection.addRange(range);
 };
 
 function handleFileUpload(event) {
-  const uploadedFiles = event.target.files;
+  const files = Array.from(event.target.files).filter(f => f.size <= 10 * 1024 * 1024); // Max 10MB
 
-  for (const file of uploadedFiles) {
-    if (file.size <= 10 * 1024 * 1024) { // 10 MB limit 
-      const obj = {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        url: URL.createObjectURL(file),
-        file: file // Blob URL létrehozása az azonnali használathoz
-      };
+  files.forEach(file => {
+    const obj = {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      url: URL.createObjectURL(file),
+      file,
+    };
 
-      // Ellenőrizzük, hogy a fájl már szerepel-e
-      if(showCreatePost.value){
-        if (!newPost.files.some(f => f.name === obj.name && f.file_size === obj.size && f.file_type === obj.type)) {
-          newPost.files.push(obj);
-        }
-      }else if(showEditPost.value){
-        if (!editingPost.files.some(f => f.name === obj.name && f.file_size === obj.size && f.file_type === obj.type)) {
-          editingPost.files.push(obj);
-        }
-      }
-    } else {
-      console.warn(`A fájl mérete túl nagy: ${file.name}`);
+    const targetList = showCreatePost.value ? newPost.files : editingPost.files;
+    if (!targetList.some(f => f.name === obj.name && f.size === obj.size && f.type === obj.type)) {
+      targetList.push(obj);
     }
-  }
-  event.target.value = '';
+  });
+
+  event.target.value = ''; // Input reset
 }
 
 function downloadFile(file) {
   try {
-    const blob = dataURLtoBlob(file.file);
-    const url = URL.createObjectURL(blob);
+    const link = Object.assign(document.createElement("a"), {
+      href: URL.createObjectURL(dataURLtoBlob(file.file)),
+      download: file.file_name || "file",
+    });
 
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = file.file_name || 'file';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // Az URL-t felszabadítjuk
-    URL.revokeObjectURL(url);
+    URL.revokeObjectURL(link.href);
   } catch (error) {
-    if (showError) {
-      showError(error.response.data);
-    }else{
-      console.log(error.response.data);
-    }
+    showError ? showError(error.response?.data || error) : console.log(error);
   }
 }
 
 function dataURLtoBlob(dataURL) {
-  const [header, base64] = dataURL.split(',');
-  const mime = header.match(/:(.*?);/)[1];
-  const binary = atob(base64);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) {
-    array.push(binary.charCodeAt(i));
-  }
-  return new Blob([new Uint8Array(array)], { type: mime });
+  const [mime, base64] = dataURL.match(/:(.*?);/)?.slice(1).concat(dataURL.split(",")[1]) || [];
+  return new Blob([Uint8Array.from(atob(base64), c => c.charCodeAt(0))], { type: mime });
 }
 
 function formatFileSize(size) {
@@ -2473,235 +2007,192 @@ function formatFileSize(size) {
   );
 }
 
-function triggerFileInput() {
-  if (fileInput.value) {
-    fileInput.value.click();
+const triggerFileInput = () => fileInput.value?.click();
+
+function fileDelete(index) {
+  const targetPost = showCreatePost.value ? newPost.files : editingPost.files;
+  targetPost.splice(index, 1);
+}
+
+const like = async (post, upload_type) => {
+  if (!get_user_by_token) return;
+
+  const oppositeReaction = post.userReaction === 'like' ? 'like' : 'dislike';
+  const change = post.userReaction !== oppositeReaction;
+  
+  if (change) {
+    if (post.userReaction === 'dislike') post.dislike -= 1;
+    post.like += post.userReaction === 'like' ? -1 : 1;
+    post.userReaction = change ? 'like' : null;
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id, upload_type, type: 0});
   }
-}
+};
 
-function fileDelete(index){
-  if(showCreatePost.value){
-    newPost.files.splice(index,1);
-  }else if(showEditPost.value){
-    editingPost.files.splice(index,1);
+const dislike = async (post, upload_type) => {
+  if (!get_user_by_token) return;
+
+  const oppositeReaction = post.userReaction === 'dislike' ? 'dislike' : 'like';
+  const change = post.userReaction !== oppositeReaction;
+  
+  if (change) {
+    if (post.userReaction === 'like') post.like -= 1;
+    post.dislike += post.userReaction === 'dislike' ? -1 : 1;
+    post.userReaction = change ? 'dislike' : null;
+    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id, upload_type, type: 1});
   }
+};
+
+function prepareReply(array) {
+  Object.assign(array, { prepareReply: true, showComments: true });
 }
 
-const { mutate: CommunityLikeDislikeForPost } = useLikeDislikeForPost();
-
-const like = async(post, upload_type) =>{
-  if(get_user_by_token){
-    if(post.userReaction != 'like'){
-      if(post.userReaction == 'dislike'){
-        post.dislike = post.dislike - 1;
-        await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
-      }
-      post.like = post.like + 1;
-      post.userReaction = 'like';
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
-    }else{
-      post.like = post.like - 1;
-      post.userReaction = null;
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 0});
-    }
-  }
-}
-
-const dislike = async(post,upload_type) =>{
-  if(get_user_by_token){    
-    if(post.userReaction != 'dislike'){
-      if(post.userReaction == 'like'){
-        post.like = post.like - 1;
-        await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
-      }
-      post.dislike = post.dislike + 1;
-      post.userReaction = 'dislike';
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
-    }else{
-      post.dislike = post.dislike - 1;
-      post.userReaction = null;
-      await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id,upload_type: upload_type, type: 1});
-    }
-  }
-}
-
-function prepareReply(array){
-  array.prepareReply = true;
-  array.showComments = true;
-}
-const { mutate: CommunityCommentEdit } = useCommentEdit();
-
-function commentEdit(comment,id){
-  comment.editable = true;
-
-  if(editingComment.value != null){
+function commentEdit(comment, id) {
+  if (editingComment.value) {
     editingComment.value.editable = false;
     document.getElementById(editingID.value).value = editingContent.value;
     editingComment.value.content = editingContent.value;
   }
-  
+
+  Object.assign(comment, { editable: true });
   editingComment.value = comment;
   editingID.value = id;
   editingContent.value = comment.content;
-  
-  nextTick(() => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.focus();
-    }
-  });
+
+  nextTick(() => document.getElementById(id)?.focus());
 }
 
-const commentEditConf = async (comment,id) =>{
-  var edited_content = document.getElementById(id).value;
+const commentEditConf = async (comment, id) => {
+  const edited_content = document.getElementById(id).value;
 
-  if(edited_content.value != ''){
+  if (edited_content) {
     await CommunityCommentEdit({content: String(edited_content), comment_id: comment.id});
     comment.gotEdit = true;
   }
 
-  editingID.value = null,
-  editingComment.value = null,
-  editingContent.value = null;
+  Object.assign(editingID, {value: null});
+  Object.assign(editingComment, {value: null});
+  Object.assign(editingContent, {value: null});
+  comment.editable = false;
+};
+
+function CommentClose(comment) {
+  Object.assign(editingID, {value: null});
+  Object.assign(editingComment, {value: null});
+  Object.assign(editingContent, {value: null});
   comment.editable = false;
 }
 
-function CommentClose(comment){
-  editingID.value = null,
-  editingComment.value = null,
-  editingContent.value = null;
-  comment.editable = false;
-}
+const addCommentToPost = async (post) => {
+  if (!post.newComment) return;
 
-const { mutate: CommunityCommentForPost } = useCommentForPost();
-
-const addCommentToPost = async (post) =>{
-  if(post.newComment != ""){
-    await CommunityCommentForPost({content: String(post.newComment), linkAuthor: null, linked_id: post.id, user_id: get_fullUser.value.id, type: 0}, {
-        onSuccess: (comment) => {
-          post.comments.unshift({
-            id: comment.id,
-            User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
-            user_name: get_UserName,
-            createdAt: formatDate(new Date()),
-            content: post.newComment,
-            like: null,
-            dislike: null,
-            userReaction: null,
-            newComment: "",
-            showComments: false,
-            prepareReply: false,
-            gotEdit: false,
-            editable: false,
-            comments: []
-          });
-
-          post.newComment = "";
-          post.total_comments = post.total_comments == undefined ? 1 : post.total_comments + 1;
-        },
-        onError: (error) => {
-          if (showError) {
-            showError(error.response.data);
-          }else{
-            console.log(error.response.data);
-          }
-        },
+  await CommunityCommentForPost({
+    content: String(post.newComment),
+    linkAuthor: null,
+    linked_id: post.id,
+    user_id: get_fullUser.value.id,
+    type: 0
+  }, {
+    onSuccess: (comment) => {
+      post.comments.unshift({
+        ...comment,
+        createdAt: formatDate(new Date()),
+        content: post.newComment,
+        user_name: get_UserName,
+        User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
+        newComment: "",
+        comments: [],
+        showComments: false,
+        prepareReply: false,
+        gotEdit: false,
+        editable: false
       });
-  }
-}
+      post.total_comments = (post.total_comments || 0) + 1;
+    },
+    onError: (error) => {showError ? showError(error.response.data) : console.log(error.response.data)}
+  });
+};
 
-const addCommentToComment = async (comment) =>{
-  if(comment.newComment != ""){
-    await CommunityCommentForPost({content: String(comment.newComment), linkAuthor: null, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
-      onSuccess: (res_comment) => {
-        comment.comments.unshift({
-          id: res_comment.id,
-          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
-          user_name: get_UserName,
-          createdAt: formatDate(new Date()),
-          content: comment.newComment,
-          like: null,
-          dislike: null,
-          userReaction: null,
-          newComment: "",
-          showComments: false,
-          prepareReply: false,
-          gotEdit: false,
-          editable: false,
-          comments: []
-        });
-        comment.prepareReply = false;
-        comment.newComment = "";
-        comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  }
-}
+const addCommentToComment = async (comment) => {
+  if (!comment.newComment) return;
+
+  await CommunityCommentForPost({
+    content: String(comment.newComment),
+    linkAuthor: null,
+    linked_id: comment.id,
+    user_id: get_fullUser.value.id,
+    type: 1
+  }, {
+    onSuccess: (res_comment) => {
+      comment.comments.unshift({
+        ...res_comment,
+        createdAt: formatDate(new Date()),
+        content: comment.newComment,
+        user_name: get_UserName,
+        User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
+        newComment: "",
+        showComments: false,
+        prepareReply: false,
+        gotEdit: false,
+        editable: false,
+        comments: []
+      });
+      comment.prepareReply = false;
+      comment.total_comments = (comment.total_comments || 0) + 1;
+    },
+    onError: (error) => {showError ? showError(error.response.data) : console.log(error.response.data)}
+  });
+};
 
 const addLastCommentToComment = async (comment, inner_comment) => {
-  if(inner_comment.newComment != ""){
-    await CommunityCommentForPost({content: String(inner_comment.newComment), linkAuthor: "@"+comment.user_name, linked_id: comment.id, user_id: get_fullUser.value.id, type: 1}, {
-      onSuccess: (res_comment) => {
-        comment.comments.unshift({
-          id: res_comment.id,
-          user_name: get_UserName,
-          User: {id: get_fullUser.value.id, user_name: get_UserName, User_customization: {profil_picture: get_fullUser.value.User_customization.profil_picture}},
-          createdAt: formatDate(new Date()),
-          content: inner_comment.newComment,
-          like: null,
-          dislike: null,
-          userReaction: null,
-          newComment: "",
-          showComments: false,
-          prepareReply: false,
-          gotEdit: false,
-          editable: false,
-          linkAuthor: "@"+comment.user_name,
-          comments: []
-        });
-        inner_comment.prepareReply = false;
-        inner_comment.newComment = "";
-        comment.total_comments = comment.total_comments == undefined ? 1 : comment.total_comments + 1;
-      },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
-    });
-  }
-}
+  if (!inner_comment.newComment) return;
 
-const { mutate: CommunityGetLimitedComments } = useGetCommunityComments();
-const loadMoreComments = async (post,type) =>{
-  await CommunityGetLimitedComments({limit: 10, offset: post.comments.length , id: post.id , type: type, userId: get_fullUser.value == null ? null : get_fullUser.value.id}, {
+  await CommunityCommentForPost({
+    content: String(inner_comment.newComment),
+    linkAuthor: "@" + comment.user_name,
+    linked_id: comment.id,
+    user_id: get_fullUser.value.id,
+    type: 1
+  }, {
     onSuccess: (res_comment) => {
-      var comments = res_comment.comments;
-      for (let i = 0; i < comments.length; i++) {
-        const createdAt = comments[i].createdAt;
-        comments[i].createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
-        post.comments.push(comments[i]);
-        post.hasMoreComments = res_comment.hasMoreComments;
-      }
+      comment.comments.unshift({
+        ...res_comment,
+        createdAt: formatDate(new Date()),
+        content: inner_comment.newComment,
+        newComment: "",
+        showComments: false,
+        prepareReply: false,
+        gotEdit: false,
+        editable: false,
+        linkAuthor: "@" + comment.user_name,
+        comments: []
+      });
+      inner_comment.prepareReply = false;
+      comment.total_comments = (comment.total_comments || 0) + 1;
     },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    },
+    onError: (error) => {showError ? showError(error.response.data) : console.log(error.response.data)}
   });
-}
+};
+
+const loadMoreComments = async (post, type) => {
+  await CommunityGetLimitedComments({
+    limit: 10, 
+    offset: post.comments.length, 
+    id: post.id, 
+    type,
+    userId: get_fullUser.value?.id || null
+  }, {
+    onSuccess: (res_comment) => {
+      res_comment.comments.forEach(comment => {
+        comment.createdAt = formatDate(new Date(comment.createdAt));
+        post.comments.push(comment);
+      });
+      post.hasMoreComments = res_comment.hasMoreComments;
+    },
+    onError: (error) => {showError ? showError(error.response.data) : console.log(error.response.data)}
+  });
+};
+
+// <------- Függvények | figyelők ------->
 </script>
 
 <style>
