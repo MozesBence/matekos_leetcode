@@ -336,9 +336,9 @@ const themesSelector = computed(() =>
 
 // Difficulty selector options
 const difficultyLevels = [
-  { text: "Könnyű", value: 1 },
-  { text: "Közepes", value: 2 },
-  { text: "Nehéz", value: 3 }
+  { text: "Könnyű", value: 0 },
+  { text: "Közepes", value: 1 },
+  { text: "Nehéz", value: 2 }
 ];
 
 
