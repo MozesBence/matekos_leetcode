@@ -1214,8 +1214,6 @@ const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
 const PassSettingDraw = ref(false);
 const NotifDraw = ref(false);
-const LeaderBoardDraw = ref(false);
-const PostDraw = ref(false);
 const UsersDraw = ref(false);
 const AdminNotifDraw = ref(false);
 const AdminValidateDraw = ref(false);
@@ -1262,13 +1260,6 @@ const group = ref(null);
 const currentFont = ref("Roboto");
 const currentTextIndex = ref(0);
 const displayedText = ref("");
-const FontSize = ref('large');
-const isLoginHovering = ref(false);
-const isRegisterHovering = ref(false);;
-const userName = ref('');
-const email = ref('');
-const password = ref('');
-const confpassword = ref('');
 const textList = ref([
   "Math Solve", "A megoldásod", "Tanulj matematikát", "Újragondolt matematika", 
   "A számok nem hazudnak", "Gyors megoldás", "Mesteri matematika", 
@@ -1323,7 +1314,7 @@ watch(group, () => {
 });
 
 const toggleDrawer = (activePanelName) => {
-  const panels = ['ProfSettingDraw', 'EmailSettingDraw', 'PassSettingDraw', 'NotifDraw', 'LeaderBoardDraw', 'PostDraw', 'UsersDraw', 'AdminNotifDraw', 'AdminValidateDraw'];
+  const panels = ['ProfSettingDraw', 'EmailSettingDraw', 'PassSettingDraw', 'NotifDraw', 'UsersDraw', 'AdminNotifDraw', 'AdminValidateDraw'];
   panels.forEach(panel => { eval(`${panel}.value = false`) });
   eval(`${activePanelName}.value = true`);
   activePanel.value = activePanelName;
@@ -1470,7 +1461,6 @@ const fetchUsers = async (params) => {
     }
   });
 };
-
 
 const handleSearchParams = () => ({
   name: searchQuery.value || null,
@@ -1681,7 +1671,6 @@ const handleProfilePic = () => {
   if (base64Image) profileImage.value = base64Image;
 };
 
-
 function getCookie(name){
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -1694,9 +1683,9 @@ function getCookie(name){
 }
 
 function Logout(){
+  window.location.reload();
   deleteCookie('user');
   get_user_by_token = null;
-  window.location.reload();
 }
 
 function deleteCookie(name) {
