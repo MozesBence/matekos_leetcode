@@ -6,7 +6,7 @@
         <!-- Left Column: Task Details -->
         <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <br>
-          <div class="taskInfo" style="background-color: rgb(var(--v-theme-task_solving_right _drawer))">
+          <div class="taskInfo" style="background-color: rgb(var(--v-theme-task_solving_right_drawer))">
             <h1 style="text-align: left; width: 100%;">
               {{ task?.id }}. {{ task?.task_title }}
             </h1>
@@ -113,7 +113,7 @@
 
         <v-col cols="12" md="6" style="padding: 2em; background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <v-row style="margin-bottom: 1em;margin-top: 1em;">
-            <h1>Megoldás:</h1>
+            <h1 style="rgb(var(--v-theme-task_solving_right_drawer))">Megoldás:</h1>
           </v-row>
           <v-row style="margin-bottom: 1em;">
             <v-text-field label="Megoldás" variant="outlined" v-model="solution"></v-text-field>

@@ -1,4 +1,7 @@
 <template>
+    <h1>Cím: {{ task.data.value?.task_title }}</h1>
+    <h1>Nehézség: {{task.data.value?.difficulty}}</h1>
+    <h1>Téma id: {{task.data.value?.theme_id}}</h1>
     {{task.data.value}}
 </template>
 <script lang="ts" setup>
