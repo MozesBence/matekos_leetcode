@@ -38,19 +38,28 @@
               <v-expansion-panels class="rounded" v-if="get_user_by_token">
                 <v-expansion-panel
                 elevation="0"
-                title="Első tipp"
-                :text="task.first_hint"
                 color="contest_challange_card"
                 bg-color="contest_challange_card"
                 >
+                <template v-slot:title>
+                    <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 1.
+                  </template>
+                  <v-expansion-panel-text>
+                    <div v-mathjax="task.first_hint"></div>
+                  </v-expansion-panel-text>
                 </v-expansion-panel>
+
                 <v-expansion-panel
                 elevation="0"
-                title="Második tipp"
-                :text="task.second_hint"
                 color="contest_challange_card"
                 bg-color="contest_challange_card"
                 >
+                  <template v-slot:title>
+                    <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 2.
+                  </template>
+                  <v-expansion-panel-text>
+                    <div v-mathjax="task.second_hint"></div>
+                  </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
             </v-card-text>
