@@ -15,13 +15,6 @@ const getAllAds = async() => {
 export const useGetAllAds = () => {
     return useQuery({
         queryFn: getAllAds,
-        queryKey:['adcards'],
-        onSuccess:(data)=> {
-            console.log(data.quote)
-        },
-        onError:(error)=>{
-            console.log(`Error in quote store! Error: ${error}`)
-        }
-        
+        queryKey:['adcards'],        
     })
 }

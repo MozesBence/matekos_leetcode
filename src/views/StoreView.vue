@@ -49,7 +49,7 @@
           <v-card-actions>
             <v-btn
               color="orange"
-              :disabled="get_fullUser.currency_count < item.price"
+              :disabled="(get_fullUser?.currency_count ?? 0) < item.price"
               @click="openPurchaseDialog(item)"
             >
               Kiváltom - {{ formatCurrency(item.price) }}
@@ -100,6 +100,13 @@ import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { UseFetchStoreItems } from '../api/storeItems/storeItemQuery';
 import { UsePurchaseItem } from '@/api/redeemItem/purchaseItemQuery';
 
+interface User {
+  id: number;
+  user_name: string;
+  currency_count: number;
+}
+
+
 const dialog = ref(false);
 const successDialog = ref(false);
 const successStatus = ref(false);
@@ -109,19 +116,19 @@ const profileMutation = useProfileGetUser();
 const items = UseFetchStoreItems();
 
 const purchaseData = ref({
-  userId: Number(get_fullUser.value?.id) || 0,
-  currency: "gold",
+  userId: get_fullUser.value?.id ?? 0,
+  currency: 'gold',
   itemId: 0,
   amount: 1,
   price: 0,
 });
 
-
-const openPurchaseDialog = (item) => {
+const openPurchaseDialog = (item: { id: number; price: number }) => {
   purchaseData.value.itemId = item.id;
   purchaseData.value.price = item.price;
   dialog.value = true;
 };
+
 
 const { mutate: confirmPurchase } = UsePurchaseItem(purchaseData);
 
@@ -129,7 +136,7 @@ const handleConfirmPurchase = async () => {
   console.log("Confirmed purchase", purchaseData);
 
   try {
-    await confirmPurchase(purchaseData);
+    await confirmPurchase();
     dialog.value = false;
 
     successStatus.value = true;
@@ -137,7 +144,7 @@ const handleConfirmPurchase = async () => {
     successDialog.value = true;
 
     await items.refetch();
-    await fetchUserData(profileMutation);
+    await fetchUserData();
   } catch (error) {
     successStatus.value = false;
     SuccessMessage.value = 'Valami hiba történt a vásárlás során.';
@@ -169,7 +176,7 @@ onMounted(async () => {
   try {
     await Promise.all([
       items.refetch(),
-      fetchUserData(profileMutation),
+      await fetchUserData(),
     ]);
   } catch (error) {
     console.error("Failed to fetch data:", error);

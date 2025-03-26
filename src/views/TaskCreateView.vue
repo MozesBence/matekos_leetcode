@@ -310,17 +310,17 @@ import router from "@/router";
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({
-    taskTitle: "",
-    task: "",
-    themeId: 0,
-    solution: "",
-    difficulty: 0,
-    creatorId: 0,
-    experiencePoints: 10,
-    solutionFormat: "",
-    hint1: "",
-    hint2: "",
-    validated: 0
+  taskTitle: '',
+  task: '',
+  themeId: 0,
+  solution: '',
+  difficulty: 0,
+  creatorId: 0,
+  experiencePoints: 10,
+  solutionFormat: '',
+  hint1: '',
+  hint2: '',
+  validated: 0,
 });
 
 
@@ -337,9 +337,9 @@ watchEffect(() => {
 });
 
 const themesSelector = computed(() =>
-  themes.data.value ? themes.data.value.map((theme: string) => ({
+  themes.data.value ? themes.data.value.map((theme: { id: number, theme: string }) => ({
     text: theme.theme,
-    value: theme.id || theme.theme,
+    value: theme.id,
   })) : []
 );
 

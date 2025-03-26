@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { onMounted, ref } from 'vue';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 
-export const get_fullUser = ref<any[]>([]);
+export const get_fullUser = ref<{ id: number; user_name: string,email:string,currency_count:number,roll_back_token:number,experience_point:number }>({ id: 0, user_name: '',email:'',currency_count:0,roll_back_token:0,experience_point:0 });
 export const userId = ref(get_fullUser.value.id);
 export const get_user_name = ref<string | null>(null);
 export const get_user_email = ref<string | null>(null);

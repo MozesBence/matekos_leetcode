@@ -17,11 +17,5 @@ export const UseFetchStoreItems = () => {
     return useQuery({
         queryFn: fetchStoreItems,
         queryKey: ['storeItems'],
-        onSuccess: (data) => {
-            console.log('Data fetched successfully:', data);
-        },
-        onError: (error) => {
-            console.log('Error occurred while fetching task data:', error);
-        },
     });
 }

@@ -13,11 +13,5 @@ export const UseQuote = () => {
     return useQuery({
         queryFn: Quote,
         queryKey:["quote"],
-        onSuccess:(data)=> {
-            console.log(data.quote)
-        },
-        onError:(error)=>{
-            console.log(`Error in quote store! Error: ${error}`)
-        }
     })
 }
