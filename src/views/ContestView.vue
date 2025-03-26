@@ -9,23 +9,28 @@
     <v-container>
       <v-row>
         <v-col cols="12" md="6">
-          <v-card class="kihivas" @click="hetiKihivasAtiranyit()">
-            <v-card-text class="pa-6">
+          <v-card class="kihivas" @click="router.push({ name: 'challange', params: { id : getISOWeekNumber(), define: 'week'} })">
+            <v-card-text class="pa-6 position-relaite align-center">
               
               <v-card-title>
                 <v-icon icon="mdi-calendar" color="community_createpost_btn" class="mb-2"></v-icon>
-
                 Heti kihivás
               </v-card-title>
               <v-card-subtitle style="color: rgb(var(--v-theme-text_color));">
                 {{ weeklyCountdown }}
               </v-card-subtitle>
+              <div
+              v-if="currentWeekChallange && currentWeekChallange.CompetitionSubmissions && currentWeekChallange.CompetitionSubmissions.length != 0" 
+              style="position: absolute; right: 0; top: 50%; transform: translate(-50%, -50%); background-color: rgb(var(--v-theme-success), .2);" 
+              class="pa-3 rounded-lg">
+                <h2 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h2>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
-          <v-card class="kihivas" @click="haviKihivasAtiranyit()">
-            <v-card-text class="pa-6">
+          <v-card class="kihivas" @click="router.push({ name: 'challange', params: { id : getMonthNumber(), define: 'month'} })">
+            <v-card-text class="pa-6 position-relaite align-center">
               <v-card-title>
                 <v-icon icon="mdi-calendar" color="community_createpost_btn" class="mb-2"></v-icon>
 
@@ -34,6 +39,12 @@
               <v-card-subtitle style="color: rgb(var(--v-theme-text_color));">
                 {{ monthlyCountdown }}
               </v-card-subtitle>
+              <div
+              v-if="currentMonthChallange && currentMonthChallange.CompetitionSubmissions && currentMonthChallange.CompetitionSubmissions.length != 0" 
+              style="position: absolute; right: 0; top: 50%; transform: translate(-50%, -50%); background-color: rgb(var(--v-theme-success), .2);" 
+              class="pa-3 rounded-lg">
+                <h2 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h2>
+              </div>
             </v-card-text>
           </v-card>
         </v-col>
@@ -85,9 +96,15 @@
                 <v-list-item class="pa-0">
                   <v-hover v-slot="{ isHovering, props }">
                     <v-card elevation="0" v-bind="props">
-                      <v-btn style="background-color: rgb(var(--v-theme-community_comment_bc)); width: 100%;" class="position-relative pa-6 rounded d-flex justify-start" @click="router.push({ name: 'challange', params: { week : contest.id} })">
+                      <v-btn style="background-color: rgb(var(--v-theme-community_comment_bc)); width: 100%;" class="position-relative pa-6 rounded d-flex justify-start" @click="router.push({ name: 'challange', params: { id : contest.identifier, define: contest.define } })">
                         <div>
-                          <h2>{{ contest.id }}. - {{ contest.define == "week" ? "Heti" : "Havi" }} kihívás</h2>
+                          <h2>{{ contest.identifier }}. - {{ contest.define == "week" ? "Heti" : "Havi" }} kihívás</h2>
+                        </div>
+                        <div
+                          v-if="contest.CompetitionSubmissions && contest.CompetitionSubmissions.length != 0" 
+                          style="position: absolute; right: 4rem; background-color: rgb(var(--v-theme-success), .2);" 
+                          class="pa-1 px-3 rounded-lg">
+                            <h3 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h3>
                         </div>
                         <div style="position: absolute; right: 1rem;" v-if="!isMobile">
                           <v-slide-x-reverse-transition>
@@ -129,10 +146,13 @@ const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
 
 var interval = null;
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
 const LeaderboardArray = ref([]);
 const weeklyCountdown = ref('');
 const monthlyCountdown = ref('');
 const prev_contest = ref(null);
+const currentWeekChallange = ref(null);
+const currentMonthChallange = ref(null);
 
 function updateCountdowns() {
   weeklyCountdown.value = getTimeUntilNextMonday();
@@ -162,19 +182,27 @@ function formatTimeDifference(ms) {
   return `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
 }
 
-const getISOWeekNumber = () => {
-  const now = new Date();
-  const yearStart = new Date(now.getFullYear(), 0, 1);
-  const firstThursday = new Date(now.getFullYear(), 0, (4 - yearStart.getDay()) + 1);
-  const weekMilliseconds = 7 * 24 * 60 * 60 * 1000;
-  return Math.ceil(((now.getTime() - firstThursday.getTime()) / weekMilliseconds) + 1);
-};
+const getISOWeekNumber = () => Math.ceil((((new Date()) - new Date(new Date().getFullYear(), 0, 4 - new Date().getDay() + 1)) / 604800000) + 1);
+
+const getMonthNumber = () => new Date().getMonth() + 1;
 
 const { mutate } = useLeaderboard();
 const { mutate: getPrevChallange } = useGetPrevChallange();
 onMounted(async () => {
-  await getPrevChallange(getISOWeekNumber(), {
+  await getPrevChallange(get_user_by_token,{
     onSuccess:(response)=>{
+      response = response.filter(c => {
+        if (c.identifier == getISOWeekNumber()) {
+          currentWeekChallange.value= c;
+          return false;
+        }
+        if (c.identifier == getMonthNumber()) {
+          currentMonthChallange.value = c;
+          return false;
+        }
+        return true;
+      });
+
       prev_contest.value = response;
     }
   })
@@ -196,12 +224,19 @@ onUnmounted(() => {
   clearInterval(interval);
 });
 
-
-function hetiKihivasAtiranyit() {
-  router.push({ name: 'challange', params: { week : getISOWeekNumber()} });
+function getCookie(name){
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=');
+    if (key === name) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
 }
-function haviKihivasAtiranyit() {
-  router.push({ path: '/monthly-challange' });
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
 </script>
 

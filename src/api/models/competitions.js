@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
                 autoIncrement: true,
                 primaryKey: true
             },
+            identifier: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
             define: {
                 type: DataTypes.TEXT,
                 allowNull: false

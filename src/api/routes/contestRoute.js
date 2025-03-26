@@ -4,6 +4,8 @@ const route = express.Router();
 
 const contestController = require("../controllers/contestController");
 
+const profileAuth = require("../middlewares/profileAuth");
+
 /**
  * @swagger
  * /contest/leader-board:
@@ -55,5 +57,7 @@ route.get("/contest/leader-board", contestController.getLeaderBoard);
 route.get("/contest/challange", contestController.getChallange);
 
 route.get("/contest/prev-challange", contestController.getPrevChallange);
+
+route.post("/contest/upload-solution", [ profileAuth.verifyToken ],  contestController.uploadSolution);
 
 module.exports = route;
