@@ -1,7 +1,7 @@
 <template>
   <main class="pa-2">
     <v-container class="hero">
-      <h1>{{ currentWeek }}. heti kihívás</h1>
+      <h1>{{ ( currentWeek % 4 == 0 ? currentWeek / 4 : currentWeek) }}. {{ (currentWeek % 4 == 0 ? "Havi" : "Heti") }} kihívás</h1>
     </v-container>
 
     <v-container class="ma-auto mb-5 pa-0">
