@@ -67,7 +67,7 @@
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
-                  <div v-for="card in similarCards.data.value" style="background-color: #212121; border-radius:15px; width:100%; padding:10px">
+                  <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px">
                     <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
                       <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
@@ -149,7 +149,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted,watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
@@ -166,6 +166,7 @@ interface Task {
   solution_format: string;
   first_hint?: string;
   second_hint?: string;
+  theme_id: number;
 }
 
 interface User {
@@ -240,13 +241,20 @@ watch(group, () => {
   drawer.value = false;
 });
 
-watch(() => getTaskData.data.value, (newVal) => {
-  console.log(newVal);
-  task.value = newVal;
-  console.log(task.value)
-  theme.refetch()
-  getTaskData.refetch();
-});
+watch(() => route.params.id, async (newId) => {
+   const id = Number(newId);
+   await getTaskData.refetch();
+   task.value = getTaskData.data.value;
+   
+   if (task.value?.theme_id) {
+     theme_id.value = task.value.theme_id;
+     await theme.refetch();
+   }
+   
+   await similarCards.refetch();
+   solution.value = '';
+  isDailyTaskValid.value = await DailyTaskCheck();
+}, { immediate: true });
 
 // Helper functions
 const chipColor = (difficulty: number) => {
@@ -339,7 +347,7 @@ onMounted(async () => {
 });
 const DailyTaskCheck = async() => {
   var currentDate = new Date();
-  var taskDate = isDailyTask.data.value?.id;
+  const taskDate = isDailyTask.data.value?.task_id
   console.log('date',currentDate.getDay())
   console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate

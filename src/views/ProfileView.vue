@@ -160,8 +160,9 @@
             color="profile_cardsColor"
             height="420"
             style="transition: .3s;"
+            
           >
-          <h2>Legutobb megkezdett feladat</h2>
+          <h2>Legutóbb megkezdett feladat</h2>
           <v-card>
             <v-card
             class="mx-auto"
@@ -174,8 +175,9 @@
                   {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}
                 </div>
                 <div class="text-h6 mb-1" v-if="!mostRecTriedTask.data.value">
-                  Jelenleg minden próbálkozásod sikeres volt! A gombra kattintva kaphatsz
-                  egy random feladatot.
+                  <p>Jelenleg minden próbálkozásod sikeres volt, vagy még nem volt! A gombra kattintva kaphatsz
+                    egy random feladatot.</p>
+                  
                 </div>
               </div>
             </v-card-item>
@@ -651,7 +653,7 @@ export default {
 #background-video source {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit:fill;
 }
 
 .background-overlay {
