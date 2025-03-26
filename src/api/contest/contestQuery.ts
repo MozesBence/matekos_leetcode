@@ -17,3 +17,22 @@ export const useLeaderboard = () => {
     },
   })
 }
+
+const getChallange = async (data: {id: number, define: string}) => {
+  const response = await axiosClient.get('http://localhost:3000/contest/challange',{
+    params: data
+  }); 
+  return response.data;
+}
+
+export const useGetChallange = () => {
+  return useMutation({
+    mutationFn: getChallange,
+    onSuccess(array) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}

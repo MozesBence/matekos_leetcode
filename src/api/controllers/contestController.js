@@ -17,3 +17,23 @@ exports.getLeaderBoard = async (req, res, next) => {
         next(error)
     }
 };
+
+exports.getChallange = async (req, res, next) => {
+    try{
+        const {id, define} = req.query;
+
+        const getChallange = await contestService.getChallange(id, define);
+
+        if(!getChallange){
+            const error = new Error("Nem sikerült lekérni a verseny feladatokat!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).send(getChallange);
+    }catch(error){
+        next(error)
+    }
+};

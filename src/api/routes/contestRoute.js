@@ -29,4 +29,6 @@ const contestController = require("../controllers/contestController");
  */
 route.get("/contest/leader-board", contestController.getLeaderBoard);
 
+route.get("/contest/challange", contestController.getChallange);
+
 module.exports = route;

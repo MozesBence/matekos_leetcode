@@ -17,7 +17,7 @@
 
                 Heti kihivás
               </v-card-title>
-              <v-card-subtitle>
+              <v-card-subtitle style="color: rgb(var(--v-theme-text_color));">
                 {{ weeklyCountdown }}
               </v-card-subtitle>
             </v-card-text>
@@ -31,7 +31,7 @@
 
                 Havi kihívás
               </v-card-title>
-              <v-card-subtitle class="text-grey-lighten-1 pa-0">
+              <v-card-subtitle style="color: rgb(var(--v-theme-text_color));">
                 {{ monthlyCountdown }}
               </v-card-subtitle>
             </v-card-text>
@@ -48,19 +48,24 @@
             <v-divider></v-divider>
             <v-list v-for="(member, index) in LeaderboardArray" :key="index" v-if="LeaderboardArray.length > 0" class="pa-0">
               <v-list-item class="pa-0 px-2">
-                <div class="d-flex flex-row align-center mb-1 pa-1 px-3 rounded justify-space-between mt-1" 
-                    style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
-                  <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;" icon elevation="0">
-                    <div style="height: 3rem; width: 3rem; border-radius: 50%; overflow: hidden; position: relative;">
-                      <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" 
-                          alt="" 
-                          style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
-                    </div>
-                  </v-btn>
-                  <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;"  elevation="0">
-                    <h3 style="font-weight: normal; text-transform: none;">{{ member.name }}</h3>
-                  </v-btn>
-                  <h3 style="font-weight: normal; width: 5rem; text-align: right;">{{ member.level }}.szint</h3>
+                <div class="d-flex flex-row align-center mb-1 pa-1 px-3 rounded justify-space-between mt-1" style="width: 100%; background-color: rgb(var(--v-theme-community_comment_bc));">
+                  <div style="width: 20%;" class="d-flex justify-start">
+                    <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;" icon elevation="0">
+                      <div style="height: 3rem; width: 3rem; border-radius: 50%; overflow: hidden; position: relative;">
+                        <img :src="member.profil_picture == null ? '/src/components/background/test_profile.jpg' : member.profil_picture" 
+                            alt="" 
+                            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
+                      </div>
+                    </v-btn>
+                  </div>
+                  <div style="width: 50%;" class="d-flex justify-center">
+                    <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;"  elevation="0">
+                      <h3 style="font-weight: normal; text-transform: none;">{{ member.name }}</h3>
+                    </v-btn>
+                  </div>
+                  <div style="width: 30%;" class="d-flex justify-end">
+                    <h3 style="font-weight: normal; text-align: right;">{{ member.level }}.szint</h3>
+                  </div>
                 </div>
               </v-list-item>
             </v-list>
@@ -76,7 +81,7 @@
             <v-card-title>Előző kihívások</v-card-title>
             <v-divider></v-divider>
             <v-list>
-              <v-list-item v-for="(contest, index) in contests" :key="index">
+              <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest">
                 <v-list-item>
                   <v-img :src="contest.image"></v-img>
                 </v-list-item>
@@ -88,8 +93,11 @@
                   <v-btn text color="primary">Virtual</v-btn>
                 </v-list-item-action>
               </v-list-item>
+              <v-list-item v-else class="d-flex justify-center">
+                <h2 style="font-weight: normal;">Eddig még nem történt egyelőre előző kihívás!</h2>
+              </v-list-item>
             </v-list>
-            <v-pagination v-model="page" :length="0"></v-pagination>
+            <v-pagination v-model="page" :length="0"  v-if="prev_contest"></v-pagination>
           </v-card>
         </v-col>
       </v-row>
@@ -97,7 +105,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { onMounted, ref, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -110,6 +118,8 @@ const LeaderboardArray = ref([]);
 const weeklyCountdown = ref('');
 const monthlyCountdown = ref('');
 let interval = null;
+const page = ref(1);
+const prev_contest = ref(null);
 
 function updateCountdowns() {
   weeklyCountdown.value = getTimeUntilNextMonday();

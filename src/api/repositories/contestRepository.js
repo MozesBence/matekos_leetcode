@@ -11,6 +11,10 @@ class contestRepository
         this.Users = db.Users;
 
         this.User_customization = db.User_customization;
+
+        this.Competitions = db.Competitions;
+
+        this.Tasks = db.Tasks;
     }
 
     async getLeaderBoard()
@@ -73,6 +77,20 @@ class contestRepository
         });        
 
         return UsersOnLeaderboard;
+    }
+
+    async getChallange(id, define){
+        const challange = await this.Competitions.findOne({
+            where:{
+                id: id,
+                define: define
+            },
+            include: [{
+                model: this.Tasks,
+            }]
+        })
+
+        return challange;
     }
 }
 

@@ -5,17 +5,14 @@ import type { Ref } from 'vue';
 
 
 const GetTaskData = async (id: number) => {
-    console.log(id);
     const response = await axiosClient.get(`/api/tasks/get-one-card/${id}`);
-    console.log(response)
-    console.log(response.data)
     return response.data;
 }
 
 export const UseGetTaskData = (id: number | null) => {
     return useQuery({
         queryKey: ['TaskData', id], 
-        queryFn: () => GetTaskData(id) , 
+        queryFn: () => GetTaskData(id), 
         enabled: !!id,
         staleTime: 0,
         refetchOnMount: true, 

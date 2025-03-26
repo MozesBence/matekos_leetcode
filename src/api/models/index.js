@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
-    const Competitions_types = require("../models/competition_types")(sequelize, DataTypes);
     const Badges = require("../models/badges")(sequelize, DataTypes);
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
@@ -17,25 +16,12 @@ module.exports = (sequelize, DataTypes) => {
     const Notification = require("./notification")(sequelize,DataTypes);
     const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
     const DailyQuote = require('../models/daily_quote')(sequelize,DataTypes)
-    const Competetions_attendees = require("../models/competetions_attendees")(sequelize,DataTypes);
     const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
     const Transactions = require('../models/transactions')(sequelize,DataTypes);
     const StoreItems = require('../models/storeItems')(sequelize,DataTypes)
     // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
-
-    const competition_submissions = sequelize.define("competition_submissions", {
-        point: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1,
-        },
-        exprience_level: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-            defaultValue: 1,
-        },
-    });
+    
     Transactions.belongsTo(StoreItems, {
         foreignKey: "itemId",
         onDelete: "CASCADE",
@@ -69,19 +55,10 @@ module.exports = (sequelize, DataTypes) => {
         through: Task_solutions,
     });
 
-    Competitions.hasOne(Competitions_types, {
-        foreignKey: "competition_type_id",
-    });
-
-    Competitions.belongsToMany(Users, {
+    /*Competitions.belongsToMany(Users, {
         foreignKey: "competetion_id",
         through: "competition_attendees",
-    });
-
-    Competitions.belongsToMany(Users, {
-        foreignKey: "competetion_id",
-        through: competition_submissions,
-    });
+    });*/
 
     Competitions.belongsToMany(Users, {
         foreignKey: "competetion_id",
@@ -206,6 +183,45 @@ module.exports = (sequelize, DataTypes) => {
     Notification.belongsTo(Community_posts, { foreignKey: 'content_id', constraints: false, as: 'reportedPost' });
     Notification.belongsTo(Community_comments, { foreignKey: 'content_id', constraints: false, as: 'reportedComment' });
 
+    const CompetitionTasks = sequelize.define('competition_tasks', {
+        id: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        task_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Tasks',
+                key: 'id'
+            }
+        },
+        competition_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: 'Competitions',
+                key: 'id'
+            }
+        }
+    }, { timestamps: false });
+    
+    Tasks.belongsToMany(Competitions, {  
+        through: CompetitionTasks, 
+        foreignKey: "task_id",
+        otherKey: "competition_id"
+    });
+    
+    Competitions.belongsToMany(Tasks, { 
+        through: CompetitionTasks, 
+        foreignKey: "competition_id",
+        otherKey: "task_id"
+    });
+    
+    Competitions.hasMany(Competetins_submissions, { foreignKey: 'competition_id'});
+    Users.hasOne(Competetins_submissions, { foreignKey: 'user_id'});
+
     return {
         Users,
         Community_posts,
@@ -216,7 +232,7 @@ module.exports = (sequelize, DataTypes) => {
         Themes,
         Tasks,
         Competitions,
-        Competitions_types,
+        Competetins_submissions,
         Badges,
         Alerts,
         Tokenz,
@@ -227,6 +243,7 @@ module.exports = (sequelize, DataTypes) => {
         Advertisement_Cards,
         DailyQuote,
         Transactions,
-        StoreItems
+        StoreItems,
+        CompetitionTasks
     };
 };

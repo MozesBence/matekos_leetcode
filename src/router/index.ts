@@ -36,15 +36,6 @@ const router = createRouter({
           path: '/contest',
           name: 'contest',
           component: () => import('../views/ContestView.vue')
-        },{
-          path: '/weekly-challange',
-          name: 'weekly-challange',
-          component: () => import('../views/WeeklyChallangeView.vue')
-        },
-        {
-          path: '/monthly-challange',
-          name: 'monthly-challange',
-          component: () => import('../views/MonthlyChallangeView.vue')
         },
         {
           path: '/store',
@@ -117,12 +108,16 @@ const router = createRouter({
       name: 'task-submit',
       component: () => import('../views/TaskSubmitView.vue')
     },
-
     {
-      path:'/bum',
-      name:'bum',
-      component: () => import('../views/Bumview.vue')
-    }
+      path: '/weekly-challange',
+      name: 'weekly-challange',
+      component: () => import('../views/WeeklyChallangeView.vue')
+    },
+    {
+      path: '/monthly-challange',
+      name: 'monthly-challange',
+      component: () => import('../views/MonthlyChallangeView.vue')
+    },
   ]
 })
 

@@ -1186,8 +1186,7 @@
 <script setup>
 import { onMounted, ref, shallowRef, computed, inject, watch  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useProfileGetUser } from '@/api/profile/profileQuery'
-import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
+import { useProfileGetUser, useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme, useDisplay } from 'vuetify';
 

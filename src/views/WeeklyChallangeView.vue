@@ -1,7 +1,79 @@
-<script setup lang="ts">
+<template>
+  <main class="pa-2">
+    <v-container class="hero">
+      <h1>{{ currentWeek }}. heti kihívás</h1>
+    </v-container>
+
+    <v-container class="ma-auto mb-5 pa-0">
+      <v-btn class="d-flex align-center rounded-0 rounded-b-lg" elevation="0" @click="router.back()">
+        <v-icon class="mr-2">mdi-arrow-left</v-icon>
+        Versenyekhez
+      </v-btn>
+    </v-container>
+
+    <v-container>
+      <v-row v-if="isLoading">
+        <v-col cols="12" class="text-center">
+          <v-progress-circular indeterminate></v-progress-circular>
+        </v-col>
+      </v-row>
+
+      <!-- Két feladat egymás mellett -->
+      <v-row v-if="!isLoading">
+        <v-col v-for="task in tasks" :key="task.id" cols="12" md="6">
+          <v-card class="pa-2 d-flex flex-column ga-1">
+            <v-card-title><h1>{{ task.task_title }}</h1></v-card-title>
+            <div style="color: rgb(var(--v-theme-text_color));" class="mx-3">
+              <h2 style="font-weight: normal; width: 100%; height: auto;" v-mathjax="task.task"></h2>
+            </div>
+            <v-card-text>
+              <v-text-field
+                :v-model="getSolution(task)"
+                label="Megoldásod"
+                variant="outlined"
+                class="task-input"
+                :disabled="!get_user_by_token"
+              ></v-text-field>
+
+              <v-expansion-panels class="rounded" v-if="get_user_by_token">
+                <v-expansion-panel
+                elevation="0"
+                title="Első tipp"
+                :text="task.first_hint"
+                color="contest_challange_card"
+                bg-color="contest_challange_card"
+                >
+                </v-expansion-panel>
+                <v-expansion-panel
+                elevation="0"
+                title="Második tipp"
+                :text="task.second_hint"
+                color="contest_challange_card"
+                bg-color="contest_challange_card"
+                >
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <!-- Beadás gomb -->
+      <v-row justify="center" class="mt-5" v-if="get_user_by_token">
+        <v-btn color="primary" class="submit-btn">
+          Beadás
+        </v-btn>
+      </v-row>
+    </v-container>
+  </main>
+</template>
+
+<script setup>
 import { ref, onMounted, watch } from 'vue';
-import { UseGetTaskData } from '@/api/taskSolving/taskSolvingQuery';
-import type { TaskData } from '@/api/taskSolving/taskSolving';
+import { useGetChallange } from '@/api/contest/contestQuery';
+import { useDisplay, useTheme } from 'vuetify';
+import { useRouter, useRoute } from 'vue-router';
+import { useProfileGetUser, useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 
 const getISOWeekNumber = () => {
   const now = new Date();
@@ -11,69 +83,81 @@ const getISOWeekNumber = () => {
   return Math.ceil(((now.getTime() - firstThursday.getTime()) / weekMilliseconds) + 1);
 };
 
+const router = useRouter();
+const route = useRoute();
+
 const currentWeek = ref(getISOWeekNumber());
-const tasks = ref<TaskData[]>([]);
+const tasksWeek = ref(null);
+const theme = useTheme();
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
+const isLoading = ref(true);
+const tasks = ref([]);
 
-// A hook, hogy adatokat töltsünk be
-const { data, isLoading, isError } = UseGetTaskData(2);  // Például 2-es ID-t kérünk le
+// <------- Api hívások ------->
 
-// Ha a data változik, akkor frissítjük a tasks tömböt
-watch(data, (newData) => {
-  console.log('newData:', newData);  // Ellenőrizd, hogy mi érkezik vissza
+// Api hívás - felhasználói profil lekérése
+const { mutate: ProfileGetUser } = useProfileGetUser()
 
-  // Ha a válasz nem tömb, de egyetlen objektumot ad vissza, akkor egy tömbbe tesszük
-  if (newData) {
-    tasks.value = Array.isArray(newData) ? newData : [newData];
+// Api hívás - versenyek lekérdezése
+const { mutate: getChallange } = useGetChallange()
+
+// <------- Api hívások ------->
+
+// <------- Függvények | figyelők ------->
+
+onMounted(async ()=>{
+  if (get_user_by_token) {
+    try {
+      await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+        onSuccess: (get_user) => {
+          theme.global.name.value = get_user.User_customization.darkmode ? 'darkTheme' :'lightTheme';
+        },
+        onError: () => getCookie('user') && deleteCookie('user'),
+      });
+    } catch (error) {
+      console.error('Hiba történt a felhasználó lekérésekor:', error);
+    }
   }
-}, { immediate: true });  // immediate: true biztosítja, hogy azonnal frissüljön
+
+  try {
+      await getChallange({ id: currentWeek.value, define: "week" }, {
+        onSuccess: (response) => {
+          isLoading.value = false;
+          console.log(response);
+          tasksWeek.value = response.id;
+          tasks.value = response.Tasks;
+        },
+        onError: () => {
+          isLoading.value = false;
+          getCookie('user') && deleteCookie('user')
+        }
+      });
+    } catch (error) {
+      console.error('Hiba történt a felhasználó lekérésekor:', error);
+    }
+})
+
+function getSolution(task){
+  task.solution = currentWeek == tasksWeek ? "" : task.solution;
+}
+
+function getCookie(name){
+  const cookies = document.cookie.split('; ');
+  for (const cookie of cookies) {
+    const [key, value] = cookie.split('=');
+    if (key === name) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+}
+
+function deleteCookie(name) {
+  document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+}
+
+// <------- Függvények | figyelők ------->
 </script>
-
-<template>
-  <main>
-    <v-container class="hero">
-      <h1>{{ currentWeek }}. heti kihívás</h1>
-    </v-container>
-
-    <v-container>
-      <v-row v-if="isLoading">
-        <v-col cols="12" class="text-center">
-          <v-spinner></v-spinner> <!-- Töltés animáció -->
-        </v-col>
-      </v-row>
-
-      <v-row v-else-if="isError">
-        <v-col cols="12" class="text-center">
-          <v-alert type="error">Hiba történt a feladatok betöltésekor.</v-alert>
-        </v-col>
-      </v-row>
-
-      <!-- Két feladat egymás mellett -->
-      <v-row v-else>
-        <v-col v-for="task in tasks" :key="task.id" cols="12" md="6">
-          <v-card class="task-card">
-            <v-card-title class="task-title">{{ task.task_title }}</v-card-title>
-            <v-card-subtitle class="task-subtitle">{{ task.task }}</v-card-subtitle>
-            <v-card-text>
-              <v-text-field
-                v-model="task.solution"
-                label="Írd be a megoldást"
-                variant="outlined"
-                class="task-input"
-              ></v-text-field>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <!-- Beadás gomb -->
-      <v-row justify="center" class="mt-5">
-        <v-btn color="primary" class="submit-btn">
-          Beadás
-        </v-btn>
-      </v-row>
-    </v-container>
-  </main>
-</template>
 
 <style scoped>
 .hero {
@@ -84,7 +168,7 @@ watch(data, (newData) => {
   color: white;
   padding: 50px 20px;
   border-radius: 12px;
-  margin-bottom: 30px;
+  border-bottom-left-radius: 0px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
@@ -97,31 +181,5 @@ watch(data, (newData) => {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
-}
-
-.task-card {
-  padding: 20px;
-  border-radius: 12px;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-.task-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.task-title {
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-.task-subtitle {
-  font-size: 1rem;
-  margin-bottom: 10px;
-}
-
-.task-input {
-  margin-top: 10px;
 }
 </style>

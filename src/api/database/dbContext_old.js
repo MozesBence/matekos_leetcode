@@ -14,56 +14,13 @@ const sequelize = new Sequelize(
     },
 );
 
-const db = {};
+const models = require("../models/index")(sequelize, DataTypes);
 
-db.Sequelize = Sequelize;
-db.sequelize = sequelize;
-
-const { 
-    Users, 
-    Community_comments, 
-    Community_posts,
-    Community_files,
-    Community_likes,
-    Community_tags,
-    Themes, 
-    Tasks, 
-    Competitions, 
-    Competitions_types, 
-    Badges, 
-    Alerts, 
-    Tokenz, 
-    User_customization, 
-    Task_solutions,
-    Daily_Tasks,
-    Notification,
-    Advertisement_Cards,
-    DailyQuote,
-    StoreItems,
-    Transactions
-} = require("../models")(sequelize, DataTypes);
-
-db.Users = Users;
-db.Community_posts = Community_posts;
-db.Community_comments = Community_comments;
-db.Community_files = Community_files;
-db.Community_likes = Community_likes;
-db.Community_tags = Community_tags;
-db.Themes = Themes;
-db.Tasks = Tasks;
-db.Competitions = Competitions;
-db.Competitions_types = Competitions_types;
-db.Badges = Badges;
-db.Alerts = Alerts;
-db.Tokenz = Tokenz;
-db.User_customization = User_customization;
-db.Task_solutions = Task_solutions; // Assign Task_solutions to db
-db.Daily_Tasks = Daily_Tasks;
-db.Notification = Notification;
-db.Advertisement_Cards = Advertisement_Cards;
-db.DailyQuote = DailyQuote;
-db.StoreItems = StoreItems;
-db.Transactions = Transactions;
+const db = {
+    sequelize,
+    Sequelize,
+    ...models 
+};
 // Initialize database and themes
 const initializeDatabase = async () => {
     try {
@@ -79,45 +36,43 @@ const initializeDatabase = async () => {
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await Users.sync({ force: true });
-        await Community_posts.sync({ force: true });
+        await db.Users.sync({ force: true });
+        await db.Community_posts.sync({ force: true });
         await sequelize.sync({ force: true });
         console.log('Database connected and models synchronized.');
-
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
-
+        
         await db.Themes.initializeThemes();
         console.log('Default themes inserted.');
-
+        
         await db.Tasks.initializeTasks();
         console.log('Default tasks inserted.');
         
         await db.Community_tags.initializeTags();
         console.log('Default tags inserted.');
-
+        
         await db.Advertisement_Cards.initializeCards();
         console.log('Cards inserted.');
-
+        
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
         console.log("Event Scheduler is enabled.");
-
+        
         const createEventQuery = `
-            CREATE EVENT IF NOT EXISTS delete_expired_tokens
-            ON SCHEDULE EVERY 10 SECOND
-            DO
-                DELETE FROM Tokenz
-                WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR) AND type = 'regisztrálás';`;
-
+        CREATE EVENT IF NOT EXISTS delete_expired_tokens
+        ON SCHEDULE EVERY 10 SECOND
+        DO
+        DELETE FROM Tokenz
+        WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR) AND type = 'regisztrálás';`;
+        
         await sequelize.query(createEventQuery);
         console.log('Event for automatic token deletion created.');
         
         const createConfDeleteEventQuery = `
-            CREATE EVENT IF NOT EXISTS delete_expired_confirm_tokens
-            ON SCHEDULE EVERY 10 SECOND
-            DO
-                DELETE FROM Tokenz
-                WHERE expires <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND type = 'beállítások';`;
-
+        CREATE EVENT IF NOT EXISTS delete_expired_confirm_tokens
+        ON SCHEDULE EVERY 10 SECOND
+        DO
+        DELETE FROM Tokenz
+        WHERE expires <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND type = 'beállítások';`;
+        
         await sequelize.query(createConfDeleteEventQuery);
         console.log('Event for automatic confirm token deletion created.');
 
@@ -159,6 +114,8 @@ const initializeDatabase = async () => {
                 END IF;
             END;
         `;
+
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
 
         await sequelize.query(createDailyTaskEventQuery);
         console.log('Daily event for tasks created.');

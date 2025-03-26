@@ -64,9 +64,10 @@ const vuetify = createVuetify({
           community_createpost_editor_area_border: colors.grey.darken4,
           community_filter_bc: colors.grey.lighten3,
 
-          contest_cards_background: colors.grey.lighten2,
+          info_label_background: blue.lighten1,
 
-          info_label_background: blue.lighten1
+          contest_cards_background: colors.grey.lighten2,
+          contest_challange_card: colors.grey.lighten2,
         },
       },
       darkTheme: {
@@ -118,10 +119,10 @@ const vuetify = createVuetify({
           /*-----*/
 
           /*TaskCreateView*/
-          info_label_background: blue.accent4
+          info_label_background: blue.accent4,
           /*-------------*/
-
-
+          contest_cards_background: colors.grey.darken3,
+          contest_challange_card: colors.grey.darken2,
         },
       },
     },
