@@ -109,12 +109,13 @@ const profileMutation = useProfileGetUser();
 const items = UseFetchStoreItems();
 
 const purchaseData = ref({
-  userId: get_fullUser.value?.id ?? null,
-  currency: 'gold',
-  itemId: null,
+  userId: Number(get_fullUser.value?.id) || 0,
+  currency: "gold",
+  itemId: 0,
   amount: 1,
-  price: null,
+  price: 0,
 });
+
 
 const openPurchaseDialog = (item) => {
   purchaseData.value.itemId = item.id;

@@ -102,9 +102,9 @@ const fetchAllTaskCount = async (filters: { difficulty: string; state: string; t
   }
 };
 
-export const useAllTaskCount = (filters: { difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }) => {
+export const useAllTaskCount = (filters: Ref<{ difficulty: string; state: string; themes: string; search: string; UserId: string; offset: number }>) => {
   return useQuery({
-    queryFn: () => fetchAllTaskCount(filters),
+    queryFn: () => fetchAllTaskCount(filters.value),
     queryKey: ['tasksCount', NonEmptyFilters(filters.value)],
     onSuccess: (data) => {
       console.log("Filtered tasks received:", data);

@@ -2,7 +2,7 @@ import axios from "axios";
 import { stat } from "fs";
 import { defineStore  } from "pinia";
 
-
+/*
 export const useUserStatisticsStore = defineStore('userStatisticsStore',{
     state: () => (
         {
@@ -22,3 +22,4 @@ export const useUserStatisticsStore = defineStore('userStatisticsStore',{
         }
     }
 })
+*/

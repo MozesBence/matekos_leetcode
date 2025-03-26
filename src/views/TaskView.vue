@@ -315,9 +315,9 @@ onMounted(async () => {
   }
 });
 
-const DailyTaskCheck = async() => {
+const DailyTaskCheck = () => {
   var currentDate = new Date();
-  var taskDate = await isDailyTask.data.value?.id;
+  var taskDate = isDailyTask.data.value?.id;
   console.log('date',currentDate.getDay())
   console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
