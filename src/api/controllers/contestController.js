@@ -86,7 +86,7 @@ exports.uploadSolution = async (req, res, next) => {
         const secretKey = process.env.JWT_KEY;
 
         var decoded = null;
-        
+
         if(token){
             decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
         }
@@ -111,13 +111,15 @@ exports.uploadSolution = async (req, res, next) => {
 
         const upload_comp = await contestService.getUploadResults(get_results, decoded.id, comp_id);
 
-        if(!upload_comp){
+        if(upload_comp != 'OK'){
             const error = new Error("Valami hibatörtént a feladatok feltöltése közben!");
 
             error.status = 500;
 
             throw error;
         }
+        
+        console.log(data, comp_id, token);
 
         res.status(201).send("Feltöltve!");
     }catch(error){

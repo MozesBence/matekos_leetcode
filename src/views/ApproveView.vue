@@ -105,28 +105,12 @@ const alertMessage = ref<{ type: "success" | "warning" | "error" | null; text: s
     type: null,
     text: "",
 });
-const mathjaxDirective = {
-  mounted(el: HTMLElement, binding: any) {
-    el.innerHTML = binding.value || "";
-    if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
-    }
-  },
-  updated(el: HTMLElement, binding: any) {
-    el.innerHTML = binding.value || "";
-    if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
-    }
-  }
-};
 
 watch(() => task.data.value?.theme_id, (newThemeId) => {
     if (newThemeId && newThemeId !== 0) {
         themeId.value = newThemeId;
     }
 }, { immediate: true });
-
-
 
 const difficultyLabel = (difficulty: number) => {
   return difficulty === 0 ? "Könnyű" : difficulty === 1 ? "Közepes" : "Nehéz";
@@ -137,10 +121,10 @@ const ApproveTask = async () => {
     data.value.validity = 1;
     Validation(undefined, {
         onSuccess: () => {
-            showAlert("success", "A feladatot sikeresen validálta!");
+          showAlert("success", "A feladatot sikeresen validálta!");
         },
         onError: (error) => {
-            showAlert("error", `Error: ${error.message || "Hiba validálás közben!"}`);
+          showAlert("error", `Error: ${error.message || "Hiba validálás közben!"}`);
         }
     });
 };

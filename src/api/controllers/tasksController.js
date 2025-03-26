@@ -90,9 +90,8 @@ const submitTask = async (req,res) => {
 
 const getUnvalidatedTasks = async(req,res,next) => {
   try{
-    const {offset} = req.params;
-    console.log(offset)
-    const tasks = await tasksService.getUnvalidatedTasks(offset)
+    const tasks = await tasksService.getUnvalidatedTasks()
+
     res.status(200).json(tasks)
   }catch(error){
     //res.status(500).json({ message: "Error a nem validált feladatok lekérése közben!" });

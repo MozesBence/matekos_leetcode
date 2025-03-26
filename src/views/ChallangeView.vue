@@ -160,8 +160,8 @@ onMounted(async ()=>{
 const UploadSolution = async () =>{
   if(getISOWeekNumber() == currentWeek || getMonthNumber() == currentWeek){
     await uploadSolution({data: { data: tasks.data.map(c => ({ id: c.id, solution: c.solution })), comp_id: Competition_id.value}, token: get_user_by_token},{
-      onSuccess: () =>{
-        Uploaded = true;
+      onSuccess: (response) =>{
+        Uploaded.value = true;
         showSucces ? showSucces("Sikeresen fel lettek töltve az eredmények!") : console.log("Sikeresen fel lettek töltve az eredmények!")
       },
       onError: (error) =>{

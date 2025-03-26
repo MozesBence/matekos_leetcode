@@ -16,11 +16,10 @@ router.get('/getsimilarTasks/:themeid',getsimilarTasks);
 
 router.get('/solution/:id',getSolution);
 
-router.get('/unvalidatedTasks/:offset',getUnvalidatedTasks)
+router.get('/unvalidatedTasks',getUnvalidatedTasks)
 
 router.get('/validateTask/',updateTaskValidationState)
 
 router.post('/submitTask',submitTask);
-
 
 module.exports = router;

@@ -92,7 +92,7 @@
             <v-card-title>Előző kihívások</v-card-title>
             <v-divider></v-divider>
             <v-list>
-              <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest">
+              <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest && prev_contest.length != 0">
                 <v-list-item class="pa-0">
                   <v-hover v-slot="{ isHovering, props }">
                     <v-card elevation="0" v-bind="props">

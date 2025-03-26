@@ -97,9 +97,9 @@ class TasksService {
       throw error;
     }
   }
-  async getUnvalidatedTasks(offset){
+  async getUnvalidatedTasks(){
     try{
-      return await tasksRepository.getUnvalidatedTasks(offset);
+      return await tasksRepository.getUnvalidatedTasks();
     }catch(error){
       throw error;
     }

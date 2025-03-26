@@ -1,7 +1,7 @@
 const { number } = require('zod');
 const { Sequelize } = require('sequelize');
 const db = require('../database/dbContext');
-const { Tasks,Themes,Task_solutions } = db;
+const { Tasks,Themes,Task_solutions, Users, User_customization } = db;
 const { Op } = require('sequelize');
 const { isConstructorDeclaration, isAwaitKeyword } = require('typescript');
 const { stat } = require('fs');
@@ -28,12 +28,36 @@ const tasksRepository = {
   },
   async getSpecificCard(id) {
     try {
-      return await Tasks.findOne({
+      const task = await Tasks.findOne({
         where: {
           id: id
         },
         attributes:['id','theme_id','theme_id','creator_id','difficulty','experience_points','task_title','task','solution_format','first_hint','second_hint'],
-      });
+        include: [{
+          model: Users,
+          as: 'creator',
+          attributes: ["id","user_name"],
+          include: [{
+            model: User_customization,
+            required: false,
+            attributes: ["profil_picture"],
+          }],
+          required: false
+        }]
+      });{
+      if (task.creator && task.creator.User_customization.profil_picture != null) {
+          const profileProfPicBuffer = task.creator.User_customization.profil_picture;
+                      
+          const profileProfPicMimeType = task.creator.User_customization.profil_picture_type || 'image/jpeg';
+          
+          if (profileProfPicBuffer) {
+            const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+            task.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+          }
+        }
+      }
+    
+      return task;
     } catch (error) {
       console.error('Error fetching specific card:', error);
       throw error;
@@ -275,14 +299,38 @@ async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experienc
     validated:validated
   });
 },
-async getUnvalidatedTasks(offset){
-  return await Tasks.findAll({
-    where:{
-      validated:0
+async getUnvalidatedTasks(){
+  const tasks = await Tasks.findAll({
+    where: {
+      validated: 0
     },
-    limit:20,
-    offset:parseInt(offset,10),
-  })
+    include: [{
+      model: Users,
+      as: 'creator',
+      attributes: ["id","user_name"],
+      include: [{
+        model: User_customization,
+        required: false,
+        attributes: ["profil_picture"],
+      }],
+      required: false
+    }]
+  });
+
+  tasks.forEach(user =>{
+    if (user.creator.User_customization.profil_picture != null) {
+      const profileProfPicBuffer = user.creator.User_customization.profil_picture;
+                  
+      const profileProfPicMimeType = user.creator.User_customization.profil_picture_type || 'image/jpeg';
+      
+      if (profileProfPicBuffer) {
+        const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+        user.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+      }
+    }
+  });
+
+  return tasks;
 },
 async updateTaskValidationState(taskId, validity) {
   console.log("Received in repo:", { taskId, validity });

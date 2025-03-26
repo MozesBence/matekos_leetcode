@@ -1123,7 +1123,32 @@
                             <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
                               <div v-for="validate in AllValidate" v-bind:key="validate.id">
-                                {{ validate }}
+                                <div 
+                                style="background-color: rgb(var(--v-theme-profile_bc));"
+                                class="rounded py-2 px-2 d-flex align-center">
+                                  <div style="width: 100%;" class="d-flex align-center mr-2">
+                                    <v-icon size="25" class="mr-2">mdi-timer-sand</v-icon>
+                                    <h3 style="font-weight: normal;">{{ validate.task_title }}</h3>
+                                    <v-divider vertical class="mx-2"></v-divider>
+                                    <div style="width: max-content;" class="ml-2"> 
+                                    <div class="d-flex flex-row ga-2 align-center">
+                                      <div 
+                                      class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                      style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                      @click="router.push({ name: 'profile', params: { id: validate.creator.id } })">
+                                        <img :src="validate.creator.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : validate.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <h3 style="font-weight: normal;">{{ validate.creator.user_name }}</h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  </div>
+
+                                  <div>
+                                    <v-btn elevation="0" @click="router.push({ name: 'approve-task', params:{taskid: validate.id}}); dialog = false">
+                                      Ellenörzés
+                                    </v-btn>
+                                  </div>
+                                </div>
                               </div>
 
                               <v-slide-y-transition mode="out-in">
@@ -1187,7 +1212,7 @@
 import { onMounted, ref, shallowRef, computed, inject, watch  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser, useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs, useGetAllUnvalidTasks } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme, useDisplay } from 'vuetify';
 
 // Képernyő méret / eszköz
@@ -1207,8 +1232,9 @@ const showError = inject("showError");
 const showSucces = inject("showSucces");
 
 // <------- Változók ------->
-const dialog = shallowRef(false)
+var timeout = null;
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
+const dialog = shallowRef(false)
 const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
 const PassSettingDraw = ref(false);
@@ -1244,7 +1270,6 @@ const loading = ref(false);
 const AllNotifs = ref([]);
 const AllValidate = ref([]);
 const AllUsers = ref([]);
-var timeout = null;
 const activatedTypeButton = ref(null);
 const adminTypeButton = ref(null);
 const AllReports = ref([]);const get_fullUser = ref(null);
@@ -1303,6 +1328,9 @@ const { mutate: setNewSettings } = useSetSettings()
 
 // Api hívás - sötét mód beállítása a felhasználó számára
 const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch()
+
+// Api hívás - ellenörzésre váró feladatok
+const { mutate: getAllUnvalidTasks } = useGetAllUnvalidTasks()
 
 // <------- Api hívások ------->  
 
@@ -1382,7 +1410,20 @@ const AdminNotifActive = async () => {
   });
 };
 
-const AdminValidateActive = () => toggleDrawer('AdminValidateDraw');
+const AdminValidateActive = async () =>{
+  toggleDrawer('AdminValidateDraw');
+  ValidateLoading.value = true;
+  await getAllUnvalidTasks(undefined, {
+    onSuccess: (response) => {
+      AllValidate.value = response;
+      ValidateLoading.value = false;
+    },
+    onError: (error) => {
+      console.log(error.response.data);
+      ValidateLoading.value = false;
+    }
+  });
+}
 
 function handlePanelToggle(){
  users_UserName.value = ''; 
