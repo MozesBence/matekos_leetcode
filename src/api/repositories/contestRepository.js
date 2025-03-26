@@ -80,7 +80,7 @@ class contestRepository
     }
 
     async getChallange(id, define){
-        const challange = await this.Competitions.findOne({
+        return await this.Competitions.findOne({
             where:{
                 id: id,
                 define: define
@@ -89,8 +89,16 @@ class contestRepository
                 model: this.Tasks,
             }]
         })
+    }
 
-        return challange;
+    async getPrevChallange(week){
+        return await this.Competitions.findAll({
+            where:{
+                id: {
+                    [Op.lt]: week,
+                },
+            },
+        })
     }
 }
 

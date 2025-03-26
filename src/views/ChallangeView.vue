@@ -28,11 +28,11 @@
             </div>
             <v-card-text>
               <v-text-field
-                :v-model="getSolution(task)"
-                label="Megoldásod"
+                :v-model="task.solution"
+                :label="currentWeek == getISOWeekNumber()?  'Megoldásod' : task.solution"
                 variant="outlined"
                 class="task-input"
-                :disabled="!get_user_by_token"
+                :disabled="!get_user_by_token || currentWeek != getISOWeekNumber()"
               ></v-text-field>
 
               <v-expansion-panels class="rounded" v-if="get_user_by_token">
@@ -45,7 +45,7 @@
                     <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 1.
                   </template>
                   <v-expansion-panel-text>
-                    <div v-mathjax="task.first_hint"></div>
+                    <h3 style="font-weight: normal;" v-mathjax="task.first_hint"></h3>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
 
@@ -58,7 +58,7 @@
                     <v-icon class="mr-2">mdi-lightbulb</v-icon> Segítség 2.
                   </template>
                   <v-expansion-panel-text>
-                    <div v-mathjax="task.second_hint"></div>
+                    <h3 style="font-weight: normal;" v-mathjax="task.second_hint"></h3>
                   </v-expansion-panel-text>
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -78,24 +78,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, inject } from 'vue';
 import { useGetChallange } from '@/api/contest/contestQuery';
 import { useDisplay, useTheme } from 'vuetify';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileGetUser, useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
 
-const getISOWeekNumber = () => {
-  const now = new Date();
-  const yearStart = new Date(now.getFullYear(), 0, 1);
-  const firstThursday = new Date(now.getFullYear(), 0, (4 - yearStart.getDay()) + 1);
-  const weekMilliseconds = 7 * 24 * 60 * 60 * 1000;
-  return Math.ceil(((now.getTime() - firstThursday.getTime()) / weekMilliseconds) + 1);
-};
+// Üzenetkezelés
+const showError = inject("showError");
+const showSucces = inject("showSucces");
 
 const router = useRouter();
 const route = useRoute();
 
-const currentWeek = ref(getISOWeekNumber());
+const currentWeek = route.params.week;
 const tasksWeek = ref(null);
 const theme = useTheme();
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
@@ -114,26 +110,35 @@ const { mutate: getChallange } = useGetChallange()
 
 // <------- Függvények | figyelők ------->
 
+const getISOWeekNumber = () => {
+  const now = new Date();
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const firstThursday = new Date(now.getFullYear(), 0, (4 - yearStart.getDay()) + 1);
+  const weekMilliseconds = 7 * 24 * 60 * 60 * 1000;
+  return Math.ceil(((now.getTime() - firstThursday.getTime()) / weekMilliseconds) + 1);
+};
+
 onMounted(async ()=>{
   if (get_user_by_token) {
-    try {
-      await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
-        onSuccess: (get_user) => {
-          theme.global.name.value = get_user.User_customization.darkmode ? 'darkTheme' :'lightTheme';
-        },
-        onError: () => getCookie('user') && deleteCookie('user'),
-      });
-    } catch (error) {
-      console.error('Hiba történt a felhasználó lekérésekor:', error);
-    }
+    await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+      onSuccess: (get_user) => {
+        theme.global.name.value = get_user.User_customization.darkmode ? 'darkTheme' :'lightTheme';
+      },
+      onError: (error) =>{
+        showError ? showError(error.response.data) : console.log(error.response.data)
+        deleteCookie('user')
+      }
+    });
   }
 
   try {
-      await getChallange({ id: currentWeek.value, define: "week" }, {
+      await getChallange({ id: route.params.week, define: (route.params.week % 4 == 0 ? "month" : "week") }, {
         onSuccess: (response) => {
           isLoading.value = false;
-          console.log(response);
           tasksWeek.value = response.id;
+          if(getISOWeekNumber() == response.id){
+            response.Tasks.forEach(c => c.solution = "")
+          }
           tasks.value = response.Tasks;
         },
         onError: () => {
@@ -146,9 +151,6 @@ onMounted(async ()=>{
     }
 })
 
-function getSolution(task){
-  task.solution = currentWeek == tasksWeek ? "" : task.solution;
-}
 
 function getCookie(name){
   const cookies = document.cookie.split('; ');

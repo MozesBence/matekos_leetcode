@@ -9,6 +9,10 @@ class contestService
     async getChallange(id, define){
         return await contestRepository.getChallange(id, define);
     }
+
+    async getPrevChallange(week){
+        return await contestRepository.getPrevChallange(week);
+    }
 }
 
 module.exports = new contestService();

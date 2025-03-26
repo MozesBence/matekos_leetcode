@@ -37,3 +37,23 @@ exports.getChallange = async (req, res, next) => {
         next(error)
     }
 };
+
+exports.getPrevChallange = async (req, res, next) => {
+    try{
+        const week = req.query.week;
+
+        const getPrevChallange = await contestService.getPrevChallange(week);
+
+        if(!getPrevChallange){
+            const error = new Error("Nem sikerült lekérni a verseny feladatokat!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).send(getPrevChallange.reverse());
+    }catch(error){
+        next(error)
+    }
+};

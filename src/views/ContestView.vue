@@ -82,22 +82,34 @@
             <v-divider></v-divider>
             <v-list>
               <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest">
-                <v-list-item>
-                  <v-img :src="contest.image"></v-img>
+                <v-list-item class="pa-0">
+                  <v-hover v-slot="{ isHovering, props }">
+                    <v-card elevation="0" v-bind="props">
+                      <v-btn style="background-color: rgb(var(--v-theme-community_comment_bc)); width: 100%;" class="position-relative pa-6 rounded d-flex justify-start" @click="router.push({ name: 'challange', params: { week : contest.id} })">
+                        <div>
+                          <h2>{{ contest.id }}. - {{ contest.define == "week" ? "Heti" : "Havi" }} kihívás</h2>
+                        </div>
+                        <div style="position: absolute; right: 1rem;" v-if="!isMobile">
+                          <v-slide-x-reverse-transition>
+                            <v-icon v-if="isHovering" size="30">
+                              mdi-arrow-right
+                            </v-icon>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                        <div style="position: absolute; right: 1rem;" v-else>
+                          <v-icon size="30">
+                              mdi-arrow-right
+                          </v-icon>
+                        </div>
+                      </v-btn>
+                    </v-card>
+                  </v-hover>
                 </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>{{ contest.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ contest.date }}</v-list-item-subtitle>
-                </v-list-item>
-                <v-list-item-action>
-                  <v-btn text color="primary">Virtual</v-btn>
-                </v-list-item-action>
               </v-list-item>
               <v-list-item v-else class="d-flex justify-center">
                 <h2 style="font-weight: normal;">Eddig még nem történt egyelőre előző kihívás!</h2>
               </v-list-item>
             </v-list>
-            <v-pagination v-model="page" :length="0"  v-if="prev_contest"></v-pagination>
           </v-card>
         </v-col>
       </v-row>
@@ -106,19 +118,20 @@
 </template>
 
 <script setup>
-import { onMounted, ref, onUnmounted } from 'vue';
+import { onMounted, ref, onUnmounted, computed} from 'vue';
 import { useRouter } from 'vue-router';
+import { useLeaderboard, useGetPrevChallange} from '@/api/contest/contestQuery';
+import { useTheme, useDisplay } from 'vuetify';
 
 const router = useRouter();
 
-import { useLeaderboard } from '@/api/contest/contestQuery';
+const { mobile } = useDisplay();
+const isMobile = computed(() => mobile.value);
 
+var interval = null;
 const LeaderboardArray = ref([]);
-
 const weeklyCountdown = ref('');
 const monthlyCountdown = ref('');
-let interval = null;
-const page = ref(1);
 const prev_contest = ref(null);
 
 function updateCountdowns() {
@@ -149,8 +162,22 @@ function formatTimeDifference(ms) {
   return `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
 }
 
-onMounted(() => {
-  const { mutate } = useLeaderboard();
+const getISOWeekNumber = () => {
+  const now = new Date();
+  const yearStart = new Date(now.getFullYear(), 0, 1);
+  const firstThursday = new Date(now.getFullYear(), 0, (4 - yearStart.getDay()) + 1);
+  const weekMilliseconds = 7 * 24 * 60 * 60 * 1000;
+  return Math.ceil(((now.getTime() - firstThursday.getTime()) / weekMilliseconds) + 1);
+};
+
+const { mutate } = useLeaderboard();
+const { mutate: getPrevChallange } = useGetPrevChallange();
+onMounted(async () => {
+  await getPrevChallange(getISOWeekNumber(), {
+    onSuccess:(response)=>{
+      prev_contest.value = response;
+    }
+  })
 
   mutate(undefined, {
     onSuccess: (array) => {
@@ -169,8 +196,9 @@ onUnmounted(() => {
   clearInterval(interval);
 });
 
+
 function hetiKihivasAtiranyit() {
-  router.push({ path: '/weekly-challange' });
+  router.push({ name: 'challange', params: { week : getISOWeekNumber()} });
 }
 function haviKihivasAtiranyit() {
   router.push({ path: '/monthly-challange' });

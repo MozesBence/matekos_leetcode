@@ -36,3 +36,22 @@ export const useGetChallange = () => {
     },
   })
 }
+
+const getPrevChallange = async (week: number) => {
+  const response = await axiosClient.get('http://localhost:3000/contest/prev-challange',{
+    params: { week }
+  }); 
+  return response.data;
+}
+
+export const useGetPrevChallange = () => {
+  return useMutation({
+    mutationFn: getPrevChallange,
+    onSuccess(array) {
+      
+    },
+    onError: (error: any) => {
+      
+    },
+  })
+}
