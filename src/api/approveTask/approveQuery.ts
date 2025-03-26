@@ -1,21 +1,24 @@
 import { userId } from "@/stores/userStore";
 import { useMutation } from "@tanstack/vue-query";
 import axios from "axios";
-import {type Ref} from 'vue'
-const validateTask = async(taskId:Number,validity:Number) =>{
+
+const validateTask = async(data: {taskId: number, validity: number, user_id: number, from_user_id:number, message: string}) =>{
     try{
-        const response = await axios.get('/api/tasks/validateTask/',{
-            params:{taskId:taskId,validity:validity}
-        });
+        const response = await axios.post('/api/tasks/validateTask/', data);
         return response.data;
     }catch(error){
         throw error;
     }
 }
 
-export const UseValidateTask = (data:Ref<{taskId:Number,validity:Number}>) => {
+export const UseValidateTask = () => {
     return useMutation({
-        mutationFn: () => validateTask(data.value.taskId,data.value.validity),
-        mutationKey:['validatetask']
+        mutationFn: validateTask,
+        onSuccess(response) {
+          
+        },
+        onError: (error: any) => {
+          
+        },
     })
 }

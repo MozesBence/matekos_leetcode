@@ -1144,7 +1144,7 @@
                                   </div>
 
                                   <div>
-                                    <v-btn elevation="0" @click="router.push({ name: 'approve-task', params:{taskid: validate.id}}); dialog = false">
+                                    <v-btn elevation="0" @click="router.push({ name: 'approve-task', params: { taskid: validate.id, adminid: get_fullUser.id } }); dialog = false">
                                       Ellenörzés
                                     </v-btn>
                                   </div>

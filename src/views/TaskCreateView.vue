@@ -10,7 +10,7 @@
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
                 <template v-slot:activator="{ props: taskTitleDialog }">
-                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskTitleDialog">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskTitleDialog" class="cursor-pointer">
                 </template>
 
                 <template v-slot:default="{ isActive }">
@@ -44,7 +44,7 @@
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
                 <template v-slot:activator="{ props: taskDescDialog }">
-                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskDescDialog">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskDescDialog" class="cursor-pointer">
                 </template>
 
                 <template v-slot:default="{ isActive }">
@@ -83,7 +83,7 @@
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
                 <template v-slot:activator="{ props: taskSolution }">
-                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskSolution">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskSolution" class="cursor-pointer">
                 </template>
 
                 <template v-slot:default="{ isActive }">
@@ -116,7 +116,7 @@
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
                 <template v-slot:activator="{ props: taskSolutionFormat }">
-                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskSolutionFormat">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskSolutionFormat" class="cursor-pointer">
                 </template>
 
                 <template v-slot:default="{ isActive }">
@@ -154,7 +154,7 @@
             <!--Iconra nyilo dialog kezdete-->
             <v-dialog max-width="500">
                 <template v-slot:activator="{ props: taskDifficulty }">
-                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskDifficulty">
+                    <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskDifficulty" class="cursor-pointer">
                 </template>
 
                 <template v-slot:default="{ isActive }">
@@ -214,7 +214,7 @@
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
             <template v-slot:activator="{ props: taskHint1 }">
-                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1">
+                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1" class="cursor-pointer">
             </template>
 
             <template v-slot:default="{ isActive }">
@@ -248,7 +248,7 @@
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
             <template v-slot:activator="{ props: taskHint1 }">
-                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1">
+                <img src="../assets/info.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="taskHint1" class="cursor-pointer">
             </template>
 
             <template v-slot:default="{ isActive }">
@@ -298,12 +298,15 @@ class="center-alert"
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watchEffect,onMounted } from "vue";
+import { ref, computed, watchEffect,onMounted, inject } from "vue";
 import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseSubmitTask} from '@/api/taskSubmit/taskSubmit'
 
+// Router és route hookok
+const showError = inject<((msg: string) => void) | undefined>("showError");
+const showSucces = inject<((msg: string) => void) | undefined>("showSucces");
 
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 import router from "@/router";
@@ -389,10 +392,10 @@ const SendTask = () => {
     } else {
         submitTask(undefined, {
             onSuccess: () => {
-                showAlert("success", "A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!");
+                showSucces ? showSucces("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!") : console.log("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!")
             },
             onError: (error) => {
-                showAlert("error", `Error: ${error.message || "Hiba a feltöltés közben!"}`);
+                showError ? showError(error.message || "Hiba a feltöltés közben!") : console.log(error.message || "Hiba a feltöltés közben!")
             }
         });
     }

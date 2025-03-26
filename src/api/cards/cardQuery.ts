@@ -253,8 +253,7 @@ export const UseGetSolution = (id:Number) => {
 
 const getSpecificTaskData = async (taskId:Ref<Number | null>) => {
   try{
-    const response = await axios.get(`/api/tasks/get-one-card/${taskId}`);
-    console.log(response.data)
+    const response = await axios.get(`/api/tasks/get-one-card/${taskId.value}`);
     return response.data
   }catch(error){
     throw error;
@@ -262,9 +261,8 @@ const getSpecificTaskData = async (taskId:Ref<Number | null>) => {
 }
 
 export const UseGetSpecificTaskData = (taskId:Ref<Number | null>) => {
-   return useQuery({
+  return useQuery({
     queryFn: () => getSpecificTaskData(taskId),
     queryKey:['specTask',taskId.value],
-    enabled: !!taskId.value
-   })
+  })
 }

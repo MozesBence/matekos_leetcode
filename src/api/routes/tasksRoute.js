@@ -18,7 +18,7 @@ router.get('/solution/:id',getSolution);
 
 router.get('/unvalidatedTasks',getUnvalidatedTasks)
 
-router.get('/validateTask/',updateTaskValidationState)
+router.post('/validateTask/',updateTaskValidationState)
 
 router.post('/submitTask',submitTask);
 

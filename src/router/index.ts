@@ -52,7 +52,7 @@ const router = createRouter({
           component: () => import('../views/TaskView.vue')
         },
         {
-          path:'/approve-task/:taskid',
+          path:'/approve-task/:taskid/:adminid',
           name:'approve-task',
           component: () => import('../views/ApproveView.vue')
         }

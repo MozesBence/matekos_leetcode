@@ -1,7 +1,7 @@
 const { number } = require('zod');
 const { Sequelize } = require('sequelize');
 const db = require('../database/dbContext');
-const { Tasks,Themes,Task_solutions, Users, User_customization } = db;
+const { Tasks,Themes,Task_solutions, Users, User_customization, Notification } = db;
 const { Op } = require('sequelize');
 const { isConstructorDeclaration, isAwaitKeyword } = require('typescript');
 const { stat } = require('fs');
@@ -27,6 +27,7 @@ const tasksRepository = {
     }
   },
   async getSpecificCard(id) {
+    console.log(id);
     try {
       const task = await Tasks.findOne({
         where: {
@@ -44,16 +45,15 @@ const tasksRepository = {
           }],
           required: false
         }]
-      });{
+      });
       if (task.creator && task.creator.User_customization.profil_picture != null) {
-          const profileProfPicBuffer = task.creator.User_customization.profil_picture;
-                      
-          const profileProfPicMimeType = task.creator.User_customization.profil_picture_type || 'image/jpeg';
-          
-          if (profileProfPicBuffer) {
-            const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
-            task.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
-          }
+        const profileProfPicBuffer = task.creator.User_customization.profil_picture;
+                    
+        const profileProfPicMimeType = task.creator.User_customization.profil_picture_type || 'image/jpeg';
+        
+        if (profileProfPicBuffer) {
+          const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+          task.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
         }
       }
     
@@ -332,14 +332,25 @@ async getUnvalidatedTasks(){
 
   return tasks;
 },
-async updateTaskValidationState(taskId, validity) {
-  console.log("Received in repo:", { taskId, validity });
+async updateTaskValidationState(taskId, validity, user_id, from_user_id, message) {
   try{
     if (validity == '0') {
-      return this.deleteTaskFromTasks(taskId);
+      this.deleteTaskFromTasks(taskId);
     }else{
-      return this.updateToValidated(taskId);
+      this.updateToValidated(taskId);
     }
+
+    await Notification.create({
+      type: 0,
+      notif_content: message,
+      content_type: 0,
+      content_id: null,
+      closed: 1,
+      user_id: user_id,
+      from_user_id: from_user_id
+    })
+
+    return 'OK'
   }catch(error){
     throw error;
   }
