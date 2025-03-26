@@ -99,7 +99,7 @@ const themeId = ref<number | null>(null);
 const theme = UseGetThemeById(themeId)
 const data = ref({
     taskId: task.data.value?.id,
-    validty:0
+    validity:0
 })
 const alertMessage = ref<{ type: "success" | "warning" | "error" | null; text: string }>({
     type: null,
@@ -109,13 +109,13 @@ const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   },
   updated(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   }
 };
@@ -154,7 +154,6 @@ const DenyTask = async () => {
           },
         onError: (error) => {
             showAlert("error", `Error: ${error.message || "Hiba validálás közben!"}`);
-            
           }
     });
 };

@@ -13,13 +13,13 @@
             <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap; ">
               <!-- Chip 1: Difficulty -->
               <v-chip
-                :color="chipColor(task?.difficulty)"
+                :color="chipColor(task?.difficulty ?? 0)"
                 outlined
                 small
                 style="min-width: 10rem; flex-shrink: 0;"
                 class="d-flex align-center justify-center"
               >
-                <p class="ma-0">{{ difficultyLabel(task?.difficulty) }}</p>
+                <p class="ma-0">{{ difficultyLabel(task?.difficulty ?? 0) }}</p>
               </v-chip>
               <!-- Chip 2 -->
               <v-chip
@@ -37,7 +37,8 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #95cdfc; color: blue"
                 class="d-flex align-center justify-center"
-                v-if="DailyTaskCheck()"
+                v-if="isDailyTaskValid"
+
               >
                 <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
               </v-chip>
@@ -155,9 +156,27 @@ import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
 //import {TaskView} from '@/stores/taskLoader'
+
+interface Task {
+  id: number;
+  task_title: string;
+  difficulty: number;
+  creator_id?: number;
+  task: string;
+  solution_format: string;
+  first_hint?: string;
+  second_hint?: string;
+}
+
+interface User {
+  id: number;
+  user_name: string;
+}
+
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
 const theme_id = ref(0);
+const isDailyTaskValid = ref(false);
 const push = (path: string) => {
   router.push(path);
 };
@@ -166,16 +185,17 @@ const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   },
   updated(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   }
 };
+
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
   //window.location.reload();
@@ -197,10 +217,9 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
 
 
 const getTaskData = UseGetTaskData(Number(route.params.id));
-var task = ref([]);
+const task = ref<Task | null>(null);
 const get_user_name = ref<string | null>(null);
-const get_fullUser = ref<any[]>([]);
-const userId = ref(get_fullUser.value.id);
+const get_fullUser = ref<User | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
 
@@ -259,7 +278,8 @@ const SubmitTask = () => {
     return;
   }
 
-  const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
+  const payload = `${get_fullUser.value?.id};${route.params.id};${solution.value}`;
+
 
   submitSolution(payload, {  
     onSuccess: (data) => {
@@ -314,7 +334,9 @@ onMounted(async () => {
     await theme.refetch();
   }
 });
-
+onMounted(async () => {
+  isDailyTaskValid.value = await DailyTaskCheck();
+});
 const DailyTaskCheck = async() => {
   var currentDate = new Date();
   var taskDate = await isDailyTask.data.value?.id;

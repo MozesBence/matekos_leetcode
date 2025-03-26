@@ -138,7 +138,6 @@
       </v-row>
       <v-row justify="space-evenly">
         <v-col
-          :key="elevation"
           cols="12"
           md="6"
         >
@@ -153,7 +152,6 @@
           </v-sheet>
         </v-col>
         <v-col
-          :key="elevation"
           cols="12"
           md="6"
         >
@@ -166,14 +164,11 @@
           <h2>Legutobb megkezdett feladat</h2>
           <v-card>
             <v-card
-            :color="color"
-            :variant="variant"
             class="mx-auto"
           >
             <v-card-item>
               <div>
                 <div class="text-overline mb-1">
-                  {{ variant }}
                 </div>
                 <div class="text-h6 mb-1" v-if="mostRecTriedTask.data.value">
                   {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}

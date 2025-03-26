@@ -138,7 +138,6 @@
   type="text"
   variant="outlined"
   clearable
-  @input="filterTasksByCharacters(filterData.search)"
   style="height: 56px;"
 ></v-text-field>
   </v-col>
@@ -319,7 +318,6 @@
 </v-layout>
 
 <v-pagination 
-v-model="pageNumber" 
 :length="Math.ceil((allTaskCountQuery.data.value) / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
@@ -373,10 +371,10 @@ import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
 import { useRoute, useRouter } from 'vue-router';
 import {UsegetRollBackTokenCount,UseGetDailyStreak} from '../api/mainPage/mainPageQuery'
-
+import {get_fullUser,getCookie} from '../stores/userStore'
 
 // Query hooks
-const get_fullUser = ref<any[]>([]);
+
 const userId = ref(get_fullUser.value.id);
 const offset = ref<number>(0);
   const filterData = ref({
@@ -401,7 +399,7 @@ var dialog = ref(false);
 const apexchart = VueApexCharts;
 const get_user_name = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
-const user_id = ref<string | null>(null);
+const user_id = ref<number | null>(null);
 const dailyStreak = UseGetDailyStreak(user_id);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
@@ -475,9 +473,9 @@ var dailytask_day = ref('');
 
 const specificTaskquery = useSpecificTask(dailytask_day);
 
-const LoadDailyTask = async (day: string) => {
-    if(CheckIfCurrentTask(day)){
-      dailytask_day.value = day;
+const LoadDailyTask = async (day: number) => {
+    if(CheckIfCurrentTask(day.toString())){
+      dailytask_day.value = day.toString();
       console.log(dailytask_day.value);
       await specificTaskquery.refetch();
       TaskView(Number(specificTaskquery.data.value.task_id));
@@ -559,16 +557,6 @@ const chartOptions = ref({
   ],
 });
 
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split('=');
-    if (key === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-}
 
 const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
@@ -747,7 +735,7 @@ onMounted(async () => {
       await ProfileGetUser({ token: userCookie, id: 0 }, {
         onSuccess: (user) => {
           get_fullUser.value = user;
-          user_id.value = String(user.id);
+          user_id.value = user.id;
         }
       });
     } catch (error) {
@@ -772,22 +760,37 @@ watch(user_id, async (newVal) => {
 
 
 
-
-  onMounted(async () => {
-    watch(() => get_fullUser.value, (newUser) => {
-      if (newUser && newUser.id) {
-        user_id.value = String(newUser.id);
+onMounted(() => {
+  watch(
+    () => get_fullUser.value, 
+    (newUser) => {
+      if (newUser && typeof newUser === "object" && "id" in newUser) {
+        user_id.value = Number(newUser.id);
         solvedTaskStatesQuery.refetch();
+      } else {
+        console.warn("Invalid user detected:", newUser);
       }
-    }, { immediate: true });
+    },
+    { immediate: true }
+  );
 
-    watch(() => solvedTaskStatesQuery.data, (newData) => {
-      if (newData) {
-        console.log('New task rates:', newData.value);
-        series.value = newData.value.countpercenct;
+  watch(
+    () => solvedTaskStatesQuery.data, 
+    (newData) => {
+      if (newData && typeof newData === "object" && "value" in newData) {
+        console.log("New task rates:", newData.value);
+        if (newData.value && "countpercenct" in newData.value) {
+          series.value = newData.value.countpercenct;
+        } else {
+          console.warn("Missing 'countpercenct' in new task rates:", newData.value);
+        }
+      } else {
+        console.warn("Invalid solved task states data:", newData);
       }
-    }, { deep: true });
-  });
+    },
+    { deep: true }
+  );
+});
 
 </script>
 
