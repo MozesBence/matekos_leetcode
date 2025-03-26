@@ -319,7 +319,6 @@
 </v-layout>
 
 <v-pagination 
-v-model="pageNumber" 
 :length="Math.ceil((allTaskCountQuery.data.value) / 15)" 
 @update:modelValue="UpdatePage">
 </v-pagination>
@@ -378,15 +377,15 @@ import {UsegetRollBackTokenCount,UseGetDailyStreak} from '../api/mainPage/mainPa
 // Query hooks
 const get_fullUser = ref<any[]>([]);
 const userId = ref(get_fullUser.value.id);
-const offset = ref<number>(0);
-  const filterData = ref({
-  difficulty: null,
-  state: null,
-  themes: '',
-  search: '',
-  UserId: userId.value,
-  offset: 0
+const filterData = ref({
+  difficulty: "",
+  state: "",
+  themes: "",
+  search: "",
+  UserId: String(userId.value) || "",
+  offset: 0,
 });
+
 const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
 const cardsQuery = UseFetchCards(filterData);
@@ -401,7 +400,8 @@ var dialog = ref(false);
 const apexchart = VueApexCharts;
 const get_user_name = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
-const user_id = ref<string | null>(null);
+const user_id = ref<number | null>(null);
+
 const dailyStreak = UseGetDailyStreak(user_id);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
@@ -769,8 +769,6 @@ watch(user_id, async (newVal) => {
     console.log('streak',dailyStreak.data.value?.streak)
   }
 }, { immediate: true });
-
-
 
 
   onMounted(async () => {
