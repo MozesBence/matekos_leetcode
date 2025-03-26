@@ -382,7 +382,7 @@ const offset = ref<number>(0);
   state: null,
   themes: '',
   search: '',
-  UserId: userId.value,
+  UserId: 2,
   offset: 0
 });
 const themesQuery = UseThemes();
