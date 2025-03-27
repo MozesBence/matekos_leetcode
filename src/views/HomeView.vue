@@ -705,7 +705,7 @@ watch(user_id, async (newUserId) => {
   if (newUserId) {
     await roll_back_token_count_query.refetch();
     await dailyStreak.refetch()
-    //await task_state.refetch();
+    //console.log('streak',dailyStreak.data.value?.streak)
   }
 });
 const UpdatePage = (newPage: number) => {
