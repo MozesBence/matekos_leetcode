@@ -837,7 +837,7 @@ Tasks.init(
                 id: 60,
                 theme_id: 16,
                 solution: "16",
-                difficulty: ö,
+                difficulty: 0,
                 experience_points: 25,
                 task_title: "Számtani sorozat",
                 task: "Mi a 10. tagja a 4, 6, 8,... sorozatnak?",

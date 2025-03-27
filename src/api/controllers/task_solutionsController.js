@@ -2,7 +2,6 @@ const task_solutionsService = require('../services/task_solutionsService');
 
 const getTaskState = async (req, res, next) => {
     const { id } = req.params;
-    console.log('Received ID:', id);
     try {
         const taskState = await task_solutionsService.getTaskState(id);
         res.status(200).json(taskState);
@@ -59,7 +58,6 @@ const submitSolution = async (req, res, next) => {
         }
 
         const [userId, taskId, solution] = processedData;
-        console.log("Parsed Data:", { userId, taskId, solution });
 
         const uploadTask = await task_solutionsService.submitSolution(userId, taskId, solution);
         
@@ -72,7 +70,7 @@ const submitSolution = async (req, res, next) => {
 
 const monthlySolvingRate = async (req,res) => {
     try{
-      const {userId,year} = req.query;
+      const {userId} = req.query;
       const task = await task_solutionsService.monthlySolvingRate(userId);
       res.status(200).json(task)
     }catch(error){
@@ -92,7 +90,6 @@ const monthlySolvingRate = async (req,res) => {
 
   const getDailyTaskStreak = async (req, res) => {
     try {
-        console.log("Request query:", req.query);
         const { userId } = req.query;
 
         if (!userId) {
