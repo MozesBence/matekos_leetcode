@@ -62,7 +62,7 @@
             <p>{{task?.solution_format}}</p>
           </div>
           
-          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer)" class="plusItems">
+          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer))" class="plusItems">
             <br>
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
@@ -114,7 +114,7 @@
 
         <v-col cols="12" md="6" style="padding: 2em; background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <v-row style="margin-bottom: 1em;margin-top: 1em;">
-            <h1 style="rgb(var(--v-theme-task_solving_right_drawer))">Megoldás:</h1>
+            <h1 style="color:rgb(var(--v-theme-task_solving_right_drawer))">Megoldás:</h1>
           </v-row>
           <v-row style="margin-bottom: 1em;">
             <v-text-field label="Megoldás" variant="outlined" v-model="solution"></v-text-field>
@@ -281,10 +281,7 @@ const SubmitTask = () => {
 
   submitSolution(payload, {  
     onSuccess: (data) => {
-      console.log(payload);
-      console.log(data);  // Log the response data
       const state = data.state;  // Access the 'state' value
-      console.log("State:", state);  // This will log the state (1 in your example)
       
       // Handle the state returned from the backend
       if (state === 1) {
@@ -341,8 +338,6 @@ onMounted(async () => {
 const DailyTaskCheck = async() => {
   var currentDate = new Date();
   const taskDate = isDailyTask.data.value?.task_id
-  console.log('date',currentDate.getDay())
-  console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
 }
 

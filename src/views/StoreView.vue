@@ -133,8 +133,6 @@ const openPurchaseDialog = (item: { id: number; price: number }) => {
 const { mutate: confirmPurchase } = UsePurchaseItem(purchaseData);
 
 const handleConfirmPurchase = async () => {
-  console.log("Confirmed purchase", purchaseData);
-
   try {
     await confirmPurchase();
     dialog.value = false;
