@@ -11,7 +11,7 @@ const CommunityPostUpload = async (data: CommunityData) => {
   formData.append('chips', JSON.stringify(data.chips));
    // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
   Object.keys(data.files).forEach(key => {
-    const file = data.files[key];
+    const file = data.files[key as keyof typeof data.files];
 
     // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
     if (file instanceof File || file instanceof Blob) {
@@ -50,7 +50,7 @@ const CommunityEditPostUpload = async (data: CommunityEditData) => {
   formData.append('none_Chips', JSON.stringify(data.none_Chips));
    // Ha a files objektum tényleges fájlokat tartalmaz, először Blob vagy File típusra kell alakítani
   Object.keys(data.files).forEach(key => {
-    const file = data.files[key];
+    const file = data.files[key as keyof typeof data.files];
 
     // Ellenőrizd, hogy a fájl Blob típusú-e, vagy szükséges-e átalakítani
     if (file instanceof File || file instanceof Blob) {
