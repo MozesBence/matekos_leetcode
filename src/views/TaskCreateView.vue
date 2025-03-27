@@ -353,7 +353,9 @@
 
     <v-row>
         <v-col cols="6">
-            <v-btn style="width: 100%;" @click="SendTask">Beküldés</v-btn>
+            <v-btn style="width: 100%;" @click="SendTask" :disabled="!get_user_email || get_user_email?.length === 0">
+                Beküldés
+              </v-btn>              
         </v-col>
         <v-col cols="6">
             <v-btn style="width: 100%;" @click="push('/')">Vissza a főoldalra</v-btn>
