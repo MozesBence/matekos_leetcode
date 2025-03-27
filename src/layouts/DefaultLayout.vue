@@ -29,7 +29,7 @@
                         :class="{'btn-active': currentRoute.name === 'home'}"
                       >
                         <template v-slot:prepend>
-                          <v-icon color="info"></v-icon>
+                          <v-icon color="info" size="25"></v-icon>
                         </template>
                         Főoldal
                       </v-btn>
@@ -50,7 +50,7 @@
                       :class="{'btn-active': currentRoute.name === 'about'}"
                     >
                       <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
+                        <v-icon color="info" size="25"></v-icon>
                       </template>
                       Rólunk
                     </v-btn>
@@ -71,7 +71,7 @@
                       :class="{'btn-active': currentRoute.name === 'contest'}"
                     >
                       <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
+                        <v-icon color="info" size="25"></v-icon>
                       </template>
                       Versenyek
                     </v-btn>
@@ -92,7 +92,7 @@
                       :class="{'btn-active': currentRoute.name === 'community'}"
                       >
                         <template v-slot:prepend>
-                          <v-icon color="info"></v-icon>
+                          <v-icon color="info" size="25"></v-icon>
                         </template>
                         Közösség
                       </v-btn>
@@ -176,7 +176,7 @@
         style="transition: all .3s;"
         >
           <div
-          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
           @click="router.push({ name: 'home' })"
           :class="{'btn-active': currentRoute.name === 'home'}"
           >
@@ -187,7 +187,7 @@
           </div>
 
           <div
-          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
           @click="currentRoute.name !== 'about' && router.push({ name: 'about' })"
           :class="{'btn-active': currentRoute.name === 'about'}"
           >
@@ -198,7 +198,7 @@
           </div>
 
           <div
-          class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
           @click="currentRoute.name !== 'contest' && router.push({ name: 'contest' })"
           :class="{'btn-active': currentRoute.name === 'contest'}"
           >
@@ -209,7 +209,7 @@
           </div>
 
           <div
-            class="d-flex align-center rounded py-2 px-4 mx-4 my-1"
+            class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
             @click="currentRoute.name !== 'community' && router.push({ name: 'community' })"
             :class="{'btn-active': currentRoute.name === 'community'}"
           >
