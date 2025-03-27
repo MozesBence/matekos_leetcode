@@ -10,19 +10,20 @@ const { update } = require('lodash');
 
 const tasksRepository = {
   
-  async getsimilarTasks(themeid) {
+  async getsimilarTasks(taskId, themeId) {
     try {
       return await Tasks.findAll({
-        where:{
-          theme_id: themeid,
-          validated: 1
+        where: {
+          theme_id: themeId,
+          validated: 1,
+          id: { [Op.ne]: taskId }
         },
         order: [['id', 'ASC']],
-        attributes:['id','theme_id','difficulty','task_title'],
+        attributes: ['id', 'theme_id', 'difficulty', 'task_title'],
         limit: 15,
       });
     } catch (error) {
-      console.error('Error fetching cards:', error);
+      console.error('Error fetching similar tasks:', error);
       throw error;
     }
   },

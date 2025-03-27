@@ -177,6 +177,7 @@ interface User {
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
 const theme_id = ref(0);
+const task_id = ref(0);
 const isDailyTaskValid = ref(false);
 const push = (path: string) => {
   router.push(path);
@@ -205,7 +206,6 @@ const TaskView = (id: number) => {
 const solution = ref('')
 
 //EZT JAVITANI KELL IDE TASKNAK A THEMEID-JE KELL NEM A SAJAT IDJE!!!!!!!!!!!!!!!!
-const similarCards = UseGetSimilarCards(Number(route.params.id));
 // Reactive state
 const drawer = ref(false);
 const group = ref<string | null>(null);
@@ -223,6 +223,7 @@ const get_user_name = ref<string | null>(null);
 const get_fullUser = ref<User | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
+const similarCards = UseGetSimilarCards(task_id,theme_id);
 
 
 function getCookie(name: string): string | null {
@@ -248,6 +249,7 @@ watch(() => route.params.id, async (newId) => {
    
    if (task.value?.theme_id) {
      theme_id.value = task.value.theme_id;
+     task_id.value = task.value.id;
      await theme.refetch();
    }
    
@@ -339,6 +341,7 @@ onMounted(async () => {
   await getTaskData.refetch();
   if (getTaskData.data.value && getTaskData.data.value.theme_id) {
     theme_id.value = getTaskData.data.value.theme_id;
+    task_id.value = getTaskData.data.value.id;
     await theme.refetch();
   }
 });

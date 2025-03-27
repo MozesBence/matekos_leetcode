@@ -12,7 +12,7 @@ router.get('/random-task',getRandomTask);
 
 router.get('/filteredTasks', getFilteredTasks);
 
-router.get('/getsimilarTasks/:themeid',getsimilarTasks);
+router.get('/getsimilarTasks',getsimilarTasks);
 
 router.get('/solution/:id',getSolution);
 

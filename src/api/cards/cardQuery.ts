@@ -194,10 +194,12 @@ export const UseFetchCards = (filters: Ref<{ difficulty: string | null; state: s
 
 
 
-const getSimilarCards = async (themeid: Number) => {
+const getSimilarCards = async (task_id: Number,themeid: Number) => {
   try{
     console.log(themeid)
-    const response = await axios.get(`/api/tasks/getsimilarTasks/${themeid}`);
+    const response = await axios.get(`/api/tasks/getsimilarTasks`,{params:{
+        taskId:task_id,themeId:themeid
+    }});
     console.log(response.data)
     return response.data;
   }catch(error){
@@ -206,9 +208,9 @@ const getSimilarCards = async (themeid: Number) => {
   }
 }
 
-export const UseGetSimilarCards = (themeid: Number) => {
+export const UseGetSimilarCards = (task_id: Ref<Number>,themeid: Ref<Number>) => {
   return useQuery({
-    queryFn: () => getSimilarCards(themeid),
+    queryFn: () => getSimilarCards(task_id.value,themeid.value),
     queryKey:['similarTasks'],
 
   })
