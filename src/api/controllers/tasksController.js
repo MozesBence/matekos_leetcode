@@ -102,7 +102,7 @@ const updateTaskValidationState = async (req, res, next) => {
   try {
     const { taskId, validity, user_id, from_user_id, message } = req.body;
     const resp = await tasksService.updateTaskValidationState(taskId, validity, user_id, from_user_id, message);
-    res.status(204).json(resp);
+    res.status(201).json(resp);
   } catch (error) {
     console.error("Controller Error:", error);
     next(error);

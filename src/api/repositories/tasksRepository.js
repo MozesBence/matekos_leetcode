@@ -318,7 +318,7 @@ async getUnvalidatedTasks(){
   });
 
   tasks.forEach(user =>{
-    if (user.creator.User_customization.profil_picture != null) {
+    if (user.creator && user.creator.User_customization.profil_picture != null) {
       const profileProfPicBuffer = user.creator.User_customization.profil_picture;
                   
       const profileProfPicMimeType = user.creator.User_customization.profil_picture_type || 'image/jpeg';

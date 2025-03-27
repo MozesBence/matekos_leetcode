@@ -20,7 +20,7 @@ const profileAuth = require("../middlewares/profileAuth");
  *         content:
  *           application/json:
  *              example:
- *                  leader_board: "[{id:1, user_name: 'Teszt_felhasználó_1',experience_point: 15}, {id:2, user_name: 'Teszt_felhasználó_2',experience_point: 0}]"
+ *                  leader_board: [{id:1, user_name: 'Teszt_felhasználó_1',experience_point: 15}, {id:2, user_name: 'Teszt_felhasználó_2',experience_point: 0}]
  *       400:
  *         description: Hiba a ranglista lekérésben
  *         content:
@@ -67,7 +67,7 @@ route.get("/contest/leader-board", contestController.getLeaderBoard);
  *         content:
  *           application/json:
  *              example:
- *                  challange: "{id: 1, identifier: 13, define: 'week', Tasks: [{id:1, CompetitionID: null, competition_tasks: {id: 1, task_id: 2, competition_id: 13}, creator_id: null, difficulty: 2, experience_points: 25,first_hint: "Próbáld megtalálni az egész gyököket az osztók segítségével.",id: 2,second_hint: "A lehetséges gyökök a konstans tag osztói (±1, ±2, ±3, ±6).",solution: "1 2 3",solution_format: "Három szám szóközzel",task: "Oldd meg valós számok halmazán: $x^3 - 6x^2 + 11x - 6 = 0$",task_title: "Harmadfokú egyenlet",theme_id: 3validated,: 1 }] }"
+ *                  challange: {id: 1, identifier: 13, define: 'week', Tasks: [{id:1, CompetitionID: null, competition_tasks: {id: 1, task_id: 2, competition_id: 13}, creator_id: null, difficulty: 2, experience_points: 25,first_hint: "Próbáld megtalálni az egész gyököket az osztók segítségével.",id: 2,second_hint: "A lehetséges gyökök a konstans tag osztói (±1, ±2, ±3, ±6).",solution: "1 2 3",solution_format: "Három szám szóközzel",task: "Oldd meg valós számok halmazán: $x^3 - 6x^2 + 11x - 6 = 0$",task_title: "Harmadfokú egyenlet",theme_id: 3validated,: 1 }] }
  *       400:
  *         description: Hiba a feadat lekérésében
  *         content:
@@ -100,7 +100,7 @@ route.get("/contest/challange", contestController.getChallange);
  *         content:
  *           application/json:
  *              example:
- *                  challanges: "[{id: 13, identifier: 13,  define: 'week', Competetins_submissions: []}]"
+ *                  challanges: [{id: 13, identifier: 13,  define: 'week', Competetins_submissions: []}]
  *       400:
  *         description: Hiba a feladatok lekérésben
  *         content:

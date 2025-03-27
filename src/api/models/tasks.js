@@ -205,7 +205,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötöst jegyezhetünk fel?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Nem számít a sorrend.",
-                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek."
+                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek.",
+                validated:1
             },
             {
                 id:12,
@@ -217,7 +218,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötös esetében lehet a dobott számok összege 10?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Gondoljon arra, hogyan lehet 10-et kapni a számjegzek összegeként.",
-                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?"
+                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?",
+                validated:1
             },
             {
                 id:13,
@@ -831,7 +833,7 @@ Tasks.init(
                 id: 60,
                 theme_id: 16,
                 solution: "16",
-                difficulty: ö,
+                difficulty: 0,
                 experience_points: 25,
                 task_title: "Számtani sorozat",
                 task: "Mi a 10. tagja a 4, 6, 8,... sorozatnak?",
