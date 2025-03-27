@@ -37,7 +37,8 @@ module.exports = (sequelize) => {
             { title: "Vágj bele egy versenybe!", content: "Inspirálódj és mérd össze tudásodat másokkal – lépj be a kihívásba!", button_title: "Kezdés", redirect: "/contest" },
             { title: "Tanulós zene válogatás", content: "Válogattunk neked olyan zenéket, amiket mi, fejlesztők, szívesen hallgatunk tanulás közben. Engedd, hogy a ritmus motiváljon!", button_title: "Zene", redirect: "https://music.youtube.com/browse/VLPL9bxdY6QqIVXPlbrfbUQGjRw3kWJS6nc7" },
             { title: "Költsd el az aranzaid!", content: "Költsd el aranyaid limitált merchekre vagy oldalon belül használható tárgyakra!", button_title: "Irány az áruház", redirect: "/store" },
-            { title: "Nézz rá a communityra!", content: "Csatlakozz a közösséghez, találkozz hasonló gondolkodású emberekkel, és építsd tovább tudásodat!", button_title: "Community", redirect: "/community" }
+            { title: "Nézz rá a communityra!", content: "Csatlakozz a közösséghez, találkozz hasonló gondolkodású emberekkel, és építsd tovább tudásodat!", button_title: "Community", redirect: "/community" },
+            {title: "Küldj be feladatos, és tegyél hozzá a közösséghez!",content:"Ha a feladatod, elfogadásra kerül ay adminok által, az oldalon a feladato a teved lesy megjelölve.",button_title:"Feldat beküldése",redirect:"/task-creation"}
         ];
 
 
