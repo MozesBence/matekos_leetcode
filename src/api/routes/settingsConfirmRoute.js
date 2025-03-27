@@ -17,37 +17,37 @@ const profileAuth = require("../middlewares/profileAuth");
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: A felhasználó emailje amire a megerősító kód küldve lesz
- *         example: 1
+ *           type: number
+ *           description: Feladat azonosítója
+ *           example: 0
  *       - in: headers
  *         name: email
  *         required: true
  *         schema:
  *           type: string
- *         description: A napi feladat azonosítója
- *         example: example@gmail.com
+ *           description: A felhasználó emailje amire a megerősító kód küldve lesz
+ *           example: example@gmail.com
  *       - in: headers
  *         name: user_name
  *         required: true
  *         schema:
  *           type: string
- *         description: A felhasználó neve
- *         example: Teszt_felhasználó
+ *           description: A felhasználó neve
+ *           example: Teszt_felhasználó
  *     responses:
  *       200:
  *         description: Sikeres lekérés
  *         content:
  *           application/json:
  *              example:
- *                  task_id: "235657"
+ *                  code: { message: 'Kód sikeresen elküldve'}
  *       400:
- *         description: Hiba a poszt / komment szerkeztése közben
+ *         description: Hiba az megerősítő kód küldésében
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Sikertelen volt a komment szekeztésének mentése!"
+ *                  message: "Nem sikerült elküldeni a megerősítő kódot!"
  */
 router.get('/get-confirm-code', settingsConfirmController.sendConfirmCode);
 
@@ -69,14 +69,14 @@ router.get('/get-confirm-code', settingsConfirmController.sendConfirmCode);
  *           schema:
  *             $ref: '#/components/schemas/new-settings'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres módosítás
  *         content:
  *           application/json:
  *              example:
- *                  code: "235657"
+ *                  content: change-example@gmail.com
  *       400:
- *         description: Hiba a beállítások módosítása közben!
+ *         description: Hiba a beállítások módosítása közben
  *         content:
  *           application/json:
  *              example:
@@ -100,7 +100,7 @@ router.get('/get-confirm-code', settingsConfirmController.sendConfirmCode);
  *         code:
  *           type: number
  *           description: A megerősító kód
- *           example: '235657'
+ *           example: 235657
  *         id:
  *           type: number
  *           description: A felhasználó azonosítója
@@ -126,23 +126,17 @@ router.patch('/set-settings', settingsConfirmController.setSettings);
  *         required: true
  *         schema:
  *           type: string
- *         description: A felhasználó tokenizált azonosítója
- *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
- *         name: email
- *         required: true
- *         schema:
- *           type: string
- *         description: A napi feladat azonosítója
- *         example: example@gmail.com
+ *           description: A felhasználó tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     responses:
  *       200:
  *         description: Sikeres lekérés
  *         content:
  *           application/json:
  *              example:
- *                  reports: "[{id: 1, type: 1, notif_content: 'Teszt bejelentés', content_type: 0, content_id: 1, closed: 0, user_id: 1, from_user_id: 2}]"
+ *                  reports: [{id: 1, type: 1, notif_content: 'Teszt bejelentés', content_type: 0, content_id: 1, closed: 0, user_id: 1, from_user_id: 2}]
  *       400:
- *         description: Hiba a bejelentések lekérése közben
+ *         description:  Hiba a bejelentések lekérése közben
  *         content:
  *           application/json:
  *              example:
@@ -155,10 +149,18 @@ router.get('/get-all-reports', [ profileAuth.verifyToken ], settingsConfirmContr
  * @swagger
  * /close-report:
  *   post:
- *     summary: Beállítások feltöltése
+ *     summary: Bejelentés lezárása
  *     tags:
- *       - Profile settings
- *     description: A megerősítő kóddal a változtatások elmentése
+ *       - Tasks
+ *     description: Bejelentés lezárása adminként
+ *     parameters:
+ *       - in: headers
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: A felhasználó tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     requestBody:
  *       required: true
  *       content:
@@ -170,18 +172,18 @@ router.get('/get-all-reports', [ profileAuth.verifyToken ], settingsConfirmContr
  *             $ref: '#/components/schemas/new-settings'
  *     responses:
  *       201:
- *         description: Sikeres módosítás
+ *         description: Sikeres lezárás
  *         content:
  *           application/json:
  *              example:
- *                  code: "235657"
+ *                  response: 'El lett küldve az értesítés!'
  *       400:
- *         description: Hiba a beállítások módosítása közben
+ *         description: Hiba a bejelentés lezárása közben
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Nem sikerült a módosítást végrehajtani!"
+ *                  message: "Nem a sikerült lezárni a bejelentést!"
  * 
  * components:
  *   schemas:
@@ -218,7 +220,7 @@ router.get('/get-all-reports', [ profileAuth.verifyToken ], settingsConfirmContr
  *         token:
  *           type: string
  *           description: Az admin azonosítója a hitelesítéshez
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c"
  */
 router.post('/close-report', [ profileAuth.verifyToken ], settingsConfirmController.closeReport);
 
@@ -229,43 +231,43 @@ router.post('/close-report', [ profileAuth.verifyToken ], settingsConfirmControl
  *     summary: Felhasználók
  *     tags:
  *       - Profile settings
- *     description: Az összes felhasználó adatai
+ *     description: Az összes felhasználó adatainak lekérése
  *     parameters:
  *       - in: headers
  *         name: name
  *         required: true
  *         schema:
- *           type: string | null
- *         description: A felhasználó neve a szűréshez
- *         example: 'Teszt_felhasználó'
+ *           type: string
+ *           description: A felhasználó neve a szűréshez
+ *           example: Teszt_felhasználó
  *       - in: headers
  *         name: activated_type
  *         required: true
  *         schema:
- *           type: integer | null
- *         description: A felhasználó aktív státusza a szűréshez
- *         example: 1
+ *           type: number
+ *           description: A felhasználó aktív státusza a szűréshez
+ *           example: 1
  *       - in: headers
  *         name: admin
  *         required: true
  *         schema:
- *           type: boolean | null
- *         description: A felhasználó jogosultsági szintje a szűréshez
- *         example: false
+ *           type: boolean
+ *           description: A felhasználó jogosultsági szintje a szűréshez
+ *           example: false
  *       - in: headers
  *         name: token
  *         required: true
  *         schema:
  *           type: string
- *         description: Az admin tokenizált azonosítója
- *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
+ *           description: Az admin tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     responses:
  *       200:
  *         description: Sikeres lekérés
  *         content:
  *           application/json:
  *              example:
- *                  notifications: "[{id: 1, user_name: 'Teszt felhasználó', email: 'example@gmail.com', password: { hash-elt jelszó}, user_role: 'member', experience_point: 150, currency_count: 60, roll_back_token: 2, admin: 0, join_date: {timestamp}, activaed: 1}]"
+ *                  users: [{id: 1, user_name: 'Teszt felhasználó', email: 'example@gmail.com', password: { hash-elt jelszó}, user_role: 'member', experience_point: 150, currency_count: 60, roll_back_token: 2, admin: 0, join_date: {timestamp}, activaed: 1}]
  *       400:
  *         description: Hiba a felhasználó adatai lekérése közben
  *         content:
@@ -278,12 +280,20 @@ router.get('/get-all-users', [ profileAuth.verifyToken ],  settingsConfirmContro
 
 /**
  * @swagger
- * /set-settings:
+ * /set-user-settings:
  *   patch:
  *     summary: Felhasználó beállításai
  *     tags:
  *       - Profile settings
  *     description: Felhasználó beállításainak módosítása adminként
+ *     parameters:
+ *       - in: headers
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: A felhasználó tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     requestBody:
  *       required: true
  *       content:
@@ -294,14 +304,14 @@ router.get('/get-all-users', [ profileAuth.verifyToken ],  settingsConfirmContro
  *           schema:
  *             $ref: '#/components/schemas/set-user-settings'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres módosítás
  *         content:
  *           application/json:
  *              example:
- *                  response: "A visszakapott érték függ attól hogy mi lett módosítva, ha a jelszó akkor visszajön a hash-el jelszó, amúgy maga az a content ami be lett küldve"
+ *                  content: A visszakapott érték függ attól hogy mi lett módosítva, ha a jelszó akkor visszajön a hash-el jelszó, amúgy maga az a content ami be lett küldve
  *       400:
- *         description: Hiba a felhasználó beállításinak módosítása közben
+ *         description: Hiba a beállítások módosítása közben
  *         content:
  *           application/json:
  *              example:
@@ -331,9 +341,9 @@ router.get('/get-all-users', [ profileAuth.verifyToken ],  settingsConfirmContro
  *           description: Az érték ami alapján eldöntődik hogy melyik érték változik meg
  *           example: 1
  *         token:
- *           type: number
+ *           type: string
  *           description: Az admin tokenizált azonosítója
- *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
+ *           example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c"
  */
 router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirmController.setUserSettings);
 
@@ -345,6 +355,14 @@ router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirm
  *     tags:
  *       - Profile settings
  *     description: Felhasználó jogosultságának módosítása adminként
+ *     parameters:
+ *       - in: headers
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *           description: A felhasználó tokenizált azonosítója
+ *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *     requestBody:
  *       required: true
  *       content:
@@ -355,14 +373,14 @@ router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirm
  *           schema:
  *             $ref: '#/components/schemas/set-user-settings'
  *     responses:
- *       200:
+ *       201:
  *         description: Sikeres módosítás
  *         content:
  *           application/json:
  *              example:
- *                  response: "A felhasználónak a jogosultsága megváltozott!"
+ *                  content: A felhasználónak a jogosultsága megváltozott!
  *       400:
- *         description: Hiba a felhasználó beállításinak módosítása közben
+ *         description: Hiba a felhasználó jogusáltságának módosítása közben
  *         content:
  *           application/json:
  *              example:
@@ -371,7 +389,7 @@ router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirm
  * 
  * components:
  *   schemas:
- *     set-user-settings:
+ *     set-user-role:
  *       type: object
  *       required:
  *         - id
@@ -387,7 +405,7 @@ router.patch('/set-user-settings', [ profileAuth.verifyToken ],  settingsConfirm
  *           description: Az érték ami alapján eldöntődik hogy melyik értékre változzon meg
  *           example: 1
  *         token:
- *           type: number
+ *           type: string
  *           description: Az admin tokenizált azonosítója
  *           example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  */
@@ -406,16 +424,16 @@ router.patch('/set-user-roles', [ profileAuth.verifyToken ],  settingsConfirmCon
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *         description: A felhasználó azonosítója
- *         example: 1
+ *           type: number
+ *           description: Feladat azonosítója
+ *           example: 0
  *     responses:
  *       200:
  *         description: Sikeres lekérés
  *         content:
  *           application/json:
  *              example:
- *                  notifications: "[{id: 1 ,type: false,user_id: 1, from_user_id: 2, notif_content: 'Teszt kontent', content_type: null, content_id: null, closed: true}]"
+ *                  notifications: [{id: 1 ,type: false,user_id: 1, from_user_id: 2, notif_content: 'Teszt kontent', content_type: null, content_id: null, closed: true}]
  *       400:
  *         description: Hiba az üzenetek lekérése közben
  *         content:
