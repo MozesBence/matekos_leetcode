@@ -67,7 +67,7 @@
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
-                  <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px">
+                  <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px;margin-bottom:1em">
                     <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
                       <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
@@ -149,13 +149,18 @@
 </template>
 
 <script lang="ts" setup>
+
+/*--- Importok kezdete ---*/
 import { ref, watch, onMounted,watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
-//import {TaskView} from '@/stores/taskLoader'
+import {getCookie, get_fullUser,get_user_name} from '@/stores/userStore'
+import {TaskView} from '@/stores/taskLoader'
+/*--- Importok vége ---*/
+
 
 interface Task {
   id: number;
@@ -177,6 +182,7 @@ interface User {
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
 const theme_id = ref(0);
+const task_id = ref(0);
 const isDailyTaskValid = ref(false);
 const push = (path: string) => {
   router.push(path);
@@ -199,14 +205,10 @@ const mathjaxDirective = {
 
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
-  //window.location.reload();
 };
 
 const solution = ref('')
 
-//EZT JAVITANI KELL IDE TASKNAK A THEMEID-JE KELL NEM A SAJAT IDJE!!!!!!!!!!!!!!!!
-const similarCards = UseGetSimilarCards(Number(route.params.id));
-// Reactive state
 const drawer = ref(false);
 const group = ref<string | null>(null);
 
@@ -219,22 +221,10 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
 
 const getTaskData = UseGetTaskData(Number(route.params.id));
 const task = ref<Task | null>(null);
-const get_user_name = ref<string | null>(null);
-const get_fullUser = ref<User | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
+const similarCards = UseGetSimilarCards(task_id,theme_id);
 
-
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split('=');
-    if (key === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-}
 
 // Watch group state
 watch(group, () => {
@@ -248,6 +238,7 @@ watch(() => route.params.id, async (newId) => {
    
    if (task.value?.theme_id) {
      theme_id.value = task.value.theme_id;
+     task_id.value = task.value.id;
      await theme.refetch();
    }
    
@@ -339,6 +330,7 @@ onMounted(async () => {
   await getTaskData.refetch();
   if (getTaskData.data.value && getTaskData.data.value.theme_id) {
     theme_id.value = getTaskData.data.value.theme_id;
+    task_id.value = getTaskData.data.value.id;
     await theme.refetch();
   }
 });
@@ -352,6 +344,8 @@ const DailyTaskCheck = async() => {
   console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
 }
+
+
 
 </script>
 

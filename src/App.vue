@@ -1,5 +1,6 @@
 <template>
-  <RouterView></RouterView>
+  <RouterView :key="$route.path" />
+
 
   <ErrorHandler ref="errorHandler" />
   

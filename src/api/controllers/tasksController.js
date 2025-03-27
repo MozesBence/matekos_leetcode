@@ -59,8 +59,8 @@ const getFilteredTasks = async (req, res) => {
 
 const getsimilarTasks = async (req,res) => {
   try{
-    const {themeid} = req.params
-    const similarTasks = await tasksService.getsimilarTasks(themeid);
+    const {taskId,themeId} = req.query;
+    const similarTasks = await tasksService.getsimilarTasks(taskId,themeId);
     res.status(200).json(similarTasks);
   }catch(error){
     res.status(500).json({ message: "Error fetching tasks" });

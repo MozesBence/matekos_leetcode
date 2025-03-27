@@ -35,7 +35,7 @@ const profileAuth = require("../middlewares/profileAuth");
  *         content:
  *           application/json:
  *              example:
- *                  user: "{id: 1, user_name: 'Teszt felhasználó', email: 'example@gmail.com', password: { hash-elt jelszó}, user_role: 'member', experience_point: 150, currency_count: 60, roll_back_token: 2, admin: 0, join_date: {timestamp}, activaed: 1}"
+ *                  user: {id: 1, user_name: 'Teszt felhasználó', email: 'example@gmail.com', password: { hash-elt jelszó}, user_role: 'member', experience_point: 150, currency_count: 60, roll_back_token: 2, admin: 0, join_date: {timestamp}, activaed: 1}
  *       400:
  *         description: Hiba a felhasználó adatainak lekérése közben
  *         content:

@@ -224,7 +224,7 @@ router.get('/filteredTasks', getFilteredTasks);
  *                  status: "400"
  *                  message: "Nem sikerült lekérni azonos feladatot!"
  */
-router.get('/getsimilarTasks/:themeid',getsimilarTasks);
+router.get('/getsimilarTasks/',getsimilarTasks);
 
 /**
  * @swagger
@@ -250,7 +250,7 @@ router.get('/getsimilarTasks/:themeid',getsimilarTasks);
  *              example:
  *                  solution: 120
  *       400:
- *         description: Hiba a 
+ *         description: Hiba a feladat megoldásának lekérése közben
  *         content:
  *           application/json:
  *              example:
@@ -275,7 +275,7 @@ router.get('/solution/:id',getSolution);
  *              example:
  *                  tasks: [{id: 13, theme_id: 11, creator_id: null, difficulty: 2, experience_points: 25, task_title: "Gráfelmélet alapok", task: "Egy 5 csúcsú összefüggő gráfnak legalább hány éle van?", solution_format: "Egész szám", first_hint: "Egy fa éleinek száma $n-1$.", second_hint: "Összefüggő gráfban legalább annyi él van, mint egy fában.", creator: null, validated: 0}]
  *       400:
- *         description: Hiba a 
+ *         description: Hiba az ellenörzésre váró feladatok adatainak lekérése közben
  *         content:
  *           application/json:
  *              example:
