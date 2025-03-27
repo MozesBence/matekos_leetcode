@@ -149,14 +149,18 @@
 </template>
 
 <script lang="ts" setup>
+
+/*--- Importok kezdete ---*/
 import { ref, watch, onMounted,watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
-import { onBeforeRouteUpdate } from 'vue-router';
-//import {TaskView} from '@/stores/taskLoader'
+import {getCookie, get_fullUser,get_user_name} from '@/stores/userStore'
+import {TaskView} from '@/stores/taskLoader'
+/*--- Importok vége ---*/
+
 
 interface Task {
   id: number;
@@ -201,13 +205,10 @@ const mathjaxDirective = {
 
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
-  //window.location.reload();
 };
 
 const solution = ref('')
 
-//EZT JAVITANI KELL IDE TASKNAK A THEMEID-JE KELL NEM A SAJAT IDJE!!!!!!!!!!!!!!!!
-// Reactive state
 const drawer = ref(false);
 const group = ref<string | null>(null);
 
@@ -220,23 +221,10 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
 
 const getTaskData = UseGetTaskData(Number(route.params.id));
 const task = ref<Task | null>(null);
-const get_user_name = ref<string | null>(null);
-const get_fullUser = ref<User | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
 const similarCards = UseGetSimilarCards(task_id,theme_id);
 
-
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split('=');
-    if (key === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-}
 
 // Watch group state
 watch(group, () => {

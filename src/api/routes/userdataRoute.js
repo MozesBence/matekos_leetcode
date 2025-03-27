@@ -1,6 +1,6 @@
  const express = require('express');
 const router = express.Router();
-const {getUserData,getRollBackTokensCount} = require('../controllers/userdataController');
+const {getUserData,getRollBackTokensCount,getUserById} = require('../controllers/userdataController');
 
 /**
  * @swagger
@@ -35,4 +35,5 @@ const {getUserData,getRollBackTokensCount} = require('../controllers/userdataCon
  */
 router.get('/mainpage', getUserData);
 router.get('/wayBackTokens',getRollBackTokensCount)
+router.get('/getUserById/:id',getUserById);
 module.exports = router;

@@ -34,8 +34,12 @@ const getRollBackTokensCount = async (req, res, next) => {
     }
 };
 
+const getUserById = async(req,res,next) => {
+
+}
 
 module.exports = {
     getUserData,
-    getRollBackTokensCount
+    getRollBackTokensCount,
+    getUserById
   };
