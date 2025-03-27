@@ -50,7 +50,7 @@
                 class="d-flex align-center justify-center"
                 v-if="task?.creator_id != null"
               >
-                <p class="ma-0">👑 {{task?.creator_id}}</p>
+                <p class="ma-0">👑 {{creator_name.data.value.user_name}}</p>
               </v-chip>
             </v-row>
           </div>
@@ -155,10 +155,9 @@ import { ref, watch, onMounted,watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
-import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { useProfileGetUser,UseGetUserById } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
-import {getCookie, get_fullUser,get_user_name} from '@/stores/userStore'
-import {TaskView} from '@/stores/taskLoader'
+import {getCookie, get_fullUser,get_user_name, userId} from '@/stores/userStore'
 /*--- Importok vége ---*/
 
 
@@ -218,13 +217,13 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
   text: "",
 });
 
-
 const getTaskData = UseGetTaskData(Number(route.params.id));
 const task = ref<Task | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
 const similarCards = UseGetSimilarCards(task_id,theme_id);
-
+const creator_id = ref(0)
+const creator_name = UseGetUserById(creator_id);
 
 // Watch group state
 watch(group, () => {
@@ -331,6 +330,8 @@ onMounted(async () => {
   if (getTaskData.data.value && getTaskData.data.value.theme_id) {
     theme_id.value = getTaskData.data.value.theme_id;
     task_id.value = getTaskData.data.value.id;
+    creator_id.value = getTaskData.data.value.creator_id
+    await creator_name.refetch();
     await theme.refetch();
   }
 });
@@ -344,8 +345,6 @@ const DailyTaskCheck = async() => {
   console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
 }
-
-
 
 </script>
 

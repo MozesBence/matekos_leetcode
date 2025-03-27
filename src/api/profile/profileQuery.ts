@@ -3,6 +3,8 @@ import { useMutation, useQuery } from '@tanstack/vue-query'
 import { ref } from 'vue'
 import type { ProfilPicdata } from "./profile"
 import { userId } from '@/stores/userStore';
+import axios from 'axios';
+import { type Ref } from 'vue';
 
 const ProfileGetUser = async (data: { token: string | null; id: number }): Promise<any> => {
     try {
@@ -121,4 +123,24 @@ export const UseGetMostRecentlyTriedTask = (userId: Number) => {
         queryFn: () => getMostRecentlyTriedTask(userId),
         queryKey: ['mostRecentlyTriedTask', userId],
     });
+}
+
+
+const getUserById = async (userId: Number) => {
+    console.log('userId',userId)
+    try{
+        const response = await axiosClient.get(`/api/userData/getUserById/${userId}`);
+        console.log(response.data)
+        return response.data;
+    }catch(error){
+        throw error;
+    }
+}
+
+
+export const UseGetUserById = (userId:Ref<Number>) => {
+    return useQuery({
+        queryFn: () => getUserById(userId.value),
+        queryKey:['creator_name',userId.value]
+    })
 }
