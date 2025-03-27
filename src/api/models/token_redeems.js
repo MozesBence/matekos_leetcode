@@ -6,11 +6,13 @@ module.exports = (sequelize,DataTypes) => {
     TokenRedeems.init({
         user_id:{
             type: DataTypes.INTEGER,
-            allowNull:false
+            allowNull:false,
+            primaryKey:true
         },
         task_id: {
             type:DataTypes.INTEGER,
-            allowNull:false
+            allowNull:false,
+            primaryKey:true
         },
         submission_date: {
             type: DataTypes.DATE,

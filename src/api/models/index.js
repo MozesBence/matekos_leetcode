@@ -19,9 +19,8 @@ module.exports = (sequelize, DataTypes) => {
     const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
     const Transactions = require('../models/transactions')(sequelize,DataTypes);
     const StoreItems = require('../models/storeItems')(sequelize,DataTypes)
-    // Import Task_solutions
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
-    
+    const TokenRedeems = require('../models/token_redeems')(sequelize,DataTypes)
     Transactions.belongsTo(StoreItems, {
         foreignKey: "itemId",
         onDelete: "CASCADE",
@@ -212,6 +211,12 @@ module.exports = (sequelize, DataTypes) => {
     Competitions.hasMany(Competetins_submissions, { foreignKey: 'competition_id'});
     Users.hasOne(Competetins_submissions, { foreignKey: 'user_id'});
 
+    TokenRedeems.belongsTo(Users, { foreignKey: 'user_id' });
+    Users.hasMany(TokenRedeems, { foreignKey: 'user_id' });
+
+    TokenRedeems.belongsTo(Tasks, { foreignKey: 'task_id' });
+    Tasks.hasMany(TokenRedeems, { foreignKey: 'task_id' });
+
     return {
         Users,
         Community_posts,
@@ -234,6 +239,7 @@ module.exports = (sequelize, DataTypes) => {
         DailyQuote,
         Transactions,
         StoreItems,
-        CompetitionTasks
+        CompetitionTasks,
+        TokenRedeems
     };
 };
