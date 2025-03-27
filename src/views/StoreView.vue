@@ -144,7 +144,17 @@ const handleConfirmPurchase = async () => {
     successDialog.value = true;
 
     await items.refetch();
-    await fetchUserData();
+    try {
+    await Promise.all([
+      items.refetch(),
+      await fetchUserData(),
+    ]);
+  } catch (error) {
+    console.error("Failed to fetch data:", error);
+  } finally {
+    isLoading.value = false;
+  }
+   // await fetchUserData();
   } catch (error) {
     successStatus.value = false;
     SuccessMessage.value = 'Valami hiba történt a vásárlás során.';
