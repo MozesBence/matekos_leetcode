@@ -22,12 +22,12 @@
           >
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
-          <v-text 
+          <p
             class="text-center" 
             style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;"
           >
             <h4 style="font-weight: normal;">{{ card.content }}</h4>
-          </v-text>
+          </p>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
             <v-btn
               append-icon="mdi-chevron-right"
@@ -182,21 +182,21 @@
         v-model="progressPercentage"
         :color="progressColor"
         height="25"
-        class="rounded-pill mt-2"
+        class="rounded-pill mt-2 py-3"
         style="width: 300px; background-color: rgb(var(--v-theme-background));"
         >
           <template v-slot:default="{ value }">
             <strong>{{ currentLevel }}. szint</strong>
           </template>
         </v-progress-linear>
-          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
+          <h4 class=" d-flex align-center">
+            <img height="20px" src="../assets/coin.png" class="mr-1">
             Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}
-            <img height="20" src="../assets/coin.png">
           </h4>
-          <h4 style="align-items: center; vertical-align:middle; text-align:center; display:flex;">
-          Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
-          <img src="../assets/rollback.png" alt="" height="24px">
-        </h4>
+          <h4 class=" d-flex align-center">
+            <img src="../assets/rollback.png" alt="" height="20px" class="mr-1">
+            Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
+          </h4>
         </div>
       </v-list-item>
 
@@ -220,8 +220,11 @@
               {{ day.day }}
             </div>
           </div>
-          <div style="justify-content:center; display:flex; margin-top:1em; margin-bottom:1em vertical-align:middle;" v-if="get_fullUser.email">            
-            <h3 style="vertical-align:middle; display:flex; justify-content:center;display:flex;"><img src="../assets/fire.png" alt="" height="25" width="25">{{dailyStreak.data.value?.streak}} napos sorozat!</h3>
+          <div class="d-flex align-center justify-center mt-2" v-if="get_fullUser.email">            
+            <h3 class="d-flex align-center justify-center">
+              <img src="../assets/fire.png" alt="" height="25" width="25" class="mr-1">
+              {{dailyStreak.data.value?.streak}} napos sorozat!
+            </h3>
           </div>
 
           </div>      
@@ -244,24 +247,24 @@
     </v-list>
   </v-navigation-drawer>
   
-  <v-main class="d-block align-center justify-center" style="height: 160vh">
+  <v-main class="d-block align-center justify-center" style="height: 122vh">
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
-      <v-col class="d-flex align-center justify-center" cols="1">
+      <v-col class="d-flex align-center justify-center" cols="2">
         <span>Státusz</span>
       </v-col>
-      <v-col class="d-flex align-center justify-center" cols="6">
+      <v-col class="d-flex align-center justify-center" cols="10" sm="6">
         <span>Cím</span>
       </v-col>
-      <v-col class="d-flex align-center justify-center" cols="4">
+      <v-col class="d-flex align-center justify-center" cols="6" sm="2">
         <span>Teljesítési arány</span>
       </v-col>
-      <v-col class="d-flex align-center justify-center" cols="1">
+      <v-col class="d-flex align-center justify-center" cols="6" sm="2">
         <span>Nehézség</span>
       </v-col>
     </v-row>
     <v-row 
     v-if="cardsQuery.data && cardsQuery.data.value && cardsQuery.data.value.length > 0"
-    class="task_card mx-8 pa-3 cursor-pointer tasks"
+    class="task_card mx-8 pa-2 cursor-pointer tasks"
     v-for="(card) in cardsQuery.data.value" 
     :key="card.id" 
     style="border-bottom: 1px solid #ccc; transition: .3s !important;"
@@ -318,7 +321,7 @@
 </v-layout>
 
 <v-pagination 
-:length="Math.ceil((allTaskCountQuery.data.value) / 15)" 
+:length="allTaskCountQuery.data.value ? Math.ceil(allTaskCountQuery.data.value / 15) : 1" 
 @update:modelValue="UpdatePage">
 </v-pagination>
 <v-dialog v-model="dialog" width="auto">
@@ -476,7 +479,6 @@ const specificTaskquery = useSpecificTask(dailytask_day);
 const LoadDailyTask = async (day: number) => {
     if(CheckIfCurrentTask(day.toString())){
       dailytask_day.value = day.toString();
-      console.log(dailytask_day.value);
       await specificTaskquery.refetch();
       TaskView(Number(specificTaskquery.data.value.task_id));
     }else{
@@ -665,11 +667,8 @@ const getDaysInMonth = (year: number, month: number): number => {
 
 // Watch for changes in task count
 watch(() => allTaskCountQuery.data.value, (newVal) => {
-  console.log("Watch triggered - New Value:", newVal);
-  console.log("Query Data:", allTaskCountQuery.data.value);
   if (newVal !== undefined) {
     taskCount.value = newVal;
-    console.log("Updated taskCount:", taskCount.value);
   }
 });
 
@@ -704,16 +703,13 @@ onMounted(async () => {
 
 watch(user_id, async (newUserId) => {
   if (newUserId) {
-    console.log('Fetching roll back token count for userId:', newUserId);
     await roll_back_token_count_query.refetch();
     await dailyStreak.refetch()
-    console.log('streak',dailyStreak.data.value?.streak)
     //await task_state.refetch();
   }
 });
 const UpdatePage = (newPage: number) => {
   filterData.value.offset = 15 *(newPage - 1);
-  console.log('teherbebeaszott offset',offset.value)
   router.push({ query: { page: newPage, per_page: 15 } });
   cardsQuery.refetch();
   window.scrollTo({
@@ -754,7 +750,6 @@ watch(user_id, async (newVal) => {
       roll_back_token_count_query.refetch(),
       dailyStreak.refetch()
     ]);
-    console.log('streak',dailyStreak.data.value?.streak)
   }
 }, { immediate: true });
 
@@ -778,11 +773,8 @@ onMounted(() => {
     () => solvedTaskStatesQuery.data, 
     (newData) => {
       if (newData && typeof newData === "object" && "value" in newData) {
-        console.log("New task rates:", newData.value);
         if (newData.value && "countpercenct" in newData.value) {
           series.value = newData.value.countpercenct;
-        } else {
-          console.warn("Missing 'countpercenct' in new task rates:", newData.value);
         }
       } else {
         console.warn("Invalid solved task states data:", newData);

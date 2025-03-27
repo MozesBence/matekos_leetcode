@@ -25,7 +25,7 @@
                       <v-btn
                         prepend-icon="mdi-home"
                         size="large"
-                        @click="currentRoute.name !== 'home' && router.push({ name: 'home', params: {id: 1} })"
+                        @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
                         :class="{'btn-active': currentRoute.name === 'home'}"
                       >
                         <template v-slot:prepend>

@@ -47,7 +47,6 @@ const getRandomTask = async (req,res,next) => {
 }
 
 const getFilteredTasks = async (req, res) => {
-  console.log(req.query)
   try {
       const tasks = await tasksService.getFilteredTasks(req.query);
       res.status(200).json(tasks);

@@ -27,7 +27,6 @@ export const useCompletionRates = () => {
 const fetchTaskState = async (id:Ref<number | null, number | null>) => {
   try {
     const response = await axios.get(`/api/task_solution/taskState/${id.value}`);
-    console.log("Response data:", response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching task state:', error);
@@ -51,7 +50,6 @@ export const useTaskState = (id: Ref<number | null, number | null>) => {
 const fetchSolvedTaskRates = async (id: Ref<number | null, number | null>) => {
   try {
     const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id.value}`);
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching solved task rates:', error);
@@ -73,7 +71,6 @@ const fetchAllTaskCount = async (filters: { difficulty: string | null; state: st
     const response = await axios.get("/api/tasks/taskCount", {
       params: filteredParams,
     });
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -92,7 +89,6 @@ export const useAllTaskCount = (filters: Ref<{ difficulty: string | null; state:
 const fetchRandomTask = async () => {
   try {
     const response = await axios.get(`/api/tasks/random-task`);
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching a random task:', error);
@@ -110,10 +106,8 @@ export const useRandomTask = () => {
 
 // Fetching Specific Task by Day
 const fetchSpecificTask = async (day: Ref<string>) => {
-  console.log(day.value)
   try {
     const response = await axios.get(`/api/daily_tasks/get-daily-task/${day.value}`);
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching specific task:', error);
@@ -121,7 +115,6 @@ const fetchSpecificTask = async (day: Ref<string>) => {
 };
 
 export const useSpecificTask = (day: Ref<string>) => {
-    console.log(day.value)
   return useQuery({
     queryFn: () => fetchSpecificTask(day),
     queryKey: ["specificDay",day],
@@ -131,14 +124,9 @@ export const useSpecificTask = (day: Ref<string>) => {
 
 
 const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
-  console.log('Selected Theme IDs:', themeIds);
   try {
     const themesPath = themeIds.value.length > 0 ? themeIds.value.join(';') : 'all';
-    console.log('Themespath',themesPath)
-    console.log('Formatted Theme IDs:', themesPath);
-
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
-   // console.log(response);
     return response.data;
   } catch (error) {
     console.error('Error occurred while fetching tasks by themes:', error);
@@ -146,8 +134,6 @@ const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
 };
 
 export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
-  console.log("Fetching with theme IDs:", themeIds);
-
   return useQuery({
     queryFn: () => fetchCardsByThemes(themeIds),
     queryKey: ['filteredByThemes', themeIds.value.join(';')], 
@@ -163,7 +149,6 @@ const fetchCards = async (filters: Ref<{ difficulty: string | null; state: strin
     const response = await axios.get("/api/tasks/filteredTasks", {
       params: filteredParams,
     });
-    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error("Error taskok fetchelese kozben:", error);
@@ -196,11 +181,9 @@ export const UseFetchCards = (filters: Ref<{ difficulty: string | null; state: s
 
 const getSimilarCards = async (task_id: Number,themeid: Number) => {
   try{
-    console.log(themeid)
     const response = await axios.get(`/api/tasks/getsimilarTasks`,{params:{
         taskId:task_id,themeId:themeid
     }});
-    console.log(response.data)
     return response.data;
   }catch(error){
     console.error('error hasonlo feladatok lekerese kozben',error)
@@ -220,7 +203,6 @@ export const UseGetSimilarCards = (task_id: Ref<Number>,themeid: Ref<Number>) =>
 const CheckIfDailyTask = async (taskid:Number) => {
   try{
     const response = await axios.get(`/api/daily_tasks/checkIfDailyTask/${taskid}`)
-    console.log(response.data)
     return response.data;
   }catch(error){
     console.error('error napi feladat checknel',error)

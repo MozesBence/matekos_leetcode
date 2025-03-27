@@ -18,10 +18,6 @@ const router = createRouter({
           component: () => import('../views/HomeView.vue'),
         },
         {
-          path: '/leader-board',
-          name: 'leader-board',
-          component: () => import('../views/LeaderBoardView.vue')},
-        {
           path: '/about',
           name: 'about',
           component: () => import('../views/AboutView.vue')
@@ -96,11 +92,6 @@ const router = createRouter({
       path: '/profile/:id',
       name: 'profile',
       component: () => import('../views/ProfileView.vue')
-    },
-    {
-      path: '/profil/redeem',
-      name: 'redeem',
-      component: () => import('../views/RedeemView.vue')
     },
     {
       path: '/task-submit',

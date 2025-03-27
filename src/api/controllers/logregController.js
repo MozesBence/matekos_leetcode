@@ -219,6 +219,15 @@ exports.loginUser = async (req, res, next) =>
             throw error;
         }
 
+        if(user != null && user.activated == 2)
+        {
+            const error = new Error("A felhasználó ki van tíltva a weboldalról!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
         const user_activated = await logregServices.activateUser(user.id);
 
         const token = jwt.sign(

@@ -6,7 +6,6 @@ import axios from "axios";
 const getAllAds = async() => {
     try{
     const response = await axios.get('/api/ads/get-ads-for-mainpage')
-    console.log(response.data)
     return response.data
     }catch(error){
         console.log('Error az adcardQueryben!',error);

@@ -18,7 +18,6 @@ const daily_taskRepository = {
                     task_id: taskid
                 }
             });
-            console.log("Task found:", task); // Log the task to check if it is found
             return task; // Return the task or null
         } catch (error) {
             console.error("Error in CheckIfDailyTask service:", error);

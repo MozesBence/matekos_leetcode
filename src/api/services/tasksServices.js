@@ -22,7 +22,6 @@ class TasksService {
       if (themes) {
         themes = themes.split(";");
       }
-      console.log(offset)
       return await tasksRepository.getTaskCount({
         difficulty,
         search,
@@ -63,7 +62,6 @@ class TasksService {
       if (themes) {
         themes = themes.split(";");
       }
-      console.log(offset)
       return await tasksRepository.getFilteredTasks({
         difficulty,
         search,
