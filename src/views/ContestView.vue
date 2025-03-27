@@ -9,7 +9,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" md="6">
-          <v-card class="kihivas" @click="router.push({ name: 'challange', params: { id : getISOWeekNumber(), define: 'week'} })">
+          <v-card class="kihivas" :disabled="!currentWeekChallange" @click="router.push({ name: 'challange', params: { id : getISOWeekNumber(), define: 'week'} })">
             <v-card-text class="pa-6 position-relaite align-center">
               
               <v-card-title>
@@ -29,7 +29,7 @@
           </v-card>
         </v-col>
         <v-col cols="12" md="6">
-          <v-card class="kihivas" @click="router.push({ name: 'challange', params: { id : getMonthNumber(), define: 'month'} })">
+          <v-card class="kihivas" :disabled="!currentMonthChallange"  @click="router.push({ name: 'challange', params: { id : getMonthNumber(), define: 'month'} })">
             <v-card-text class="pa-6 position-relaite align-center">
               <v-card-title>
                 <v-icon icon="mdi-calendar" color="community_createpost_btn" class="mb-2"></v-icon>
