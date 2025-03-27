@@ -155,6 +155,7 @@ import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQ
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
+import { onBeforeRouteUpdate } from 'vue-router';
 //import {TaskView} from '@/stores/taskLoader'
 
 interface Task {
@@ -355,6 +356,7 @@ const DailyTaskCheck = async() => {
   console.log('date',isDailyTask.data.value?.id)
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
 }
+
 
 
 </script>
