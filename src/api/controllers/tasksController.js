@@ -14,7 +14,6 @@ const getCardInfo = async (req, res) => {
   }
 };
 
-
 const getSpecificCard = async (req,res,next) =>{
   try{
     const { id } = req.params;

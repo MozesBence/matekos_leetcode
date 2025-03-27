@@ -34,5 +34,38 @@ const {getUserData,getRollBackTokensCount} = require('../controllers/userdataCon
  *                  message: "Nem sikerült a lekérni a felhasználó statisztikáit!"
  */
 router.get('/mainpage', getUserData);
+
+/**
+ * @swagger
+ * /wayBackTokens:
+ *   get:
+ *     summary: Visszaállítási token
+ *     tags:
+ *       - Main page
+ *     description: Felhasználó tokenjei napi feladat sorozat visszaállításhoz
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *           description: A felhasználó azonosítója
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Sikeres lekérés
+ *         content:
+ *           application/json:
+ *              example:
+ *                  roll_back_token: "3"
+ *       400:
+ *         description: Hiba a felhasználó visszaállítási tokenje lekérése közben
+ *         content:
+ *           application/json:
+ *              example:
+ *                  status: "400"
+ *                  message: "Nem sikerült a lekérni a felhasználó visszaállítási tokenjét!"
+ */
 router.get('/wayBackTokens',getRollBackTokensCount)
+
 module.exports = router;

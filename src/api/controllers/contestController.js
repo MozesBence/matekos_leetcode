@@ -118,8 +118,6 @@ exports.uploadSolution = async (req, res, next) => {
 
             throw error;
         }
-        
-        console.log(data, comp_id, token);
 
         res.status(201).send("Feltöltve!");
     }catch(error){
