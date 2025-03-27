@@ -51,7 +51,7 @@
                     <v-card title="Feladat címe:">
                     <v-card-text>
                        A feladat leírása csupán a feladat szövege legyen a címet NEM ide kell írni. Ha bármilyen matekos kifejelzés szerepel a 
-                       beírni kívánt szövegben egyenlőre külsős oldalhoz kell fordulni. (https://asciimath.org/) A szövegben az itt összeállított
+                       beírni kívánt szövegben egyenlőre külsős oldalhoz kell fordulni. (<a href="https://asciimath.org/" target="_blank">https://asciimath.org</a>) A szövegben az itt összeállított
                        kifejezést következő képpen kell megadni:<br> 
                        <li>$kifejezés$ - ha a szövegben szerepeljen folyamatosan,</li>
                        <li>$$kifejezés$$ - ha legyen egy sortörés az előtte, illetve utánna lévő szöveg között.</li>
@@ -71,6 +71,31 @@
                 </template>
             </v-dialog>
             <!--Iconra nyilo dialog vege-->
+            <!--Preview dialog a feladat leírásához kezdete-->
+            <v-dialog max-width="500" fullscreen>
+                <template v-slot:activator="{ props: TaskPreview }">
+                    <img src="../assets/magnifying-glass.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="TaskPreview" class="cursor-pointer">
+                </template>
+
+                <template v-slot:default="{ isActive }">
+                    <v-card title="A feladat hasonlóan fog kinézni:">
+                    <v-card-text>
+                        <div v-mathjax="Task_Data.task" class="previewArea" v-if="Task_Data.task != ''"></div>
+                        <div v-else class="text-center previewArea">Még nem írt be semmit.</div>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn
+                        text="Bezár"
+                        style="background-color: #1E88E5;"
+                        @click="isActive.value = false"
+                        width="100%"
+                        ></v-btn>
+                    </v-card-actions>
+                    </v-card>
+                </template>
+            </v-dialog>
+            <!--Preview dialog a feladat leírásához vége-->
         </v-row>
         <v-row>
             <v-textarea label="A feladat szövege" variant="outlined" v-model="Task_Data.task"></v-textarea>
@@ -210,7 +235,7 @@
 
       <!-- feladathoz tartozó segítség (1) -->
       <v-row class="titleRow">
-        <h3>Első segítség a feladat megoldásához</h3>
+        <h3>Első segítség a feladathoz</h3>
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
             <template v-slot:activator="{ props: taskHint1 }">
@@ -236,6 +261,31 @@
             </template>
         </v-dialog>
         <!--Iconra nyiló dialog vége-->
+        <!--Preview dialog a segítsgéghez(1) kezdete-->
+        <v-dialog max-width="500" fullscreen>
+            <template v-slot:activator="{ props: Help1Preview }">
+                <img src="../assets/magnifying-glass.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="Help1Preview" class="cursor-pointer">
+            </template>
+
+            <template v-slot:default="{ isActive }">
+                <v-card title="A segítség hasonlóan fog kinézni:">
+                <v-card-text>
+                    <div v-mathjax="Task_Data.hint1" class="previewArea" v-if="Task_Data.hint1 != ''"></div>
+                    <div v-else class="text-center previewArea">Még nem írt be semmit.</div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                    text="Bezár"
+                    style="background-color: #1E88E5;"
+                    @click="isActive.value = false"
+                    width="100%"
+                    ></v-btn>
+                </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
+        <!--Preview dialog a segítsgéghez(1) vége-->
     </v-row>
     <v-row>
         <v-text-field label="Segítség 1" variant="outlined" v-model="Task_Data.hint1"></v-text-field>
@@ -244,7 +294,7 @@
 
      <!-- feladathoz tartozó segítség (2) -->
      <v-row class="titleRow">
-        <h3>Második segítség a feladat megoldásához</h3>
+        <h3>Második segítség a feladathoz</h3>
         <!--Iconra nyiló dialog kezdete-->
         <v-dialog max-width="500">
             <template v-slot:activator="{ props: taskHint1 }">
@@ -270,6 +320,31 @@
             </template>
         </v-dialog>
         <!--Iconra nyiló dialog vége-->
+        <!--Preview dialog a segítsgéghez(2) kezdete-->
+        <v-dialog max-width="500" fullscreen>
+            <template v-slot:activator="{ props: Help2Preview }">
+                <img src="../assets/magnifying-glass.png" alt="" width="20px" height="20" style="margin-left: 5px;" v-bind="Help2Preview" class="cursor-pointer">
+            </template>
+
+            <template v-slot:default="{ isActive }">
+                <v-card title="A segítség hasonlóan fog kinézni:">
+                <v-card-text>
+                  <div v-mathjax="Task_Data.hint2" class="previewArea" v-if="Task_Data.hint2 != ''"></div>
+                  <div v-else class="text-center previewArea">Még nem írt be semmit.</div>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                    text="Bezár"
+                    style="background-color: #1E88E5;"
+                    @click="isActive.value = false"
+                    width="100%"
+                    ></v-btn>
+                </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
+        <!--Preview dialog a segítsgéghez(2) vége-->
     </v-row>
     <v-row>
         <v-text-field label="Segítség 2" variant="outlined" v-model="Task_Data.hint2"></v-text-field>
@@ -310,14 +385,31 @@ const showSucces = inject<((msg: string) => void) | undefined>("showSucces");
 
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 import router from "@/router";
+
+const mathjaxDirective = {
+  mounted(el: HTMLElement, binding: any) {
+    el.innerHTML = binding.value || "";
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
+    }
+  },
+  updated(el: HTMLElement, binding: any) {
+    el.innerHTML = binding.value || "";
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
+    }
+  }
+};
+
+
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({
   taskTitle: '',
   task: '',
-  themeId: 0,
+  themeId: null,
   solution: '',
-  difficulty: 0,
+  difficulty: null,
   creatorId: 0,
   experiencePoints: 10,
   solutionFormat: '',
@@ -456,5 +548,13 @@ const showAlert = (type: "success" | 'warning' | "error", text: string) => {
   
   .titleRow{
     vertical-align: middle; display: flex; align-items: center; background-color: rgb(var(--v-theme-info_label_background)); border-radius: 10px; height: 3em; padding: 5px; margin-bottom: 10px; padding-left:1em;
+  }
+
+  .previewArea{
+    background-color: #B0BEC5;
+    border-radius: 10px;
+    padding: 1em;
+    width: 100%;
+    height: auto;
   }
 </style>
