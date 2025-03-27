@@ -136,7 +136,7 @@
 
 <script setup>
 import { onMounted, ref, onUnmounted, computed} from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useLeaderboard, useGetPrevChallange} from '@/api/contest/contestQuery';
 import { useTheme, useDisplay } from 'vuetify';
 
@@ -179,7 +179,8 @@ function updateCountdowns() {
 
 function getTimeUntilNextMonday() {
   const now = new Date();
-  const nextMonday = new Date(now.setDate(now.getDate() + ((8 - now.getDay()) % 7 || 7)));
+  const nextMonday = new Date(now);
+  nextMonday.setDate(now.getDate() + ((8 - now.getDay()) % 7 || 7));
   nextMonday.setHours(0, 0, 0, 0);
   return nextMonday - now;
 }
