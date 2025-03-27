@@ -708,7 +708,6 @@ watch(user_id, async (newUserId) => {
     await roll_back_token_count_query.refetch();
     await dailyStreak.refetch()
     console.log('streak',dailyStreak.data.value?.streak)
-    //await task_state.refetch();
   }
 });
 const UpdatePage = (newPage: number) => {
