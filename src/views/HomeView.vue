@@ -22,12 +22,12 @@
           >
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
-          <p
+          <div
             class="text-center" 
             style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;"
           >
             <h4 style="font-weight: normal;">{{ card.content }}</h4>
-          </p>
+          </div>
           <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
             <v-btn
               append-icon="mdi-chevron-right"
@@ -189,10 +189,10 @@
             <strong>{{ currentLevel }}. szint</strong>
           </template>
         </v-progress-linear>
-          <h4 class=" d-flex align-center">
+          <div class=" d-flex align-center">
             <img height="20px" src="../assets/coin.png" class="mr-1">
-            Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}
-          </h4>
+            <h4>Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}</h4> 
+          </div>
           <h4 class=" d-flex align-center">
             <img src="../assets/rollback.png" alt="" height="20px" class="mr-1">
             Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
@@ -206,7 +206,10 @@
           class="d-flex flex-column align-center justify-center"
         >
         <div class="heatmap">
-            <p><h1>Napi feladatok</h1><h3>({{ currentYear }} - {{ currentMonth }})</h3></p>
+            <div>
+              <h1>Napi feladatok</h1>
+              <h3>({{ currentYear }} - {{ currentMonth }})</h3>
+            </div>
           <div class="heatmap-grid">
             <div
               v-for="(day, index) in days"
@@ -221,10 +224,10 @@
             </div>
           </div>
           <div class="d-flex align-center justify-center mt-2" v-if="get_fullUser.email">            
-            <h3 class="d-flex align-center justify-center">
+            <div class="d-flex align-center justify-center">
               <img src="../assets/fire.png" alt="" height="25" width="25" class="mr-1">
-              {{dailyStreak.data.value?.streak}} napos sorozat!
-            </h3>
+              <h3>{{dailyStreak.data.value?.streak}} napos sorozat!</h3>
+            </div>
           </div>
 
           </div>      
