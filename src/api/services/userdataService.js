@@ -14,6 +14,13 @@ class UserInfo {
             throw error;
         }
     }
+    async getUserById(id){
+        try{
+            return await userRepository.getUserById(id);
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 module.exports = new UserInfo();

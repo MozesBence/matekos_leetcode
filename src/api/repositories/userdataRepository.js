@@ -12,6 +12,14 @@ const userDataRepository = {
             },
             attributes:['roll_back_token']
         })
+    },
+    async getUserById(id){
+        return await Users.findOne({
+            where:{
+                id:id
+            },
+            attributes:['user_name']
+        })
     }
    
 };
