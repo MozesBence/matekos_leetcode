@@ -92,7 +92,7 @@
             <v-card-title>Előző kihívások</v-card-title>
             <v-divider></v-divider>
             <v-list>
-              <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest">
+              <v-list-item v-for="(contest, index) in prev_contest" :key="index" v-if="prev_contest && prev_contest.length != 0">
                 <v-list-item class="pa-0">
                   <v-hover v-slot="{ isHovering, props }">
                     <v-card elevation="0" v-bind="props">
@@ -136,14 +136,19 @@
 
 <script setup>
 import { onMounted, ref, onUnmounted, computed} from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { useLeaderboard, useGetPrevChallange} from '@/api/contest/contestQuery';
 import { useTheme, useDisplay } from 'vuetify';
 
+// Router és route hookok
 const router = useRouter();
+const route = useRoute();
 
+// Képernyő méret / eszköz
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
+
+// <------- Változók ------->
 
 var interval = null;
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
@@ -154,31 +159,41 @@ const prev_contest = ref(null);
 const currentWeekChallange = ref(null);
 const currentMonthChallange = ref(null);
 
+// <------- Változók ------->
+
+// <------- Api hívások ------->
+
+//Api hívás - ranglista lekérése
+const { mutate } = useLeaderboard();
+
+//Api hívás - előző versenyek lekérése
+const { mutate: getPrevChallange } = useGetPrevChallange();
+
+// <------- Api hívások ------->
+
+// <------- Függvények | figyelők ------->
 function updateCountdowns() {
-  weeklyCountdown.value = getTimeUntilNextMonday();
-  monthlyCountdown.value = getTimeUntilNextMonth();
+  weeklyCountdown.value = formatTimeDifference(getTimeUntilNextMonday());
+  monthlyCountdown.value = formatTimeDifference(getTimeUntilNextMonth());
 }
 
 function getTimeUntilNextMonday() {
   const now = new Date();
-  const nextMonday = new Date();
+  const nextMonday = new Date(now);
   nextMonday.setDate(now.getDate() + ((8 - now.getDay()) % 7 || 7));
   nextMonday.setHours(0, 0, 0, 0);
-  return formatTimeDifference(nextMonday - now);
+  return nextMonday - now;
 }
 
 function getTimeUntilNextMonth() {
   const now = new Date();
-  const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-  return formatTimeDifference(nextMonth - now);
+  return new Date(now.getFullYear(), now.getMonth() + 1, 1) - now;
 }
 
 function formatTimeDifference(ms) {
   const totalSeconds = Math.floor(ms / 1000);
-  const days = Math.floor(totalSeconds / (60 * 60 * 24));
-  const hours = Math.floor((totalSeconds % (60 * 60 * 24)) / (60 * 60));
-  const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
-  const seconds = totalSeconds % 60;
+  const days = Math.floor(totalSeconds / 86400), hours = Math.floor((totalSeconds % 86400) / 3600),
+        minutes = Math.floor((totalSeconds % 3600) / 60), seconds = totalSeconds % 60;
   return `${days} nap ${hours} óra ${minutes} perc ${seconds} mp`;
 }
 
@@ -186,34 +201,21 @@ const getISOWeekNumber = () => Math.ceil((((new Date()) - new Date(new Date().ge
 
 const getMonthNumber = () => new Date().getMonth() + 1;
 
-const { mutate } = useLeaderboard();
-const { mutate: getPrevChallange } = useGetPrevChallange();
 onMounted(async () => {
-  await getPrevChallange(get_user_by_token,{
-    onSuccess:(response)=>{
-      response = response.filter(c => {
-        if (c.identifier == getISOWeekNumber()) {
-          currentWeekChallange.value= c;
-          return false;
-        }
-        if (c.identifier == getMonthNumber()) {
-          currentMonthChallange.value = c;
-          return false;
-        }
-        return true;
+  await getPrevChallange(get_user_by_token, {
+    onSuccess: (response) => {
+      const filterChallenges = response.filter(c => {
+        if (c.identifier === getISOWeekNumber()) currentWeekChallange.value = c;
+        else if (c.identifier === getMonthNumber()) currentMonthChallange.value = c;
+        else return true;
       });
-
-      prev_contest.value = response;
+      prev_contest.value = filterChallenges;
     }
-  })
+  });
 
   mutate(undefined, {
-    onSuccess: (array) => {
-      LeaderboardArray.value = array;
-    },
-    onError: (error) => {
-      console.log(error);
-    },
+    onSuccess: (array) => LeaderboardArray.value = array,
+    onError: (error) => console.log(error),
   });
 
   updateCountdowns();
@@ -238,6 +240,8 @@ function getCookie(name){
 function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
+
+// <------- Függvények | figyelők ------->
 </script>
 
 <style scoped>

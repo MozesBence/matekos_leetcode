@@ -20,11 +20,6 @@ Tasks.init(
                 type: DataTypes.STRING(150),
                 allowNull: false,
             },
-            creator_id:{
-                type: DataTypes.INTEGER,
-                allowNull:true,
-                defaultValue: null
-            },
             difficulty: {
                 type: DataTypes.INTEGER,
                 allowNull: false,

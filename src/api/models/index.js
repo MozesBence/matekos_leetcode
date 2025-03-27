@@ -30,15 +30,6 @@ module.exports = (sequelize, DataTypes) => {
     StoreItems.hasMany(Transactions, {
         foreignKey: "itemId",
     });
-    // challanges részhez a Gergő által javasolt módszer
-    Tasks.belongsTo(Competitions, {
-        foreignKey: "CompetitionID"
-    });
-
-    Competitions.hasMany(Tasks, {
-        foreignKey: "CompetitionID"
-    });
-    
 
     Users.hasOne(User_customization, {
         foreignKey: "user_id",
@@ -55,16 +46,15 @@ module.exports = (sequelize, DataTypes) => {
         through: Task_solutions,
     });
 
-    /*Competitions.belongsToMany(Users, {
-        foreignKey: "competetion_id",
-        through: "competition_attendees",
-    });*/
-
-    Competitions.belongsToMany(Users, {
-        foreignKey: "competetion_id",
-        through: "tasks_creator",
+    Users.hasMany(Tasks, {
+        foreignKey: "creator_id",
+        as: 'createdTasks'
     });
-
+    Tasks.belongsTo(Users, {
+        foreignKey: "creator_id",
+        as: 'creator'
+    });
+    
     Themes.hasMany(Tasks, {
         foreignKey: 'theme_id',
     });

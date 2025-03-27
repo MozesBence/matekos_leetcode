@@ -90,9 +90,8 @@ const submitTask = async (req,res) => {
 
 const getUnvalidatedTasks = async(req,res,next) => {
   try{
-    const {offset} = req.params;
-    console.log(offset)
-    const tasks = await tasksService.getUnvalidatedTasks(offset)
+    const tasks = await tasksService.getUnvalidatedTasks()
+
     res.status(200).json(tasks)
   }catch(error){
     //res.status(500).json({ message: "Error a nem validált feladatok lekérése közben!" });
@@ -102,9 +101,8 @@ const getUnvalidatedTasks = async(req,res,next) => {
 
 const updateTaskValidationState = async (req, res, next) => {
   try {
-    console.log("Received query:", req.query);
-    const { taskId, validity } = req.query;
-    const resp = await tasksService.updateTaskValidationState(taskId, validity);
+    const { taskId, validity, user_id, from_user_id, message } = req.body;
+    const resp = await tasksService.updateTaskValidationState(taskId, validity, user_id, from_user_id, message);
     res.status(204).json(resp);
   } catch (error) {
     console.error("Controller Error:", error);

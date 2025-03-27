@@ -91,8 +91,11 @@ import { useProfileGetUser} from '@/api/profile/profileQuery'
 const showError = inject("showError");
 const showSucces = inject("showSucces");
 
+// Router és route hookok
 const router = useRouter();
 const route = useRoute();
+
+// <------- Változók ------->
 
 var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
 const currentWeek = route.params.id;
@@ -101,6 +104,8 @@ const theme = useTheme();
 const isLoading = ref(true);
 const tasks = reactive({ data: [] });
 const Uploaded = ref(false);
+
+// <------- Változók ------->
 
 // <------- Api hívások ------->
 
@@ -121,55 +126,42 @@ const getISOWeekNumber = () => Math.ceil((((new Date()) - new Date(new Date().ge
 
 const getMonthNumber = () => new Date().getMonth() + 1;
 
-onMounted(async ()=>{
+onMounted(async () => {
   if (get_user_by_token) {
-    await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
-      onSuccess: (get_user) => {
-        theme.global.name.value = get_user.User_customization.darkmode ? 'darkTheme' :'lightTheme';
-      },
-      onError: (error) =>{
-        showError ? showError(error.response.data) : console.log(error.response.data)
-        deleteCookie('user')
-      }
-    });
+    try {
+      await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
+        onSuccess: (get_user) => theme.global.name.value = get_user.User_customization.darkmode ? 'darkTheme' : 'lightTheme',
+        onError: (error) => { showError ? showError(error.response.data) : console.log(error.response.data); deleteCookie('user'); }
+      });
+    } catch (error) { console.error('Hiba történt a felhasználó lekérésekor:', error); }
   }
 
   try {
-      await getChallange({ id: route.params.id, define: route.params.define, token: get_user_by_token}, {
-        onSuccess: (response) => {
-          if(response.CompetitionSubmissions){
-            Uploaded.value = response.CompetitionSubmissions.length == 1;
-          }
-          isLoading.value = false;
-          Competition_id.value = response.id;
-          if((getISOWeekNumber() == response.identifier || getMonthNumber() == response.identifier) && !Uploaded.value){
-            response.Tasks.forEach(c => c.solution = "")
-          }
-          tasks.data = response.Tasks;
-        },
-        onError: () => {
-          isLoading.value = false;
-          getCookie('user') && deleteCookie('user')
+    await getChallange({ id: route.params.id, define: route.params.define, token: get_user_by_token }, {
+      onSuccess: (response) => {
+        isLoading.value = false;
+        Competition_id.value = response.id;
+        if ((getISOWeekNumber() == response.identifier || getMonthNumber() == response.identifier) && !response.CompetitionSubmissions?.length) {
+          response.Tasks.forEach(c => c.solution = "");
         }
-      });
-    } catch (error) {
-      console.error('Hiba történt a felhasználó lekérésekor:', error);
-    }
-})
-
-const UploadSolution = async () =>{
-  if(getISOWeekNumber() == currentWeek || getMonthNumber() == currentWeek){
-    await uploadSolution({data: { data: tasks.data.map(c => ({ id: c.id, solution: c.solution })), comp_id: Competition_id.value}, token: get_user_by_token},{
-      onSuccess: () =>{
-        Uploaded = true;
-        showSucces ? showSucces("Sikeresen fel lettek töltve az eredmények!") : console.log("Sikeresen fel lettek töltve az eredmények!")
+        tasks.data = response.Tasks;
       },
-      onError: (error) =>{
-        showError ? showError("Nem sikerült feltölteni az eredményeket!") : console.log("Nem sikerült feltölteni az eredményeket!")
-      }
-    })
+      onError: () => { isLoading.value = false; getCookie('user') && deleteCookie('user'); }
+    });
+  } catch (error) { console.error('Hiba történt a felhasználó lekérésekor:', error); }
+});
+
+const UploadSolution = async () => {
+  if (getISOWeekNumber() == currentWeek || getMonthNumber() == currentWeek) {
+    await uploadSolution({
+      data: { data: tasks.data.map(c => ({ id: c.id, solution: c.solution })), comp_id: Competition_id.value },
+      token: get_user_by_token
+    }, {
+      onSuccess: () => { Uploaded.value = true; showSucces ? showSucces("Sikeresen fel lettek töltve az eredmények!") : console.log("Sikeresen fel lettek töltve az eredmények!"); },
+      onError: () => { showError ? showError("Nem sikerült feltölteni az eredményeket!") : console.log("Nem sikerült feltölteni az eredményeket!"); }
+    });
   }
-}
+};
 
 function getCookie(name){
   const cookies = document.cookie.split('; ');
