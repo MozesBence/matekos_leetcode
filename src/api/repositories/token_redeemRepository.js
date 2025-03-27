@@ -8,20 +8,23 @@ const TokenRedeemRepository = {
             if (!hasTokens) {
                 return null;
             }
-
-            const [tokenRedeem, created] = await db.TokenRedeems.findOrCreate({
-                where: { user_id: userId, task_id: taskId },
-                defaults: {
-                    state: 'active',
-                    submission_date: new Date()
+            if(await this.CheckMonthlySpend(userId) <= 3)
+            {
+                const [tokenRedeem, created] = await db.TokenRedeems.findOrCreate({
+                    where: { user_id: userId, task_id: taskId },
+                    defaults: {
+                        state: 'active',
+                        submission_date: new Date()
+                    }
+                });
+                if (created) {
+                    await this.DeductWayBackToken(userId);
                 }
-            });
-
-            if (created) {
-                await this.DeductWayBackToken(userId);
+    
+                return { success: true, data: tokenRedeem, created };
+            }else{
+                return null;
             }
-
-            return { success: true, data: tokenRedeem, created };
         } catch (error) {
            
             throw error;
@@ -36,6 +39,26 @@ const TokenRedeemRepository = {
 
         return user && user.roll_back_token > 0;
     },
+
+    async CheckMonthlySpend(userId) {
+        try {
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+    
+            return await db.TokenRedeems.count({
+                where: {
+                    user_id: userId,
+                    submission_date: {
+                        [db.Sequelize.Op.gte]: new Date(currentYear, currentMonth, 1),
+                        [db.Sequelize.Op.lt]: new Date(currentYear, currentMonth + 1, 1)
+                    },
+                }
+            });
+        } catch (error) {
+            throw error;
+        }
+    },
+    
 
     async DeductWayBackToken(userId) {
         return await db.Users.decrement('roll_back_token', {

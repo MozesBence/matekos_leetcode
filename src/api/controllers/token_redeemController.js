@@ -15,6 +15,7 @@ const deactivateToken = async(req,res,next) => {
     try{
         const {userId,taskId} = req.query;
         const data = await token_redeemService.deactivateToken(userId,taskId)
+        console.log(data)
         res.status(200).json(data);
 
     }catch(error){
