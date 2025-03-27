@@ -205,7 +205,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötöst jegyezhetünk fel?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Nem számít a sorrend.",
-                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek."
+                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek.",
+                validated: 1
             },
             {
                 id:12,
@@ -217,7 +218,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötös esetében lehet a dobott számok összege 10?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Gondoljon arra, hogyan lehet 10-et kapni a számjegzek összegeként.",
-                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?"
+                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?",
+                validated: 1
             },
             {
                 id:13,
@@ -229,7 +231,8 @@ Tasks.init(
                 task:"Adott az $A = {0;1;2;3;4;5}$ halmaz. Az A halmaz elemeiből hány olyan hatjegyű szám írható fel, amely legalább egy egyest tartalmaz?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Nem számít a sorrend.",
-                second_hint:"Mennyit szeretnénk kiválasytani, mennyiből?"
+                second_hint:"Mennyit szeretnénk kiválasytani, mennyiből?",
+                validated: 1
             },
             {
                 id:14,
@@ -241,7 +244,8 @@ Tasks.init(
                 task:"Egy 2011-ben készült statisztikai összehasonlításban az alábbiakat olvashattuk:„Ha New York-ban az átlagfizetést és az átlagos árszínvonalat egyaránt 100%-nak veszszük, akkor Budapesten az átlagfizetés 23,6%, az átlagos árszínvonal pedig 70,9%. (Az árszínvonal számításához 122 áru és szolgáltatás árát hasonlították össze.)” Feltételezve, hogy az idézet megállapításai igazak, válaszoljon az alábbi kérdésekre! Ha Budapesten a havi átlagfizetés 150 ezer forint, akkor hány dollár ($) a havi átlagfizetés New York-ban, 190 forint/dollár (Ft/$) árfolyammal számolva? Válaszát egész dollárra kerekítve adja meg! ",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"A legalább szó és hány olyan szavak fontos, érdemes ezeken elgondolkozni.",
-                second_hint:"Komplementer esemény."
+                second_hint:"Komplementer esemény.",
+                validated: 1
             },
 
             {
@@ -254,7 +258,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötöst jegyezhetünk fel?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Nem számít a sorrend.",
-                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek."
+                second_hint:"3 féle elem van (0, 2, 4) amik ismétlődnek.",
+                validated: 1
             },
             {
                 id:16,
@@ -266,7 +271,8 @@ Tasks.init(
                 task:"Egy szabályos játékkocka két oldalára 0-át, két oldalára 2-est, két oldalára 4-est írunk. A dobókockát ötször egymás után feldobjuk, és a dobások eredményét rendre feljegyezzük. Hányféle számötös esetében lehet a dobott számok összege 10?",
                 solution_format:"Egy egész szám, mint például 1.",
                 first_hint:"Gondoljon arra, hogyan lehet 10-et kapni a számjegzek összegeként.",
-                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?"
+                second_hint:"Vizsgálja meg az eseteket, hány féle képpen dobhatjuk őket?",
+                validated: 1
             },
             {
                 id: 17,
@@ -1018,7 +1024,8 @@ Tasks.init(
                 task: "Oldd meg: $|2x - 3| = 5$",
                 solution_format: "x=szám,szám",
                 first_hint: "Két eset: $2x-3=5$ vagy $2x-3=-5$",
-                second_hint: "Megoldások: $x=4$ és $x=-1$"
+                second_hint: "Megoldások: $x=4$ és $x=-1$",
+                validated: 1
             },
             {
                 id: 75,
@@ -1029,7 +1036,8 @@ Tasks.init(
                 task: "Igaz-e: Ha $p$ prím, akkor $p^2 + 2$ is prím?",
                 solution_format: "igaz/hamis",
                 first_hint: "Próbáld ki $p=3$-mal",
-                second_hint: "Ellenőrizd $p=2$ esetén is"
+                second_hint: "Ellenőrizd $p=2$ esetén is",
+                validated: 1
             },
             {
                 id: 76,
@@ -1040,7 +1048,8 @@ Tasks.init(
                 task: "Oldd meg: $3(x - 1) = 12$",
                 solution_format: "x=szám",
                 first_hint: "Először ossz 3-mal",
-                second_hint: "Utána adj hozzá 1-et"
+                second_hint: "Utána adj hozzá 1-et",
+                validated: 1
             },
             {
                 id: 77,
@@ -1051,7 +1060,8 @@ Tasks.init(
                 task: "$$ x + y = 5 $$ $$ x - y = -1 $$",
                 solution_format: "x=szám,y=szám",
                 first_hint: "Add össze a két egyenletet",
-                second_hint: "Az eredmény: $2x = 4$"
+                second_hint: "Az eredmény: $2x = 4$",
+                validated: 1
             },
             {
                 id: 78,
@@ -1062,7 +1072,8 @@ Tasks.init(
                 task: "Oldd meg: $3x + 4 ≥ 10$",
                 solution_format: "x >= 82 vagy x <= 90",
                 first_hint: "Először vonj ki 4-et",
-                second_hint: "Ossz 3-mal, figyelj az egyenlőtlenség irányára"
+                second_hint: "Ossz 3-mal, figyelj az egyenlőtlenség irányára",
+                validated: 1
             },
             {
                 id: 79,
@@ -1073,7 +1084,8 @@ Tasks.init(
                 task: "Bontsd fel: $(x-3)(x+3)$",
                 solution_format: "polinom, például a^2-b-c, ahol a;b;c egész számok",
                 first_hint: "Használd a különbségi négyzetet",
-                second_hint: "$a^2 - b^2 = (a-b)(a+b)$"
+                second_hint: "$a^2 - b^2 = (a-b)(a+b)$",
+                validated: 1
             },
             {
                 id: 80,
@@ -1084,7 +1096,8 @@ Tasks.init(
                 task: "Milyen $x$-re értelmes: $√{x + 2}$?",
                 solution_format: "x>=szám",
                 first_hint: "A gyök alatt nemnegatív szám",
-                second_hint: "Oldd meg: $x + 2 ≥ 0$"
+                second_hint: "Oldd meg: $x + 2 ≥ 0$",
+                validated: 1
             },
             {
                 id: 81,
@@ -1095,7 +1108,8 @@ Tasks.init(
                 task: "Mennyi $\\log_{10}(1000)$?",
                 solution_format: "szám",
                 first_hint: "10 milyen hatványa 1000?",
-                second_hint: "$10^3 = 1000$"
+                second_hint: "$10^3 = 1000$",
+                validated: 1
             },
             {
                 id: 82,
@@ -1106,7 +1120,8 @@ Tasks.init(
                 task: "Mi az $f(x) = x^3$ deriváltja?",
                 solution_format: "kifejezés",
                 first_hint: "Hatványfüggvény deriváltja: $n x^{n-1}$",
-                second_hint: "$n=3$ esetén"
+                second_hint: "$n=3$ esetén",
+                validated: 1
             },
             {
                 id: 83,
@@ -1117,7 +1132,8 @@ Tasks.init(
                 task: "Igaz-e: $\\{1,2\\} \\subseteq \\{2,3,4\\}$?",
                 solution_format: "igaz/hamis",
                 first_hint: "Minden elemnek benne kell lennie",
-                second_hint: "1 nincs a második halmazban"
+                second_hint: "1 nincs a második halmazban",
+                validated: 1
             },
             {
                 id: 84,
@@ -1128,7 +1144,8 @@ Tasks.init(
                 task: "Hányféleképpen ülhet 4 ember 4 székre?",
                 solution_format: "szám",
                 first_hint: "Permutáció: $n!$",
-                second_hint: "$4! = 4×3×2×1$"
+                second_hint: "$4! = 4×3×2×1$",
+                validated: 1
             },
             {
                 id: 85,
@@ -1139,7 +1156,8 @@ Tasks.init(
                 task: "Melyik $k$ esetén van megoldása: $x^2 + kx + 4 = 0$?",
                 solution_format: "k≤szám/vagy≥",
                 first_hint: "Diszkrimináns nemnegatív",
-                second_hint: "$D = k^2 - 16 ≥ 0$"
+                second_hint: "$D = k^2 - 16 ≥ 0$",
+                validated: 1
             },
             {
                 id: 86,
@@ -1150,7 +1168,8 @@ Tasks.init(
                 task: "Két pont: $(1,2)$ és $(4,6)$. Mi a távolság?",
                 solution_format: "szám",
                 first_hint: "Távolságképlet: $√{(x_2-x_1)^2 + (y_2-y_1)^2}$",
-                second_hint: "$√{(3)^2 + (4)^2} = 5$"
+                second_hint: "$√{(3)^2 + (4)^2} = 5$",
+                validated: 1
             },
             {
                 id: 87,
@@ -1161,7 +1180,8 @@ Tasks.init(
                 task: "Igaz-e: Ha esik az eső, akkor nedves az út?",
                 solution_format: "igaz/hamis",
                 first_hint: "Az implikáció igazságtáblázata",
-                second_hint: "Ha előtag igaz, utótag is igaz kell legyen"
+                second_hint: "Ha előtag igaz, utótag is igaz kell legyen",
+                validated: 1
             },
             {
                 id: 88,
@@ -1172,7 +1192,8 @@ Tasks.init(
                 task: "Mekkora egy szabályos háromszög belső szöge?",
                 solution_format: "egy egész szám, például 67",
                 first_hint: "Belső szögek összege 180°",
-                second_hint: "Egyenlő szögek: 180°/3"
+                second_hint: "Egyenlő szögek: 180°/3",
+                validated: 1
             },
             {
                 id: 89,
@@ -1183,7 +1204,8 @@ Tasks.init(
                 task: "Első tag: 2, differencia: 3. Mi a 7. tag?",
                 solution_format: "szám",
                 first_hint: "Képlet: $a_n = a_1 + (n-1)d$",
-                second_hint: "$a_7 = 2 + 6×3$"
+                second_hint: "$a_7 = 2 + 6×3$",
+                validated: 1
             },
             {
                 id: 90,
@@ -1194,7 +1216,8 @@ Tasks.init(
                 task: "Adatok: 10,12,12,15. Mi a módusz?",
                 solution_format: "szám",
                 first_hint: "Módusz = leggyakoribb érték",
-                second_hint: "12 kétszer szerepel"
+                second_hint: "12 kétszer szerepel",
+                validated: 1
             },
             {
                 id: 91,
@@ -1205,7 +1228,8 @@ Tasks.init(
                 task: "Mi a 14 legkisebb prímosztója?",
                 solution_format: "szám",
                 first_hint: "Prímfelbontás: 14 = 2×7",
-                second_hint: "A legkisebb prímosztó 2"
+                second_hint: "A legkisebb prímosztó 2",
+                validated: 1
             },
             {
                 id: 92,
@@ -1216,7 +1240,8 @@ Tasks.init(
                 task: "Az 52941 számjegyeit leírjuk az összes lehetséges sorrendben. Ezen számok közül hány osztható 12-vel?",
                 solution_format: "egész szám, például 79543",
                 first_hint: "Egy szám akkor és csak akkor osztható 12-vel, ha a szám osztható 4-el és 3-al is.",
-                second_hint: "Nézzük meg ezen feltételek mely esetekben teljesülnek!"
+                second_hint: "Nézzük meg ezen feltételek mely esetekben teljesülnek!",
+                validated: 1
             },
             {
                 id: 93,
@@ -1227,7 +1252,8 @@ Tasks.init(
                 task: "Kocka éle 5 cm. Mi a térfogata?",
                 solution_format: "szám",
                 first_hint: "Kocka térfogata: $a^3$",
-                second_hint: "$5^3$"
+                second_hint: "$5^3$",
+                validated: 1
             },
             {
                 id: 94,
@@ -1238,7 +1264,8 @@ Tasks.init(
                 task: "Egy kisvárosban hét nagyobb üzlet található. A tavalyi évben elért, millió forintra kerekített árbevételeikről tudjuk, hogy az átlaguk 120 millió Ft, és ez megegyezik a mediánjukkal. A hét adat egyetlen módusza 100 millió Ft. Két üzletben éppen átlagos, azaz 120 millió forintos a kerekített bevétel, a legnagyobb bevétel pedig 160 millió forint volt. Számítsa ki a kerekített bevételek szórását!",
                 solution_format: "egész szám, például 8743",
                 first_hint: "Kerekített bevételek összege $7*120$",
-                second_hint: "A medián 120 millió forint, és két 120 millió forintos árbevétel volt, ezért legfeljebb három 120 millió forintnál kisebb bevétel lehet. "
+                second_hint: "A medián 120 millió forint, és két 120 millió forintos árbevétel volt, ezért legfeljebb három 120 millió forintnál kisebb bevétel lehet. ",
+                validated: 1
             },
             {
                 id: 95,
@@ -1249,7 +1276,8 @@ Tasks.init(
                 task: "Mi a valószínűsége, hogy fej lesz?",
                 solution_format: "tört",
                 first_hint: "Két egyformán valószínű esemény",
-                second_hint: "Kedvező/összes = 1/2"
+                second_hint: "Kedvező/összes = 1/2",
+                validated: 1
             },
             {
                 id: 96,
@@ -1260,7 +1288,8 @@ Tasks.init(
                 task: "Oldd meg: $|5x| = 20$",
                 solution_format: "x=szám,szám",
                 first_hint: "Két eset: $5x=20$ vagy $5x=-20$",
-                second_hint: "Megoldások: $x=4$ és $x=-4$"
+                second_hint: "Megoldások: $x=4$ és $x=-4$",
+                validated: 1
             },
             {
                 id: 97,
@@ -1271,7 +1300,8 @@ Tasks.init(
                 task: "Igaz-e: Ha egy szám osztható 12-vel, akkor 4-gyel is?",
                 solution_format: "igaz/hamis",
                 first_hint: "12 = 3×4",
-                second_hint: "Ha osztható 12-vel, biztosan osztható 4-gyel"
+                second_hint: "Ha osztható 12-vel, biztosan osztható 4-gyel",
+                validated: 1
             },
             {
                 id: 98,
@@ -1282,7 +1312,8 @@ Tasks.init(
                 task: "Oldd meg: $2x + 5 = 1$",
                 solution_format: "x=szám",
                 first_hint: "Először vonj ki 5-öt",
-                second_hint: "Utána ossz 2-vel"
+                second_hint: "Utána ossz 2-vel",
+                validated: 1
             },
             {
                 id: 99,
@@ -1293,7 +1324,8 @@ Tasks.init(
                 task: "$$ x + 2y = 7 $$ $$ 2x - y = -1 $$",
                 solution_format: "x=szám,y=szám",
                 first_hint: "Második egyenletből fejezd ki y-t",
-                second_hint: "$y = 2x + 1$, majd helyettesíts"
+                second_hint: "$y = 2x + 1$, majd helyettesíts",
+                validated: 1
             },
             {
                 id: 100,
@@ -1304,7 +1336,8 @@ Tasks.init(
                 task: "Oldd meg: $3^{x} < 3$",
                 solution_format: "x<szám",
                 first_hint: "$3^1 = 3$",
-                second_hint: "Ha alap >1, exponens <1"
+                second_hint: "Ha alap >1, exponens <1",
+                validated: 1
             },
         ];
     

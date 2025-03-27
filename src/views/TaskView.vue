@@ -356,6 +356,7 @@ const DailyTaskCheck = async() => {
   return isDailyTask.data.value != null && currentDate.getDay() == taskDate
 }
 
+
 </script>
 
 
