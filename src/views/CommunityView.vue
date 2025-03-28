@@ -267,7 +267,7 @@
                 class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
                 style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc)); cursor: pointer;" 
                 @click="router.push({ name: 'profile', params: { id: post.User.id } })">
-                  <img :src="post.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : post.User.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                  <img :src="post.User.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : post.User.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                   <h4 style="font-weight: normal;">{{ post.user_name }}</h4>
                 </div>
                 <h5 style="font-weight: normal;">{{ post.createdAt }}</h5>
@@ -366,7 +366,7 @@
                     <v-expand-transition>
                       <div class="position-relative mx-4 pa-2" v-if="get_user_by_token">
                         <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                          <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                          <img :src="get_fullUser.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                           <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                         </div>
                         <div>
@@ -416,7 +416,7 @@
                             >
                               <img 
                                 :src="comment.User.User_customization.profil_picture == null 
-                                  ? '/src/components/background/test_profile.jpg' 
+                                  ? '../assets/test_profile.jpg' 
                                   : comment.User.User_customization.profil_picture" 
                                 alt="" 
                                 style="height: 2rem; width: 2rem; border-radius: 50%;" 
@@ -498,7 +498,7 @@
                               class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" 
                               style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));"
                               >
-                                <img :src="get_fullUser.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                <img :src="get_fullUser.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                 <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                               </div>
                               <div>
@@ -546,7 +546,7 @@
                                       style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;"
                                       @click="router.push({ name: 'profile', params: { id: inner_comment.User.id } })"
                                       >
-                                        <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <img :src="inner_comment.User.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                         <h4 style="font-weight: normal;">{{ inner_comment.user_name }}</h4>
                                       </div>
                                       <h5 style="font-weight: normal;">{{ inner_comment.createdAt }}</h5>
@@ -608,7 +608,7 @@
                                 <v-expand-transition>
                                   <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
                                     <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
-                                      <img :src="inner_comment.User.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                      <img :src="inner_comment.User.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                       <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                                     </div>
                                     <div>

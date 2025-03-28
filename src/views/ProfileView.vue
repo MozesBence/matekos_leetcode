@@ -90,7 +90,7 @@
               />
             </template>
             <template v-else>
-              <img src="/src/components/background/test_profile.jpg"  alt="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
+              <img src="../assets/test_profile.jpg"  alt="" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
             </template>
           </v-btn>
           <h1 style="position: relative; color: rgb(var(--v-theme-profile_textColor)); font-size: xx-large;">
