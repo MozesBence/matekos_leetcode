@@ -4,7 +4,7 @@ import type { ForgetPasswordData } from './ForgetPassword'
 import type { Ref } from 'vue'
 
 const forgetPassword = async (data: ForgetPasswordData) => {
-  const response = await axiosClient.post('http://localhost:3000/forget-password', data)
+  const response = await axiosClient.post('/api/forget-password', data)
   return response.data
 }
 

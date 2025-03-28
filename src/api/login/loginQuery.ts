@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { LoginData } from './login'
 
 const loginUser = async (data: LoginData) => {
-  const response = await axiosClient.post('http://localhost:3000/login', data); 
+  const response = await axiosClient.post('/api/login', data); 
   return response.data; // Sikeres válasz
 }
 

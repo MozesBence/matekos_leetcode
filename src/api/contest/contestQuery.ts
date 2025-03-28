@@ -2,7 +2,7 @@ import axiosClient from '../../lib/axios'
 import { useMutation } from '@tanstack/vue-query'
 
 const leaderBoard = async () => {
-  const response = await axiosClient.get('http://localhost:3000/contest/leader-board'); 
+  const response = await axiosClient.get('/api/contest/leader-board'); 
   return response.data;
 }
 
@@ -19,7 +19,7 @@ export const useLeaderboard = () => {
 }
 
 const getChallange = async (data: {id: number, define: string, token: string | null}) => {
-  const response = await axiosClient.get('http://localhost:3000/contest/challange',{
+  const response = await axiosClient.get('/api/contest/challange',{
     params: data
   }); 
   return response.data;
@@ -38,7 +38,7 @@ export const useGetChallange = () => {
 }
 
 const getPrevChallange = async (token: string | null) => {
-  const response = await axiosClient.get('http://localhost:3000/contest/prev-challange',{
+  const response = await axiosClient.get('/api/contest/prev-challange',{
     params: { token }
   }); 
   return response.data;
@@ -57,7 +57,7 @@ export const useGetPrevChallange = () => {
 }
 
 const uploadSolution = async ({ data, token }: { data: {data: Array<{ id: number; solution: string; }>, comp_id: number }, token: string }) => {
-  const response = await axiosClient.post('http://localhost:3000/contest/upload-solution', data,{
+  const response = await axiosClient.post('/api/contest/upload-solution', data,{
     headers:{
       token: token
     }

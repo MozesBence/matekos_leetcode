@@ -8,7 +8,7 @@ import { type Ref } from 'vue';
 
 const ProfileGetUser = async (data: { token: string | null; id: number }): Promise<any> => {
     try {
-        const response = await axiosClient.get('http://localhost:3000/profile', {
+        const response = await axiosClient.get('/api/profile', {
         headers: {
             token: data.token,
             id: data.id,
@@ -41,7 +41,7 @@ const ProfilePicUpload = async (data: ProfilPicdata) => {
     formData.append('type', data.type.toString());  // type
 
     try {
-        const response = await axiosClient.patch('http://localhost:3000/profile', formData, {
+        const response = await axiosClient.patch('/api/profile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -68,7 +68,7 @@ export const useProfilePicUpload = () => {
 
 const ProfileDarkMode = async (data: Object) => {
     try {
-        const response = await axiosClient.patch('http://localhost:3000/profile', data);
+        const response = await axiosClient.patch('/api/profile', data);
     } catch (error: any) {
         console.error('Request failed:', error.response ? error.response.data : error.message);
     }
