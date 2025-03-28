@@ -7,7 +7,8 @@
         width="70%"
         class="mx-auto"
       ></v-skeleton-loader>
-      <h1 v-else ref="rotatingText">Üdvözlünk a boltban, {{ get_fullUser.user_name }}!</h1>
+      <h1 v-else-if="get_fullUser && get_fullUser.user_name" ref="rotatingText">Üdvözlünk a boltban, {{ get_fullUser.user_name }}!</h1>
+      <h1 v-else>Üdvözlünk a boltban!</h1>
     </div>
 
     <div class="userCurrency">
@@ -17,10 +18,11 @@
         width="20%"
         class="mx-auto"
       ></v-skeleton-loader>
-      <h3 v-else style="align-items: center; vertical-align: middle; text-align: center; display: flex;">
+      <h3 v-else-if="get_fullUser && get_fullUser.currency_count" style="align-items: center; vertical-align: middle; text-align: center; display: flex;">
         Aranyak száma: {{ formatCurrency(get_fullUser?.currency_count) }}
         <img height="20" src="../assets/coin.png" />
       </h3>
+      <h3 v-else>Aranyaid megtekintéséhéze jelentkezz be!</h3>
     </div>
 
     <v-row v-if="isLoading">
@@ -94,7 +96,7 @@
 </template>
 
 <script lang="ts" setup>
-import { get_fullUser, fetchUserData } from '@/stores/userStore';
+import { get_fullUser, fetchUserData,get_user_name } from '@/stores/userStore';
 import { ref, onMounted } from 'vue';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { UseFetchStoreItems } from '../api/storeItems/storeItemQuery';
