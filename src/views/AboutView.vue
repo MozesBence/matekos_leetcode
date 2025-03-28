@@ -110,7 +110,7 @@
                     <v-row class="d-flex align-center flex-column flex-md-row">
                       <div class="profile-img mr-md-8 mb-4 mb-md-0">
                         <img 
-                        src="../assets/test_profile.jpg" 
+                        src="../../public/test_profile.jpg" 
                         alt="Profile 1" 
                         style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"/>
                       </div>
@@ -130,7 +130,7 @@
                       <!-- Kép mobilon felül, nagyobb képernyőn jobb oldalon -->
                       <div class="profile-img order-first order-md-last mr-md-8 mb-4 mb-md-0" :style="{marginLeft: $vuetify.display.smAndDown ? '0vw': '2vw'}">
                         <img 
-                          src="../assets/test_profile.jpg"
+                          src="../../public/test_profile.jpg"
                           alt="Profile 2"
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
                         />
@@ -154,7 +154,7 @@
                     <v-row class="d-flex align-center flex-column flex-md-row">
                       <div class="profile-img mr-md-8 mb-4 mb-md-0">
                         <img 
-                          src="../assets/test_profile.jpg"
+                          src="../../public/test_profile.jpg"
                           alt="Profile 3"
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;"
                         />

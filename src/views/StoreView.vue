@@ -249,7 +249,4 @@ onMounted(async () => {
   margin-top:2em;
   margin-bottom:2em;
 }
-.userCurrency{
-
-}
 </style>

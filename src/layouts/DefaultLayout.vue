@@ -451,7 +451,7 @@
 
                     <div style="width: 100%; height: max-content; justify-content: center;" class="d-flex flex-column align-center justfiy-center mt-5 position-absolute bottom-0">
                       <div style="border-radius: 50%; width: 5rem; height: 5rem; overflow: hidden; position: relative;">
-                        <img :src="get_fullUser.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : get_fullUser.User_customization.profil_picture"
+                        <img :src="get_fullUser.User_customization.profil_picture == null ? '../public/test_profile.jpg' : get_fullUser.User_customization.profil_picture"
                           alt="profil_kep"
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
                           @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
@@ -631,7 +631,7 @@
                                       class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                       style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                       @click="router.push({ name: 'profile', params: { id: notif.ReportedUser.id } })">
-                                        <img :src="notif.ReportedUser.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : notif.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <img :src="notif.ReportedUser.User_customization.profil_picture == null ? '../public/test_profile.jpg' : notif.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                         <h3 style="font-weight: normal;">{{ notif.ReportedUser.user_name }}</h3>
                                       </div>
                                     </div>
@@ -699,7 +699,7 @@
                                                 style="width: max-content; cursor: pointer; background-color: rgb(var(--v-theme-community_posts_bc));" 
                                               >
                                                 <img 
-                                                  :src="user.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : user.User_customization.profil_picture"  
+                                                  :src="user.User_customization.profil_picture == null ? '../public/test_profile.jpg' : user.User_customization.profil_picture"  
                                                   alt="" 
                                                   style="height: 3rem; width: 3rem; border-radius: 50%;" 
                                                   class="mr-3"
@@ -853,7 +853,7 @@
                                               class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                               style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                               @click="router.push({ name: 'profile', params: { id: report.ReportedUser.id } })">
-                                                <img :src="report.ReportedUser.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <img :src="report.ReportedUser.User_customization.profil_picture == null ? '../public/test_profile.jpg' : report.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                                 <h3 style="font-weight: normal;">{{ report.ReportedUser.user_name }}</h3>
                                               </div>
                                             </div>
@@ -863,7 +863,7 @@
                                               class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                               style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                               @click="router.push({ name: 'profile', params: { id: report.Reporter.id } })">
-                                                <img :src="report.Reporter.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                                <img :src="report.Reporter.User_customization.profil_picture == null ? '../public/test_profile.jpg' : report.Reporter.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                                 <h3 style="font-weight: normal;">{{ report.Reporter.user_name }}</h3>
                                               </div>
                                             </div>
@@ -1136,7 +1136,7 @@
                                       class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
                                       style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                       @click="router.push({ name: 'profile', params: { id: validate.creator.id } })">
-                                        <img :src="validate.creator.User_customization.profil_picture == null ? '../assets/test_profile.jpg' : validate.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <img :src="validate.creator.User_customization.profil_picture == null ? '../public/test_profile.jpg' : validate.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                         <h3 style="font-weight: normal;">{{ validate.creator.user_name }}</h3>
                                       </div>
                                     </div>
