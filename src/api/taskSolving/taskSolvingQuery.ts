@@ -5,28 +5,23 @@ import type { Ref } from 'vue';
 
 
 const GetTaskData = async (id: number) => {
-    console.log(id);
-    const response = await axiosClient.get(`/api/tasks/get-one-card/${id}`);
-    console.log(response)
-    console.log(response.data)
-    return response.data;
+    try{
+        const response = await axiosClient.get(`/api/tasks/get-one-card/${id}`);
+        return response.data;
+    }catch(error){
+        throw error;
+    }
 }
 
 export const UseGetTaskData = (id: number | null) => {
     return useQuery({
         queryKey: ['TaskData', id], 
-        queryFn: () => GetTaskData(id) , 
+        queryFn: () => GetTaskData(id??0), 
         enabled: !!id,
         staleTime: 0,
         refetchOnMount: true, 
         refetchOnReconnect: true,
         refetchOnWindowFocus: false,
-        onSuccess: (data) => {
-            console.log('Task data:', data);
-        },
-        onError: (error: any) => {
-            console.error('Error occurred while fetching task data:', error);
-        },
     });
 };
 

@@ -3,12 +3,10 @@ import axios from "axios";
 import { type Ref, ref, watch, onMounted } from 'vue';
 
 const getRollBackTokenCount = async (userId: Number) => {
-  console.log("Fetching rollback tokens for userId:", userId);
   try {
     const response = await axios.get('/api/userdata/wayBackTokens', {
       params: { userId },
     });
-    console.log('RollBack token count:', response.data);
     return response.data;
   } catch (error) {
     console.error('Error fetching RollBack tokens:', error);
@@ -33,12 +31,10 @@ export const UsegetRollBackTokenCount = (userId: Ref<Number | null>) => {
 
 
 const getDailyStreak = async(userId: number) => {
-  console.log("streak", userId)
   try {
     const response = await axios.get('/api/task_solution/dailyTaskStreak', {
       params: { userId }
     })
-    console.log(response.data)
     return response.data;
   } catch(error) {
     throw error;

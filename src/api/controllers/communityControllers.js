@@ -2,11 +2,12 @@ const communityService = require("../services/communityService");
 
 exports.getLimitedPosts = async (req, res, next) => {
     const { limit, offset, id, filter, tagsArray, search } = req.query;
+    
+    const Tags = tagsArray ? JSON.parse(tagsArray) : [];
 
-    console.log(limit, offset, id, filter, tagsArray, search);
 
     try{
-        const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, tagsArray, search);
+        const get_posts = await communityService.getLimitedPost(limit, offset, id, filter, Tags, search);
 
         if(!get_posts){
             const error = new Error("Nem sikerült lekérni a posztokat!");
@@ -175,7 +176,7 @@ exports.postLike = async (req,res,next)=>{
             throw error;
         }
 
-        res.status(200).send(like_result);
+        res.status(201).send(like_result);
     }
     catch(error){
         next(error);
@@ -218,7 +219,7 @@ exports.postComment = async (req,res,next)=>{
             throw error;
         }
 
-        res.status(200).send(comment_result);
+        res.status(201).send(comment_result);
     }
     catch(error){
         next(error);

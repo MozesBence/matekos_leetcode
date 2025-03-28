@@ -22,7 +22,6 @@ class TasksService {
       if (themes) {
         themes = themes.split(";");
       }
-      console.log(offset)
       return await tasksRepository.getTaskCount({
         difficulty,
         search,
@@ -63,7 +62,6 @@ class TasksService {
       if (themes) {
         themes = themes.split(";");
       }
-      console.log(offset)
       return await tasksRepository.getFilteredTasks({
         difficulty,
         search,
@@ -76,9 +74,9 @@ class TasksService {
       throw error;
     }
   }
-  async getsimilarTasks(themeid){
+  async getsimilarTasks(taskId,themeId){
     try{
-      return await tasksRepository.getsimilarTasks(themeid)
+      return await tasksRepository.getsimilarTasks(taskId,themeId)
     }catch(error){
       throw error;
     }
@@ -97,9 +95,16 @@ class TasksService {
       throw error;
     }
   }
-  async getUnvalidatedTasks(offset){
+  async getUnvalidatedTasks(){
     try{
-      return await tasksRepository.getUnvalidatedTasks(offset);
+      return await tasksRepository.getUnvalidatedTasks();
+    }catch(error){
+      throw error;
+    }
+  }
+  async updateTaskValidationState(taskId,validity, user_id, from_user_id, message){
+    try{
+      return await tasksRepository.updateTaskValidationState(taskId,validity, user_id, from_user_id, message);
     }catch(error){
       throw error;
     }

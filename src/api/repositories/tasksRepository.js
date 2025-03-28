@@ -1,38 +1,63 @@
 const { number } = require('zod');
 const { Sequelize } = require('sequelize');
 const db = require('../database/dbContext');
-const { Tasks,Themes,Task_solutions } = db;
+const { Tasks,Themes,Task_solutions, Users, User_customization, Notification } = db;
 const { Op } = require('sequelize');
 const { isConstructorDeclaration, isAwaitKeyword } = require('typescript');
 const { stat } = require('fs');
 const { ADDRGETNETWORKPARAMS } = require('dns');
+const { update } = require('lodash');
 
 const tasksRepository = {
   
-  async getsimilarTasks(themeid) {
+  async getsimilarTasks(taskId, themeId) {
     try {
       return await Tasks.findAll({
-        where:{
-          theme_id: themeid,
-          validated: 1
+        where: {
+          theme_id: themeId,
+          validated: 1,
+          id: { [Op.ne]: taskId }
         },
         order: [['id', 'ASC']],
-        attributes:['id','theme_id','difficulty','task_title'],
+        attributes: ['id', 'theme_id', 'difficulty', 'task_title'],
         limit: 15,
       });
     } catch (error) {
-      console.error('Error fetching cards:', error);
+      console.error('Error fetching similar tasks:', error);
       throw error;
     }
   },
   async getSpecificCard(id) {
     try {
-      return await Tasks.findOne({
+      const task = await Tasks.findOne({
         where: {
           id: id
         },
         attributes:['id','theme_id','theme_id','creator_id','difficulty','experience_points','task_title','task','solution_format','first_hint','second_hint'],
+        include: [{
+          model: Users,
+          as: 'creator',
+          attributes: ["id","user_name"],
+          include: [{
+            model: User_customization,
+            required: false,
+            attributes: ["profil_picture"],
+          }],
+          required: false
+        }]
       });
+      if (task.creator && task.creator.User_customization.profil_picture != null) {
+        const profileProfPicBuffer = task.creator.User_customization.profil_picture;
+                    
+        const profileProfPicMimeType = task.creator.User_customization.profil_picture_type || 'image/jpeg';
+        
+        if (profileProfPicBuffer) {
+          const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+          task.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+        }
+      }
+    
+      return task;
     } catch (error) {
       console.error('Error fetching specific card:', error);
       throw error;
@@ -196,7 +221,6 @@ const tasksRepository = {
         }
 
         let stateTaskIds = null;
-        console.log(state)
         if (state !== undefined && userId) {
             if (state == 2) {
                 const solvedTaskIds = await db.Task_solutions.findAll({
@@ -274,15 +298,79 @@ async submitTask({taskTitle,task,themeId,solution,difficulty,creatorId,experienc
     validated:validated
   });
 },
-async getUnvalidatedTasks(offset){
-  return await Tasks.findAll({
-    where:{
-      validated:0
+async getUnvalidatedTasks(){
+  const tasks = await Tasks.findAll({
+    where: {
+      validated: 0
     },
-    limit:20,
-    offset:parseInt(offset,10),
-  })
+    include: [{
+      model: Users,
+      as: 'creator',
+      attributes: ["id","user_name"],
+      include: [{
+        model: User_customization,
+        required: false,
+        attributes: ["profil_picture"],
+      }],
+      required: false
+    }]
+  });
+
+  tasks.forEach(user =>{
+    if (user.creator && user.creator.User_customization.profil_picture != null) {
+      const profileProfPicBuffer = user.creator.User_customization.profil_picture;
+                  
+      const profileProfPicMimeType = user.creator.User_customization.profil_picture_type || 'image/jpeg';
+      
+      if (profileProfPicBuffer) {
+        const base64Image = Buffer.from(profileProfPicBuffer).toString('base64');
+        user.creator.User_customization.profil_picture = `data:${profileProfPicMimeType};base64,${base64Image}`;
+      }
+    }
+  });
+
+  return tasks;
+},
+async updateTaskValidationState(taskId, validity, user_id, from_user_id, message) {
+  try{
+    if (validity == '0') {
+      this.deleteTaskFromTasks(taskId);
+    }else{
+      this.updateToValidated(taskId);
+    }
+
+    await Notification.create({
+      type: 0,
+      notif_content: message,
+      content_type: 0,
+      content_id: null,
+      closed: 1,
+      user_id: user_id,
+      from_user_id: from_user_id
+    })
+
+    return 'OK'
+  }catch(error){
+    throw error;
+  }
+
+},
+
+
+async updateToValidated(taskId) {
+  return Tasks.update(
+    { validated: 1 },
+    { where: { id: taskId } }
+  );
+},
+
+async deleteTaskFromTasks(taskId) {
+  return Tasks.destroy({
+    where: { id: taskId }
+  });
 }
+
+
 };
 
 module.exports = tasksRepository;

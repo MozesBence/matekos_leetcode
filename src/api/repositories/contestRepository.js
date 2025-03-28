@@ -11,6 +11,12 @@ class contestRepository
         this.Users = db.Users;
 
         this.User_customization = db.User_customization;
+
+        this.Competitions = db.Competitions;
+
+        this.Tasks = db.Tasks;
+
+        this.Competetins_submissions = db.Competetins_submissions;
     }
 
     async getLeaderBoard()
@@ -73,6 +79,97 @@ class contestRepository
         });        
 
         return UsersOnLeaderboard;
+    }
+
+    async getChallange(id, define, user_id){
+        if(user_id){
+            return await this.Competitions.findOne({
+                where:{
+                    identifier: id,
+                    define: define
+                },
+                include: [
+                    {
+                        model: this.Tasks,
+                    },
+                    {
+                        model: this.Competetins_submissions,
+                        where: {
+                            user_id: user_id
+                        },
+                        required: false,
+                    }
+                ]
+            })
+        }else{
+            return await this.Competitions.findOne({
+                where:{
+                    identifier: id,
+                    define: define
+                },
+                include: [
+                    {
+                        model: this.Tasks,
+                    },
+                ]
+            })
+        }
+    }
+
+    async getPrevChallange(id){
+        if (id) {
+            return await this.Competitions.findAll({
+                include: [{
+                    model: this.Competetins_submissions,
+                    where: {
+                        user_id: id
+                    },
+                    required: false,
+                }]
+            });
+        } else {
+            return await this.Competitions.findAll();
+        }
+    }
+
+    async getSolutionResults(data){
+        var points = 0;
+        var experience_points = 0;
+        for(const solution of data){
+            const task = await this.Tasks.findOne({
+                where: {
+                    id: solution.id
+                }
+            })
+
+            if(task.solution == solution.solution){
+                points++;
+                experience_points += task.experience_points;
+            }
+        }
+
+        return {point: points, exp: experience_points}
+    }
+
+    async getUploadResults(get_results, id, comp_id){
+        await this.Competetins_submissions.create({
+            experience_level: get_results.exp,
+            point: get_results.point,
+            competition_id: comp_id,
+            user_id: id
+        });
+
+        const user = await this.Users.findOne({
+            where:{
+                id: id
+            }
+        })
+
+        user.experience_point = Number(user.experience_point) + get_results.exp;
+
+        user.save();
+
+        return 'OK'
     }
 }
 

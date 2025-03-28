@@ -9,18 +9,18 @@
   <main 
   style="height: auto; background-color: transparent; position: relative; z-index: 2;" 
   class="d-flex justify-center align-center"
-  :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
+
   >
     <div style="height: 100vh; width: 75%; background-color: transparent; position: relative;" class="rounded">
       <div class="position-absolute" style="width: max-content; left: .5rem; top: .1vw;">
         <v-btn 
         icon
-        @click="goBack" 
+        @click="router.back()" 
         style="z-index: 5; pointer-events: visible;">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
       </div>
-      <div class="d-flex justify-center position-absolute ga-2" style="width: max-content; right: .5rem; top: .1vw;">
+      <div class="d-flex justify-center position-absolute" style="width: max-content; right: .5rem; top: .1vw;">
         <v-btn
         v-if="settingsShow"
         icon
@@ -28,15 +28,6 @@
         style="z-index: 5; pointer-events: visible;"
         >
           <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-        </v-btn>
-
-        <v-btn
-        v-if="settingsShow"
-        icon
-        @click="dialog = true"
-        style="z-index: 5; pointer-events: visible;"
-        >
-          <v-icon>mdi-account-cog</v-icon>
         </v-btn>
       </div>
       <header>
@@ -74,8 +65,7 @@
         </div>
         <div 
         class="d-flex flex-column justify-center align-center mt-4 overlay-div" 
-        style="pointer-events: none;"
-        :style="{top: $vuetify.display.smAndDown ? '-11rem' : '-12rem'}"
+        style="pointer-events: none; top: -13vh;"
         >
           <v-btn 
             icon
@@ -115,8 +105,7 @@
         />
       </header>
       <div 
-      style="background-color: transparent; position: relative; top: -21vh;"
-      :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}"
+      style="background-color: transparent; position: relative; top: -12vh;"
       >
       <v-row justify="space-evenly">
         <v-col
@@ -138,7 +127,6 @@
       </v-row>
       <v-row justify="space-evenly">
         <v-col
-          :key="elevation"
           cols="12"
           md="6"
         >
@@ -153,7 +141,6 @@
           </v-sheet>
         </v-col>
         <v-col
-          :key="elevation"
           cols="12"
           md="6"
         >
@@ -162,25 +149,24 @@
             color="profile_cardsColor"
             height="420"
             style="transition: .3s;"
+            
           >
-          <h2>Legutobb megkezdett feladat</h2>
+          <h2>Legutóbb megkezdett feladat</h2>
           <v-card>
             <v-card
-            :color="color"
-            :variant="variant"
             class="mx-auto"
           >
             <v-card-item>
               <div>
                 <div class="text-overline mb-1">
-                  {{ variant }}
                 </div>
                 <div class="text-h6 mb-1" v-if="mostRecTriedTask.data.value">
                   {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}
                 </div>
                 <div class="text-h6 mb-1" v-if="!mostRecTriedTask.data.value">
-                  Jelenleg minden próbálkozásod sikeres volt! A gombra kattintva kaphatsz
-                  egy random feladatot.
+                  <p>Jelenleg minden próbálkozásod sikeres volt, vagy még nem volt! A gombra kattintva kaphatsz
+                    egy random feladatot.</p>
+                  
                 </div>
               </div>
             </v-card-item>
@@ -198,445 +184,223 @@
           </v-sheet>
         </v-col>
       </v-row>
-
-        <div class="pa-4 text-center">
-          <v-dialog
-            v-model="dialog"
-            max-width="700"
-          >
-            <v-card>
-              <v-card-title>
-                <span class="text-h6">{{ get_UserName }} felhasználó beállításai</span>
-              </v-card-title>
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <!-- Felhasználónév -->
-                    <v-col cols="12" md="12">
-                      <v-text-field
-                        v-model="userName"
-                        :label="get_UserName"
-                        outlined
-                      ></v-text-field>
-                    </v-col>
-                    <!-- E-mail -->
-                    <v-col cols="12" md="12">
-                      <v-text-field
-                        v-model="email"
-                        :label="get_fullUser.email"
-                        outlined
-                        type="email"
-                      ></v-text-field>
-                    </v-col>
-                    <!-- Jelszó -->
-                    <v-col cols="12" md="12">
-                      <v-text-field
-                        v-model="password"
-                        label="Új Jelszó"
-                        outlined
-                        type="password"
-                      ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" md="12">
-                      <v-text-field
-                        v-model="confpassword"
-                        label="Új Jelszó megerősítés"
-                        outlined
-                        type="confpassword"
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </v-card-text>
-              <v-divider></v-divider>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  text="Bezárás"
-                  variant="plain"
-                  @click="dialog = false"
-                ></v-btn>
-                <v-btn
-                  color="success"
-                  text="Mentés"
-                  variant="tonal"
-                  @click="saveSettings"
-                >Mentés</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
-        </div>
       </div>
     </div>
   </main>
 </template>
 
-<script lang="ts" setup>
-import { onMounted, ref, watch, shallowRef, inject,watchEffect } from 'vue';
+<script setup>
+import { onMounted, ref, watch, inject ,watchEffect, computed  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useProfilePicUpload } from '@/api/profile/profileQuery';
-import { useProfileGetUser } from '@/api/profile/profileQuery';
-import { useTheme } from 'vuetify';
+import { useTheme, useDisplay } from 'vuetify';
 import imageCompression from 'browser-image-compression';
-import { useProfileDarkmodeSwitch,UseGetMonthlySolvingRate,UseGetMostRecentlyTriedTask } from '@/api/profile/profileQuery'
+import { useProfileDarkmodeSwitch, UseGetMonthlySolvingRate, UseGetMostRecentlyTriedTask, useProfileGetUser, useProfilePicUpload } from '@/api/profile/profileQuery'
 import VueApexCharts from 'vue3-apexcharts';
 import {useRandomTask} from '@/api/cards/cardQuery'
 
-const dialog = shallowRef(false)
+// Üzenetkezelés
+const showError = inject("showError");
+const showSucces = inject("showSucces");
 
-interface ProfilPicdata {
-  id: number
-  pic: Blob
-  type: number
-}
-
+// Router és route hookok
 const router = useRouter();
 const route = useRoute();
 
+// Képernyő méret / eszköz
+const { mobile } = useDisplay();
+const isMobile = computed(() => mobile.value);
 
-const getCookie = (name: string) => {
-  const cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split('=');
-    if (key === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-};
+// Cookie kezelés
+const getCookie = (name) => document.cookie.split('; ').reduce((res, cookie) => {
+  const [key, value] = cookie.split('=');
+  return key === name ? decodeURIComponent(value) : res;
+}, null);
 
-const showError = inject<((msg: string) => void) | undefined>("showError");
+// <------- Változók ------->
 
 var get_user_by_token = getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object" ? getCookie('user') : null;
-
-const get_fullUser = ref<any>(null);
-
-const get_UserName = ref<string>('Betöltés...');
-
-const get_fullUser_customs = ref<any>(null);
-
+const get_fullUser = ref(null);
+const get_UserName = ref('Betöltés...');
+const get_fullUser_customs = ref(null);
 const settingsShow = ref(false);
-
-const { mutate: ProfileGetUser } = useProfileGetUser();
-
+const profileImage = ref('hibas-kep-url.jpg');
+const backImage = ref('hibas-kep-url.jpg');
 const userId = route.params.id;
 const mostRecTriedTask = UseGetMostRecentlyTriedTask(Number(userId))
 const solvingRates = UseGetMonthlySolvingRate(Number(userId));
 const apexchart = VueApexCharts;
-
-interface SolvingRate {
-  month: string;
-  solutionCount: number;
-}
-
-const series = ref<{ name: string; data: number[] }[]>([]);
-
-watchEffect(() => {
-  if (solvingRates.data?.value) {
-    series.value = [
-      {
-        name: "Solved tasks",
-        data: solvingRates.data.value.map((x: SolvingRate) => x.solutionCount)
-      }
-    ];
-  }
-});
-
+const randomTask = useRandomTask();
+const series = ref([]);
+const DarkmodeChange = ref(false);
+const isProfImageAvailable = ref(true);
+const isBackImageAvailable = ref(true);
+const fileProfPicInput = ref(null);
+const fileBackPicInput = ref(null);
+const theme = useTheme();
 const chartOptions = ref({
-  chart: {
-    height: 350,
-    type: 'line',
-    zoom: { enabled: false },
-    toolbar: {
-      show: false
-    }
-  },
+  chart: { height: 350, type: 'line', zoom: { enabled: false }, toolbar: { show: false } },
   dataLabels: { enabled: false },
   stroke: { curve: 'straight' },
   title: { text: 'Megoldott feladatok', align: 'left' },
-  grid: {
-    row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 }
-  },
-  xaxis: {
-    categories: ['Jan', 'Feb', 'Már', 'Ápr', 'May', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec']
-  },
-  yaxis: {
-    labels: {
-      formatter: function (val: number) {
-        return val.toFixed(0);
-      }
-    }
+  grid: { row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 } },
+  xaxis: { categories: ['Jan', 'Feb', 'Már', 'Ápr', 'May', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'] },
+  yaxis: { labels: { formatter: (val) => val.toFixed(0) } }
+});
+
+// <------- Változók ------->
+
+// <------- API hívások ------->
+
+// API hívás - felhasználó profiljának adatainak lekérése
+const { mutate: ProfileGetUser } = useProfileGetUser();
+
+// API hívás - felhasználó profiljának sötétmódra váltása
+const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
+
+// API hívás - felhasználó profil- és háttérképének feltöltése
+const { mutate: ProfilePicUpload } = useProfilePicUpload();
+
+// <------- API hívások -------> 
+
+// <------- Függvények | figyelők ------->
+
+watchEffect(() => {
+  if (solvingRates.value?.data?.value) {
+    series.value = [{
+      name: "Solved tasks",
+      data: solvingRates.value.data.value.map(x => x.solutionCount)
+    }];
   }
 });
 
-const randomTask = useRandomTask();
-
 const LoadRandomTask = async () => {
-  await randomTask.refetch();
-  console.log(randomTask.data.value.id)
-  if (randomTask.data.value.id !== null) {
-    TaskView(randomTask.data.value.id);
-  }
+  const task = await randomTask.refetch();
+  task?.data?.value?.id && router.push({ name: 'task', params: { id: task.data.value.id } });
 };
 
-
-const TaskView = (id: number) => {
-  console.log('Navigating to task with id:', id);
-  router.push({ name: 'task', params: { id } });
-};
-
+const TaskView = (id) => router.push({ name: 'task', params: { id } });
 
 onMounted(async () => {
   try {
-    await ProfileGetUser({token: get_user_by_token, id: Number(userId)}, {
+    await ProfileGetUser({ token: get_user_by_token, id: Number(userId) }, {
       onSuccess: (get_user) => {
-        get_UserName.value = get_user.user_name ? get_user.user_name : get_user.name;
+        get_UserName.value = get_user.user_name || get_user.name;
         get_fullUser.value = get_user;
         get_fullUser_customs.value = get_user.User_customization;
         settingsShow.value = get_fullUser.value.id == userId;
-        handlePtofilPicters(get_user.User_customization ? { profil_picture: get_user.User_customization.profil_picture, background_picture: get_user.User_customization.background_picture } : { profil_picture: get_user.profil_picture, background_picture: get_user.background_picture })
+        handlePtofilPicters({
+          profil_picture: get_user.User_customization?.profil_picture || get_user.profil_picture,
+          background_picture: get_user.User_customization?.background_picture || get_user.background_picture
+        });
       },
-      onError: (error) => {
-        if (showError) {
-          showError(error.response.data);
-        }else{
-          console.log(error.response.data);
-        }
-      },
+      onError: () => showError ? showError(error.response.data) : console.log(error.response.data)
     });
-  } catch (error : any) {
-    if (showError) {
-      showError(error.response.data);
-    }else{
-      console.log(error.response.data);
-    }
+  } catch (error) {
+    showError ? showError(error.response) : console.log(error.response);
   }
 });
 
-const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
-const DarkmodeChange = ref(false);
 const handleDarkmodeSwitch = async () => {
   DarkmodeChange.value = !DarkmodeChange.value;
-
-  // Téma módosítása
   theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
 
-  // API hívás a sötét mód változtatásához
-  if(get_fullUser.value != null){
+  if (get_fullUser.value) {
     try {
-      await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
-    } catch (error: any) {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
+      await ProfileDarkMode({ id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
+    } catch (error) {
+      showError ? showError(error.response.data) : console.log(error.response.data);
     }
   }
 };
 
-const theme = useTheme();
-
-// Változó figyelése
-watch(get_fullUser, (newUser: any | null) => {
+watch(get_fullUser, (newUser) => {
   if (newUser) {
-    DarkmodeChange.value = newUser.User_customization ? newUser.User_customization.darkmode : newUser.darkmode;
+    DarkmodeChange.value = newUser.User_customization?.darkmode ?? newUser.darkmode;
     theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
   }
 });
 
-const profileImage = ref<string>('hibas-kep-url.jpg');
-const backImage = ref<string>('hibas-kep-url.jpg');
-
-const handlePtofilPicters = (data: { profil_picture: string | null, background_picture: string | null }) => {
-  const base64ImageProf = data.profil_picture;
-  const base64ImageBack = data.background_picture;
-
-  if (base64ImageProf && base64ImageProf != null) {
-    profileImage.value = base64ImageProf; // Közvetlenül beállítjuk a Base64 kódolt képet
+const handlePtofilPicters = ({ profil_picture, background_picture }) => {
+  if (profil_picture) {
+    profileImage.value = profil_picture;
     isProfImageAvailable.value = true;
   }
-
-  if (base64ImageBack && base64ImageBack != null) {
-    backImage.value = base64ImageBack; // Közvetlenül beállítjuk a Base64 kódolt képet
+  if (background_picture) {
+    backImage.value = background_picture;
     isBackImageAvailable.value = true;
   }
 };
 
+const handleProfImageError = () => isProfImageAvailable.value = false;
 
-// Állapotok
-const compressedImageBlob = ref<Blob | null>(null);
-const isProfImageAvailable = ref(true);
-const isBackImageAvailable = ref(true);
-
-// Kép hiba kezelése
-const handleProfImageError = () => {
-  isProfImageAvailable.value = false;
-};
-
-// Alapértelmezett háttér beállítása
-const setDefaultBackground = (event: Event) => {
-  const target = event.target as HTMLImageElement;
+const setDefaultBackground = ({ target }) => {
   target.style.display = 'none';
   isBackImageAvailable.value = false;
 };
 
-// Rejtett fájl input hivatkozás
-const fileProfPicInput = ref<HTMLInputElement | null>(null);
-
-const fileBackPicInput = ref<HTMLInputElement | null>(null);
-
-// API hívás
-const { mutate: ProfilePicUpload } = useProfilePicUpload();
-
-// Fájl feltöltési kezelő
-const handleProfPicUpload = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files ? input.files[0] : null;
+const handleProfPicUpload = async (event) => {
+  const input = event.target;
+  const file = input.files?.[0];
 
   if (file) {
     try {
-      // Kép tömörítése
-      const options = {
-        maxSizeMB: 0.1,
-        useWebWorker: true,
-      };
+      const options = { maxSizeMB: 0.1, useWebWorker: true };
+      const compressedFile = file.type === 'image/gif' ? file : await imageCompression(file, options);
 
-      const compressedFile = await imageCompression(file, options);
-
-      // Frissítjük a profilképet a tömörített fájl URL-jével
-      profileImage.value = URL.createObjectURL(compressedFile);
-      isProfImageAvailable.value = true;
-      compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
-
-      // Tömörített fájl adatainak továbbítása
-      var ProfPicUploaddata: ProfilPicdata = {
-        id: Number(get_fullUser.value.id),
-        pic: compressedFile,
-        type: Number(0)
-      };
-
-      // Profilkép feltöltése
+      const ProfPicUploaddata = { id: Number(get_fullUser.value.id), pic: compressedFile, type: 0 };
       ProfilePicUpload(ProfPicUploaddata);
 
-    } catch (error : any) {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
+      profileImage.value = URL.createObjectURL(compressedFile);
+      isProfImageAvailable.value = true;
+
+      showSucces ? showSucces("Profilkép sikeresen feltöltve!") : console.log("Profilkép sikeresen feltöltve!");
+    } catch (error) {
+      showError ? showError(error) : console.log(error);
     }
   }
 };
 
-// Fájl input triggerelése
 const triggerProfPicFileInput = () => {
-  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+  if (get_fullUser.value && userId == get_fullUser.value.id) {
     fileProfPicInput.value?.click();
   }
 };
 
-const handlebackPicUpload = async (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  const file = input.files ? input.files[0] : null;
+const handlebackPicUpload = async (event) => {
+  const input = event.target;
+  const file = input.files?.[0];
 
   if (file) {
     try {
-      // Ellenőrizzük, hogy GIF fájl
-      if (file.type === 'image/gif') {
-        // Fájl bináris adatként történő beolvasása
+      const isGif = file.type === 'image/gif';
+      const options = { maxSizeMB: 0.1, useWebWorker: true };
+      const compressedFile = isGif ? file : await imageCompression(file, options);
 
-          // GIF fájl adatainak továbbítása bináris formátumban
-          var ProfBackUploaddata: ProfilPicdata = {
-            id: Number(get_fullUser.value.id),
-            pic: file, // A bináris adat Blob formátumban
-            type: 1,
-          };
+      const ProfBackUploaddata = { id: Number(get_fullUser.value.id), pic: compressedFile, type: 1 };
+      ProfilePicUpload(ProfBackUploaddata);
 
-          // Profilkép feltöltése
-          ProfilePicUpload(ProfBackUploaddata);
-
-          // A GIF fájl URL-jének létrehozása és megjelenítése
-          backImage.value = URL.createObjectURL(file);
-          isBackImageAvailable.value = true;
-          compressedImageBlob.value = file; // Tárolhatjuk a blob fájlt későbbi használatra
-      } else {
-        // Ha nem GIF, akkor alkalmazunk tömörítést
-        const options = {
-          maxSizeMB: 0.1,
-          useWebWorker: true,
-        };
-
-        const compressedFile = await imageCompression(file, options);
-
-        // Tömörített fájl adatainak Blob-ként történő elküldése
-        var ProfBackUploaddata: ProfilPicdata = {
-          id: Number(get_fullUser.value.id),
-          pic: compressedFile,  // A tömörített fájl Blob formátumban
-          type: 1,
-        };
-
-        // Profilkép feltöltése
-        ProfilePicUpload(ProfBackUploaddata);
-
-        // Frissítjük a profilképet a tömörített fájl URL-jével
-        backImage.value = URL.createObjectURL(compressedFile);
-        isBackImageAvailable.value = true;
-        compressedImageBlob.value = compressedFile; // Tárolhatjuk a blob fájlt későbbi használatra
-      }
-    } catch (error: any) {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
+      backImage.value = URL.createObjectURL(compressedFile);
+      isBackImageAvailable.value = true;
+      
+      showSucces ? showSucces("Háttérkép sikeresen feltöltve!") : console.log("Háttérkép sikeresen feltöltve!");
+    } catch (error) {
+      showError ? showError(error) : console.log(error);
     }
   }
 };
 
 const triggerBackPicFileInput = () => {
-  if(get_fullUser.value != null && userId == get_fullUser.value.id){
+  if (get_fullUser.value && userId == get_fullUser.value.id) {
     fileBackPicInput.value?.click();
   }
 };
-</script>
 
-<script lang="ts">
-export default {
-  data() {
-    return {
-      dialog: false, // Dialógus vezérlés
-      userName: '', // Felhasználónév
-      email: '', // E-mail cím
-      password: '', // Jelszó
-      confpassword: '',
-    };
-  },
-  methods: {
-      goBack() {
-        this.$router.back();
-      },
-      saveSettings() {
-        // Mentési logika
-        console.log("Felhasználónév:", this.userName);
-        console.log("E-mail:", this.email);
-        console.log("Jelszó:", this.password);
-        this.dialog = false; // Dialógus bezárása
-      },
-    },
-  computed: {
-    get_UserName() {
-      return "PéldaFelhasználó"; // Cseréld le a valódi logikád szerint
-    },
-  },
-  }
+// <------- Függvények | figyelők ------->
 </script>
 
 <style>
-
-
 .background-video-container {
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100vh;
   overflow: hidden;
@@ -656,7 +420,7 @@ export default {
 #background-video source {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit:fill;
 }
 
 .background-overlay {

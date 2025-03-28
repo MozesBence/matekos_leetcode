@@ -342,7 +342,6 @@ const task_solutionRepository = {
             prevDay = currentDay;
         });
         return {streak:streak,longestStreak:longestStreak,missedDays:missedDays}
-        console.log(`Streak: ${streak}, Longest Streak: ${longestStreak}, Missed Days: ${missedDays}`);
     },
     async getStreak(userId) {
         const user = await db.Users.findOne({
@@ -361,8 +360,6 @@ const task_solutionRepository = {
         });
         return user ? user.max_streak : 0;
     }
-    
-    
 };    
 
 

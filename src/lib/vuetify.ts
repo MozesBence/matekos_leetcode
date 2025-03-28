@@ -5,7 +5,7 @@ import * as directives from 'vuetify/directives'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import '@mdi/font/css/materialdesignicons.css'
 import { type ThemeDefinition } from 'vuetify'
-import colors from 'vuetify/util/colors'
+import colors, { blue, purple } from 'vuetify/util/colors'
 
 const vuetify = createVuetify({
   components,
@@ -64,7 +64,16 @@ const vuetify = createVuetify({
           community_createpost_editor_area_border: colors.grey.darken4,
           community_filter_bc: colors.grey.lighten3,
 
+          info_label_background: blue.lighten1,
+
           contest_cards_background: colors.grey.lighten2,
+          contest_challange_card: colors.grey.lighten2,
+
+          /*TaskView*/
+          task_solving_left_drawer: colors.grey.lighten1,
+          task_solving_right_drawer: colors.grey.lighten2,
+          task_solving_similar_task: colors.grey.lighten5,
+          /*-----*/
         },
       },
       darkTheme: {
@@ -110,7 +119,17 @@ const vuetify = createVuetify({
           community_createpost_editor_area_border: colors.grey.lighten5,
           community_filter_bc: colors.grey.darken2,
 
-          contest_cards_background: colors.grey.darken2,
+          /*TaskView*/
+          task_solving_left_drawer: colors.grey.darken1,
+          task_solving_right_drawer: colors.grey.darken2,
+          task_solving_similar_task: colors.grey.darken4,
+          /*-----*/
+
+          /*TaskCreateView*/
+          info_label_background: blue.accent4,
+          /*-------------*/
+          contest_cards_background: colors.grey.darken3,
+          contest_challange_card: colors.grey.darken2,
         },
       },
     },

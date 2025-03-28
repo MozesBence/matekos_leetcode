@@ -1,7 +1,6 @@
-require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
+require('dotenv').config();
 
-// Sequelize adatbázis kapcsolat
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USERNAME,
@@ -10,19 +9,18 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         dialect: process.env.DB_DIALECT || 'mysql',
         port: 3306,
-        logging: false,  // Itt javítottam a 'loging' elírást
+        logging: false,
     }
 );
 
-const models = require("../models/index")(sequelize, DataTypes); // Betöltöd az index.js-t
+const models = require("../models/index")(sequelize, DataTypes);
 
 const db = {
     sequelize,
     Sequelize,
-    ...models // A modellek beillesztése a db objektumba
+    ...models
 };
 
-// Inicializálás és események beállítása
 const initializeDatabase = async () => {
     try {
         console.log("\n--- Új log ---");

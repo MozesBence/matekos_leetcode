@@ -1,16 +1,19 @@
 <template>
-  <RouterView></RouterView>
+  <RouterView :key="$route.path" />
+
 
   <ErrorHandler ref="errorHandler" />
+  
+  <SuccesHandler ref="succesHandler" />
 </template>
 
 <script setup>
 import { ref, provide, nextTick, watch } from "vue";
 import ErrorHandler from "@/components/ErrorHandler.vue";
+import SuccesHandler from "@/components/SuccesHandler.vue";
 
 const errorHandler = ref(null);
 
-// Provide-oljuk a showError metódust
 provide("showError", (msg) => {
   nextTick(() => {
     if (errorHandler.value) {
@@ -20,16 +23,17 @@ provide("showError", (msg) => {
     }
   });
 });
-/*
-// Amikor az errorHandler változik, ellenőrizhetjük, hogy elérhető-e
-watch(errorHandler, (newValue) => {
-  if (newValue) {
-    console.log("errorHandler elérhető", newValue);
-  }
+
+const succesHandler = ref(null);
+
+provide("showSucces", (msg) => {
+  nextTick(() => {
+    if (succesHandler.value) {
+      succesHandler.value.showSucces(msg);
+    } else {
+      console.log("succesHandler még nem elérhető");
+    }
+  });
 });
 
-// Teszt: Statikus hibaüzenet
-setTimeout(() => {
-  errorHandler.value?.showError('Ez egy statikus error!');
-}, 1000);*/
 </script>

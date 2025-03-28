@@ -6,33 +6,30 @@
       elevation="0">
         <v-app-bar
           color="primary"
-          prominent
           elevation="0"
         >
-          <v-app-bar-nav-icon v-if="$vuetify.display.smAndDown"  variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+          <v-app-bar-nav-icon v-if="isMobile"  variant="text" @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
 
           <div class="site-title">
-            <span class="title"  style="color: rgb(var(--v-theme-site_title));" :style="{ fontFamily: currentFont, fontSize: fontSize }">{{ displayedText }}</span>
+            <span class="title"  style="color: rgb(var(--v-theme-site_title)); font-size: larger;" :style="{ fontFamily: currentFont,}">{{ displayedText }}</span>
           </div>
 
-          <v-container max-width="auto" v-if="$vuetify.display.mdAndUp">
-            <v-row justify="space-evenly" style="background-color: transparent;">
+          <div style="width: 70%; margin: auto;">
+            <v-row justify="space-around" style="background-color: transparent;" v-if="!isMobile">
               <v-hover v-slot="{ isHovering, props }">
                 <div class="text-center">
                   <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                     <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                       <v-btn
                         prepend-icon="mdi-home"
                         size="large"
-                        @click="currentRoute.name !== 'home' && router.push({ name: 'home', params: {id: 1} })"
+                        @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
                         :class="{'btn-active': currentRoute.name === 'home'}"
                       >
                         <template v-slot:prepend>
-                          <v-icon color="info"></v-icon>
+                          <v-icon color="info" size="25"></v-icon>
                         </template>
                         Főoldal
                       </v-btn>
@@ -43,9 +40,7 @@
               <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -55,7 +50,7 @@
                       :class="{'btn-active': currentRoute.name === 'about'}"
                     >
                       <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
+                        <v-icon color="info" size="25"></v-icon>
                       </template>
                       Rólunk
                     </v-btn>
@@ -66,9 +61,7 @@
             <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="auto"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -78,7 +71,7 @@
                       :class="{'btn-active': currentRoute.name === 'contest'}"
                     >
                       <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
+                        <v-icon color="info" size="25"></v-icon>
                       </template>
                       Versenyek
                     </v-btn>
@@ -89,9 +82,7 @@
             <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
                 <v-col
-                    cols="12"
-                    sm="0"
-                    md="0"
+                    md="12"
                   >
                   <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                     <v-btn
@@ -101,7 +92,7 @@
                       :class="{'btn-active': currentRoute.name === 'community'}"
                       >
                         <template v-slot:prepend>
-                          <v-icon color="info"></v-icon>
+                          <v-icon color="info" size="25"></v-icon>
                         </template>
                         Közösség
                       </v-btn>
@@ -110,9 +101,9 @@
                 </div>
               </v-hover>
             </v-row>
-          </v-container>
+          </div>
 
-          <div class="nav-right-content">
+          <div class="d-flex position-fixed ga-1" style="right: .2em">
             <v-hover v-slot="{ isHovering, props }">
               <v-card
                 elevation="0"
@@ -177,82 +168,56 @@
         </v-app-bar>
 
         <v-navigation-drawer
-          v-model="drawer"
-          :location="isMobile ? 'left' : undefined"
-          temporary
-          scrim="rgba(0, 0, 0, 1)"
-          class="nav_drawer"
+        v-model="drawer"
+        :location="isMobile ? 'left' : undefined"
+        scrim="rgba(0, 0, 0, 1)"
+        class="pt-2"
+        v-if="isMobile"
+        style="transition: all .3s;"
         >
-          <v-list>
-            <v-container max-height="auto" class="pa-0" v-if="isMobile">
-              <v-col justify="space-between" class="mobil-nav-view">
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-home"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'home' && router.push({ name: 'home' })"
-                    :class="{'btn-active': currentRoute.name === 'home'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Főoldal</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-information"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'about' && router.push({ name: 'about' })"
-                    :class="{'btn-active': currentRoute.name === 'about'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Rólunk</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-trophy"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'contest' && router.push({ name: 'contest' })"
-                    :class="{'btn-active': currentRoute.name === 'contest'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Versenyek</p>
-                  </v-btn>
-                </div>
-                <div class="text-center">
-                  <v-btn
-                    prepend-icon="mdi-account-group"
-                    size="large"
-                    elevation="0"
-                    class="d-flex justify-space-between align-center rounded-lg"
-                    style="width: 100%;"
-                    @click="currentRoute.name !== 'community' && router.push({ name: 'community' })"
-                    :class="{'btn-active': currentRoute.name === 'community'}"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon color="info"></v-icon>
-                    </template>
-                    <p style="width: 20vw;">Közösségi</p>
-                  </v-btn>
-                </div>
-              </v-col>
-            </v-container>
-          </v-list>
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
+          @click="router.push({ name: 'home' })"
+          :class="{'btn-active': currentRoute.name === 'home'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-home</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Főoldal</h2>
+          </div>
+
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
+          @click="currentRoute.name !== 'about' && router.push({ name: 'about' })"
+          :class="{'btn-active': currentRoute.name === 'about'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32"> mdi-information</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Rólunk</h2>
+          </div>
+
+          <div
+          class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
+          @click="currentRoute.name !== 'contest' && router.push({ name: 'contest' })"
+          :class="{'btn-active': currentRoute.name === 'contest'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-trophy</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Versenyek</h2>
+          </div>
+
+          <div
+            class="d-flex align-center rounded py-2 px-4 mx-4 my-1 cursor-pointer"
+            @click="currentRoute.name !== 'community' && router.push({ name: 'community' })"
+            :class="{'btn-active': currentRoute.name === 'community'}"
+          >
+            <div style="width: 20%;">
+              <v-icon color="info" size="32">mdi-account-group</v-icon>
+            </div>
+            <h2 style="font-weight: normal; width: 80%;" class="text-center">Közösségi</h2>
+          </div>
         </v-navigation-drawer>
   
         <v-main style="background: rgb(var(--v-theme-background)); overflow: hidden; --v-layout-left: 0px !important;" elevation="0">
@@ -262,39 +227,56 @@
               class="d-flex justify-center full-width align-center pt-2 pb-2 pr-0 pl-0 mx-0"
               style="border-bottom: .3vh solid rgb(var(--v-theme-secondary));"
             >
-              <v-btn
-                class="rounded-pill"
-                prepend-icon="mdi-login"
-                size="large"
-                elevation="0"
-                :style="loginButtonStyles"
-                @mouseover="isLoginHovering = true"
-                @mouseleave="isLoginHovering = false"
-                @click="router.push({ name: 'login' })"
+              
+            <v-hover v-slot:default="{ isHovering, props }">
+              <div class="text-center">
+                <v-col
+                  md="12"
+                  class="pa-0"
                 >
-                <template v-slot:prepend>
-                  <v-icon color="info"></v-icon>
-                </template>
-                <p class="mx-0" style="font-size: medium;">Bejelentkezés</p>
-              </v-btn>
+                  <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
+                    <v-btn
+                      prepend-icon="mdi-login"
+                      size="large"
+                      @click="router.push({ name: 'login' })"
+                      style="background-color: transparent;"
+                      :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
+                    >
+                      <template v-slot:prepend>
+                        <v-icon color="info"></v-icon>
+                      </template>
+                      Bejelentkezés
+                    </v-btn>
+                  </v-card>
+                </v-col>
+              </div>
+            </v-hover>
 
             <span class="align-self-center mr-4 ml-4" style="font-size: .8rem;"> || </span>
 
-            <v-btn
-              class="rounded-pill"
-                prepend-icon="mdi-account-edit"
-                size="large"
-                elevation="0"
-                :style="registerButtonStyles"
-                @mouseover="isRegisterHovering = true"
-                @mouseleave="isRegisterHovering = false"
-                @click="router.push({ name: 'register' })"
+            <v-hover v-slot="{ isHovering, props }">
+              <div class="text-center">
+                <v-col
+                md="12"
+                class="pa-0"
                 >
-                <template v-slot:prepend>
-                  <v-icon color="info"></v-icon>
-                </template>
-                <p class="mx-0" style="font-size: medium;">Regisztrálás</p>
-            </v-btn>
+                <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
+                  <v-btn
+                    prepend-icon="mdi-account-edit"
+                    size="large"
+                    @click="router.push({ name: 'register' })"
+                    style="background-color: transparent;"
+                    :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
+                    >
+                      <template v-slot:prepend>
+                        <v-icon color="info"></v-icon>
+                      </template>
+                      Regisztrálás
+                    </v-btn>
+                  </v-card>
+                </v-col>
+              </div>
+            </v-hover>
           </v-container>
 
           <div class="pa-4 text-center" :style="{position: dialog ? 'relativ': 'absolute'}">
@@ -442,6 +424,28 @@
                         </div>
                       </v-expand-transition>
 
+                      <v-divider inset color="default_btn_bc" style="transition: .3s;" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'"></v-divider>
+                    
+                      <v-expand-transition>
+                        <div class="w-100 d-flex align-center pa-2 pl-4 cursor-pointer position-relativ custom-drawer-btn" style="border-radius: 0;" @click="AdminValidateActive" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'">
+                          <v-icon style="flex: 0; text-align: center;">mdi-format-list-bulleted</v-icon>
+                          <h4
+                            style="flex: 1; text-align: center; margin: 0; text-transform: capitalize; font-weight: normal;"
+                          >
+                          Feladatok
+                          </h4>
+                          <v-slide-x-reverse-transition hide-on-leave>
+                            <div 
+                            v-if="AdminValidateDraw" 
+                            style="background-color: rgb(var(--v-theme-surface)); position: absolute; max-width: 2rem; max-height: 2rem; width: 100%; height: 100%; right: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px; transition: .3s;"
+                            class="d-flex align-center"
+                            >
+                              <v-icon color="custom_drawer_icon" class="ml-1"  size="20">mdi-radiobox-marked</v-icon>
+                            </div>
+                          </v-slide-x-reverse-transition>
+                        </div>
+                      </v-expand-transition>
+
                       <v-divider color="default_btn_bc" style="transition: .3s;" v-if="get_fullUser.admin && get_fullUser.user_role == 'admin'"></v-divider>
                     </div>
 
@@ -476,7 +480,7 @@
                     <v-slide-y-transition mode="out-in">
                       <div :key="activePanel" class="w-100" style="height: auto;">
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'profile'" class="d-flex flex-column justify-center">
+                          <div v-if="activePanel == 'ProfSettingDraw'" class="d-flex flex-column justify-center">
                             <h1 class="text-center">Fiók név változtatás</h1>
 
                             <div 
@@ -522,7 +526,7 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'email'" class="w-100">
+                          <div v-if="activePanel == 'EmailSettingDraw'" class="w-100">
                             <h1 class="text-center">Email változtatás</h1>
 
                             <div 
@@ -562,7 +566,7 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'password'" class="w-100">
+                          <div v-if="activePanel == 'PassSettingDraw'" class="w-100">
                             <h1 class="text-center">Jelszó változtatás</h1>
 
                             <div class="d-flex flex-column align-center my-5 ga-5 w-100">
@@ -608,7 +612,7 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'notif'" class="h-100 d-flex flex-column justify-center">
+                          <div v-if="activePanel == 'NotifDraw'" class="h-100 d-flex flex-column justify-center">
                             <h1 class="text-center">Értesítések</h1>
                             <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
                               
@@ -649,7 +653,7 @@
                         </v-fade-transition>
 
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'users'" class="w-100 h-100">
+                          <div v-if="activePanel == 'UsersDraw'" class="w-100 h-100">
                             <h1 class="text-center mb-2">Felhasználók</h1>
                             <div 
                               class="d-flex"
@@ -820,7 +824,7 @@
                         </v-fade-transition>
                         
                         <v-fade-transition mode="out-in">
-                          <div v-if="activePanel == 'adminNotif'" class="w-100 h-100">
+                          <div v-if="activePanel == 'AdminNotifDraw'" class="w-100 h-100">
                             <h1 class="text-center mt-2">Bejelentések</h1>
 
                             <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 45.9vh; max-height: 45.9vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 d-flex flex-column adminNotif">
@@ -1104,13 +1108,59 @@
                                       <div class="d-flex justify-center mx-3 my-5" v-if="ReportLoading">
                                         <v-progress-circular indeterminate></v-progress-circular>
                                       </div>
-
                                     </v-expansion-panel-text>
                                   </v-expansion-panel>
                                 </v-slide-y-transition>
                               </v-expansion-panels>       
                             </div>
 
+                          </div>
+                        </v-fade-transition>
+                                                                                
+                        <v-fade-transition mode="out-in">
+                          <div v-if="activePanel == 'AdminValidateDraw'" class="h-100 d-flex flex-column justify-center">
+                            <h1 class="text-center">Feladatok</h1>
+                            <div style="border: .1vw solid rgb(var(--v-theme-text_color)); height: auto; min-height: 40vh; max-height: 40vh; overflow: auto;" class="rounded mb-5 mt-2 pt-2 px-2 ga-2 d-flex flex-column">
+                              
+                              <div v-for="validate in AllValidate" v-bind:key="validate.id">
+                                <div 
+                                style="background-color: rgb(var(--v-theme-profile_bc));"
+                                class="rounded py-2 px-2 d-flex align-center">
+                                  <div style="width: 100%;" class="d-flex align-center mr-2">
+                                    <v-icon size="25" class="mr-2">mdi-timer-sand</v-icon>
+                                    <h3 style="font-weight: normal;">{{ validate.task_title }}</h3>
+                                    <v-divider vertical class="mx-2"></v-divider>
+                                    <div style="width: max-content;" class="ml-2"> 
+                                    <div class="d-flex flex-row ga-2 align-center">
+                                      <div 
+                                      class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                      style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
+                                      @click="router.push({ name: 'profile', params: { id: validate.creator.id } })">
+                                        <img :src="validate.creator.User_customization.profil_picture == null ? '/src/components/background/test_profile.jpg' : validate.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+                                        <h3 style="font-weight: normal;">{{ validate.creator.user_name }}</h3>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  </div>
+
+                                  <div>
+                                    <v-btn elevation="0" @click="router.push({ name: 'approve-task', params: { taskid: validate.id, adminid: get_fullUser.id } }); dialog = false">
+                                      Ellenörzés
+                                    </v-btn>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <v-slide-y-transition mode="out-in">
+                                <div class="d-flex justify-center align-center" v-if="AllValidate.length == 0">
+                                  <h2 style="font-weight: normal;" class="text-center">Jelenleg egy feladat se vár ellenőrzésre!</h2>
+                                  <v-icon size="45" class="ml-4">mdi-emoticon-excited</v-icon>
+                                </div>
+                              </v-slide-y-transition>
+                              <div class="d-flex justify-center mx-3 my-5" v-if="ValidateLoading">
+                                <v-progress-circular indeterminate></v-progress-circular>
+                              </div>
+                            </div>
                           </div>
                         </v-fade-transition>
 
@@ -1159,46 +1209,43 @@
 </template>
 
 <script setup>
-import { onMounted, ref, shallowRef, computed, inject } from 'vue';
+import { onMounted, ref, shallowRef, computed, inject, watch  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { useProfileGetUser } from '@/api/profile/profileQuery'
-import { useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
-import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs } from '@/api/settings-confirm/settingsConfirmQuery'
+import { useProfileGetUser, useProfileDarkmodeSwitch } from '@/api/profile/profileQuery'
+import { useGetSettingsConfirm, useSetSettings, useGetAllReports, useCloseReport, useGetAllUser, useSetUserNewSettings, useSetUserRoles, useGetAllNotifs, useGetAllUnvalidTasks } from '@/api/settings-confirm/settingsConfirmQuery'
 import { useTheme, useDisplay } from 'vuetify';
 
-const { mutate : ProfileGetUser} = useProfileGetUser()
-
+// Képernyő méret / eszköz
 const { mobile } = useDisplay();
 const isMobile = computed(() => mobile.value);
 watch(isMobile, async (newValue) => {
   SettingsMenu.value = newValue;
 });
 
+// Router és route hookok
 const { currentRoute } = useRouter()
-
 const router = useRouter();
 const route = useRoute();
 
-const dialog = shallowRef(false)
-
-var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
-
+// Üzenetkezelés
 const showError = inject("showError");
+const showSucces = inject("showSucces");
 
+// <------- Változók ------->
+var timeout = null;
+var get_user_by_token = (getCookie('user') != null && getCookie('user') != 'undefined' && typeof getCookie('user') != "object") ? getCookie('user') : null;
+const dialog = shallowRef(false)
 const ProfSettingDraw = ref(true);
 const EmailSettingDraw = ref(false);
 const PassSettingDraw = ref(false);
 const NotifDraw = ref(false);
-const LeaderBoardDraw = ref(false);
-const PostDraw = ref(false);
 const UsersDraw = ref(false);
 const AdminNotifDraw = ref(false);
-const activePanel = ref('profile');
-
+const AdminValidateDraw = ref(false);
+const activePanel = ref('ProfSettingDraw');
 const ProfInputDisabled = ref(true);
 const EmailInputDisabled = ref(true);
 const ConfirmCode = ref(false);
-
 const userNameInput = ref('');
 const userEmailInput = ref('');
 const CurrentPasswordInput = ref('');
@@ -1210,102 +1257,95 @@ const ResponseError = ref(null);
 const ReportLoading = ref(false);
 const UsersLoading = ref(false);
 const NotifsLoading = ref(false);
+const ValidateLoading = ref(false);
 const SettingsMenu = ref(false);
-
 const ReportDelete = ref(false);
 const ReportAccept = ref(false);
 const CloseMessage = ref('');
 const searchQuery = ref('');
-
 const users_UserName = ref('');
 const users_UserEmail = ref('');
 const users_UserPassword = ref('');
-
 const loading = ref(false);
-
-function ProfSettingsActive(){
-  ProfSettingDraw.value = true;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'profile';
-  ResponseContent.value = null;
-  ResponseError.value = null;
-  userNameInput.value = '';
-  userEmailInput.value = '';
-  CurrentPasswordInput.value = '';
-  NewPasswordInput.value = '';
-  NewPasswordConfirmInput.value = '';
-
-  EmailInputDisabled.value = true;
-  loading.value = false;
-}
-
-function EmailSettingsActive(){
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = true;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'email';
-  ResponseContent.value = null;
-  ResponseError.value = null;
-  userNameInput.value = '';
-  userEmailInput.value = '';
-  CurrentPasswordInput.value = '';
-  NewPasswordInput.value = '';
-  NewPasswordConfirmInput.value = '';
-  
-  ProfInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-}
-
-function PassSettingsActive(){
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = true;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'password';
-  ResponseContent.value = null;
-  ResponseError.value = null;
-  userNameInput.value = '';
-  userEmailInput.value = '';
-  CurrentPasswordInput.value = '';
-  NewPasswordInput.value = '';
-  NewPasswordConfirmInput.value = '';
-  
-  ProfInputDisabled.value = true;
-  EmailInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-}
-
-const { mutate : getAllNotifs} = useGetAllNotifs()
-
 const AllNotifs = ref([]);
+const AllValidate = ref([]);
+const AllUsers = ref([]);
+const activatedTypeButton = ref(null);
+const adminTypeButton = ref(null);
+const AllReports = ref([]);const get_fullUser = ref(null);
+const get_fullUser_customs = ref(null);
+const get_user_name = ref(null);
+const ProfImage = ref(null);
+const theme = useTheme();
+const DarkmodeChange = ref(false);
+const profileImage = ref("");
+const drawer = ref(false);
+const group = ref(null);
+const currentFont = ref("Roboto");
+const currentTextIndex = ref(0);
+const displayedText = ref("");
+const textList = ref([
+  "Math Solve", "A megoldásod", "Tanulj matematikát", "Újragondolt matematika", 
+  "A számok nem hazudnak", "Gyors megoldás", "Mesteri matematika", 
+  "Matematika mágia"
+]);
+const fonts = ref([
+  "Roboto", "Montserrat", "Poppins", "Pacifico", "Lato", "Open Sans", "Oswald", 
+  "Raleway", "Playfair Display", "Merriweather", "Ubuntu", "Roboto Slab", 
+  "Slabo 27px", "Fira Sans"
+]);
 
-const NotifActive = async() =>{
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = true;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'notif';
+// <------- Változók ------->
+
+// <------- Api hívások ------->
+
+// Api hívás - felhasználói profil lekérése
+const { mutate: ProfileGetUser } = useProfileGetUser()
+
+// Api hívás - összes értesítés lekérése
+const { mutate: getAllNotifs } = useGetAllNotifs()
+
+// Api hívás - összes felhasználó lekérése
+const { mutate: getAllUser } = useGetAllUser()
+
+// Api hívás - felhasználói beállítások módosítása
+const { mutate: setUserNewSettings } = useSetUserNewSettings()
+
+// Api hívás - felhasználói szerepek módosítása
+const { mutate: setNewUserRoles } = useSetUserRoles()
+
+// Api hívás - összes jelentés lekérése
+const { mutate: getAllReports } = useGetAllReports()
+
+// Api hívás - jelentés lezárása
+const { mutate: closeReport } = useCloseReport()
+
+// Api hívás - beállítások megerősítése
+const { mutate: getSettingsConfirm } = useGetSettingsConfirm()
+
+// Api hívás - felhasználói beállítások módosítása
+const { mutate: setNewSettings } = useSetSettings()
+
+// Api hívás - sötét mód beállítása a felhasználó számára
+const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch()
+
+// Api hívás - ellenörzésre váró feladatok
+const { mutate: getAllUnvalidTasks } = useGetAllUnvalidTasks()
+
+// <------- Api hívások ------->  
+
+// <------- Függvények | figyelők ------->
+
+watch(group, () => {
+  drawer.value = false;
+});
+
+const toggleDrawer = (activePanelName) => {
+  const panels = ['ProfSettingDraw', 'EmailSettingDraw', 'PassSettingDraw', 'NotifDraw', 'UsersDraw', 'AdminNotifDraw', 'AdminValidateDraw'];
+  panels.forEach(panel => { eval(`${panel}.value = false`) });
+  eval(`${activePanelName}.value = true`);
+  activePanel.value = activePanelName;
+
   ResponseContent.value = null;
   ResponseError.value = null;
   userNameInput.value = '';
@@ -1318,9 +1358,18 @@ const NotifActive = async() =>{
   EmailInputDisabled.value = true;
   ConfirmCode.value = false;
   loading.value = false;
+};
 
+const ProfSettingsActive = () => toggleDrawer('ProfSettingDraw');
+
+const EmailSettingsActive = () => toggleDrawer('EmailSettingDraw');
+
+const PassSettingsActive = () => toggleDrawer('PassSettingDraw');
+
+const NotifActive = async () => {
+  toggleDrawer('NotifDraw');
   NotifsLoading.value = true;
-  await getAllNotifs({id: get_fullUser.value.id}, {
+  await getAllNotifs({ id: get_fullUser.value.id }, {
     onSuccess: (response) => {
       AllNotifs.value = response;
       NotifsLoading.value = false;
@@ -1328,51 +1377,51 @@ const NotifActive = async() =>{
     onError: (error) => {
       console.log(error.response.data);
       NotifsLoading.value = false;
-    },
+    }
   });
-}
+};
 
-const { mutate : getAllUser} = useGetAllUser()
+const UsersActive = async () => {
+  toggleDrawer('UsersDraw');
+  await fetchUsers(handleSearchParams());
+};
 
-const AllUsers = ref([]);
-
-const UsersActive = async () =>{
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = true;
-  AdminNotifDraw.value = false;
-  activePanel.value = 'users';
-  ResponseContent.value = null;
-  ResponseError.value = null;
-  userNameInput.value = '';
-  userEmailInput.value = '';
-  CurrentPasswordInput.value = '';
-  NewPasswordInput.value = '';
-  NewPasswordConfirmInput.value = '';
-  
-  ProfInputDisabled.value = true;
-  EmailInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-
-  UsersLoading.value = true;
-  await getAllUser({name: null,activated_type: null, admin: null, token: get_user_by_token}, {
+const AdminNotifActive = async () => {
+  toggleDrawer('AdminNotifDraw');
+  ReportLoading.value = true;
+  await getAllReports(get_user_by_token, {
     onSuccess: (response) => {
-      AllUsers.value = response;
-      UsersLoading.value = false;
+      response.forEach((post) => {
+        if (post.reportedPost) {
+          postsConvertToDisplay(post);
+        } else {
+          const createdAt = post.reportedComment.createdAt.split('T');
+          post.reportedComment.createdAt = `${createdAt[0]} ${createdAt[1].split('.')[0].split(':')[0]}:${createdAt[1].split('.')[0].split(':')[1]}`;
+          AllReports.value.push(post);
+        }
+      });
+      ReportLoading.value = false;
     },
     onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-      UsersLoading.value = false;
+      if (showError) showError(error.response.data);
+      else console.log(error.response.data);
+      ReportLoading.value = false;
+    }
+  });
+};
+
+const AdminValidateActive = async () =>{
+  toggleDrawer('AdminValidateDraw');
+  ValidateLoading.value = true;
+  await getAllUnvalidTasks(undefined, {
+    onSuccess: (response) => {
+      AllValidate.value = response;
+      ValidateLoading.value = false;
     },
+    onError: (error) => {
+      console.log(error.response.data);
+      ValidateLoading.value = false;
+    }
   });
 }
 
@@ -1382,79 +1431,53 @@ function handlePanelToggle(){
  users_UserPassword.value = '';
 }
 
-const { mutate : setUserNewSettings} = useSetUserNewSettings()
+const setNewSetting = async (user, id, model, type) => {
+  const updateUser = (response) => {
+    if (type === 1) {
+      user.user_name = response;
+      if (user.id === get_fullUser.value.id) {
+        get_fullUser.value.user_name = response;
+        get_user_name.value = response;
+      }
+    } else if (type === 2) {
+      user.email = response;
+    } else if (type === 3) {
+      user.password = response;
+    }
+  };
 
-const setNewSetting = async(user,id, model, type) =>{
-  await setUserNewSettings({content: model, id: id, type: type, token: get_user_by_token}, {
+  await setUserNewSettings({ content: model, id, type, token: get_user_by_token }, {
     onSuccess: (response) => {
-      if(type == 1){
-        user.user_name = response;
-        if(user.id == get_fullUser.value.id){
-          get_fullUser.value.user_name = response;
-          get_user_name.value = response;
-        }
-      }
-      else if(type == 2){
-        user.email = response;
-      }
-      else if(type == 3){
-        user.password = response;
-      }
+      updateUser(response);
       handlePanelToggle();
     },
     onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    },
+      showError ? showError(error.response.data) : console.log(error.response.data);
+    }
   });
-}
-
-const { mutate : setNewUserRoles} = useSetUserRoles()
+};
 
 const setUserRoles = async (user, id, type) => {
-  await setNewUserRoles({id: id, type: type, token: get_user_by_token}, {
-    onSuccess: (response) => {
-      if(type == 1){
-        user.activated = 1;
-      }
-      else if(type == 2){
-        user.user_role = 'banned';
-        user.activated = 2;
-        user.admin = 0;
-        if(get_fullUser.value.id == id){
-          deleteCookie('user');
-        }
-      }
-      else if(type == 3){
-        user.user_role = 'member';
-        user.activated = 1;
-        user.admin = 0;
-      }
-      else if(type == 4){
-        user.user_role = 'admin';
-        user.admin = 1;
-      }
-      else if(type == 5){
-        user.user_role = 'member';
-        user.admin = 0;
-      }
-    },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    },
-  });
-}
+  const updateUser = (role, activated, admin) => {
+    user.user_role = role;
+    user.activated = activated;
+    user.admin = admin;
+    if (get_fullUser.value.id === id && (type === 2 || type === 5)) {
+      deleteCookie('user');
+    }
+  };
 
-var timeout = null;
-const activatedTypeButton = ref(null);
-const adminTypeButton = ref(null);
+  await setNewUserRoles({ id, type, token: get_user_by_token }, {
+    onSuccess: () => {
+      if (type === 1) updateUser('member', 1, 0);
+      else if (type === 2) updateUser('banned', 2, 0);
+      else if (type === 3) updateUser('member', 1, 0);
+      else if (type === 4) updateUser('admin', 1, 1);
+      else if (type === 5) updateUser('member', 1, 0);
+    },
+    onError: (error) => showError ? showError(error.response.data) : console.log(error.response.data),
+  });
+};
 
 function AdminType() {
   adminTypeButton.value = adminTypeButton.value === null ? 1 : null;
@@ -1464,225 +1487,111 @@ function ActivatedType(number) {
   activatedTypeButton.value = activatedTypeButton.value === number ? null : number;
 }
 
-// Watch az activatedTypeButton-ra
-watch(activatedTypeButton, async (newValue, oldValue) => {
+const fetchUsers = async (params) => {
   UsersLoading.value = true;
-  await getAllUser({
-      name: searchQuery.value,
-      activated_type: newValue,
-      admin: adminTypeButton.value, 
-      token: get_user_by_token
-    }, 
-    {
+  await getAllUser(params, {
     onSuccess: (response) => {
       AllUsers.value = response;
       UsersLoading.value = false;
+    },
+    onError: (error) => {
+      if (showError) showError(error.response.data);
+      else console.log(error.response.data);
+      UsersLoading.value = false;
     }
-  })
+  });
+};
+
+const handleSearchParams = () => ({
+  name: searchQuery.value || null,
+  activated_type: activatedTypeButton.value,
+  admin: adminTypeButton.value,
+  token: get_user_by_token
 });
 
-// Watch az adminTypeButton-ra
-watch(adminTypeButton, async (newValue, oldValue) => {
-  UsersLoading.value = true;
-  await getAllUser({
-      name: searchQuery.value,
-      activated_type: activatedTypeButton.value, 
-      admin: newValue, 
-      token: get_user_by_token
-    }, 
-    {
-    onSuccess: (response) => {
-      AllUsers.value = response;
-      UsersLoading.value = false;
-    }
-  })
+watch([activatedTypeButton, adminTypeButton], async () => {
+  await fetchUsers(handleSearchParams());
 });
 
 watch(searchQuery, async (newValue) => {
   clearTimeout(timeout);
-
-  if (newValue !== "") {
-    UsersLoading.value = true;
-    timeout = setTimeout( async () => {
-      await getAllUser({
-        name: newValue,
-        activated_type: activatedTypeButton.value, 
-        admin: adminTypeButton.value, 
-        token: get_user_by_token
-      }, 
-      {
-      onSuccess: (response) => {
-        AllUsers.value = response;
-        UsersLoading.value = false;
-      }
-    })
+  timeout = setTimeout(async () => {
+    await fetchUsers(handleSearchParams());
   }, 300);
-  }else{
-    UsersLoading.value = true;
-    timeout = setTimeout( async () => {
-      await getAllUser({
-        name: null,
-        activated_type: activatedTypeButton.value, 
-        admin: adminTypeButton.value, 
-        token: get_user_by_token
-      }, 
-      {
-      onSuccess: (response) => {
-        AllUsers.value = response;
-        UsersLoading.value = false;
-      }
-    })
-  }, 300);
-  }
 });
 
-const { mutate : getAllReports} = useGetAllReports()
-
-const AllReports = ref([]);
-
-const AdminNotifActive = async () =>{
-  ProfSettingDraw.value = false;
-  EmailSettingDraw.value = false;
-  PassSettingDraw.value = false;
-  NotifDraw.value = false;
-  LeaderBoardDraw.value = false;
-  PostDraw.value = false;
-  UsersDraw.value = false;
-  AdminNotifDraw.value = true;
-  activePanel.value = 'adminNotif';
-  ResponseContent.value = null;
-  ResponseError.value = null;
-  userNameInput.value = '';
-  userEmailInput.value = '';
-  CurrentPasswordInput.value = '';
-  NewPasswordInput.value = '';
-  NewPasswordConfirmInput.value = '';
-  
-  ProfInputDisabled.value = true;
-  EmailInputDisabled.value = true;
-  ConfirmCode.value = false;
-  loading.value = false;
-
-  AllReports.value = [];
-  ReportLoading.value = true;
-  await getAllReports(get_user_by_token, {
-    onSuccess: (response) => {
-      response.forEach((post, index) => {
-          if (post.reportedPost) {
-            postsConvertToDisplay(post);
-          }else{
-            var createdAt = post.reportedComment.createdAt;
-            post.reportedComment.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
-            AllReports.value.push(post);
-          }
-      });
-      ReportLoading.value = false;
-    },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-      ReportLoading.value = false;
-    },
-  });
-}
-
-function postsConvertToDisplay(array){
+const postsConvertToDisplay = (array) => {
   const tempDiv = document.createElement("div");
   tempDiv.innerHTML = array.reportedPost.content;
-  
-  var createdAt = array.reportedPost.createdAt;
-  array.reportedPost.createdAt = createdAt.split('T')[0] + " " + createdAt.split('T')[1].split('.')[0].split(':')[0]+':'+createdAt.split('T')[1].split('.')[0].split(':')[1];
-  
-  const imgElements = tempDiv.querySelectorAll("img");
 
-  if(imgElements){
-    imgElements.forEach((img) => {
-      const id = Number(img.id)-1;
-      if (array.reportedPost.images[id]) {
-        img.setAttribute("src", (array.reportedPost.images[id].url != null ? array.reportedPost.images[id].url : array.reportedPost.images[id].file)); // Az `src` attribútumot beállítjuk
-      }
-    });
-  }
-  
+  const createdAt = array.reportedPost.createdAt.split('T');
+  array.reportedPost.createdAt = `${createdAt[0]} ${createdAt[1].split('.')[0].slice(0, 5)}`;
+
+  tempDiv.querySelectorAll("img").forEach((img) => {
+    const id = Number(img.id) - 1;
+    const imgUrl = array.reportedPost.images[id];
+    if (imgUrl) img.setAttribute("src", imgUrl.url || imgUrl.file);
+  });
+
   array.reportedPost.content = tempDiv.innerHTML;
-
   AllReports.value.push(array);
-}
+};
 
-function downloadFile(file) {
+const downloadFile = (file) => {
   try {
-    const blob = dataURLtoBlob(file.file);
-    const url = URL.createObjectURL(blob);
-
+    const url = URL.createObjectURL(dataURLtoBlob(file.file));
     const link = document.createElement('a');
     link.href = url;
     link.download = file.file_name || 'file';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-
-    // Az URL-t felszabadítjuk
     URL.revokeObjectURL(url);
   } catch (error) {
     console.error('Fájl letöltési hiba:', error);
   }
-}
+};
 
-function formatFileSize(size) {
+const formatFileSize = (size) => {
   if (!size) return 'Ismeretlen méret';
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
   const i = Math.floor(Math.log(size) / Math.log(1024));
-  return (
-    (size / Math.pow(1024, i)).toFixed(2) * 1 +
-    ' ' +
-    ['B', 'KB', 'MB', 'GB', 'TB'][i]
-  );
-}
+  return `${(size / Math.pow(1024, i)).toFixed(2)} ${units[i]}`;
+};
 
-function dataURLtoBlob(dataURL) {
+const dataURLtoBlob = (dataURL) => {
   const [header, base64] = dataURL.split(',');
   const mime = header.match(/:(.*?);/)[1];
   const binary = atob(base64);
-  const array = [];
-  for (let i = 0; i < binary.length; i++) {
-    array.push(binary.charCodeAt(i));
-  }
+  const array = Array.from(binary, (char) => char.charCodeAt(0));
   return new Blob([new Uint8Array(array)], { type: mime });
-}
+};
 
-function ReportCloseOpen(model){
-  if(model == 'ReportAccept'){
-    ReportAccept.value = true;
-    ReportDelete.value = false;
-  }else{
-    ReportAccept.value = false;
-    ReportDelete.value = true;
-  }
-}
+const ReportCloseOpen = (model) => {
+  ReportAccept.value = model === 'ReportAccept';
+  ReportDelete.value = model !== 'ReportAccept';
+};
 
-const { mutate : closeReport} = useCloseReport()
-
-const ReportClose = async (report,report_id, user_id, content_id, content_type) => {
+const ReportClose = async (report, report_id, user_id, content_id, content_type) => {
   ReportLoading.value = true;
-  await closeReport({id: report_id, user_id: user_id, admin_id: get_fullUser.value.id, content: CloseMessage.value, content_id: ReportDelete.value ? content_id : null, content_type: ReportDelete.value ? content_type : null, token: get_user_by_token}, {
-    onSuccess: (response) => {
+  const closeData = {
+    id: report_id, user_id, admin_id: get_fullUser.value.id, 
+    content: CloseMessage.value, 
+    content_id: ReportDelete.value ? content_id : null, 
+    content_type: ReportDelete.value ? content_type : null, 
+    token: get_user_by_token
+  };
+  await closeReport(closeData, {
+    onSuccess: () => {
       report.closed = true;
       ReportLoading.value = false;
     },
     onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
+      showError ? showError(error.response.data) : console.log(error.response.data);
       ReportLoading.value = false;
-    },
+    }
   });
-}
-
-const { mutate : getSettingsConfirm} = useGetSettingsConfirm()
+};
 
 const SendConfirmCode = async () => {
   loading.value = true;
@@ -1701,89 +1610,80 @@ const SendConfirmCode = async () => {
   });
 }
 
-const { mutate : setNewSettings} = useSetSettings()
-
 watch(otpCode, async (newVal) => {
-  ResponseError.value = null;
-  if (newVal != null && newVal.length === 6) {
-    var content = [];
+  if (newVal?.length === 6) {
+    ResponseError.value = null;
+    const content = ProfSettingDraw.value ? [userNameInput.value] : 
+                    EmailSettingDraw.value ? [userEmailInput.value] : 
+                    PassSettingDraw.value ? [CurrentPasswordInput.value, NewPasswordInput.value, get_fullUser.value.password] : [];
 
-    if(ProfSettingDraw.value){
-      content = [userNameInput.value];
-    }
-    else if(EmailSettingDraw.value){
-      content = [userEmailInput.value];
-    }
-    else if(PassSettingDraw.value){
-      content = [CurrentPasswordInput.value, NewPasswordInput.value, get_fullUser.value.password];
-    }
-
-    await setNewSettings({content: content, code: newVal, id: get_fullUser.value.id, type: activePanel.value}, {
-    onSuccess: (response) => {
-      otpCode.value = null;
-      if(activePanel.value == 'profile'){
-        ResponseContent.value = "A fiók név sikeresen meg lett változtatva!";
-        get_fullUser.value.user_name = response;
-        get_user_name.value = response;
-      }
-      else if(activePanel.value == 'email'){
-        ResponseContent.value = "A fiókhoz tartozó e-mail sikeresen meg lett változtatva!";
-        get_fullUser.value.email = response;
-      }
-      else if(activePanel.value == 'password'){
-        ResponseContent.value = "A fiókhoz tartozó jelszó sikeresen meg lett változtatva!";
-        get_fullUser.value.password = response;
-      }
-    },
-    onError: (error) => {
-      if (showError) {
-        showError(error.response.data);
-      }else{
-        console.log(error.response.data);
-      }
-    },
-  });
+    await setNewSettings({
+      content, code: newVal, id: get_fullUser.value.id, type: activePanel.value
+    }, {
+      onSuccess: (response) => {
+        otpCode.value = null;
+        const messages = {
+          ProfSettingDraw: "A fiók név sikeresen meg lett változtatva!",
+          EmailSettingDraw: "A fiókhoz tartozó e-mail sikeresen meg lett változtatva!",
+          PassSettingDraw: "A fiókhoz tartozó jelszó sikeresen meg lett változtatva!"
+        };
+        ResponseContent.value = messages[activePanel.value];
+        if (activePanel.value === 'ProfSettingDraw') {
+          get_fullUser.value.user_name = response;
+          get_user_name.value = response;
+        } else if (activePanel.value === 'EmailSettingDraw') {
+          get_fullUser.value.email = response;
+        } else if (activePanel.value === 'PassSettingDraw') {
+          get_fullUser.value.password = response;
+        }
+      },
+      onError: (error) => showError?.(error.response.data) ?? console.log(error.response.data),
+    });
   }
 });
 
-const get_fullUser = ref(null);
-const get_fullUser_customs = ref(null);
-const get_user_name = ref(null);
-const ProfImage = ref(null);
-
-const theme = useTheme();
-
-// A useProfileDarkmodeSwitch hook a setup() részben
-const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
-const DarkmodeChange = ref(false);
-
 onMounted(async () => {
-  if(get_user_by_token){
+  if (get_user_by_token) {
     try {
-      await ProfileGetUser({token: get_user_by_token, id: 0}, {
+      await ProfileGetUser({ token: get_user_by_token, id: 0 }, {
         onSuccess: (get_user) => {
           get_fullUser.value = get_user;
           get_user_name.value = get_user.user_name;
           get_fullUser_customs.value = get_user.User_customization;
-          if(get_fullUser_customs.value.profil_picture != null){
-            ProfImage.value = get_fullUser_customs.value.profil_picture;
-          }
+          ProfImage.value = get_fullUser_customs.value.profil_picture ?? ProfImage.value;
         },
-        onError: (error) => {
-          if(getCookie('user') != null){
-            deleteCookie('user');
-          }
-        },
+        onError: () => getCookie('user') && deleteCookie('user'),
       });
     } catch (error) {
       console.error('Hiba történt a felhasználó lekérésekor:', error);
     }
   }
 
-  if(isMobile.value){
-    SettingsMenu.value = true;
-  }
+  typeAndSwitchFont();
+  if (isMobile.value) SettingsMenu.value = true;
 });
+
+const typeAndSwitchFont = async () => {
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+  while (true) {
+    const text = textList.value[currentTextIndex.value];
+    displayedText.value = "";
+    for (let i = 0; i < text.length; i++) {
+      displayedText.value += text[i];
+      await sleep(100);
+    }
+
+    await sleep(2000);
+    for (let i = text.length; i >= 0; i--) {
+      displayedText.value = text.substring(0, i);
+      await sleep(100);
+    }
+
+    currentTextIndex.value = (currentTextIndex.value + 1) % textList.value.length;
+    currentFont.value = fonts.value[Math.floor(Math.random() * fonts.value.length)];
+  }
+};
 
 watch(get_fullUser, (newUser) => {
   if (newUser) {
@@ -1793,34 +1693,24 @@ watch(get_fullUser, (newUser) => {
   }
 });
 
-// A sötét mód váltásának kezelése
 const handleDarkmodeSwitch = async () => {
   DarkmodeChange.value = !DarkmodeChange.value;
-
-  // Téma módosítása
   theme.global.name.value = DarkmodeChange.value ? 'darkTheme' : 'lightTheme';
 
-  // API hívás a sötét mód változtatásához
-  if(get_fullUser.value != null){
+  if (get_fullUser.value) {
     try {
-      await ProfileDarkMode({id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
+      await ProfileDarkMode({ id: get_fullUser.value.id, darkmode: DarkmodeChange.value, type: 4 });
     } catch (error) {
       console.error('Hiba történt a sötét mód váltásakor:', error);
     }
   }
 };
 
-const profileImage = ref("");
-
 const handleProfilePic = () => {
   const base64Image = get_fullUser_customs.value.profil_picture;
-
-  if (base64Image && base64Image != null) {
-    profileImage.value = base64Image; // Közvetlenül beállítjuk a Base64 kódolt képet
-  }
+  if (base64Image) profileImage.value = base64Image;
 };
 
-// Cookie-k kezelése
 function getCookie(name){
   const cookies = document.cookie.split('; ');
   for (const cookie of cookies) {
@@ -1833,110 +1723,16 @@ function getCookie(name){
 }
 
 function Logout(){
+  window.location.reload();
   deleteCookie('user');
   get_user_by_token = null;
-  window.location.reload();
 }
 
 function deleteCookie(name) {
   document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
 }
-</script>
 
-<script>
-import { ref, watch } from 'vue'
-
-const drawer = ref(false);
-const group = ref(null);
-
-watch(group, () => {
-  drawer.value = false
-});
-export default {
-    data() {
-      return {
-        textList: ["Math Solve", "A megoldásod", "Tanulj matematikát", "Újragondolt matematika", "A számok nem hazudnak", "Gyors megoldás", "Mesteri matematika", "Matematika mágia"],
-        fonts: ["Roboto", "Montserrat", "Poppins", "Pacifico", "Lato", "Open Sans", "Oswald", "Raleway", "Playfair Display", "Merriweather", "Ubuntu", "Roboto Slab", "Slabo 27px", "Fira Sans"],
-        currentFont: "Roboto",
-        currentTextIndex: 0,
-        displayedText: "",
-        IsMobile: false,
-        FontSize: 'large',
-        isLoginHovering: false,
-        isRegisterHovering: false,
-        dialog: false,
-        userName: '', // Felhasználónév
-        email: '', // E-mail cím
-        password: '', // Jelszó
-        confpassword: '',
-        DarkmodeChange: false,
-      };
-    },
-    watch: {
-      '$vuetify.display.mobile'(newValue) {
-        this.IsMobile = newValue;
-
-        if (!this.IsMobile) {
-          this.performDesktopAction();
-        }
-      },
-    },
-    mounted() {
-      this.typeAndSwitchFont();
-      this.IsMobile = this.$vuetify.display.mobile;
-
-      if (!this.IsMobile) {
-        this.performDesktopAction();
-      }
-    },
-    methods: {
-      async typeAndSwitchFont() {
-        while (true) {
-          const text = this.textList[this.currentTextIndex];
-          this.displayedText = "";
-
-          for (let i = 0; i < text.length; i++) {
-            this.displayedText += text[i];
-            await this.sleep(100);
-          }
-
-          await this.sleep(2000);
-
-          for (let i = text.length; i >= 0; i--) {
-            this.displayedText = text.substring(0, i);
-            await this.sleep(100);
-          }
-          this.currentTextIndex = (this.currentTextIndex + 1) % this.textList.length;
-          this.currentFont = this.fonts[Math.floor(Math.random() * this.fonts.length)];
-        }
-      },
-      sleep(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      },
-      performDesktopAction() {
-        drawer.value = false;
-      },
-    },
-    computed: {
-      fontSize() {
-        return this.IsMobile ? 'x-large' : 'large'; // Ha mobil eszköz van, kisebb betűméret
-      },
-      loginButtonStyles() {
-        return {
-          backgroundColor: this.isLoginHovering ? 'rgb(var(--v-theme-nav_btn_hover))' : 'transparent',
-          //color: this.isLoginHovering ? 'white' : 'rgb(var(--v-theme-primary))',
-          transition: 'background-color 0.3s ease, color 0.3s ease',
-        };
-      },
-      registerButtonStyles() {
-        return {
-          backgroundColor: this.isRegisterHovering ? 'rgb(var(--v-theme-nav_btn_hover))' : 'transparent',
-          //color: this.isRegisterHovering ? 'white' : 'rgb(var(--v-theme-primary))',
-          transition: 'background-color 0.3s ease, color 0.3s ease',
-        };
-      },
-    }
-  };
+// <------- Függvények | figyelők ------->
 </script>
 
 <style scoped>
@@ -1948,21 +1744,6 @@ export default {
   white-space: nowrap;
   width: 10vw;
   overflow-x: visible;
-}
-
-.nav-right-content{
-  position: fixed;
-  display: flex;
-  align-items: center;
-  align-content: center;
-  justify-content: space-around;
-  right: .2vw;
-}
-
-.mobil-nav-view{
-  display: flex;
-  flex-direction: column;
-  gap: 2vw;
 }
 
 .btn-active{
@@ -2051,10 +1832,4 @@ export default {
   background: rgba(255, 255, 255, 0.7);
 }
 
-.nav_drawer .v-overlay__scrim {
-  width: 100vw !important;  /* Teljes képernyő szélesség */
-  height: 100vh !important; /* Teljes képernyő magasság */
-  position: absolute;
-  opacity: .7 !important;
-}
 </style>

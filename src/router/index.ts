@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 import DefaultLayout from '../layouts/DefaultLayout.vue'
 import LogRegLayout from '../layouts/LogRegLayout.vue'
 
@@ -19,10 +18,6 @@ const router = createRouter({
           component: () => import('../views/HomeView.vue'),
         },
         {
-          path: '/leader-board',
-          name: 'leader-board',
-          component: () => import('../views/LeaderBoardView.vue')},
-        {
           path: '/about',
           name: 'about',
           component: () => import('../views/AboutView.vue')
@@ -36,15 +31,6 @@ const router = createRouter({
           path: '/contest',
           name: 'contest',
           component: () => import('../views/ContestView.vue')
-        },{
-          path: '/weekly-challange',
-          name: 'weekly-challange',
-          component: () => import('../views/WeeklyChallangeView.vue')
-        },
-        {
-          path: '/monthly-challange',
-          name: 'monthly-challange',
-          component: () => import('../views/MonthlyChallangeView.vue')
         },
         {
           path: '/store',
@@ -62,7 +48,7 @@ const router = createRouter({
           component: () => import('../views/TaskView.vue')
         },
         {
-          path:'/approve-task/:taskid',
+          path:'/approve-task/:taskid/:adminid',
           name:'approve-task',
           component: () => import('../views/ApproveView.vue')
         }
@@ -108,21 +94,15 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue')
     },
     {
-      path: '/profil/redeem',
-      name: 'redeem',
-      component: () => import('../views/RedeemView.vue')
-    },
-    {
       path: '/task-submit',
       name: 'task-submit',
       component: () => import('../views/TaskSubmitView.vue')
     },
-
     {
-      path:'/bum',
-      name:'bum',
-      component: () => import('../views/Bumview.vue')
-    }
+      path: '/challange/:id/:define',
+      name: 'challange',
+      component: () => import('../views/ChallangeView.vue')
+    },
   ]
 })
 

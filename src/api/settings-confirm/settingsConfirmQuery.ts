@@ -181,3 +181,22 @@ export const useGetAllNotifs = () => {
         }
     })
 }
+
+const getAllUnvalidTasks = async () => {
+    const response = await axiosClient.get(`http://localhost:3000/api/tasks/unvalidatedTasks`);
+    return response.data
+}
+
+export const useGetAllUnvalidTasks = () => {
+    return useMutation({
+        mutationFn: getAllUnvalidTasks,
+        onMutate: () => {
+
+        },
+        onSuccess: (response) => {
+        },
+        onError: (error) => {
+
+        }
+    })
+}

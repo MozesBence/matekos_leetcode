@@ -29,7 +29,11 @@ const getThemeById = async (req, res, next) => {
     const theme = await themeRepository.getThemeById(theme_id);
     
     if (!theme) {
-      return res.status(404).json({ message: "Téma nem található!" });
+      const error = new Error("Téma nem található!");
+
+      error.status = 404;
+
+      throw error;
     }
 
     res.status(200).json(theme);

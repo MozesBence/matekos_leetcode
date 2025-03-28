@@ -14,7 +14,6 @@ const getCardInfo = async (req, res) => {
   }
 };
 
-
 const getSpecificCard = async (req,res,next) =>{
   try{
     const { id } = req.params;
@@ -48,7 +47,6 @@ const getRandomTask = async (req,res,next) => {
 }
 
 const getFilteredTasks = async (req, res) => {
-  console.log(req.query)
   try {
       const tasks = await tasksService.getFilteredTasks(req.query);
       res.status(200).json(tasks);
@@ -60,8 +58,8 @@ const getFilteredTasks = async (req, res) => {
 
 const getsimilarTasks = async (req,res) => {
   try{
-    const {themeid} = req.params
-    const similarTasks = await tasksService.getsimilarTasks(themeid);
+    const {taskId,themeId} = req.query;
+    const similarTasks = await tasksService.getsimilarTasks(taskId,themeId);
     res.status(200).json(similarTasks);
   }catch(error){
     res.status(500).json({ message: "Error fetching tasks" });
@@ -90,15 +88,26 @@ const submitTask = async (req,res) => {
 
 const getUnvalidatedTasks = async(req,res,next) => {
   try{
-    const {offset} = req.params;
-    console.log(offset)
-    const tasks = await tasksService.getUnvalidatedTasks(offset)
+    const tasks = await tasksService.getUnvalidatedTasks()
+
     res.status(200).json(tasks)
   }catch(error){
     //res.status(500).json({ message: "Error a nem validált feladatok lekérése közben!" });
     next(error);
   }
 }
+
+const updateTaskValidationState = async (req, res, next) => {
+  try {
+    const { taskId, validity, user_id, from_user_id, message } = req.body;
+    const resp = await tasksService.updateTaskValidationState(taskId, validity, user_id, from_user_id, message);
+    res.status(201).json(resp);
+  } catch (error) {
+    console.error("Controller Error:", error);
+    next(error);
+  }
+};
+
 
 
 module.exports = {
@@ -110,5 +119,6 @@ module.exports = {
   getsimilarTasks,
   getSolution,
   submitTask,
-  getUnvalidatedTasks
+  getUnvalidatedTasks,
+  updateTaskValidationState
 };

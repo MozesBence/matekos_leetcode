@@ -66,8 +66,6 @@ exports.profilPicUpload = async (req, res, next) => {
     try {
         var upload_result;
 
-        console.log(blob);
-
         if(type == '0' || type == '1' || type == '2'){
             upload_result = await profileService.ProfPicUpload(id, blob, type, mimeType);
         }else if(type == '4'){

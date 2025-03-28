@@ -1,25 +1,25 @@
 <template>
-  <v-layout>
+  <v-layout   :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}">
     <!-- Main Content -->
     <v-main>
       <v-row style="height: 100vh; padding: 0.5em;">
         <!-- Left Column: Task Details -->
-        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-home_rightdrawer_card))">
+        <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <br>
-          <div class="taskInfo" style="">
+          <div class="taskInfo" style="background-color: rgb(var(--v-theme-task_solving_right_drawer))">
             <h1 style="text-align: left; width: 100%;">
               {{ task?.id }}. {{ task?.task_title }}
             </h1>
-            <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap;">
+            <v-row style="padding: 1em; gap: 1em; flex-wrap: nowrap; overflow-x: auto; width: 100%; display: flex; white-space: nowrap; ">
               <!-- Chip 1: Difficulty -->
               <v-chip
-                :color="chipColor(task?.difficulty)"
+                :color="chipColor(task?.difficulty ?? 0)"
                 outlined
                 small
                 style="min-width: 10rem; flex-shrink: 0;"
                 class="d-flex align-center justify-center"
               >
-                <p class="ma-0">{{ difficultyLabel(task?.difficulty) }}</p>
+                <p class="ma-0">{{ difficultyLabel(task?.difficulty ?? 0) }}</p>
               </v-chip>
               <!-- Chip 2 -->
               <v-chip
@@ -37,7 +37,8 @@
                 small
                 style="min-width: 10rem; flex-shrink: 0; background-color: #95cdfc; color: blue"
                 class="d-flex align-center justify-center"
-                v-if="isDailyTask.data.value != null"
+                v-if="isDailyTaskValid"
+
               >
                 <p class="ma-0"><v-icon>mdi-calendar</v-icon> Napi feladat</p>
               </v-chip>
@@ -49,24 +50,24 @@
                 class="d-flex align-center justify-center"
                 v-if="task?.creator_id != null"
               >
-                <p class="ma-0">👑 {{task?.creator_id}}</p>
+                <p class="ma-0">👑 {{creator_name.data.value.user_name}}</p>
               </v-chip>
             </v-row>
           </div>
 
-          <div style="margin-top: 2em;" class="taskDisplay">
+          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer))" class="taskDisplay">
             <h3>A feladat leírása:</h3>
             <div v-mathjax="task?.task"></div>
             <h3>Megoldás formatuma:</h3>
             <p>{{task?.solution_format}}</p>
           </div>
           
-          <div style="margin-top: 2em;" class="plusItems">
+          <div style="margin-top: 2em; background-color: rgb(var(--v-theme-task_solving_right_drawer))" class="plusItems">
             <br>
             <v-expansion-panels style="border-radius: 15px;">
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
-                  <div v-for="card in similarCards.data.value" style="background-color: #212121; border-radius:15px; width:100%; padding:10px">
+                  <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px;margin-bottom:1em">
                     <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
                       <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
@@ -111,9 +112,9 @@
           </div>
         </v-col>
 
-        <v-col cols="12" md="6" style="padding: 2em;">
+        <v-col cols="12" md="6" style="padding: 2em; background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <v-row style="margin-bottom: 1em;margin-top: 1em;">
-            <h1>Megoldás:</h1>
+            <h1 style="color:rgb(var(--v-theme-task_solving_right_drawer))">Megoldás:</h1>
           </v-row>
           <v-row style="margin-bottom: 1em;">
             <v-text-field label="Megoldás" variant="outlined" v-model="solution"></v-text-field>
@@ -148,16 +149,40 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, watch, onMounted } from "vue";
+
+/*--- Importok kezdete ---*/
+import { ref, watch, onMounted,watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { UseGetTaskData,UsesubmitSolution } from "@/api/taskSolving/taskSolvingQuery";
 import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
-import { useProfileGetUser } from '@/api/profile/profileQuery';
+import { useProfileGetUser,UseGetUserById } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
-//import {TaskView} from '@/stores/taskLoader'
+import {getCookie, get_fullUser,get_user_name, userId} from '@/stores/userStore'
+/*--- Importok vége ---*/
+
+
+interface Task {
+  id: number;
+  task_title: string;
+  difficulty: number;
+  creator_id?: number;
+  task: string;
+  solution_format: string;
+  first_hint?: string;
+  second_hint?: string;
+  theme_id: number;
+}
+
+interface User {
+  id: number;
+  user_name: string;
+}
+
 const route = useRoute();
 const router = useRouter(); // Type is inferred, but we can also explicitly type it
 const theme_id = ref(0);
+const task_id = ref(0);
+const isDailyTaskValid = ref(false);
 const push = (path: string) => {
   router.push(path);
 };
@@ -166,26 +191,23 @@ const mathjaxDirective = {
   mounted(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   },
   updated(el: HTMLElement, binding: any) {
     el.innerHTML = binding.value || "";
     if (window.MathJax) {
-      window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, el]);
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
     }
   }
 };
+
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
-  //window.location.reload();
 };
 
 const solution = ref('')
 
-//EZT JAVITANI KELL IDE TASKNAK A THEMEID-JE KELL NEM A SAJAT IDJE!!!!!!!!!!!!!!!!
-const similarCards = UseGetSimilarCards(Number(route.params.id));
-// Reactive state
 const drawer = ref(false);
 const group = ref<string | null>(null);
 
@@ -195,39 +217,34 @@ const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
   text: "",
 });
 
-
 const getTaskData = UseGetTaskData(Number(route.params.id));
-var task = ref([]);
-const get_user_name = ref<string | null>(null);
-const get_fullUser = ref<any[]>([]);
-const userId = ref(get_fullUser.value.id);
+const task = ref<Task | null>(null);
 const isDailyTask = UseCheckIfDailyTask(Number(route.params.id));
 const theme = UseGetThemeById(theme_id)
-
-
-function getCookie(name: string): string | null {
-  const cookies = document.cookie.split('; ');
-  for (const cookie of cookies) {
-    const [key, value] = cookie.split('=');
-    if (key === name) {
-      return decodeURIComponent(value);
-    }
-  }
-  return null;
-}
+const similarCards = UseGetSimilarCards(task_id,theme_id);
+const creator_id = ref(0)
+const creator_name = UseGetUserById(creator_id);
 
 // Watch group state
 watch(group, () => {
   drawer.value = false;
 });
 
-watch(() => getTaskData.data.value, (newVal) => {
-  console.log(newVal);
-  task.value = newVal;
-  console.log(task.value)
-  theme.refetch()
-  getTaskData.refetch();
-});
+watch(() => route.params.id, async (newId) => {
+   const id = Number(newId);
+   await getTaskData.refetch();
+   task.value = getTaskData.data.value;
+   
+   if (task.value?.theme_id) {
+     theme_id.value = task.value.theme_id;
+     task_id.value = task.value.id;
+     await theme.refetch();
+   }
+   
+   await similarCards.refetch();
+   solution.value = '';
+  isDailyTaskValid.value = await DailyTaskCheck();
+}, { immediate: true });
 
 // Helper functions
 const chipColor = (difficulty: number) => {
@@ -259,14 +276,12 @@ const SubmitTask = () => {
     return;
   }
 
-  const payload = `${get_fullUser.value.id};${route.params.id};${solution.value}`;
+  const payload = `${get_fullUser.value?.id};${route.params.id};${solution.value}`;
+
 
   submitSolution(payload, {  
     onSuccess: (data) => {
-      console.log(payload);
-      console.log(data);  // Log the response data
       const state = data.state;  // Access the 'state' value
-      console.log("State:", state);  // This will log the state (1 in your example)
       
       // Handle the state returned from the backend
       if (state === 1) {
@@ -311,11 +326,20 @@ onMounted(async () => {
   await getTaskData.refetch();
   if (getTaskData.data.value && getTaskData.data.value.theme_id) {
     theme_id.value = getTaskData.data.value.theme_id;
+    task_id.value = getTaskData.data.value.id;
+    creator_id.value = getTaskData.data.value.creator_id
+    await creator_name.refetch();
     await theme.refetch();
   }
 });
-
-
+onMounted(async () => {
+  isDailyTaskValid.value = await DailyTaskCheck();
+});
+const DailyTaskCheck = async() => {
+  var currentDate = new Date();
+  const taskDate = isDailyTask.data.value?.task_id
+  return isDailyTask.data.value != null && currentDate.getDay() == taskDate
+}
 
 </script>
 

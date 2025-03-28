@@ -24,7 +24,11 @@ const getRollBackTokensCount = async (req, res, next) => {
         const { userId } = req.query;
 
         if (!userId) {
-            return res.status(400).json({ message: "userId is required" });
+            const error = new Error("userId is required");
+
+            error.status = 400;
+
+            throw error;
         }
 
         const tokenCount = await userdataService.getRollBackTokensCount(userId);
@@ -34,8 +38,18 @@ const getRollBackTokensCount = async (req, res, next) => {
     }
 };
 
+const getUserById = async(req,res,next) => {
+    try{
+        const {id} = req.params;
+        const userId = await userdataService.getUserById(id);
+        res.status(200).json(userId);
+    }catch(error){
+        next(error);
+    }   
+}
 
 module.exports = {
     getUserData,
-    getRollBackTokensCount
+    getRollBackTokensCount,
+    getUserById
   };

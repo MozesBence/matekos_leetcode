@@ -92,6 +92,9 @@ app.use('/api/store',storeItems)
 const transactionsRoute = require('./api/routes/transactionRoute')
 app.use('/api/transactions', transactionsRoute)
 
+const token_redeem_route = require('./api/routes/token_redeemRoute')
+app.use('/api/handle-way-back-token',token_redeem_route);
+
 const user_data_route = require('./api/routes/userdataRoute')
 app.use('/api/userdata',user_data_route)
 app.use(errorHandler.notFoundError);
