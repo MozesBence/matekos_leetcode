@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { Ref } from 'vue'
 
 const getSettingsConfirm = async (data: {email: string, user_name: string, id: number}) => {
-    const response = await axiosClient.get('/api/get-confirm-code', {
+    const response = await axiosClient.get('/get-confirm-code', {
         params: data,
     });
     return response.data
@@ -24,7 +24,7 @@ export const useGetSettingsConfirm = () => {
 }
 
 const setNewSettings = async (data: {content: string[], code: number, id: number, type: string}) => {
-    const response = await axiosClient.patch('/api/set-settings', data);
+    const response = await axiosClient.patch('/set-settings', data);
     return response.data
 }
 
@@ -44,7 +44,7 @@ export const useSetSettings = () => {
 
 
 const getAllReports = async (token: string) => {
-    const response = await axiosClient.get('/api/get-all-reports', {
+    const response = await axiosClient.get('/get-all-reports', {
         headers: {
             token: token,
         },
@@ -67,7 +67,7 @@ export const useGetAllReports = () => {
 }
 
 const closeReport = async (data: {id: number, user_id: number, admin_id: number, content: string, content_id: string | null, content_type: boolean | null, token: string}) => {
-    const response = await axiosClient.post('/api/close-report', data, {
+    const response = await axiosClient.post('/close-report', data, {
         headers: {
             token: data.token,
         },
@@ -90,7 +90,7 @@ export const useCloseReport = () => {
 }
 
 const getAllUser = async (data: {name: string | null, activated_type: number | null, admin: boolean | null, token: string}) => {
-    const response = await axiosClient.get('/api/get-all-users', {
+    const response = await axiosClient.get('/get-all-users', {
         params: data,
         headers: {
             token: data.token,
@@ -114,7 +114,7 @@ export const useGetAllUser = () => {
 }
 
 const setUserNewSettings = async (data: {content: string, id: number, type: number, token: string}) => {
-    const response = await axiosClient.patch('/api/set-user-settings', data, {
+    const response = await axiosClient.patch('/set-user-settings', data, {
         headers:{
             token: data.token
         }
@@ -137,7 +137,7 @@ export const useSetUserNewSettings = () => {
 }
 
 const setNewUserRoles = async (data: {id: number, type: number, token: string}) => {
-    const response = await axiosClient.patch('/api/set-user-roles', data, {
+    const response = await axiosClient.patch('/set-user-roles', data, {
         headers:{
             token: data.token
         }
@@ -160,7 +160,7 @@ export const useSetUserRoles = () => {
 }
 
 const getAllNotifs = async (id: number) => {
-    const response = await axiosClient.get('/api/get-all-notifs', {
+    const response = await axiosClient.get('/get-all-notifs', {
         params: {
             id
         }
@@ -183,7 +183,7 @@ export const useGetAllNotifs = () => {
 }
 
 const getAllUnvalidTasks = async () => {
-    const response = await axiosClient.get(`/api/api/tasks/unvalidatedTasks`);
+    const response = await axiosClient.get(`/api/tasks/unvalidatedTasks`);
     return response.data
 }
 

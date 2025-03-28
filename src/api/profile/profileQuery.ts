@@ -8,7 +8,7 @@ import { type Ref } from 'vue';
 
 const ProfileGetUser = async (data: { token: string | null; id: number }): Promise<any> => {
     try {
-        const response = await axiosClient.get('/api/profile', {
+        const response = await axiosClient.get('/profile', {
         headers: {
             token: data.token,
             id: data.id,
@@ -68,7 +68,7 @@ export const useProfilePicUpload = () => {
 
 const ProfileDarkMode = async (data: Object) => {
     try {
-        const response = await axiosClient.patch('/api/profile', data);
+        const response = await axiosClient.patch('/profile', data);
     } catch (error: any) {
         console.error('Request failed:', error.response ? error.response.data : error.message);
     }
@@ -127,7 +127,6 @@ export const UseGetMostRecentlyTriedTask = (userId: Number) => {
 
 
 const getUserById = async (userId: Number) => {
-    console.log('userId',userId)
     try{
         const response = await axiosClient.get(`/api/userData/getUserById/${userId}`);
         console.log(response.data)
