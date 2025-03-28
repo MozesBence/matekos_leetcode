@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Sequelize, DataTypes } = require('sequelize');
 const mysql = require('mysql2/promise');
-const storeItems = require('../models/storeItems');
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,

@@ -6,14 +6,6 @@ const getDailyTask = async (req, res, next) => {
 
         const task = await daily_taskServices.getDailyTask(id);
 
-        if(!task){
-            const error = new Error("Nem sikerült lekérni a napi feladatot!");
-
-            error.status = 400;
-
-            throw error;
-        }
-
         res.status(200).json(task);
     } catch (error) {
         next(error);
