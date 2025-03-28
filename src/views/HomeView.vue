@@ -2,33 +2,33 @@
   <!-- Kártyák kezdete -->
   <v-container fluid style="overflow-x: auto;">
     <v-row 
-      class="d-flex align-center flex-nowrap overflow-x-auto cardStyle"
+      class="d-flex align-center flex-nowrap overflow-x-auto cardStyle align-stretch"
       style="gap: 1rem; padding: 1vw 2vw; white-space: nowrap;"
     >
       <v-col 
-        v-for="(card, index) in cards" 
-        :key="index" 
-        class="pa-2"
-        cols="12" sm="6" md="3" lg="3"
-        :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
+      v-for="(card, index) in cards" 
+      :key="index" 
+      class="pa-2"
+      cols="12" sm="6" md="3" lg="3"
+      :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
       >
         <v-card 
-          class="hero position-relative d-flex flex-column pa-2 rounded-lg" 
-          style="overflow: hidden; min-height: 22vh;"
+          class="hero d-flex flex-column pa-2 rounded"
+          style="overflow: hidden; height: 100%;"
         >
           <v-card-title 
-            class="text-h6" 
-            style="background-color: rgba(69, 10, 118, 0.3); text-align: center; padding: .6rem; color: white; border-radius:30px"
+            class="text-h6 text-center py-1 px-2 rounded" 
+            style="background-color: rgba(69, 10, 118, 0.3);"
           >
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
           <div
-            class="text-center" 
+            class="text-center flex-grow-1 d-flex align-center justify-center" 
             style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;"
           >
             <h4 style="font-weight: normal;">{{ card.content }}</h4>
           </div>
-          <v-card-actions class="d-flex justify-center" style="margin-top: auto;">
+          <v-card-actions class="d-flex justify-center mt-auto">
             <v-btn
               append-icon="mdi-chevron-right"
               color="white"
@@ -156,7 +156,7 @@
   <v-navigation-drawer 
   location="right" 
   width="400"
-  style="background-color: transparent; border: none;"
+  style="background-color: transparent; border: none; height: 100rem;"
   >
   <v-list>
     <v-list-item class="rounded" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
@@ -250,7 +250,7 @@
     </v-list>
   </v-navigation-drawer>
   
-  <v-main class="d-block align-center justify-center" style="height: 122vh">
+  <v-main class="align-center justify-center" style="height: 145vh">
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="2">
         <span>Státusz</span>
@@ -267,7 +267,7 @@
     </v-row>
     <v-row 
     v-if="cardsQuery.data && cardsQuery.data.value && cardsQuery.data.value.length > 0"
-    class="task_card mx-8 pa-2 cursor-pointer tasks"
+    class="task_card mx-8 pa-3 cursor-pointer tasks"
     v-for="(card) in cardsQuery.data.value" 
     :key="card.id" 
     style="border-bottom: 1px solid #ccc; transition: .3s !important;"
@@ -291,7 +291,7 @@
     </v-col>
     
     <!-- Task Title -->
-    <v-col class="d-flex align-center justify-center" cols="10" sm="6" style="text-align: left;">
+    <v-col class="d-flex align-center justify-center text-center" cols="10" sm="6">
       <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
     </v-col>
   
