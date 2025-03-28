@@ -19,7 +19,7 @@ const CommunityPostUpload = async (data: CommunityData) => {
     }
   });
 
-  const response = await axiosClient.post('/api/community', formData,{
+  const response = await axiosClient.post('/community', formData,{
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return response.data;
@@ -58,7 +58,7 @@ const CommunityEditPostUpload = async (data: CommunityEditData) => {
     }
   });
 
-  const response = await axiosClient.patch('/api/community/post-edit', formData,{
+  const response = await axiosClient.patch('/community/post-edit', formData,{
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return response.data;
@@ -80,7 +80,7 @@ export const useCommunityEditPost = () => {
 }
 
 const CommunityGetLimitedPosts = async (data: {limit: number, offset: number , id: number | null, filter: Array<string> | null, tagsArray: string | null, search: string | null}) => {
-  const response = await axiosClient.get('/api/community', { 
+  const response = await axiosClient.get('/community', { 
     params: data,
   });
 
@@ -100,7 +100,7 @@ export const useGetCommunityPost = () => {
 }
 
 const CommunityGetLimitedComments = async (data: {limit: number, offset: number , id: number, type: number, userId: number | null}) => {
-  const response = await axiosClient.get('/api/community/get-comments', {
+  const response = await axiosClient.get('/community/get-comments', {
     params: data,
   });
 
@@ -120,7 +120,7 @@ export const useGetCommunityComments = () => {
 }
 
 const CommunityLikeDislikeForPost = async (data: {post_id: number, user_id: number, upload_type: string, type: number}) => {
-  const response = await axiosClient.post(`/api/community/post-like`, data);
+  const response = await axiosClient.post(`/community/post-like`, data);
   return response.data;
 }
 
@@ -137,7 +137,7 @@ export const useLikeDislikeForPost = () => {
 }
 
 const CommunityCommentForPost = async (data: {content: string, linkAuthor: string | null, linked_id: number, user_id: number, type: number}) => {
-  const response = await axiosClient.post(`/api/community/post-comment`, data);
+  const response = await axiosClient.post(`/community/post-comment`, data);
   return response.data;
 }
 
@@ -154,7 +154,7 @@ export const useCommentForPost = () => {
 }
 
 const CommunityCommentEdit = async (data: {content: string, comment_id: number}) => {
-  const response = await axiosClient.patch(`/api/community/comment-edit`, data);
+  const response = await axiosClient.patch(`/community/comment-edit`, data);
   return response.data;
 }
 
@@ -171,7 +171,7 @@ export const useCommentEdit = () => {
 }
 
 const CommunityTags = async () => {
-  const response = await axiosClient.get(`/api/community/tags`);
+  const response = await axiosClient.get(`/community/tags`);
   return response.data;
 }
 
@@ -188,7 +188,7 @@ export const useCommunityTags = () => {
 }
 
 const CommunityReports = async (data: {type: boolean, notif_content: string, content_type: boolean, user_id: number, from_user_id: number, content_id: number}) => {
-  const response = await axiosClient.post(`/api/community/reports`, data);
+  const response = await axiosClient.post(`/community/reports`, data);
   return response.data;
 }
 

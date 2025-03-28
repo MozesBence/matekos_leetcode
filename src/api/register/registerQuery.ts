@@ -4,7 +4,7 @@ import type { RegisterData } from './register'
 import type { Ref } from 'vue'
 
 const registerUser = async (data: RegisterData) => {
-  const response = await axiosClient.post('/api/register', data)
+  const response = await axiosClient.post('/register', data)
   return response.data
 }
 
@@ -27,7 +27,7 @@ export const useRegisterUser = (loading: Ref<boolean, boolean>,  RegBtnValue: Re
 }
 
 const UserActivation = async (token: object) => { 
-  const response = await axiosClient.post('/api/success-register', token)
+  const response = await axiosClient.post('/success-register', token)
   return response.data
 }
 

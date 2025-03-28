@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import type { Ref } from 'vue'
 
 const setNewPassword = async (data: SetNewPasswordData) => {
-    const response = await axiosClient.patch('/api/set-new-password', data)
+    const response = await axiosClient.patch('/set-new-password', data)
     return response.data
 }
 
