@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     const Notification = require("./notification")(sequelize,DataTypes);
     const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
     const DailyQuote = require('../models/daily_quote')(sequelize,DataTypes)
-    const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
+    const Competetins_submissions = require("./competition_submissions")(sequelize,DataTypes);
     const Transactions = require('../models/transactions')(sequelize,DataTypes);
     const StoreItems = require('../models/storeItems')(sequelize,DataTypes)
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
