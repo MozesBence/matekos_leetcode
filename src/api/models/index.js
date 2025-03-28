@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     const Notification = require("./notification")(sequelize,DataTypes);
     const Advertisement_Cards = require('../models/advertisement_cards')(sequelize, DataTypes);
     const DailyQuote = require('../models/daily_quote')(sequelize,DataTypes)
-    const Competetins_submissions = require("../models/competetins_submissions")(sequelize,DataTypes);
+    const Competition_submissions = require("./competition_submissions")(sequelize,DataTypes);
     const Transactions = require('../models/transactions')(sequelize,DataTypes);
     const StoreItems = require('../models/storeItems')(sequelize,DataTypes)
     const Task_solutions = require("../models/task_solution")(sequelize, DataTypes);
@@ -208,8 +208,8 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: "task_id"
     });
     
-    Competitions.hasMany(Competetins_submissions, { foreignKey: 'competition_id'});
-    Users.hasOne(Competetins_submissions, { foreignKey: 'user_id'});
+    Competitions.hasMany(Competition_submissions, { foreignKey: 'competition_id'});
+    Users.hasOne(Competition_submissions, { foreignKey: 'user_id'});
 
     TokenRedeems.belongsTo(Users, { foreignKey: 'user_id' });
     Users.hasMany(TokenRedeems, { foreignKey: 'user_id' });
@@ -227,7 +227,7 @@ module.exports = (sequelize, DataTypes) => {
         Themes,
         Tasks,
         Competitions,
-        Competetins_submissions,
+        Competition_submissions,
         Badges,
         Alerts,
         Tokenz,
