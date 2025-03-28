@@ -74,7 +74,6 @@ const contest_route = require('../src/api/routes/contestRoute');
 app.use('/',contest_route);
 //----------------------
 
-
 //settings confirm routes
 const settingsConf_route = require('../src/api/routes/settingsConfirmRoute');
 app.use('/',settingsConf_route);
@@ -97,6 +96,7 @@ app.use('/api/handle-way-back-token',token_redeem_route);
 
 const user_data_route = require('./api/routes/userdataRoute')
 app.use('/api/userdata',user_data_route)
+
 app.use(errorHandler.notFoundError);
 
 app.use(errorHandler.showError);

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/vue-query';
 import { computed, type Ref } from 'vue';
 const fetchThemes = async () => {
     try {
-        const response = await axiosClient.get('/api/themes');
+        const response = await axiosClient.get('/themes');
         return response.data;
     } catch (error) {
         console.error(`Error in theme store! Error ${error}`);
@@ -19,7 +19,7 @@ export const UseThemes = () => {
 
 const getThemeById = async (theme_id:Number) => {
     try{
-        const response = await axiosClient.get(`/api/getThemeById/${theme_id}`);
+        const response = await axiosClient.get(`/getThemeById/${theme_id}`);
         return response.data;
     }catch(error){
         throw error;

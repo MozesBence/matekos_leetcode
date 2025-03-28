@@ -41,7 +41,7 @@ const ProfilePicUpload = async (data: ProfilPicdata) => {
     formData.append('type', data.type.toString());  // type
 
     try {
-        const response = await axiosClient.patch('/api/profile', formData, {
+        const response = await axiosClient.patch('/profile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
