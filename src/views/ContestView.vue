@@ -63,9 +63,10 @@
                   <div style="width: 20%;" class="d-flex justify-start">
                     <v-btn @click="router.push({ name: 'profile', params: { id: member.id } })" style="cursor: pointer; background-color: transparent !important;" icon elevation="0">
                       <div style="height: 3rem; width: 3rem; border-radius: 50%; overflow: hidden; position: relative;">
-                        <img :src="member.profil_picture == null ? '../public/test_profile.jpg' : member.profil_picture" 
+                        <img v-if="member.profil_picture" :src="member.profil_picture"
                             alt="" 
                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
+                        <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
                       </div>
                     </v-btn>
                   </div>

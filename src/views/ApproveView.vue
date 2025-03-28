@@ -16,7 +16,8 @@
           class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
           style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
           @click="router.push({ name: 'profile', params: { id: task.data.value?.creator.id } })">
-            <img :src="task.data.value?.creator.User_customization.profil_picture == null ? '../public/test_profile.jpg' : task.data.value?.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+            <img v-if="task.data.value?.creator.User_customization.profil_picture" :src="task.data.value?.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
+            <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
             <h3 style="font-weight: normal;">{{ task.data.value?.creator.user_name }}</h3>
           </div>
         </div>
