@@ -26,12 +26,14 @@ class contestRepository
             limit: 10,
             include: [{
                 model: this.User_customization,
-                required: true,
+                required: false,
             }],
             where:{
                 activated: 1
             }
         });
+
+        console.log(userWithCustomization);
 
         const UsersOnLeaderboard = [];
 

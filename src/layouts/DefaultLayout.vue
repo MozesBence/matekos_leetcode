@@ -120,7 +120,7 @@
                     icon
                     @click="handleDarkmodeSwitch"
                   >
-                  <v-icon>{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+                  <v-icon size="25">{{ DarkmodeChange ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
                 </v-btn>
               </v-card>
             </v-hover>
@@ -456,7 +456,7 @@
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
                           @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
                           >
-                          <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })">mdi-account</v-icon>
+                          <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })" size="40">mdi-account</v-icon>
                         </div>
                         <h2 
                         style="font-weight: normal; text-decoration: none; cursor: pointer;" 

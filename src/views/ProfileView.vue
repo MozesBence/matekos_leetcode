@@ -90,7 +90,7 @@
               />
             </template>
             <template v-else>
-              <v-icon style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+              <v-icon style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;" size="100">mdi-account</v-icon>
             </template>
           </v-btn>
           <h1 style="position: relative; color: rgb(var(--v-theme-profile_textColor)); font-size: xx-large;">

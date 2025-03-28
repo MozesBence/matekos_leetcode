@@ -66,7 +66,7 @@
                         <img v-if="member.profil_picture" :src="member.profil_picture"
                             alt="" 
                             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">
-                        <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                        <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;" size="25">mdi-account</v-icon>
                       </div>
                     </v-btn>
                   </div>

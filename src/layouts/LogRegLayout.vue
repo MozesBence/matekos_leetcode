@@ -10,190 +10,195 @@
   <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
 
     <div class="image-text-container">
-      <h1 class="text" style="font-size: 5em; font-family: 'Orbitron', sans-serif;">Math Solve</h1>
+      <h1 class="text" style="font-size: 3.5em; font-family: 'Orbitron', sans-serif;">Math Solve</h1>
       <h3 class="text" style="font-weight: normal; color: white;">Üdvözli önt az oldal!</h3>
     </div>
 
-    <v-card
-      class="mx-auto pa-12 pb-4"
-      elevation="8"
-      max-width="550"
-      min-width="400"
-      rounded="lg"
-    >
-      <v-expand-transition class="d-flex flex-column justify-center align-center">
-        <div v-if="SuccessOpen">
-          <v-icon :color="SuccessText.split(' ')[0] == 'Sikeres' ? 'green' : 'red'" size="120">
-            {{ SuccessText.split(' ')[0] == "Sikeres" ? 'mdi-check' : 'mdi-close' }}
-          </v-icon>
-          <h2 class="text-center">{{ SuccessText }}</h2>
-          <div class="dropdown-content text-center" :style="{marginTop: isMobile ? '3vw' : '1vw'}">
-            <p :style="{fontSize: isMobile ? '3vw' : '.9vw'}">{{ SuccessMessage }}</p>
-          </div>
-        </div>
-      </v-expand-transition>
-
-      <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name != 'set-new-password' && route.name != 'success-register'">Fiók</div>
-
-      <v-text-field
-        density="compact"
-        placeholder="email cím"
-        prepend-inner-icon="mdi-email-outline"
-        variant="outlined"
-        v-model="emailValue"
-        v-if="route.name != 'set-new-password' && route.name != 'success-register'"
-        :rules="[
-          (v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 35) || 'Maximum 35 karakter lehet.']" 
-      ></v-text-field>
-
-      <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name == 'register'">Fiók név</div>
-
-      <v-text-field
-        density="compact"
-        placeholder="Felhasználó név..."
-        prepend-inner-icon="mdi-account-outline"
-        variant="outlined"
-        v-if="route.name == 'register'"
-        v-model="RegdataRef.user_name"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 24) || 'Maximum 24 karakter lehet.', (v) => v.length >= 6 || 'Minimum 6 karakteres név kell.']"
-      ></v-text-field>
-
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'">
-        {{ PasswordValue }}
-          <a
-            class="text-caption text-decoration-none text-blue"
-            href="#"
-            rel="noopener noreferrer"
-            v-if="route.name == 'login'"
-            @click.prevent="router.push({ name: 'forget-password' })"
+    <v-container fluid>
+      <v-row justify="center">
+        <v-col
+          :style="{ maxWidth: '550px', minWidth: !isMobile ? '450px' : '310px', width: '100%' }"
+        >
+          <v-card
+          class="mx-auto pa-10 pb-4"
+          rounded="lg"
           >
-            Elfelejtette jelszavát?</a>
-      </div>
+            <v-expand-transition class="d-flex flex-column justify-center align-center">
+              <div v-if="SuccessOpen">
+                <v-icon :color="SuccessText.split(' ')[0] == 'Sikeres' ? 'green' : 'red'" size="120">
+                  {{ SuccessText.split(' ')[0] == "Sikeres" ? 'mdi-check' : 'mdi-close' }}
+                </v-icon>
+                <h2 class="text-center">{{ SuccessText }}</h2>
+                <div class="dropdown-content text-center" :style="{marginTop: isMobile ? '3vw' : '1vw'}">
+                  <p :style="{fontSize: isMobile ? '3vw' : '.9vw'}">{{ SuccessMessage }}</p>
+                </div>
+              </div>
+            </v-expand-transition>
 
-      <v-text-field
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Írja be a jelszavát..."
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-        v-model="passwordValue"
-        v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.',  (v) => v.length >= 8 || 'Minimum 8 karakteres jelszó kell.',]"
-      ></v-text-field>
+            <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name != 'set-new-password' && route.name != 'success-register'">Fiók</div>
 
-      <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'register' || route.name == 'set-new-password'">
-        {{ ConfPasswordValue }}
-      </div>
+            <v-text-field
+              density="compact"
+              placeholder="email cím"
+              prepend-inner-icon="mdi-email-outline"
+              variant="outlined"
+              v-model="emailValue"
+              v-if="route.name != 'set-new-password' && route.name != 'success-register'"
+              :rules="[
+                (v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 35) || 'Maximum 35 karakter lehet.']" 
+            ></v-text-field>
 
-      <v-text-field
-        :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
-        :type="visible ? 'text' : 'password'"
-        density="compact"
-        placeholder="Erősítse meg a jelszavát..."
-        prepend-inner-icon="mdi-lock-outline"
-        variant="outlined"
-        @click:append-inner="visible = !visible"
-        v-if="route.name == 'register' || route.name == 'set-new-password'"
-        v-model="confirmPassword"
-        :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.', (v) => (v && confirmPassword == passwordValue) || 'Nem egyezik a két jelszó']"
-      ></v-text-field>
+            <div class="text-subtitle-1 text-medium-emphasis" v-if="route.name == 'register'">Fiók név</div>
 
-      <v-checkbox
-        v-model="rememberMe"
-        :label="`Maradjak bejelentkezve`"
-        v-if="route.name == 'login'"
-        hide-details
-      ></v-checkbox>
+            <v-text-field
+              density="compact"
+              placeholder="Felhasználó név..."
+              prepend-inner-icon="mdi-account-outline"
+              variant="outlined"
+              v-if="route.name == 'register'"
+              v-model="RegdataRef.user_name"
+              :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 24) || 'Maximum 24 karakter lehet.', (v) => v.length >= 6 || 'Minimum 6 karakteres név kell.']"
+            ></v-text-field>
 
-        <v-btn
-          class="mb-4 mt-4"
-          color="blue"
-          size="large"
-          variant="tonal"
-          block
-          v-if="route.name == 'login'"
-          :disabled="!LogindataRef.password || !LogindataRef.email"
-          :loading="loading"
-          @click="handleLogin"
-        >
-          Bejelentkezés
-        </v-btn>
+            <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'">
+              {{ PasswordValue }}
+                <a
+                  class="text-caption text-decoration-none text-blue"
+                  href="#"
+                  rel="noopener noreferrer"
+                  v-if="route.name == 'login'"
+                  @click.prevent="router.push({ name: 'forget-password' })"
+                >
+                  Elfelejtette jelszavát?</a>
+            </div>
 
-    <v-btn
-        class="mb-4 mt-4"
-        color="blue"
-        size="large"
-        variant="tonal"
-        block
-        v-if="route.name == 'register'"
-        :disabled="RegBtnValue == 'Email elküldve' || RegdataRef.password !== confirmPassword || !RegdataRef.password || !RegdataRef.email || !RegdataRef.user_name"
-        @click="handleRegister"
-        :loading="loading"
-        >
-        {{ RegBtnValue }}
-    </v-btn>
+            <v-text-field
+              :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="visible ? 'text' : 'password'"
+              density="compact"
+              placeholder="Írja be a jelszavát..."
+              prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              @click:append-inner="visible = !visible"
+              v-model="passwordValue"
+              v-if="route.name == 'login' || route.name == 'register' || route.name == 'set-new-password'"
+              :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.',  (v) => v.length >= 8 || 'Minimum 8 karakteres jelszó kell.',]"
+            ></v-text-field>
 
-    <v-btn
-        class="mb-4 mt-4"
-        color="blue"
-        size="large"
-        variant="tonal"
-        block
-        v-if="route.name == 'forget-password'"
-        :disabled="!ForgetPassworddataRef.email"
-        @click="handleForgetPassword"
-        :loading="loading"
-        >
-        {{ ForgetBtnValue }}
-    </v-btn>
+            <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between" v-if="route.name == 'register' || route.name == 'set-new-password'">
+              {{ ConfPasswordValue }}
+            </div>
 
-    <v-btn
-        class="mb-4 mt-4"
-        color="blue"
-        size="large"
-        variant="tonal"
-        block
-        v-if="route.name == 'set-new-password'"
-        :disabled="!SetNewPassworddataRef.password || !confirmPassword"
-        @click="handSetNewPassword"
-        :loading="loading"
-        >
-        {{ SetBtnValue }}
-    </v-btn>
+            <v-text-field
+              :append-inner-icon="visible ? 'mdi-eye-off' : 'mdi-eye'"
+              :type="visible ? 'text' : 'password'"
+              density="compact"
+              placeholder="Erősítse meg a jelszavát..."
+              prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              @click:append-inner="visible = !visible"
+              v-if="route.name == 'register' || route.name == 'set-new-password'"
+              v-model="confirmPassword"
+              :rules="[(v) => !!v || 'Kötelező ezt a mezőt kitölteni', (v) => (v && v.length <= 30) || 'Maximum 30 karakter lehet.', (v) => (v && confirmPassword == passwordValue) || 'Nem egyezik a két jelszó']"
+            ></v-text-field>
 
-      <v-card-text class="text-center" @click="RegisterPushHandler" v-if="route.name == 'login'">
-        <a
-          class="text-blue text-decoration-none"
-          rel="noopener noreferrer"
-          :style="{ cursor: 'pointer' }"
-        >
-          Regisztrálás <v-icon icon="mdi-chevron-right"></v-icon>
-        </a>
-      </v-card-text>
+            <v-checkbox
+              v-model="rememberMe"
+              :label="`Maradjak bejelentkezve`"
+              v-if="route.name == 'login'"
+              hide-details
+            ></v-checkbox>
 
-      <h2 v-if="route.name == 'register'" class="text-center">Van már fiókod?</h2>
-      <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'register' || route.name == 'success-register'">
-        <a
-          class="text-blue text-decoration-none"
-          rel="noopener noreferrer"
-          :style="{ cursor: 'pointer' }"
-        >
-          Bejelentkezés <v-icon icon="mdi-chevron-right"></v-icon>
-        </a>
-      </v-card-text>
+              <v-btn
+                class="mb-4 mt-4"
+                color="blue"
+                size="large"
+                variant="tonal"
+                block
+                v-if="route.name == 'login'"
+                :disabled="!LogindataRef.password || !LogindataRef.email"
+                :loading="loading"
+                @click="handleLogin"
+              >
+                Bejelentkezés
+              </v-btn>
 
-      <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'forget-password' || route.name == 'set-new-password'">
-        <a
-          class="text-blue text-decoration-none"
-          rel="noopener noreferrer"
-          :style="{ cursor: 'pointer' }"
-        >
-        <v-icon icon="mdi-chevron-left"></v-icon> Bejelentkezés
-        </a>
-      </v-card-text>
-    </v-card>
+          <v-btn
+              class="mb-4 mt-4"
+              color="blue"
+              size="large"
+              variant="tonal"
+              block
+              v-if="route.name == 'register'"
+              :disabled="RegBtnValue == 'Email elküldve' || RegdataRef.password !== confirmPassword || !RegdataRef.password || !RegdataRef.email || !RegdataRef.user_name"
+              @click="handleRegister"
+              :loading="loading"
+              >
+              {{ RegBtnValue }}
+          </v-btn>
+
+          <v-btn
+              class="mb-4 mt-4"
+              color="blue"
+              size="large"
+              variant="tonal"
+              block
+              v-if="route.name == 'forget-password'"
+              :disabled="!ForgetPassworddataRef.email"
+              @click="handleForgetPassword"
+              :loading="loading"
+              >
+              {{ ForgetBtnValue }}
+          </v-btn>
+
+          <v-btn
+              class="mb-4 mt-4"
+              color="blue"
+              size="large"
+              variant="tonal"
+              block
+              v-if="route.name == 'set-new-password'"
+              :disabled="!SetNewPassworddataRef.password || !confirmPassword"
+              @click="handSetNewPassword"
+              :loading="loading"
+              >
+              {{ SetBtnValue }}
+          </v-btn>
+
+            <v-card-text class="text-center" @click="RegisterPushHandler" v-if="route.name == 'login'">
+              <a
+                class="text-blue text-decoration-none"
+                rel="noopener noreferrer"
+                :style="{ cursor: 'pointer' }"
+              >
+                Regisztrálás <v-icon icon="mdi-chevron-right"></v-icon>
+              </a>
+            </v-card-text>
+
+            <h2 v-if="route.name == 'register'" class="text-center">Van már fiókod?</h2>
+            <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'register' || route.name == 'success-register'">
+              <a
+                class="text-blue text-decoration-none"
+                rel="noopener noreferrer"
+                :style="{ cursor: 'pointer' }"
+              >
+                Bejelentkezés <v-icon icon="mdi-chevron-right"></v-icon>
+              </a>
+            </v-card-text>
+
+            <v-card-text class="text-center" @click="LoginPushHandler" v-if="route.name == 'forget-password' || route.name == 'set-new-password'">
+              <a
+                class="text-blue text-decoration-none"
+                rel="noopener noreferrer"
+                :style="{ cursor: 'pointer' }"
+              >
+              <v-icon icon="mdi-chevron-left"></v-icon> Bejelentkezés
+              </a>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
   </div>
 </template>
 
