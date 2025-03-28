@@ -1831,7 +1831,7 @@ function deleteCookie(name) {
 }
 
 .adminUsers::-webkit-scrollbar-thumb, .adminNotif::-webkit-scrollbar-thumb {
-  background: rgb(var(--v-theme-profile_bc)); /* Görgetősáv színe */
+  background: rgb(var(--v-theme-scrollar_color)); /* Görgetősáv színe */
   border-radius: 10px;
 }
 

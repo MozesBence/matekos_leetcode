@@ -25,7 +25,7 @@ const router = express.Router();
  *         content:
  *           application/json:
  *              example:
- *                  response:
+ *                  response: {success: true, data: { state: active, submission_date, 2025-03-27T23:01:55.650Z, user_id: 2, task_id: 3}, created: true}
  *       400:
  *         description: Hiba a visszaállítási token használatának feltöltése közben
  *         content:
@@ -57,37 +57,37 @@ router.post('/useWayBackToken',useWayBackToken)
  * @swagger
  * /deactivate-token:
  *   put:
- *     summary: Visszaállítási token használata
+ *     summary: Visszaállítási token deaktiválása
  *     tags:
  *       - Token redeem
- *     description: Visszaállítási token használata
+ *     description: Visszaállítási token használata után deaktiválja a tokent hogy ne tudja használni újra
  *     requestBody:
  *       required: true
  *       content:
  *         application/x-www-form-urlencoded:
  *           schema:
- *             $ref: '#/components/schemas/use-way-back-token'
+ *             $ref: '#/components/schemas/deactivate-token'
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/use-way-back-token'
+ *             $ref: '#/components/schemas/deactivate-token'
  *     responses:
  *       201:
- *         description: Sikeres feltöltés
+ *         description: Sikeres módosítás
  *         content:
  *           application/json:
  *              example:
- *                  response:
+ *                  response: true
  *       400:
- *         description: Hiba a visszaállítási token használatának feltöltése közben
+ *         description: Hiba a visszaállítási token állapotán változtatni
  *         content:
  *           application/json:
  *              example:
  *                  status: "400"
- *                  message: "Nem a sikerült visszaállítási token használatának feltöltése!"
+ *                  message: "Nem a sikerült visszaállítási token állapotán változtatni!"
  * 
  * components:
  *   schemas:
- *     use-way-back-token:
+ *     deactivate-token:
  *       type: object
  *       required:
  *         - userId
