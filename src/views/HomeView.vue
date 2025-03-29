@@ -356,7 +356,7 @@
     <!-- Action Button -->
     <template v-slot:actions>
       <v-btn class="ms-auto" text="Vissza" @click="dialog = false"></v-btn>
-      <v-btn>Token felhasználása</v-btn>
+      <v-btn @click="UseToken">Token felhasználása</v-btn>
     </template>
   </v-card>
 </v-dialog>
@@ -380,7 +380,7 @@ import {useGetAllAds} from '@/api/adcards/adcardQuery'
 import { useRoute, useRouter } from 'vue-router';
 import {UsegetRollBackTokenCount,UseGetDailyStreak} from '../api/mainPage/mainPageQuery'
 import {get_fullUser,getCookie} from '../stores/userStore'
-
+import {UsewayBackToken} from '@/api/redeemWayBackToken/WayBackTokenQuery'
 // Query hooks
 
 const userId = ref(get_fullUser.value.id);
@@ -478,7 +478,7 @@ const LoadRandomTask = async () => {
   }
 };
 var dailytask_day = ref('');
-
+var dailytask_dayNum = ref(0);
 const specificTaskquery = useSpecificTask(dailytask_day);
 
 const LoadDailyTask = async (day: number) => {
@@ -488,6 +488,7 @@ const LoadDailyTask = async (day: number) => {
       TaskView(Number(specificTaskquery.data.value.task_id));
     }else{
       dialog.value = true;
+      dailytask_dayNum.value = day;
     }
     
 };
@@ -563,6 +564,19 @@ const chartOptions = ref({
     },
   ],
 });
+
+const {mutate:SpendToken} = UsewayBackToken(user_id,dailytask_dayNum)
+
+const UseToken = () => {
+    SpendToken(undefined, {
+        onSuccess: () => {
+            alert("Token spent successfully!");
+        },
+        onError: (error) => {
+            console.error("Error spending token:", error);
+        }
+    });
+};
 
 
 const getDaysInMonth = (year: number, month: number): number => {
