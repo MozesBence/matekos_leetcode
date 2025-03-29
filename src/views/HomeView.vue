@@ -357,7 +357,7 @@
     <!-- Action Button -->
     <template v-slot:actions>
       <v-btn class="ms-auto" text="Vissza" @click="dialog = false"></v-btn>
-      <v-btn @click="UseToken">Token felhasználása</v-btn>
+      <v-btn @click="UseToken" :disabled="roll_back_token_count_query.data.value?.roll_back_token == 0">Token felhasználása</v-btn>
     </template>
   </v-card>
 </v-dialog>

@@ -367,6 +367,17 @@ const task_solutionRepository = {
             raw: true
         });
         return user ? user.max_streak : 0;
+    },
+
+    async getAllTimeMaxStreak(userId){
+        const user = await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['all_TimeMax'],
+            raw:true
+        });
+        return user ? user.all_TimeMax : 0;
     }
 };    
 
