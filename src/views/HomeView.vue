@@ -361,6 +361,15 @@
   </v-card>
 </v-dialog>
 
+<v-alert
+  v-if="alertMessage.type"
+  :key="alertMessage.text"
+  :color="alertMessage.type"
+  :icon="alertMessage.type === 'success' ? '$success' : '$error'"
+  :title="alertMessage.text"
+  class="alert-bottom"
+></v-alert>
+
 
 </template>
 
@@ -482,22 +491,37 @@ var dailytask_dayNum = ref(0);
 const specificTaskquery = useSpecificTask(dailytask_day);
 
 const LoadDailyTask = async (day: number) => {
-    if(CheckIfCurrentTask(day.toString())){
-      dailytask_day.value = day.toString();
-      await specificTaskquery.refetch();
-      TaskView(Number(specificTaskquery.data.value.task_id));
-    }else{
-      dialog.value = true;
-      dailytask_dayNum.value = day;
+    var tasksDate: any = CheckIfCurrentTask(day.toString());
+
+    switch (tasksDate) {
+        case 0:
+            dailytask_day.value = day.toString();
+            await specificTaskquery.refetch();
+            TaskView(Number(specificTaskquery.data.value.task_id));
+            break; // Prevent falling through
+
+        case 1:
+            alert("Ez a feladat még nem érhető el");
+            break; // Prevent falling through
+
+        case 2:
+            dialog.value = true;
+            dailytask_dayNum.value = day;
+            break; 
+        default:
+          alert('varatlan hiba')
+          break;
     }
-    
 };
+
 
 const CheckIfCurrentTask =  (day: string) => {
   if(Number(day) == new Date().getDate()){
-    return true;
+    return 0;
+  }else if(Number(day) > new Date().getDate()){
+    return 1;
   }else{
-    return false;
+    return 2;
   }
 }
 
@@ -565,16 +589,34 @@ const chartOptions = ref({
   ],
 });
 
+const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
+  type: null,
+  text: "",
+});
+
+const showAlert = (type: "success" | "error", text: string) => {
+  alertMessage.value = { type, text };
+  setTimeout(() => {
+    alertMessage.value = { type: null, text: "" };
+  }, 5000);
+};
+
 const {mutate:SpendToken} = UsewayBackToken(user_id,dailytask_dayNum)
 
 const UseToken = () => {
     SpendToken(undefined, {
-        onSuccess: () => {
-            alert("Token spent successfully!");
-        },
-        onError: (error) => {
-            console.error("Error spending token:", error);
-        }
+      onSuccess: (data: any) => {
+    console.log("Token spent, response:", data);
+    if (data != null) {
+        TaskView(dailytask_dayNum.value);
+    } else {
+      dialog.value = false;
+        console.log("Triggering alert...");
+        showAlert("error", "Sajnos a hónapban már elhasznált 3 tokent!");
+        console.log("Alert triggered:", alertMessage.value);
+    }
+},
+
     });
 };
 
@@ -890,5 +932,14 @@ onMounted(() => {
 
   .cardStyle::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.7);
+  }
+  .alert-bottom {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    max-width: 400px;
+    z-index: 1000;
   }
 </style>

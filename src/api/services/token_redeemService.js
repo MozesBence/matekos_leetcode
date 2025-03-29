@@ -16,6 +16,14 @@ class token_Service{
             throw error;
         }
     }
+
+    async checkToken(userId,taskId){
+        try{
+            return await token_redeemRepository.checkToken(userId,taskId);
+        }catch(error){
+            throw error;
+        }
+    }
 }
 
 module.exports = new token_Service();

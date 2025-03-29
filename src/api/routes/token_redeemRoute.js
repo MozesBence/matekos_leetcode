@@ -1,4 +1,4 @@
-const {useWayBackToken,deactivateToken} = require('../controllers/token_redeemController')
+const {useWayBackToken,deactivateToken,checkToken} = require('../controllers/token_redeemController')
 const express = require('express')
 const router = express.Router();
 
@@ -103,5 +103,7 @@ router.post('/useWayBackToken',useWayBackToken)
  *           example: 1
  */
 router.put('/deactivate-token',deactivateToken)
+
+router.get('/check-token',checkToken)
 
 module.exports = router;

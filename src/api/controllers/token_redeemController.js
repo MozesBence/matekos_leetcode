@@ -23,7 +23,22 @@ const deactivateToken = async(req,res,next) => {
     }
 }
 
+const checkToken = async (req, res, next) => {
+    try {
+        const { userId, taskId } = req.query;
+        
+        const data = await token_redeemService.checkToken(userId, taskId);
+        
+            res.status(200).json(data);
+        
+    } catch (error) {
+        next(error);
+    }
+};
+
+
 module.exports = {
     useWayBackToken,
-    deactivateToken
+    deactivateToken,
+    checkToken
 }

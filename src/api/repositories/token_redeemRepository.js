@@ -1,5 +1,6 @@
 const { where } = require("sequelize");
 const db = require("../database/dbContext");
+const themes = require("../models/themes");
 
 const TokenRedeemRepository = {
     async useWayBackToken(userId, taskId) {
@@ -8,7 +9,7 @@ const TokenRedeemRepository = {
             if (!hasTokens) {
                 return null;
             }
-            if(await this.CheckMonthlySpend(userId) <= 3)
+            if(await this.CheckMonthlySpend(userId) < 3)
             {
                 const [tokenRedeem, created] = await db.TokenRedeems.findOrCreate({
                     where: { user_id: userId, task_id: taskId },
@@ -75,6 +76,21 @@ const TokenRedeemRepository = {
             );
             return updatedRows > 0;
         } catch (error) {
+            throw error;
+        }
+    },
+
+    async checkToken(userId,taskId){
+        try{
+            const isExists = await db.TokenRedeems.findOne({
+                where:{
+                    user_id:userId,
+                    task_id:taskId,
+                    state: "active"
+                },
+            });
+            return !!isExists;
+        }catch(error){
             throw error;
         }
     }
