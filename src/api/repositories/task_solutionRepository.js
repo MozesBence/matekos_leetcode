@@ -150,11 +150,19 @@ const task_solutionRepository = {
             } else {
                 if (state === 1) {
                     if (existingSolution.state === 1) {
+                        if(dailyTask){
+                            await this.IncreaseCurrencyCount(userId);
+                            await Task_solutions.update(
+                                { submission_date: currentTimestamp },
+                                { where: { UserId: userId, task_id: taskId } }
+                            );
+                        }
                         // ha mar alapbol jo volt, csak a datumot frissiti
                         await Task_solutions.update(
                             { submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
                             );
+                            
                     } else {
                         // ha hibas problakozas volt de most jo akkor update
                         await Task_solutions.update(
