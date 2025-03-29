@@ -1,0 +1,358 @@
+```
+📦 MathSolve
+├─ .dockerignore
+├─ .gitignore
+├─ .vscode
+│  └─ extensions.json
+├─ LICENSE
+├─ README.md
+├─ backend_test
+│  ├─ .env
+│  ├─ __mocks__
+│  │  └─ dbContext.js
+│  ├─ api
+│  │  ├─ controllers
+│  │  │  ├─ advertisement_cards_controller.js
+│  │  │  ├─ communityControllers.js
+│  │  │  ├─ contestController.js
+│  │  │  ├─ daily_taskController.js
+│  │  │  ├─ logregController.js
+│  │  │  ├─ mathSolveControllers.js
+│  │  │  ├─ profileController.js
+│  │  │  ├─ quoteController.js
+│  │  │  ├─ settingsConfrimController.js
+│  │  │  ├─ storeItemsController.js
+│  │  │  ├─ task_solutionsController.js
+│  │  │  ├─ tasksController.js
+│  │  │  ├─ themeControllers.js
+│  │  │  ├─ token_redeemController.js
+│  │  │  ├─ transactionController.js
+│  │  │  └─ userdataController.js
+│  │  ├─ database
+│  │  │  └─ dbContext.js
+│  │  ├─ middlewares
+│  │  │  ├─ errorHandler.js
+│  │  │  ├─ profileAuth.js
+│  │  │  └─ tasksHandler.js
+│  │  ├─ models
+│  │  │  ├─ advertisement_cards.js
+│  │  │  ├─ alerts.js
+│  │  │  ├─ community_comments.js
+│  │  │  ├─ community_files.js
+│  │  │  ├─ community_likes.js
+│  │  │  ├─ community_posts.js
+│  │  │  ├─ community_tags.js
+│  │  │  ├─ competition_submissions.js
+│  │  │  ├─ competitions.js
+│  │  │  ├─ daily_quote.js
+│  │  │  ├─ daily_tasks.js
+│  │  │  ├─ index.js
+│  │  │  ├─ notification.js
+│  │  │  ├─ storeItems.js
+│  │  │  ├─ task_solution.js
+│  │  │  ├─ tasks.js
+│  │  │  ├─ themes.js
+│  │  │  ├─ token_redeems.js
+│  │  │  ├─ tokenz.js
+│  │  │  ├─ transactions.js
+│  │  │  ├─ user_customization.js
+│  │  │  └─ users.js
+│  │  ├─ repositories
+│  │  │  ├─ advertisement_cards_repository.js
+│  │  │  ├─ communityRepository.js
+│  │  │  ├─ contestRepository.js
+│  │  │  ├─ daily_taskRepository.js
+│  │  │  ├─ logregRepository.js
+│  │  │  ├─ mathSolveRepository.js
+│  │  │  ├─ profileRepository.js
+│  │  │  ├─ quoteRepository.js
+│  │  │  ├─ settingsConfirmRepository.js
+│  │  │  ├─ storeItemsRepository.js
+│  │  │  ├─ task_solutionRepository.js
+│  │  │  ├─ tasksRepository.js
+│  │  │  ├─ themeRepository.js
+│  │  │  ├─ token_redeemRepository.js
+│  │  │  ├─ transactionRepository.js
+│  │  │  └─ userdataRepository.js
+│  │  ├─ routes
+│  │  │  ├─ advertisement_cards_routes.js
+│  │  │  ├─ communityRoute.js
+│  │  │  ├─ contestRoute.js
+│  │  │  ├─ daily_taskRoute.js
+│  │  │  ├─ logregRoute.js
+│  │  │  ├─ profileRoute.js
+│  │  │  ├─ quoteroute.js
+│  │  │  ├─ settingsConfirmRoute.js
+│  │  │  ├─ statisticsRoute.js
+│  │  │  ├─ storeItemsRoute.js
+│  │  │  ├─ task_solutionsRoute.js
+│  │  │  ├─ tasksRoute.js
+│  │  │  ├─ themeRoute.js
+│  │  │  ├─ token_redeemRoute.js
+│  │  │  ├─ transactionRoute.js
+│  │  │  └─ userdataRoute.js
+│  │  └─ services
+│  │     ├─ advertisement_cards_services.js
+│  │     ├─ communityService.js
+│  │     ├─ contestService.js
+│  │     ├─ daily_taskServices.js
+│  │     ├─ logregService.js
+│  │     ├─ mathSolveServices.js
+│  │     ├─ profileService.js
+│  │     ├─ quoteService.js
+│  │     ├─ settingsConfirmService.js
+│  │     ├─ storeItemsServices.js
+│  │     ├─ task_solutionsService.js
+│  │     ├─ tasksServices.js
+│  │     ├─ token_redeemService.js
+│  │     ├─ transactionService.js
+│  │     └─ userdataService.js
+│  ├─ app.js
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ server.js
+│  └─ tests
+│     └─ Test_Cases.test.js
+├─ docker-compose.yml
+├─ dockerfile
+├─ env.d.ts
+├─ index.html
+├─ math_solve_vizsgaremek.sql
+├─ package-lock.json
+├─ package.json
+├─ public
+│  ├─ favicon.ico
+│  └─ test_profile.jpg
+├─ quote_py
+│  ├─ .env
+│  ├─ __pycache__
+│  │  ├─ request.cpython-311.pyc
+│  │  └─ request.cpython-312.pyc
+│  ├─ main.py
+│  └─ request.py
+├─ src
+│  ├─ .env
+│  ├─ .env_old
+│  ├─ App.d.ts
+│  ├─ App.vue
+│  ├─ api
+│  │  ├─ adcards
+│  │  │  └─ adcardQuery.ts
+│  │  ├─ approveTask
+│  │  │  └─ approveQuery.ts
+│  │  ├─ cards
+│  │  │  └─ cardQuery.ts
+│  │  ├─ community
+│  │  │  ├─ community.d.ts
+│  │  │  └─ communityQuery.ts
+│  │  ├─ contest
+│  │  │  └─ contestQuery.ts
+│  │  ├─ controllers
+│  │  │  ├─ advertisement_cards_controller.js
+│  │  │  ├─ communityControllers.js
+│  │  │  ├─ contestController.js
+│  │  │  ├─ daily_taskController.js
+│  │  │  ├─ logregController.js
+│  │  │  ├─ mathSolveControllers.js
+│  │  │  ├─ profileController.js
+│  │  │  ├─ quoteController.js
+│  │  │  ├─ settingsConfrimController.js
+│  │  │  ├─ storeItemsController.js
+│  │  │  ├─ task_solutionsController.js
+│  │  │  ├─ tasksController.js
+│  │  │  ├─ themeControllers.js
+│  │  │  ├─ token_redeemController.js
+│  │  │  ├─ transactionController.js
+│  │  │  └─ userdataController.js
+│  │  ├─ database
+│  │  │  ├─ dbContext.js
+│  │  │  └─ dbContext_old.js
+│  │  ├─ forget-password
+│  │  │  ├─ ForgetPassword.d.ts
+│  │  │  └─ ForgetPasswordQuery.ts
+│  │  ├─ login
+│  │  │  ├─ login.d.ts
+│  │  │  └─ loginQuery.ts
+│  │  ├─ mainPage
+│  │  │  └─ mainPageQuery.ts
+│  │  ├─ middlewares
+│  │  │  ├─ errorHandler.js
+│  │  │  ├─ profileAuth.js
+│  │  │  └─ tasksHandler.js
+│  │  ├─ models
+│  │  │  ├─ advertisement_cards.js
+│  │  │  ├─ alerts.js
+│  │  │  ├─ community_comments.js
+│  │  │  ├─ community_files.js
+│  │  │  ├─ community_likes.js
+│  │  │  ├─ community_posts.js
+│  │  │  ├─ community_tags.js
+│  │  │  ├─ competition_submissions.js
+│  │  │  ├─ competitions.js
+│  │  │  ├─ daily_quote.js
+│  │  │  ├─ daily_tasks.js
+│  │  │  ├─ index.js
+│  │  │  ├─ notification.js
+│  │  │  ├─ storeItems.js
+│  │  │  ├─ task_solution.js
+│  │  │  ├─ tasks.js
+│  │  │  ├─ themes.js
+│  │  │  ├─ token_redeems.js
+│  │  │  ├─ tokenz.js
+│  │  │  ├─ transactions.js
+│  │  │  ├─ user_customization.js
+│  │  │  └─ users.js
+│  │  ├─ profile
+│  │  │  ├─ profile.d.ts
+│  │  │  └─ profileQuery.ts
+│  │  ├─ quote
+│  │  │  └─ QuoteQuery.ts
+│  │  ├─ redeemItem
+│  │  │  └─ purchaseItemQuery.ts
+│  │  ├─ redeemWayBackToken
+│  │  │  └─ WayBackTokenQuery.ts
+│  │  ├─ register
+│  │  │  ├─ register.d.ts
+│  │  │  └─ registerQuery.ts
+│  │  ├─ repositories
+│  │  │  ├─ advertisement_cards_repository.js
+│  │  │  ├─ communityRepository.js
+│  │  │  ├─ contestRepository.js
+│  │  │  ├─ daily_taskRepository.js
+│  │  │  ├─ logregRepository.js
+│  │  │  ├─ mathSolveRepository.js
+│  │  │  ├─ profileRepository.js
+│  │  │  ├─ quoteRepository.js
+│  │  │  ├─ settingsConfirmRepository.js
+│  │  │  ├─ storeItemsRepository.js
+│  │  │  ├─ task_solutionRepository.js
+│  │  │  ├─ tasksRepository.js
+│  │  │  ├─ themeRepository.js
+│  │  │  ├─ token_redeemRepository.js
+│  │  │  ├─ transactionRepository.js
+│  │  │  └─ userdataRepository.js
+│  │  ├─ routes
+│  │  │  ├─ advertisement_cards_routes.js
+│  │  │  ├─ communityRoute.js
+│  │  │  ├─ contestRoute.js
+│  │  │  ├─ daily_taskRoute.js
+│  │  │  ├─ logregRoute.js
+│  │  │  ├─ profileRoute.js
+│  │  │  ├─ quoteroute.js
+│  │  │  ├─ settingsConfirmRoute.js
+│  │  │  ├─ statisticsRoute.js
+│  │  │  ├─ storeItemsRoute.js
+│  │  │  ├─ task_solutionsRoute.js
+│  │  │  ├─ tasksRoute.js
+│  │  │  ├─ themeRoute.js
+│  │  │  ├─ token_redeemRoute.js
+│  │  │  ├─ transactionRoute.js
+│  │  │  └─ userdataRoute.js
+│  │  ├─ services
+│  │  │  ├─ advertisement_cards_services.js
+│  │  │  ├─ communityService.js
+│  │  │  ├─ contestService.js
+│  │  │  ├─ daily_taskServices.js
+│  │  │  ├─ logregService.js
+│  │  │  ├─ mathSolveServices.js
+│  │  │  ├─ profileService.js
+│  │  │  ├─ quoteService.js
+│  │  │  ├─ settingsConfirmService.js
+│  │  │  ├─ storeItemsServices.js
+│  │  │  ├─ task_solutionsService.js
+│  │  │  ├─ tasksServices.js
+│  │  │  ├─ token_redeemService.js
+│  │  │  ├─ transactionService.js
+│  │  │  └─ userdataService.js
+│  │  ├─ set-new-password
+│  │  │  ├─ SetNewPassword.d.ts
+│  │  │  └─ SetNewPasswordQuery.ts
+│  │  ├─ settings-confirm
+│  │  │  └─ settingsConfirmQuery.ts
+│  │  ├─ storeItems
+│  │  │  └─ storeItemQuery.ts
+│  │  ├─ taskSolving
+│  │  │  ├─ taskSolving.d.ts
+│  │  │  └─ taskSolvingQuery.ts
+│  │  ├─ taskSubmit
+│  │  │  └─ taskSubmit.ts
+│  │  └─ themes
+│  │     └─ themeQuery.ts
+│  ├─ app.js
+│  ├─ assets
+│  │  ├─ Mug_item.png
+│  │  ├─ Notebook_item.png
+│  │  ├─ Tshirt.png
+│  │  ├─ Tshirt_item.png
+│  │  ├─ base.css
+│  │  ├─ coin.png
+│  │  ├─ fire.png
+│  │  ├─ info.png
+│  │  ├─ late.png
+│  │  ├─ logo.svg
+│  │  ├─ magnifying-glass.png
+│  │  ├─ main.css
+│  │  └─ rollback.png
+│  ├─ components
+│  │  ├─ ErrorHandler.vue
+│  │  ├─ HelloWorld.vue
+│  │  ├─ SuccesHandler.vue
+│  │  ├─ TheWelcome.vue
+│  │  ├─ WelcomeItem.vue
+│  │  ├─ __tests__
+│  │  │  └─ HelloWorld.spec.ts
+│  │  ├─ background
+│  │  │  ├─ logreg_background.mp4
+│  │  │  └─ profile_background.mp4
+│  │  └─ icons
+│  │     ├─ IconCommunity.vue
+│  │     ├─ IconDocumentation.vue
+│  │     ├─ IconEcosystem.vue
+│  │     ├─ IconSupport.vue
+│  │     ├─ IconTooling.vue
+│  │     └─ logo.png
+│  ├─ layouts
+│  │  ├─ DefaultLayout.vue
+│  │  └─ LogRegLayout.vue
+│  ├─ lib
+│  │  ├─ axios.ts
+│  │  ├─ queryClient.ts
+│  │  └─ vuetify.ts
+│  ├─ main.ts
+│  ├─ package-lock.json
+│  ├─ package.json
+│  ├─ router
+│  │  └─ index.ts
+│  ├─ server.js
+│  ├─ shims-vue.d.ts
+│  ├─ stores
+│  │  └─ userStore.ts
+│  ├─ types
+│  │  └─ global.d.ts
+│  ├─ utils
+│  │  └─ queryKeys.ts
+│  └─ views
+│     ├─ AboutView.vue
+│     ├─ ApproveView.vue
+│     ├─ ChallangeView.vue
+│     ├─ CommunityView.vue
+│     ├─ ContestView.vue
+│     ├─ ForgetPasswordView.vue
+│     ├─ HomeView.vue
+│     ├─ LogView.vue
+│     ├─ ProfileView.vue
+│     ├─ RegView.vue
+│     ├─ SetNewPasswordView.vue
+│     ├─ StoreView.vue
+│     ├─ SuccessRegisterView.vue
+│     ├─ TaskCreateView.vue
+│     ├─ TaskSubmitView.vue
+│     └─ TaskView.vue
+├─ tsconfig.app.json
+├─ tsconfig.json
+├─ tsconfig.node.json
+├─ tsconfig.vitest.json
+├─ vite.config.ts
+└─ vitest.config.ts
+```
+©generated by [Project Tree Generator](https://woochanleee.github.io/project-tree-generator)
