@@ -491,6 +491,7 @@ var dailytask_dayNum = ref(0);
 const specificTaskquery = useSpecificTask(dailytask_day);
 
 const LoadDailyTask = async (day: number) => {
+  console.log(day)
     var tasksDate: any = CheckIfCurrentTask(day.toString());
 
     switch (tasksDate) {
@@ -505,8 +506,10 @@ const LoadDailyTask = async (day: number) => {
             break; // Prevent falling through
 
         case 2:
+            dailytask_day.value = day.toString();
             dialog.value = true;
-            dailytask_dayNum.value = day;
+            await specificTaskquery.refetch();
+            dailytask_dayNum.value = Number(specificTaskquery.data.value.task_id);
             break; 
         default:
           alert('varatlan hiba')
