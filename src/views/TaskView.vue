@@ -158,6 +158,7 @@ import {UseGetSimilarCards,UseCheckIfDailyTask} from '@/api/cards/cardQuery'
 import { useProfileGetUser,UseGetUserById } from '@/api/profile/profileQuery';
 import {UseGetThemeById} from '@/api/themes/themeQuery'
 import {getCookie, get_fullUser,get_user_name, userId} from '@/stores/userStore'
+import {UseCheckToken,UsedeactivateToken} from '@/api/redeemWayBackToken/WayBackTokenQuery'
 /*--- Importok vége ---*/
 
 
@@ -265,8 +266,10 @@ const showAlert = (type: "success" | "error", text: string) => {
 };
 
 const { mutate: submitSolution } = UsesubmitSolution();
-
-const SubmitTask = () => {
+const {mutate: minusToken} = UsedeactivateToken(ref(get_fullUser.value.id),task_id);
+const checkIfLateTask = UseCheckToken(ref(get_fullUser.value.id),task_id)
+const SubmitTask = async() => {
+  await checkIfLateTask.refetch()
   if (!get_fullUser.value) {
     showAlert("error", "Jelentkezz be a feladat megoldásához!");
     return;
@@ -275,7 +278,6 @@ const SubmitTask = () => {
     showAlert("error", "A megoldás mező üres! Add meg a megoldást a formátum szerint!");
     return;
   }
-
   const payload = `${get_fullUser.value?.id};${route.params.id};${solution.value}`;
 
 
@@ -285,6 +287,11 @@ const SubmitTask = () => {
       
       // Handle the state returned from the backend
       if (state === 1) {
+        if(checkIfLateTask){
+      minusToken(undefined,{
+        
+      });
+      }
         showAlert("success", "Feladat sikeresen megoldva!");
       } else if(state === 0){
         showAlert("error", "A feladat nem lett sikeresen megoldva.");
