@@ -48,7 +48,9 @@ const getRandomTask = async (req,res,next) => {
 
 const getFilteredTasks = async (req, res) => {
   try {
-      const tasks = await tasksService.getFilteredTasks(req.query);
+    console.log(req.query)
+    const { difficulty, search, themes, state, userId, offset } = req.query
+    const tasks = await tasksService.getFilteredTasks({difficulty, search, themes, state, userId, offset});
       res.status(200).json(tasks);
   } catch (error) {
       res.status(500).json({ message: "Error fetching tasks" });

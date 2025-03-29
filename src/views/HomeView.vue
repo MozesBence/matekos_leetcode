@@ -1,5 +1,5 @@
 <template>
-  <!-- Kártyák kezdete -->
+  <!--Hirdető kártyák kezdete -->
   <v-container fluid style="overflow-x: auto;">
     <v-row 
       class="d-flex align-center flex-nowrap overflow-x-auto cardStyle align-scretch pb-3"
@@ -46,8 +46,7 @@
       </v-col>
     </v-row>
   </v-container>
-  
-  <!-- Kártyák vége -->
+  <!-- Hirdető kártyák vége -->
 
   <!-- Téma választó szalag kezdete -->
   <v-sheet class="mx-auto" max-width="100%" style="background-color: transparent;">
@@ -70,7 +69,8 @@
   </v-sheet>
   <!-- Téma választó szalag vége -->
 
-  <!--Szűrések menüszalag
+  <!--
+    - Szűrések menüszalag:
       Tartalmazza:
         - Nehézség szerinti szűrés
         - Állapot szetinti szűrés
@@ -123,8 +123,6 @@
     :disabled="!get_fullUser.email"
   ></v-select>
 </v-col>
-
-
 <!--Állapot szetinti szűrés vége-->
 
 <!-- Keresés szerinti szűrés kezdete-->
@@ -151,7 +149,10 @@
   </v-col>
 </v-row>
 <!--Random feladat vége-->
+
 <!--Szűrések menüszalag vége-->
+
+<!---->
 <v-layout class="rounded-md" height="min-content">
   <v-navigation-drawer 
   location="right" 
@@ -349,7 +350,7 @@
       <br>
       <br>
       <div style="display:flex; vertical-align:middle; text-align:left;">
-        <img src="../assets/rollback.png" alt="" height="20" style="margin-right:5px"> 2 db tokened van.
+        <img src="../assets/rollback.png" alt="" height="20" style="margin-right:5px"> {{roll_back_token_count_query.data.value?.roll_back_token}} tokened van.
       </div>
     </v-card-text>
 
@@ -393,13 +394,14 @@ import {UsewayBackToken} from '@/api/redeemWayBackToken/WayBackTokenQuery'
 // Query hooks
 
 const userId = ref(get_fullUser.value.id);
+const user_id = ref<number | null>(null);
 const offset = ref<number>(0);
   const filterData = ref({
   difficulty: null,
   state: null,
   themes: '',
   search: '',
-  UserId: 2,
+  userId: userId,
   offset: 0
 });
 const themesQuery = UseThemes();
@@ -416,7 +418,6 @@ var dialog = ref(false);
 const apexchart = VueApexCharts;
 const get_user_name = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
-const user_id = ref<number | null>(null);
 const dailyStreak = UseGetDailyStreak(user_id);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
@@ -458,6 +459,7 @@ const handleToggle = async (theme: string, isSelected: boolean, toggle: Function
 
 
 watch(filterData, () => {
+  filterData.value.userId = Number(user_id.value)
   cardsQuery.refetch(); 
   allTaskCountQuery.refetch();
 }, { deep: true });

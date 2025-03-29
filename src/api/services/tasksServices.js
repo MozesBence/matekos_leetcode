@@ -57,8 +57,7 @@ class TasksService {
   }
   async getFilteredTasks({ difficulty, search, themes, state, userId, offset }) {
     try {
-      difficulty = difficulty !== undefined ? parseInt(difficulty) : undefined;
-      state = state !== undefined ? parseInt(state) : undefined;
+
       if (themes) {
         themes = themes.split(";");
       }

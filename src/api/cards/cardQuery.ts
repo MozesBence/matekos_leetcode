@@ -64,7 +64,7 @@ export const useSolvedTaskRates = (id: Ref<number | null, number | null>) => {
   });
 };
 
-const fetchAllTaskCount = async (filters: { difficulty: string | null; state: string | null; themes: string; search: string; UserId: number; offset: number }) => {
+const fetchAllTaskCount = async (filters: { difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }) => {
  try {
     const filteredParams = NonEmptyFilters(filters);
 
@@ -78,7 +78,7 @@ const fetchAllTaskCount = async (filters: { difficulty: string | null; state: st
   }
 };
 
-export const useAllTaskCount = (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; UserId: number; offset: number }>) => {
+export const useAllTaskCount = (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }>) => {
   return useQuery({
     queryFn: () => fetchAllTaskCount(filters.value),
     queryKey: ['tasksCount', NonEmptyFilters(filters.value)],
@@ -142,13 +142,15 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
 };
 
 
-const fetchCards = async (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; UserId: number; offset: number }>) => {
+const fetchCards = async (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }>) => {
   try {
+    console.log(filters.value)
     const filteredParams = NonEmptyFilters(filters.value);
-
+    console.log(filteredParams)
     const response = await axios.get("/api/tasks/filteredTasks", {
       params: filteredParams,
     });
+    console.log(response.data)
     return response.data;
   } catch (error) {
     console.error("Error taskok fetchelese kozben:", error);
@@ -156,7 +158,7 @@ const fetchCards = async (filters: Ref<{ difficulty: string | null; state: strin
   }
 };
 
-function NonEmptyFilters(filters: { difficulty: string | null; state: string | null; themes: string; search: string; UserId: number; offset: number }) {
+function NonEmptyFilters(filters: { difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }) {
   const nonEmptyFilters: Record<string, string | number> = {};
 
   for (const [key, value] of Object.entries(filters)) {
@@ -170,7 +172,7 @@ function NonEmptyFilters(filters: { difficulty: string | null; state: string | n
   return nonEmptyFilters;
 }
 
-export const UseFetchCards = (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; UserId: number; offset: number }>) => {
+export const UseFetchCards = (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }>) => {
   return useQuery({
     queryFn: () => fetchCards(filters),
     queryKey: ['tasks', NonEmptyFilters(filters.value)],
