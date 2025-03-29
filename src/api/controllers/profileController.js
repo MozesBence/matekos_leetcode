@@ -80,7 +80,27 @@ exports.profilPicUpload = async (req, res, next) => {
             throw error;
         }
 
-        res.status(200).send('Profilkép sikeresen feltöltve!');
+        res.status(201).send('Profilkép sikeresen feltöltve!');
+    } catch (error) {
+        next(error)
+    }
+};
+
+exports.userRank = async (req, res, next) => {
+    const { id } = req.params;
+
+    try {
+        const get_rank = await profileService.getRank(id);
+
+        if(!get_rank){
+            const error = new Error("Nem sikerült lekérni a felhasználó helyezését!");
+
+            error.status = 400;
+
+            throw error;
+        }
+
+        res.status(200).json(get_rank);
     } catch (error) {
         next(error)
     }

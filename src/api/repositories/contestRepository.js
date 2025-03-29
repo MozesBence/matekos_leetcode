@@ -16,7 +16,7 @@ class contestRepository
 
         this.Tasks = db.Tasks;
 
-        this.Competetins_submissions = db.Competetins_submissions;
+        this.Competition_submissions = db.Competition_submissions;
     }
 
     async getLeaderBoard()
@@ -32,8 +32,6 @@ class contestRepository
                 activated: 1
             }
         });
-
-        console.log(userWithCustomization);
 
         const UsersOnLeaderboard = [];
 
@@ -95,7 +93,7 @@ class contestRepository
                         model: this.Tasks,
                     },
                     {
-                        model: this.Competetins_submissions,
+                        model: this.Competition_submissions,
                         where: {
                             user_id: user_id
                         },
@@ -122,7 +120,7 @@ class contestRepository
         if (id) {
             return await this.Competitions.findAll({
                 include: [{
-                    model: this.Competetins_submissions,
+                    model: this.Competition_submissions,
                     where: {
                         user_id: id
                     },

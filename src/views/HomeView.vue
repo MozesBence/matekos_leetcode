@@ -2,19 +2,20 @@
   <!-- Kártyák kezdete -->
   <v-container fluid style="overflow-x: auto;">
     <v-row 
-      class="d-flex align-center flex-nowrap overflow-x-auto cardStyle align-stretch"
-      style="gap: 1rem; padding: 1vw 2vw; white-space: nowrap;"
+      class="d-flex align-center flex-nowrap overflow-x-auto cardStyle align-scretch pb-3"
+      style="white-space: nowrap;"
     >
       <v-col 
       v-for="(card, index) in cards" 
       :key="index" 
-      class="pa-2"
-      cols="12" sm="6" md="3" lg="3"
+      class="pa-2 mx-2"
+      cols="12" sm="6" md="3"
+      style="max-width: max-content;"
       :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
       >
         <v-card 
           class="hero d-flex flex-column pa-2 rounded"
-          style="overflow: hidden; height: 100%;"
+          style="overflow: hidden; height: 100%; min-height: 17rem;"
         >
           <v-card-title 
             class="text-h6 text-center py-1 px-2 rounded" 
@@ -23,8 +24,8 @@
             <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
           </v-card-title>
           <div
-            class="text-center flex-grow-1 d-flex align-center justify-center" 
-            style="margin: 16px 0; white-space: pre-wrap; word-wrap: break-word; color: white;"
+            class="pt-5 d-flex align-center justify-center" 
+            style="white-space: pre-wrap; word-wrap: break-word; color: white;"
           >
             <h4 style="font-weight: normal;">{{ card.content }}</h4>
           </div>
@@ -35,7 +36,6 @@
               :text="card.button_title"
               variant="outlined"
               block
-              style="width: 4rem;"
               class="rounded-pill"
               @click="navigate(card.redirect)"
             >
@@ -171,29 +171,31 @@
     </v-list-item>
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
-      style="text-align: center; height: 12em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
+      style="text-align: center; height: 13em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
       >
         <div 
-          style="border-radius: 15px; padding: 10px; width: 380px; height: 9em;" 
-          class="d-flex flex-column align-center justify-center "
+          style="width: 380px; height: max-content;" 
+          class="d-flex flex-column align-center justify-center rounded pa-2"
         >
-        <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
-        <v-progress-linear
-        v-model="progressPercentage"
-        :color="progressColor"
-        height="25"
-        class="rounded-pill mt-2 py-3"
-        style="width: 300px; background-color: rgb(var(--v-theme-background));"
-        >
-          <template v-slot:default="{ value }">
-            <strong>{{ currentLevel }}. szint</strong>
-          </template>
-        </v-progress-linear>
-          <div class=" d-flex align-center">
+          <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
+          <div class="my-2">
+            <v-progress-linear
+            v-model="progressPercentage"
+            :color="progressColor"
+            height="25"
+            class="rounded-pill"
+            style="width: 300px; background-color: rgb(var(--v-theme-background));"
+            >
+              <template v-slot:default="{ value }">
+                <strong>{{ currentLevel }}. szint</strong>
+              </template>
+            </v-progress-linear>
+          </div>
+          <div class="d-flex align-center">
             <img height="20px" src="../assets/coin.png" class="mr-1">
             <h4>Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}</h4> 
           </div>
-          <h4 class=" d-flex align-center">
+          <h4 class=" d-flex align-center mt-1">
             <img src="../assets/rollback.png" alt="" height="20px" class="mr-1">
             Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
           </h4>
@@ -797,7 +799,6 @@ onMounted(() => {
     color: white;
     padding: 20px;
     border-radius: 12px;
-    margin-bottom: 30px;
     text-align: center;
   }
 

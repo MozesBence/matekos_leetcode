@@ -1,5 +1,7 @@
 const db = require("../database/dbContext");
 
+const { Op } = require('sequelize');
+
 class profileRepository
 {
     constructor(db)
@@ -133,6 +135,18 @@ class profileRepository
             console.error('Hiba történt a felhasználó és a testreszabás lekérése során:', error);
             throw error;
         }
+    }
+
+    async getRank(id){
+        const user = await this.Users.findOne({ where: { id } });
+
+        const higherRankCount = await this.Users.count({
+          where: {
+            experience_point: { [Op.gt]: user.experience_point }
+          }
+        });
+      
+        return higherRankCount + 1;
     }
 
 }

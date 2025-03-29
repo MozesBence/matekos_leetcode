@@ -41,7 +41,7 @@ const ProfilePicUpload = async (data: ProfilPicdata) => {
     formData.append('type', data.type.toString());  // type
 
     try {
-        const response = await axiosClient.patch('/profile', formData, {
+        const response = await axiosClient.patch('/api/profile', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
@@ -127,9 +127,9 @@ export const UseGetMostRecentlyTriedTask = (userId: Number) => {
 
 
 const getUserById = async (userId: Number) => {
+
     try{
         const response = await axiosClient.get(`/api/userData/getUserById/${userId}`);
-        console.log(response.data)
         return response.data;
     }catch(error){
         throw error;
@@ -142,4 +142,21 @@ export const UseGetUserById = (userId:Ref<Number>) => {
         queryFn: () => getUserById(userId.value),
         queryKey:['creator_name',userId.value]
     })
+}
+
+const ProfileRank = async (user_id: number) => {
+    const response = await axiosClient.get(`/profile-rank/${user_id}`);
+    return response.data;
+}
+
+
+export const useGetProfilRank = () => {
+    return useMutation({
+        mutationFn: ProfileRank,
+        onSuccess: (response) => {
+
+        },
+        onError: (error: any) => {
+        }}
+    );
 }

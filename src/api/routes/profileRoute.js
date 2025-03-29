@@ -14,13 +14,13 @@ const profileAuth = require("../middlewares/profileAuth");
  *     tags:
  *       - Profile
  *     description: Felhasználó összes adatának lekérése
-  *     parameters:
+ *     parameters:
  *       - in: header
  *         name: Token
  *         required: true
  *         schema:
  *           type: string
- *         description: "Token a felhasználó ellenőrzéséhez"
+ *         description: Token a felhasználó ellenőrzéséhez
  *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InBpbnRlYWRhbmk4OEBnbWFpbC5jb20iLCJpYXQiOjE3NDI0NjY4NjcsImV4cCI6MTc0MjQ3MDQ2N30.eAv8ZrTREgFFY2U8AK_hUy3mFbbJEQc_eGcQ6VZCP6c
  *       - in: header
  *         name: id
@@ -123,5 +123,38 @@ const upload = multer({
  *           example: 0
  */
 route.patch("/profile", upload.single('blob'), profileControllers.profilPicUpload);
+
+/**
+ * @swagger
+ * /profile-rank:
+ *   get:
+ *     summary: Felhasználó helyezése 
+ *     tags:
+ *       - Profile
+ *     description: Felhasználó helyezésének lekérése
+ *     parameters:
+ *       - in: params
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: int
+ *         description: Felhasználó azonosítója
+ *         example: 1
+ *     responses:
+ *       200:
+ *         description: Sikeres lekérés
+ *         content:
+ *           application/json:
+ *              example:
+ *                  rank: 1
+ *       400:
+ *         description: Hiba a felhasználó helyezésének lekérése közben
+ *         content:
+ *           application/json:
+ *              example:
+ *                  status: "400"
+ *                  message: "Nem sikerült lekérni a felhasználó helyezését!"
+ */
+route.get("/profile-rank/:id", profileControllers.userRank);
 
 module.exports = route;

@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
     const Themes = require("../models/themes")(sequelize, DataTypes);
     const Tasks = require("../models/tasks")(sequelize, DataTypes);
     const Competitions = require("../models/competitions")(sequelize, DataTypes);
-    const Badges = require("../models/badges")(sequelize, DataTypes);
     const Alerts = require("../models/alerts")(sequelize, DataTypes);
     const Tokenz = require("../models/tokenz")(sequelize, DataTypes);
     const User_customization = require("../models/user_customization")(sequelize, DataTypes);
@@ -32,11 +31,6 @@ module.exports = (sequelize, DataTypes) => {
 
     Users.hasOne(User_customization, {
         foreignKey: "user_id",
-    });
-
-    Badges.belongsToMany(Users, {
-        foreignKey: "badges_id",
-        through: "badge_redemption",
     });
 
     // Use Task_solutions in association
@@ -67,7 +61,7 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "post_id",
         allowNull: true,
     });
-    Community_posts.belongsTo(Users, { // Hiányzott!
+    Community_posts.belongsTo(Users, {
         foreignKey: "user_id",
     });
 
@@ -101,22 +95,21 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "user_id",
     });
 
-    // Like kapcsolat posztokkal
     Community_likes.belongsTo(Community_posts, {
         foreignKey: "entity_id",
-        constraints: false, // Polimorf kapcsolat miatt
+        constraints: false,
     });
-    // Like kapcsolat kommentekkel
+
     Community_likes.belongsTo(Community_comments, {
         foreignKey: "entity_id",
         constraints: false,
     });
-    // Posztokhoz tartozó like-ok
+
     Community_posts.hasMany(Community_likes, {
         foreignKey: "entity_id",
         constraints: false,
     });
-    // Kommentekhez tartozó like-ok
+
     Community_comments.hasMany(Community_likes, {
         foreignKey: "entity_id",
         constraints: false,
@@ -135,23 +128,22 @@ module.exports = (sequelize, DataTypes) => {
 
     Users.hasMany(Notification, {
         foreignKey: "user_id",
-        as: "SentReports" // A felhasználó által küldött bejelentések
+        as: "SentReports"
     });
     
     Users.hasMany(Notification, {
         foreignKey: "from_user_id",
-        as: "ReceivedReports" // A felhasználóról érkezett bejelentések
+        as: "ReceivedReports"
     });
-    
-    // Fordított kapcsolatok a Notification táblában:
+
     Notification.belongsTo(Users, {
         foreignKey: "user_id",
-        as: "Reporter" // Bejelentést küldő személy
+        as: "Reporter"
     });
     
     Notification.belongsTo(Users, {
         foreignKey: "from_user_id",
-        as: "ReportedUser" // A bejelentés célpontja (akiről szó van)
+        as: "ReportedUser"
     });
     
     Task_solutions.belongsTo(Users, {
@@ -164,7 +156,6 @@ module.exports = (sequelize, DataTypes) => {
     
     Tasks.hasOne(Daily_Tasks, { foreignKey: "task_id" });
     Daily_Tasks.belongsTo(Tasks, { foreignKey: "task_id" });
-
 
     Community_posts.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedPost' });
     Community_comments.hasMany(Notification, { foreignKey: 'content_id', as: 'reportedComment' });
@@ -228,7 +219,6 @@ module.exports = (sequelize, DataTypes) => {
         Tasks,
         Competitions,
         Competition_submissions,
-        Badges,
         Alerts,
         Tokenz,
         User_customization,

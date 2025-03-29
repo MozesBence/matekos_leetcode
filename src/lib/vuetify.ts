@@ -51,6 +51,7 @@ const vuetify = createVuetify({
           profile_header_bc: colors.grey.lighten2,
           profile_textColor: colors.grey.lighten5,
           profile_cardsColor: colors.grey.lighten2,
+          chart_color: colors.grey.darken4,
 
           about_bc: colors.grey.lighten2,
           about_main_text_color: colors.grey.lighten5,
@@ -107,6 +108,7 @@ const vuetify = createVuetify({
           profile_header_bc: colors.grey.darken3,
           profile_textColor: colors.grey.lighten4,
           profile_cardsColor: colors.grey.darken3,
+          chart_color: colors.grey.lighten5,
 
           about_bc: colors.grey.darken3,
           about_main_text_color: colors.grey.lighten5,

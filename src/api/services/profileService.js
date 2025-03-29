@@ -21,6 +21,11 @@ class profileService
     {
         return await profileRepository.getElseUserById(id);
     }
+
+    async getRank(id)
+    {
+        return await profileRepository.getRank(id);
+    }
 }
 
 module.exports = new profileService();

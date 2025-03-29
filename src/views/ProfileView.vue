@@ -64,7 +64,7 @@
           />
         </div>
         <div 
-        class="d-flex flex-column justify-center align-center mt-4 overlay-div" 
+        class="d-flex flex-column justify-center align-center mt-4 overlay-div"
         style="pointer-events: none; top: -13vh;"
         >
           <v-btn 
@@ -119,68 +119,88 @@
             height="420"
             style="transition: .3s;"
           >
-          <div id="chart">
-            <apexchart type="line" height="350" :options="chartOptions" :series="series"></apexchart>
+          <div id="chart" style="max-height: 400px;">
+            <apexchart type="line" height="400" :options="chartOptions" :series="series"></apexchart>
           </div>
           </v-sheet>
         </v-col>
       </v-row>
-      <v-row justify="space-evenly">
+      <v-row justify="space-evenly" :class="{'ga-2' : isMobile}">
         <v-col
           cols="12"
-          md="6"
+          :md="settingsShow ? '6' : '12'"
         >
           <v-sheet
-            class="pa-2 rounded-lg"
+            class="pa-2 rounded-lg  text-center"
             color="profile_cardsColor"
-            height="420"
+            min-height="180"
             style="transition: .3s;"
           >
-           <h1>Rang:</h1>
-           
+           <h1>Felhasználó helyezése</h1>
+           <div style="background-color: rgb(var(--v-theme-profile_bc)); width: max-content;" class="rounded-circle mx-auto pa-5">
+            <h1 class="position-relative rounded-circle d-flex align-center justify-center" style="height: 6rem; width: 6rem; font-size: 4rem;">{{ UserRank }}
+              <v-icon
+                v-if="UserRank === 1"
+                class="crown-icon gold"
+              >
+                mdi-crown
+              </v-icon>
+              <v-icon
+                v-if="UserRank === 2"
+                class="crown-icon silver"
+              >
+                mdi-crown
+              </v-icon>
+              <v-icon
+                v-if="UserRank === 3"
+                class="crown-icon bronze"
+              >
+                mdi-crown
+              </v-icon>
+            </h1>
+           </div>
           </v-sheet>
         </v-col>
         <v-col
           cols="12"
           md="6"
+          v-if="settingsShow"
         >
           <v-sheet
-            class="pa-2 rounded-lg"
+            class="pa-2 rounded-lg text-center"
             color="profile_cardsColor"
-            height="420"
             style="transition: .3s;"
+            min-height="180"
             
           >
-          <h2>Legutóbb megkezdett feladat</h2>
-          <v-card>
+            <h1>Legutóbb megkezdett feladat</h1>
             <v-card
-            class="mx-auto"
-          >
-            <v-card-item>
-              <div>
-                <div class="text-overline mb-1">
+              elevation="0"
+              class="mx-auto"
+              style="box-shadow: none;"
+            >
+              <v-card-item>
+                <div>
+                  <div class="text-overline mb-1">
+                  </div>
+                  <div class="text-h6 mb-1" v-if="mostRecTriedTask.data.value">
+                    {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}
+                  </div>
+                  <div class="text-h6 mb-1" v-if="!mostRecTriedTask.data.value">
+                    <p>Jelenleg minden próbálkozásod sikeres volt, vagy még nem volt! A gombra kattintva kaphatsz egy random feladatot.</p>
+                  </div>
                 </div>
-                <div class="text-h6 mb-1" v-if="mostRecTriedTask.data.value">
-                  {{mostRecTriedTask.data.value.id}} {{mostRecTriedTask.data.value.task_title}}
-                </div>
-                <div class="text-h6 mb-1" v-if="!mostRecTriedTask.data.value">
-                  <p>Jelenleg minden próbálkozásod sikeres volt, vagy még nem volt! A gombra kattintva kaphatsz
-                    egy random feladatot.</p>
-                  
-                </div>
-              </div>
-            </v-card-item>
-    
-            <v-card-actions>
-              <v-btn  v-if="!mostRecTriedTask.data.value" @click="LoadRandomTask">
-                Random task
-              </v-btn>
-              <v-btn  v-if="mostRecTriedTask.data.value" @click="TaskView(mostRecTriedTask.data.value.id)">
-                Folytatás
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-          </v-card>
+              </v-card-item>
+      
+              <v-card-actions>
+                <v-btn  v-if="!mostRecTriedTask.data.value" @click="LoadRandomTask" class="w-100">
+                  Random task
+                </v-btn>
+                <v-btn  v-if="mostRecTriedTask.data.value" @click="TaskView(mostRecTriedTask.data.value.id)"  class="w-100">
+                  Folytatás
+                </v-btn>
+              </v-card-actions>
+            </v-card>
           </v-sheet>
         </v-col>
       </v-row>
@@ -194,7 +214,7 @@ import { onMounted, ref, watch, inject ,watchEffect, computed  } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useTheme, useDisplay } from 'vuetify';
 import imageCompression from 'browser-image-compression';
-import { useProfileDarkmodeSwitch, UseGetMonthlySolvingRate, UseGetMostRecentlyTriedTask, useProfileGetUser, useProfilePicUpload } from '@/api/profile/profileQuery'
+import { useProfileDarkmodeSwitch, UseGetMonthlySolvingRate, UseGetMostRecentlyTriedTask, useProfileGetUser, useProfilePicUpload, useGetProfilRank } from '@/api/profile/profileQuery'
 import VueApexCharts from 'vue3-apexcharts';
 import {useRandomTask} from '@/api/cards/cardQuery'
 
@@ -236,16 +256,50 @@ const isProfImageAvailable = ref(true);
 const isBackImageAvailable = ref(true);
 const fileProfPicInput = ref(null);
 const fileBackPicInput = ref(null);
+const UserRank = ref(null);
 const theme = useTheme();
-const chartOptions = ref({
-  chart: { height: 350, type: 'line', zoom: { enabled: false }, toolbar: { show: false } },
-  dataLabels: { enabled: false },
-  stroke: { curve: 'straight' },
-  title: { text: 'Megoldott feladatok', align: 'left' },
-  grid: { row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 } },
-  xaxis: { categories: ['Jan', 'Feb', 'Már', 'Ápr', 'May', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'] },
-  yaxis: { labels: { formatter: (val) => val.toFixed(0) } }
-});
+const chartOptions = computed(() => {
+  const lineColor = theme.current.value.colors.chart_color
+  const labelColor = theme.current.value.colors.chart_color
+
+  return {
+    chart: { 
+      height: 400, 
+      type: 'line', 
+      zoom: { enabled: false }, 
+      toolbar: { show: false } 
+    },
+    dataLabels: { enabled: false },
+    stroke: { curve: 'straight' },
+    title: { 
+      text: 'Megoldott feladatok', 
+      align: 'left', 
+      style: { color: labelColor, fontSize: '18px', fontWeight: 'bold' }
+    },
+    grid: { 
+      row: { colors: ['#f3f3f3', 'transparent'], opacity: 0.5 } 
+    },
+    xaxis: { 
+      categories: ['Jan', 'Feb', 'Már', 'Ápr', 'May', 'Jún', 'Júl', 'Aug', 'Szep', 'Okt', 'Nov', 'Dec'],
+      labels: { 
+        style: { 
+          colors: Array(12).fill(labelColor),
+          fontSize: '14px'
+        } 
+      }
+    },
+    yaxis: { 
+      labels: { 
+        formatter: (val) => val.toFixed(0),
+        style: { 
+          colors: [labelColor],
+          fontSize: '14px'
+        }
+      }
+    },
+    colors: [lineColor]
+  }
+})
 
 // <------- Változók ------->
 
@@ -260,22 +314,25 @@ const { mutate: ProfileDarkMode } = useProfileDarkmodeSwitch();
 // API hívás - felhasználó profil- és háttérképének feltöltése
 const { mutate: ProfilePicUpload } = useProfilePicUpload();
 
+// API hívás - felhasználó helyezésének lekérése
+const { mutate: ProfileRank } = useGetProfilRank();
+
 // <------- API hívások -------> 
 
 // <------- Függvények | figyelők ------->
 
 watchEffect(() => {
-  if (solvingRates.value?.data?.value) {
+  if (solvingRates?.data?.value) {
     series.value = [{
       name: "Solved tasks",
-      data: solvingRates.value.data.value.map(x => x.solutionCount)
+      data: solvingRates.data.value.map(x => x.solutionCount)
     }];
   }
 });
 
 const LoadRandomTask = async () => {
   const task = await randomTask.refetch();
-  task?.data?.value?.id && router.push({ name: 'task', params: { id: task.data.value.id } });
+  task?.data?.id && router.push({ name: 'task', params: { id: task.data.id } });
 };
 
 const TaskView = (id) => router.push({ name: 'task', params: { id } });
@@ -298,6 +355,13 @@ onMounted(async () => {
   } catch (error) {
     showError ? showError(error.response) : console.log(error.response);
   }
+
+  await ProfileRank(Number(userId), {
+      onSuccess: (rank) => {
+        UserRank.value = rank;
+      },
+      onError: () => showError ? showError(error.response.data) : console.log(error.response.data)
+    });
 });
 
 const handleDarkmodeSwitch = async () => {
@@ -462,5 +526,27 @@ const triggerBackPicFileInput = () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.crown-icon {
+  position: absolute;
+  font-size: 4rem;
+  right: 0;
+  top: -.4em;
+}
+
+.gold {
+  color: gold;
+  transform: rotate(25deg);
+}
+
+.silver {
+  color: silver;
+  transform: rotate(25deg);
+}
+
+.bronze {
+  color: #cd7f32;
+  transform: rotate(25deg);
 }
 </style>
