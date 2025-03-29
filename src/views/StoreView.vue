@@ -36,25 +36,100 @@
     </v-row>
 
     <v-row v-else>
-      <v-col cols="12" sm="6" lg="3" v-for="(item, index) in items.data.value" :key="index">
+      <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
-          <img class="align-end text-white" height="200" src="../assets/Tshirt_item.png" cover />
+          <img class="align-end text-white" height="200" src="../assets/rollback.png" cover />
 
           <v-card-subtitle class="pt-4">
-            {{ item.name }}
+            {{ items.data.value[0].name }}
           </v-card-subtitle>
 
           <v-card-text>
-            <div>{{ item.description }}</div>
+            <div>{{ items.data.value[0].description }}</div>
           </v-card-text>
 
           <v-card-actions>
             <v-btn
               color="orange"
-              :disabled="(get_fullUser?.currency_count ?? 0) < item.price"
-              @click="openPurchaseDialog(item)"
+              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price"
+              @click="openPurchaseDialog(items.data.value[0])"
             >
-              Kiváltom - {{ formatCurrency(item.price) }}
+              Kiváltom - {{ formatCurrency(items.data.value[0].price) }}
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+          <v-col cols="12" sm="6" lg="3">
+        <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
+          <img class="align-end text-white" height="200" src="../assets/Tshirt_item.png" cover />
+
+          <v-card-subtitle class="pt-4">
+            {{ items.data.value[1].name }}
+          </v-card-subtitle>
+
+          <v-card-text>
+            <div>{{ items.data.value[1].description }}</div>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn
+              color="orange"
+              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price"
+              @click="openPurchaseDialog(items.data.value[1])"
+            >
+              Kiváltom - {{ formatCurrency(items.data.value[1].price) }}
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+          <v-col cols="12" sm="6" lg="3">
+        <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
+          <img class="align-end text-white" height="200" src="../assets/Mug_item.png" cover />
+
+          <v-card-subtitle class="pt-4">
+            {{ items.data.value[2].name }}
+          </v-card-subtitle>
+
+          <v-card-text>
+            <div>{{ items.data.value[2].description }}</div>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn
+              color="orange"
+              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[2].price"
+              @click="openPurchaseDialog(items.data.value[2])"
+            >
+              Kiváltom - {{ formatCurrency(items.data.value[2].price) }}
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+
+          <v-col cols="12" sm="6" lg="3">
+        <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
+          <img class="align-end text-white" height="200" src="../assets/Notebook_item.png" cover />
+
+          <v-card-subtitle class="pt-4">
+            {{ items.data.value[3].name }}
+          </v-card-subtitle>
+
+          <v-card-text>
+            <div>{{ items.data.value[3].description }}</div>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn
+              color="orange"
+              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[3].price"
+              @click="openPurchaseDialog(items.data.value[3])"
+            >
+              Kiváltom - {{ formatCurrency(items.data.value[3].price) }}
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
