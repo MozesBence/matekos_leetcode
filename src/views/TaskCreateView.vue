@@ -1,4 +1,5 @@
 <template>
+    <!--Oldal main kontentjének kezdete-->
     <v-container>
     <v-row style="display: flex; vertical-align: middle; text-align: center; justify-content: center; margin-top: 20px; margin-bottom: 20px; height:auto; max-height:40em; min-height:10em;vertical-align:middle;display:flex; justify-content:center; align-items:center;" class="hero">
         <h1>Feladat beküldés</h1>
@@ -371,39 +372,23 @@ v-if="alertMessage.type"
 class="center-alert"
 ></v-alert>
 </v-container>
+ <!--Oldal main kontentjének kezdete-->
 
 </template>
 
 <script lang="ts" setup>
+
+//Importok kezdete
 import { ref, computed, watchEffect,onMounted, inject } from "vue";
 import { UseThemes } from "@/api/themes/themeQuery";
 import {useRouter} from "vue-router"
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import {UseSubmitTask} from '@/api/taskSubmit/taskSubmit'
-
-// Router és route hookok
-const showError = inject<((msg: string) => void) | undefined>("showError");
-const showSucces = inject<((msg: string) => void) | undefined>("showSucces");
-
 import {get_fullUser, getCookie, userId,get_user_email,get_user_name} from '@/stores/userStore'
 import router from "@/router";
+//Importok vége
 
-const mathjaxDirective = {
-  mounted(el: HTMLElement, binding: any) {
-    el.innerHTML = binding.value || "";
-    if (window.MathJax) {
-      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
-    }
-  },
-  updated(el: HTMLElement, binding: any) {
-    el.innerHTML = binding.value || "";
-    if (window.MathJax) {
-      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
-    }
-  }
-};
-
-
+//Változók kezdetes
 const themes = UseThemes();
 const {push} = useRouter();
 const Task_Data = ref({
@@ -419,20 +404,15 @@ const Task_Data = ref({
   hint2: '',
   validated: 0,
 });
-
-
 const alertMessage = ref<{ type: "success" | "warning" | "error" | null; text: string }>({
     type: null,
     text: "",
 });
-
-
 const showAlertForEmptyData = ref(false);
-watchEffect(() => {
-    Task_Data.value.experiencePoints = Task_Data.value.difficulty === 0 ? 10 :
-                                          Task_Data.value.difficulty === 1 ? 15 : 25;
-});
+const showError = inject<((msg: string) => void) | undefined>("showError");
+const showSucces = inject<((msg: string) => void) | undefined>("showSucces");
 
+//Lekért témáknak értékadás annak érdekében, hogy a TaskDatában megfelelően szerepeljen
 const themesSelector = computed(() =>
   themes.data.value ? themes.data.value.map((theme: { id: number, theme: string }) => ({
     text: theme.theme,
@@ -440,15 +420,72 @@ const themesSelector = computed(() =>
   })) : []
 );
 
-// Difficulty selector options
+//A nehésgek és hozzájuk rendelt értékek annak érdekében, hogy a TaskDatában megfelelően szerepeljen
 const difficultyLevels = [
   { text: "Könnyű", value: 0 },
   { text: "Közepes", value: 1 },
   { text: "Nehéz", value: 2 }
 ];
+//Véltozók vége
 
+//MathJax behúzása
+const mathjaxDirective = {
+  mounted(el: HTMLElement, binding: any) {
+    el.innerHTML = binding.value || "";
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
+    }
+  },
+  updated(el: HTMLElement, binding: any) {
+    el.innerHTML = binding.value || "";
+    if (window.MathJax) {
+      window.MathJax.typesetPromise([el]).catch((err) => console.error("MathJax error:", err));
+    }
+  }
+};
 
+//Feladat beküldéshez hasznalt mutation, mely UseSubmitTask query-t haználja
+const { mutate: submitTask } = UseSubmitTask(Task_Data);
 
+//A beküldés lekekzelése, siker, ill. sikertelenség kijelzése, user informálása
+const SendTask = () => { 
+    if (!CheckData()) {
+        showAlert("warning", "Töltsön ki minden mezőt, hogy feladata beküldésre kerüljön!");
+    } else {
+        submitTask(undefined, {
+            onSuccess: () => {
+                showSucces ? showSucces("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!") : console.log("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!")
+            },
+            onError: (error) => {
+                showError ? showError(error.message || "Hiba a feltöltés közben!") : console.log(error.message || "Hiba a feltöltés közben!")
+            }
+        });
+    }
+};
+
+//Alert message kezelése, típus, szöveg beállítsa, 5mp utána bezárása
+const showAlert = (type: "success" | 'warning' | "error", text: string) => {
+  alertMessage.value = { type, text };
+  setTimeout(() => {
+    alertMessage.value = { type: null, text: "" };
+  }, 5000);
+};
+
+//Ellenőrző függvénz megnézi, hogy van-e üres mező
+function CheckData(){
+const hasNull = Object.values(Task_Data.value).some(value => value === null);
+if (hasNull) {
+    return false;
+}
+return true;
+};
+
+//trigger event(ek)
+watchEffect(() => {
+    Task_Data.value.experiencePoints = Task_Data.value.difficulty === 0 ? 10 : Task_Data.value.difficulty === 1 ? 15 : 25;
+});
+
+//Oldal betöltésekor lefutó függvénzek, kérések...
 onMounted(async ()=>{
   const userCookie = getCookie('user');
         if (userCookie) {
@@ -477,41 +514,6 @@ onMounted(async ()=>{
           }
         }
 });
-
-const { mutate: submitTask } = UseSubmitTask(Task_Data);
-
-const SendTask = () => { 
-    if (!CheckData()) {
-        showAlert("warning", "Töltsön ki minden mezőt, hogy feladata beküldésre kerüljön!");
-    } else {
-        submitTask(undefined, {
-            onSuccess: () => {
-                showSucces ? showSucces("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!") : console.log("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!")
-            },
-            onError: (error) => {
-                showError ? showError(error.message || "Hiba a feltöltés közben!") : console.log(error.message || "Hiba a feltöltés közben!")
-            }
-        });
-    }
-};
-
-
-const showAlert = (type: "success" | 'warning' | "error", text: string) => {
-  alertMessage.value = { type, text };
-  setTimeout(() => {
-    alertMessage.value = { type: null, text: "" };
-  }, 5000);
-};
-
-
-    function CheckData(){
-    const hasNull = Object.values(Task_Data.value).some(value => value === null);
-    if (hasNull) {
-        return false;
-    }
-    return true;
-};
-
 </script>
 
 
