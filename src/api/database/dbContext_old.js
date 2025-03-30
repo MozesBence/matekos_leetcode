@@ -81,7 +81,6 @@ const initializeDatabase = async () => {
         WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR) AND type = 'regisztrálás';`;
         
         await sequelize.query(createEventQuery);
-        console.log('Event for automatic token deletion created.');
         
         const createConfDeleteEventQuery = `
         CREATE EVENT IF NOT EXISTS delete_expired_confirm_tokens
@@ -91,7 +90,6 @@ const initializeDatabase = async () => {
         WHERE expires <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND type = 'beállítások';`;
         
         await sequelize.query(createConfDeleteEventQuery);
-        console.log('Event for automatic confirm token deletion created.');
 
         const createTriggerQuery = `
             CREATE TRIGGER IF NOT EXISTS delete_user_when_token_deleted
@@ -108,22 +106,19 @@ const initializeDatabase = async () => {
             END;`;
 
         await sequelize.query(createTriggerQuery);
-        console.log('Trigger for user deletion created.');
 
         const createDailyTaskEventQuery = `
             CREATE EVENT IF NOT EXISTS daily_task_event
             ON SCHEDULE EVERY 1 DAY
-            STARTS TIMESTAMP(CURRENT_DATE) -- Holnaptól indul
+            STARTS TIMESTAMP(CURRENT_DATE)
             DO
             BEGIN
-                -- Ellenőrzés, hogy a hónap első napja van-e
                 IF DAY(CURRENT_DATE) = 1 THEN
                     DELETE FROM Daily_Tasks;
                 END IF;
 
-                -- Ha az adott napi id már létezik, akkor nem csinál semmit
                 IF NOT EXISTS (SELECT 1 FROM Daily_Tasks WHERE id = DAY(CURRENT_DATE)) THEN
-                    -- Új random task hozzáadása az aktuális nap id-jával
+
                     INSERT INTO Daily_Tasks (id, task_id)
                     SELECT 
                         DAY(CURRENT_DATE) AS id,  -- Az aktuális nap sorszáma
@@ -132,10 +127,24 @@ const initializeDatabase = async () => {
             END;
         `;
 
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
-
         await sequelize.query(createDailyTaskEventQuery);
-        console.log('Daily event for tasks created.');
+
+        const createTokenRedeemDeleteQuery = `
+            CREATE EVENT IF NOT EXISTS token_redeem_delete_event
+            ON SCHEDULE EVERY 1 DAY
+            STARTS TIMESTAMP(CURRENT_DATE)
+            DO
+            BEGIN
+
+                IF DAY(CURRENT_DATE) = 1 THEN
+                    DELETE FROM tokenredeems;
+                END IF;
+            END;
+        `;
+
+        await sequelize.query(createTokenRedeemDeleteQuery);
+        
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
 
     } catch (error) {
         console.error('Error initializing database:', error);

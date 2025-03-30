@@ -230,25 +230,19 @@
               
             <v-hover v-slot:default="{ isHovering, props }">
               <div class="text-center">
-                <v-col
-                  md="12"
-                  class="pa-0"
-                >
-                  <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
-                    <v-btn
-                      prepend-icon="mdi-login"
-                      size="large"
-                      @click="router.push({ name: 'login' })"
-                      style="background-color: transparent;"
-                      :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
-                    >
-                      <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
-                      </template>
-                      Bejelentkezés
-                    </v-btn>
-                  </v-card>
-                </v-col>
+                <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
+                  <v-btn
+                    prepend-icon="mdi-login"
+                    @click="router.push({ name: 'login' })"
+                    style="background-color: transparent;"
+                    :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon color="info"></v-icon>
+                    </template>
+                    Bejelentkezés
+                  </v-btn>
+                </v-card>
               </div>
             </v-hover>
 
@@ -256,25 +250,19 @@
 
             <v-hover v-slot="{ isHovering, props }">
               <div class="text-center">
-                <v-col
-                md="12"
-                class="pa-0"
-                >
                 <v-card elevation="0" :color="isHovering ? 'nav_btn_hover' :  'transparent'" v-bind="props" class="rounded-pill" block>
                   <v-btn
-                    prepend-icon="mdi-account-edit"
-                    size="large"
-                    @click="router.push({ name: 'register' })"
-                    style="background-color: transparent;"
-                    :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
-                    >
-                      <template v-slot:prepend>
-                        <v-icon color="info"></v-icon>
-                      </template>
-                      Regisztrálás
-                    </v-btn>
-                  </v-card>
-                </v-col>
+                  prepend-icon="mdi-account-edit"
+                  @click="router.push({ name: 'register' })"
+                  style="background-color: transparent;"
+                  :style="{color: isHovering ? 'rgb(var(--v-theme-background))' : 'rgb(var(--v-theme-text_color))'}"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon color="info"></v-icon>
+                    </template>
+                    Regisztrálás
+                  </v-btn>
+                </v-card>
               </div>
             </v-hover>
           </v-container>
