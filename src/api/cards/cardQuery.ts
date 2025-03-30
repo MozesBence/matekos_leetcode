@@ -12,7 +12,7 @@ const fetchCompletionRates = async () => {
     const response = await axios.get('/api/task_solution/tasks/task-completion-rates');
     return response.data;
   } catch (error) {
-    console.error(`Error occurred while fetching completion rates: ${error}`);
+    throw error;
   }
 };
 
@@ -29,7 +29,6 @@ const fetchTaskState = async (id:Ref<number | null, number | null>) => {
     const response = await axios.get(`/api/task_solution/taskState/${id.value}`);
     return response.data;
   } catch (error) {
-    console.error('Error fetching task state:', error);
     throw error;
   }
 };
@@ -52,7 +51,7 @@ const fetchSolvedTaskRates = async (id: Ref<number | null, number | null>) => {
     const response = await axios.get(`/api/task_solution/solved-tasks-rate/${id.value}`);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching solved task rates:', error);
+    throw error;
   }
 };
 
@@ -73,7 +72,6 @@ const fetchAllTaskCount = async (filters: { difficulty: string | null; state: st
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching tasks:", error);
     throw error;
   }
 };
@@ -91,7 +89,7 @@ const fetchRandomTask = async () => {
     const response = await axios.get(`/api/tasks/random-task`);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching a random task:', error);
+    throw error;
   }
 };
 
@@ -110,7 +108,7 @@ const fetchSpecificTask = async (day: Ref<string>) => {
     const response = await axios.get(`/api/daily_tasks/get-daily-task/${day.value}`);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching specific task:', error);
+    throw error;
   }
 };
 
@@ -129,7 +127,7 @@ const fetchCardsByThemes = async (themeIds: Ref<string[]>) => {
     const response = await axios.get(`/api/tasks/filter-task-by-themes/${themesPath}`);
     return response.data;
   } catch (error) {
-    console.error('Error occurred while fetching tasks by themes:', error);
+    throw error;
   }
 };
 
@@ -144,16 +142,12 @@ export const useCardsByThemes = (themeIds:  Ref<string[]>) => {
 
 const fetchCards = async (filters: Ref<{ difficulty: string | null; state: string | null; themes: string; search: string; userId: number; offset: number }>) => {
   try {
-    console.log(filters.value)
     const filteredParams = NonEmptyFilters(filters.value);
-    console.log(filteredParams)
     const response = await axios.get("/api/tasks/filteredTasks", {
       params: filteredParams,
     });
-    console.log(response.data)
     return response.data;
   } catch (error) {
-    console.error("Error taskok fetchelese kozben:", error);
     throw error;
   }
 };
@@ -188,7 +182,6 @@ const getSimilarCards = async (task_id: Number,themeid: Number) => {
     }});
     return response.data;
   }catch(error){
-    console.error('error hasonlo feladatok lekerese kozben',error)
     throw error;
   }
 }
@@ -207,7 +200,6 @@ const CheckIfDailyTask = async (taskid:Number) => {
     const response = await axios.get(`/api/daily_tasks/checkIfDailyTask/${taskid}`)
     return response.data;
   }catch(error){
-    console.error('error napi feladat checknel',error)
     throw error;
   }
 }
@@ -224,7 +216,6 @@ const GetSolution = async (id:Number)=> {
     const response = await axios.get(`/api/tasks/solution/${id}`)
     return response.data;
   }catch(error){
-    console.error('error napi feladat checknel',error)
     throw error;
   }
 }
@@ -236,7 +227,6 @@ export const UseGetSolution = (id:Number) => {
   })
 
 }
-
 
 const getSpecificTaskData = async (taskId:Ref<Number | null>) => {
   try{

@@ -262,7 +262,7 @@
   </v-navigation-drawer>
   
   <!--Kártyák kezdete-->
-  <v-main class="align-center justify-center" style="height: 145vh">
+  <v-main class="align-center justify-center" style="height: auto;">
     <!--Címszalag létrehozása-->
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="2">
