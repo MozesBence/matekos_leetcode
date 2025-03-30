@@ -353,12 +353,12 @@
     <!--feladathoz tartozó segítség (2) vége-->
 
     <v-row>
-        <v-col cols="6">
+        <v-col cols="12" md="6">
             <v-btn style="width: 100%;" @click="SendTask" :disabled="!get_user_name || get_user_name?.length === 0">
                 Beküldés
               </v-btn>              
         </v-col>
-        <v-col cols="6">
+        <v-col cols="12" md="6">
             <v-btn style="width: 100%;" @click="push('/')">Vissza a főoldalra</v-btn>
         </v-col>
     </v-row>
