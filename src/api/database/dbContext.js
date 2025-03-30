@@ -54,27 +54,6 @@ const initializeDatabase = async () => {
         
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
 
-        await db.CompetitionTasks.bulkCreate([
-            { task_id: 1, competition_id: 1 },
-            { task_id: 1, competition_id: 20 },
-            { task_id: 2, competition_id: 40 },
-            { task_id: 2, competition_id: 24 },
-            { task_id: 3, competition_id: 70 },
-            { task_id: 3, competition_id: 5 },
-            { task_id: 4, competition_id: 2 },
-            { task_id: 4, competition_id: 7 },
-            { task_id: 4, competition_id: 9 },
-            { task_id: 4, competition_id: 66 },
-            { task_id: 5, competition_id: 45 },
-            { task_id: 5, competition_id: 59 },
-            { task_id: 6, competition_id: 92 },
-            { task_id: 6, competition_id: 34 },
-            { task_id: 7, competition_id: 28 },
-            { task_id: 7, competition_id: 39 },
-            { task_id: 7, competition_id: 72 },
-            { task_id: 7, competition_id: 54 }
-        ], { ignoreDuplicates: true });
-
         await db.Users.bulkCreate([
             { email: "pinteadani88@gmail.com", password: "admin12345", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
             { email: "pinteaviktoria1@gmail.com", password: "felhasznalo12345", user_name: "teszt_felhasznalo",  activated: 2 }
@@ -84,6 +63,27 @@ const initializeDatabase = async () => {
             { user_id: 1, darkmode: 0 },
             { user_id: 2, darkmode: 0 }
         ], { ignoreDuplicates: true })
+
+        await db.CompetitionTasks.bulkCreate([
+            { competition_id: 1, task_id: 1 },
+            { competition_id: 1, task_id: 20 },
+            { competition_id: 2, task_id: 40 },
+            { competition_id: 2, task_id: 24 },
+            { competition_id: 3, task_id: 70 },
+            { competition_id: 3, task_id: 5 },
+            { competition_id: 4, task_id: 2 },
+            { competition_id: 4, task_id: 7 },
+            { competition_id: 4, task_id: 9 },
+            { competition_id: 4, task_id: 66 },
+            { competition_id: 5, task_id: 45 },
+            { competition_id: 5, task_id: 59 },
+            { competition_id: 6, task_id: 92 },
+            { competition_id: 6, task_id: 34 },
+            { competition_id: 7, task_id: 28 },
+            { competition_id: 7, task_id: 39 },
+            { competition_id: 7, task_id: 72 },
+            { competition_id: 7, task_id: 54 }
+        ]);
         
         const createEventQuery = `
         CREATE EVENT IF NOT EXISTS delete_expired_tokens
