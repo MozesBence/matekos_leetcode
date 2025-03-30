@@ -45,7 +45,7 @@ if errorlevel 1 (
 REM A quote_py mappában először letölti a szükséges Python csomagokat, majd elindítja a main.py-t egy külön CMD ablakban
 start "Quote" cmd /c "cd quote_py && pip install mysql-connector-python python-dotenv requests beautifulsoup4 chardet && python ./main.py"
 REM Az src mappából a preview és start parancsokat külön ablakokban indítjuk el
-start "Preview" cmd /k "cd src && npm run preview"
+start "Preview" cmd /k "npm run preview"
 start "Start" cmd /k "cd src && npm start"
 goto end
 
