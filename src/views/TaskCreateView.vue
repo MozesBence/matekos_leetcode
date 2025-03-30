@@ -452,7 +452,6 @@ const SendTask = () => {
     if (!CheckData()) {
         showAlert("warning", "Töltsön ki minden mezőt, hogy feladata beküldésre kerüljön!");
     } else {
-        console.log(Task_Data.value)
         submitTask(undefined, {
             onSuccess: () => {
                 showSucces ? showSucces("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!") : console.log("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!")
@@ -494,7 +493,7 @@ onMounted(async ()=>{
             const userData = JSON.parse(atob(userCookie.split('.')[1]));
             get_user_name.value = userData.id;
           } catch (error) {
-            console.error('Error parsing user cookie:', error);
+            console.error(error);
           }
         }
   
@@ -511,7 +510,7 @@ onMounted(async ()=>{
               },
             });
           } catch (error) {
-            console.error('Error fetching user profile:', error);
+            console.error(error);
           }
         }
 });
