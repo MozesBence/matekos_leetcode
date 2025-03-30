@@ -1,5 +1,7 @@
 <template>
+  <!--Main content-->
   <v-container>
+    <!--Cím div, skeleton-->
     <div class="hero">
       <v-skeleton-loader
         v-if="isLoading"
@@ -11,6 +13,7 @@
       <h1 v-else>Üdvözlünk a boltban!</h1>
     </div>
 
+    <!--Aranyak kijelzése, skeleton-->
     <div class="userCurrency">
       <v-skeleton-loader
         v-if="isLoading"
@@ -18,6 +21,7 @@
         width="20%"
         class="mx-auto"
       ></v-skeleton-loader>
+      <!--Ha van user bejelentkezve akkor mutatja az aranyat, ha nincs üzenetet mutat-->
       <h3 v-else-if="get_fullUser && get_fullUser.currency_count" style="align-items: center; vertical-align: middle; text-align: center; display: flex;">
         Aranyak száma: {{ formatCurrency(get_fullUser?.currency_count) }}
         <img height="20" src="../assets/coin.png" />
@@ -25,6 +29,7 @@
       <h3 v-else>Aranyaid megtekintéséhéze jelentkezz be!</h3>
     </div>
 
+    <!--Skeletonok store itemekhez ha tölt-->
     <v-row v-if="isLoading">
       <v-col v-for="n in 4" :key="n" cols="12" sm="6" lg="3">
         <v-skeleton-loader
@@ -35,7 +40,9 @@
       </v-col>
     </v-row>
 
+    <!--Ha nem tölt itemek mutatása-->
     <v-row v-else>
+      <!--Item 1-->
       <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/rollback.png" cover />
@@ -48,7 +55,7 @@
             <div>{{ items.data.value[0].description }}</div>
           </v-card-text>
 
-          <v-card-actions>
+          <v-card-actions v-if="items.data.value[0].amount > 0 || items.data.value[0].amount == null">
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price"
@@ -58,10 +65,19 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <v-card-actions v-else>
+            <v-btn
+              disabled
+            >
+              Nincs készleten
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
 
-          <v-col cols="12" sm="6" lg="3">
+      <!--Item 2-->
+      <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Tshirt_item.png" cover />
 
@@ -73,20 +89,29 @@
             <div>{{ items.data.value[1].description }}</div>
           </v-card-text>
 
-          <v-card-actions>
+          <v-card-actions v-if="items.data.value[1].amount > 0 || items.data.value[1].amount == null">
             <v-btn
               color="orange"
-              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price"
+              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[1].price"
               @click="openPurchaseDialog(items.data.value[1])"
             >
               Kiváltom - {{ formatCurrency(items.data.value[1].price) }}
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <v-card-actions v-else>
+            <v-btn
+              disabled
+            >
+              Nincs készleten
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
 
-          <v-col cols="12" sm="6" lg="3">
+      <!--Item 3-->
+      <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Mug_item.png" cover />
 
@@ -98,7 +123,7 @@
             <div>{{ items.data.value[2].description }}</div>
           </v-card-text>
 
-          <v-card-actions>
+          <v-card-actions v-if="items.data.value[2].amount > 0 || items.data.value[2].amount == null">
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[2].price"
@@ -108,10 +133,19 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <v-card-actions v-else>
+            <v-btn
+              disabled
+            >
+              Nincs készleten
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
 
-          <v-col cols="12" sm="6" lg="3">
+      <!--Item 4-->
+      <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Notebook_item.png" cover />
 
@@ -123,7 +157,7 @@
             <div>{{ items.data.value[3].description }}</div>
           </v-card-text>
 
-          <v-card-actions>
+          <v-card-actions v-if="items.data.value[3].amount > 0 || items.data.value[3].amount == null">
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[3].price"
@@ -133,10 +167,19 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <v-card-actions v-else>
+            <v-btn
+              disabled
+            >
+              Nincs készleten
+              <img src="../assets/coin.png" alt="" height="20" />
+            </v-btn>
+          </v-card-actions>
         </v-card>
       </v-col>
     </v-row>
 
+    <!--Dialog a kiváltásra-->
     <v-dialog v-model="dialog" max-width="400" persistent>
       <v-card>
         <v-card-title class="headline">Biztosan kiváltod ezt a tételt?</v-card-title>
@@ -151,6 +194,7 @@
       </v-card>
     </v-dialog>
 
+    <!--Dialog arra, hogy a vásárlás végbement (sikeres/sikertelen)-->
     <v-dialog v-model="successDialog" max-width="400" persistent>
       <v-card class="d-flex flex-column align-center justify-center text-center">
         <v-card-title class="headline">{{ successStatus ? 'Sikeres vásárlás' : 'Sikertelen vásárlás' }}</v-card-title>
@@ -171,19 +215,23 @@
 </template>
 
 <script lang="ts" setup>
+
+//Importok kezdete
 import { get_fullUser, fetchUserData,get_user_name } from '@/stores/userStore';
 import { ref, onMounted } from 'vue';
 import { useProfileGetUser } from '@/api/profile/profileQuery';
 import { UseFetchStoreItems } from '../api/storeItems/storeItemQuery';
 import { UsePurchaseItem } from '@/api/redeemItem/purchaseItemQuery';
+//Importok vége
 
+//User interface
 interface User {
   id: number;
   user_name: string;
   currency_count: number;
 }
 
-
+//Változók
 const dialog = ref(false);
 const successDialog = ref(false);
 const successStatus = ref(false);
@@ -191,7 +239,6 @@ const SuccessMessage = ref('');
 const isLoading = ref(true);
 const profileMutation = useProfileGetUser();
 const items = UseFetchStoreItems();
-
 const purchaseData = ref({
   userId: get_fullUser.value?.id ?? 0,
   currency: 'gold',
@@ -200,6 +247,7 @@ const purchaseData = ref({
   price: 0,
 });
 
+//A vásárlásnál megjelenú dialog megnyitása, ahol mutatja az adott elem árát
 const openPurchaseDialog = (item: { id: number; price: number }) => {
   purchaseData.value.itemId = item.id;
   purchaseData.value.price = item.price;
@@ -229,7 +277,6 @@ const handleConfirmPurchase = async () => {
   } finally {
     isLoading.value = false;
   }
-   // await fetchUserData();
   } catch (error) {
     successStatus.value = false;
     SuccessMessage.value = 'Valami hiba történt a vásárlás során.';
@@ -239,23 +286,30 @@ const handleConfirmPurchase = async () => {
   }
 };
 
+// A vásárlás állapotát jelzó dialog bezárása
 const CloseStateDialog = () => {
   successDialog.value = false;
 };
 
-const formatCurrency = (currency: number): string => {
-  if (currency === 0) return '0';
+/*Az adott éréket átkonvertálja adott formákra:
+  Példák:
+    - 100, (100)
+    - 1,5E, (1500)
+    - 1,4M, (1400000)
+    - 10.2MLRD (10200003400)
+*/
+function formatCurrency(amount: number): string {
+  if (amount === 0) return '0';
 
   const units = ['E', 'M', 'MLRD'];
-  let index = -1;
+  let index = 0;
 
-  while (currency >= 1000 && index < units.length - 1) {
-    currency /= 1000;
+  while (amount >= 1000 && index < units.length) {
+    amount /= 1000;
     index++;
   }
-
-  return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
-};
+  return index > 0 ? `${amount.toFixed(1)}${units[index - 1]}` : amount.toString();
+}
 
 onMounted(async () => {
   try {
