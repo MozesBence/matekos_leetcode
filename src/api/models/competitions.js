@@ -54,7 +54,7 @@ module.exports = (sequelize, DataTypes) => {
     
         await Promise.all(items.map(item => 
             Competitions.findOrCreate({
-                where: { title: item.title },
+                where: { identifier: item.identifier },
                 defaults: item,
             })
         ));
