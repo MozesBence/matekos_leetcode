@@ -5,45 +5,44 @@
       class="d-flex align-center flex-nowrap overflow-x-auto cardStyle align-scretch pb-3"
       style="white-space: nowrap;"
     >
-      <v-col 
-      v-for="(card, index) in cards" 
-      :key="index" 
-      class="pa-2 mx-2"
-      cols="12" sm="6" md="3"
-      style="max-width: max-content;"
-      :style="$vuetify.display.xs ? 'flex: 0 0 auto; min-width: 80vw; max-width: 80vw;' : ''"
+    <v-col 
+    v-for="(card, index) in cards" 
+    :key="index" 
+    class="pa-2 mx-2"
+    cols="12" sm="6" md="3"
+  >
+    <v-card 
+      class="hero d-flex flex-column pa-2 rounded"
+      style="overflow: hidden; height: 100%; min-height: 17rem;"
+    >
+      <v-card-title 
+        class="text-h6 text-center py-1 px-2 rounded" 
+        style="background-color: rgba(69, 10, 118, 0.3);"
       >
-        <v-card 
-          class="hero d-flex flex-column pa-2 rounded"
-          style="overflow: hidden; height: 100%; min-height: 17rem;"
+        <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
+      </v-card-title>
+      <div
+        class="pt-5 d-flex align-center justify-center" 
+        style="white-space: pre-wrap; word-wrap: break-word; color: white;"
+      >
+        <h4 style="font-weight: normal;">{{ card.content }}</h4>
+      </div>
+      <v-card-actions class="d-flex justify-center mt-auto">
+        <v-btn
+          append-icon="mdi-chevron-right"
+          color="white"
+          :text="card.button_title"
+          variant="outlined"
+          block
+          class="rounded-pill"
+          @click="navigate(card.redirect)"
         >
-          <v-card-title 
-            class="text-h6 text-center py-1 px-2 rounded" 
-            style="background-color: rgba(69, 10, 118, 0.3);"
-          >
-            <h4 style="text-transform: uppercase;">{{ card.title }}</h4>
-          </v-card-title>
-          <div
-            class="pt-5 d-flex align-center justify-center" 
-            style="white-space: pre-wrap; word-wrap: break-word; color: white;"
-          >
-            <h4 style="font-weight: normal;">{{ card.content }}</h4>
-          </div>
-          <v-card-actions class="d-flex justify-center mt-auto">
-            <v-btn
-              append-icon="mdi-chevron-right"
-              color="white"
-              :text="card.button_title"
-              variant="outlined"
-              block
-              class="rounded-pill"
-              @click="navigate(card.redirect)"
-            >
-              <h3>{{ card.button_title }}</h3>
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+          <h3>{{ card.button_title }}</h3>
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-col>
+  
     </v-row>
   </v-container>
   <!-- Hirdető kártyák vége -->
