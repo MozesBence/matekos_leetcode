@@ -208,7 +208,7 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="FaqOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p :style="{fontSize: $vuetify.display.smAndDown ? '3vw' : '1vw'}">Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!</p>
+            <p>Ha bármilyen kérdésed van a használattal kapcsolatban, nézd meg a gyakori kérdéseket vagy lépj velünk kapcsolatba!</p>
           </div>
         </v-expand-transition>
       </section>
