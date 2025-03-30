@@ -185,8 +185,8 @@
                 <template v-slot:default="{ isActive }">
                     <v-card title="Feladat megoldása:">
                     <v-card-text>
-                       Ez a mező mindenkinek egyedi és szubbjektív ezért gondoltuk adunk egy kis segítséget:<br> 
-                       <li>A közép szintű matek érettségi feladatok nehézségével megegyező vagy az alattiak, könnyűnek számítanak.</li>
+                       Ez a mező mindenkinek egyedi és szubjektív ezért gondoltuk adunk egy kis segítséget:<br> 
+                       <li>A közép szintű matek érettségi feladatok nehézségével megegyező, vagy az alattiak könnyűnek számítanak.</li>
                        <li>Az emelt matek érettségi szintű feladatok nehézségével megegyező feladatok ide sorolhatóak, illetve a közép szintűek közül a nehezebbek.</li>
                        <li>Ide jöhetnek az igazán elgondolkodtató emelt szintű feladatok nehézségével megegyező, oktv. szintű versenyfeladatok, egyetemi szintet megütő feladatok</li>
                     </v-card-text>

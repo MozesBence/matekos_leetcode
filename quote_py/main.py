@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from request import get_random_quote
 
-load_dotenv()
+load_dotenv("../src/.env")
 
 def get_db_connection():
     """Kapcsolódás az adatbázishoz .env változókkal."""

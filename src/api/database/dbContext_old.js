@@ -41,19 +41,37 @@ const initializeDatabase = async () => {
         console.log('Database connected and models synchronized.');
         
         await db.Themes.initializeThemes();
-        console.log('Default themes inserted.');
         
         await db.Tasks.initializeTasks();
-        console.log('Default tasks inserted.');
         
         await db.Community_tags.initializeTags();
-        console.log('Default tags inserted.');
         
         await db.Advertisement_Cards.initializeCards();
-        console.log('Cards inserted.');
+
+        await db.Competitions.initializeCompetitions();
         
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
-        console.log("Event Scheduler is enabled.");
+
+        await db.CompetitionTasks.bulkCreate([
+            { task_id: 1, competition_id: 1 },
+            { task_id: 1, competition_id: 20 },
+            { task_id: 2, competition_id: 40 },
+            { task_id: 2, competition_id: 24 },
+            { task_id: 3, competition_id: 70 },
+            { task_id: 3, competition_id: 5 },
+            { task_id: 4, competition_id: 2 },
+            { task_id: 4, competition_id: 7 },
+            { task_id: 4, competition_id: 9 },
+            { task_id: 4, competition_id: 66 },
+            { task_id: 5, competition_id: 45 },
+            { task_id: 5, competition_id: 59 },
+            { task_id: 6, competition_id: 92 },
+            { task_id: 6, competition_id: 34 },
+            { task_id: 7, competition_id: 28 },
+            { task_id: 7, competition_id: 39 },
+            { task_id: 7, competition_id: 72 },
+            { task_id: 7, competition_id: 54 }
+        ], { ignoreDuplicates: true });
         
         const createEventQuery = `
         CREATE EVENT IF NOT EXISTS delete_expired_tokens

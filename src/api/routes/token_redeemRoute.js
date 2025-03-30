@@ -104,6 +104,44 @@ router.post('/useWayBackToken',useWayBackToken)
  */
 router.put('/deactivate-token',deactivateToken)
 
+/**
+ * @swagger
+ * /check-token:
+ *   get:
+ *     summary: Token ellenörzés
+ *     tags:
+ *       - Token redeem
+ *     description: Token ellenörzés
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: number
+ *           description: Feladat azonosítója
+ *           example: 1
+ *       - in: query
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: number
+ *           description: Feladat azonosítója
+ *           example: 1
+ *     responses:
+ *       200:
+ *         description: Sikeres token ellenörzés lekérése
+ *         content:
+ *           application/json:
+ *              example:
+ *                  response: {taskId: true} 
+ *       400:
+ *         description: Hiba az token ellenörzése közben
+ *         content:
+ *           application/json:
+ *              example:
+ *                  status: "400"
+ *                  message: "Nem sikerült ellenőrizni a tokent!"
+ */
 router.get('/check-token',checkToken)
 
 module.exports = router;

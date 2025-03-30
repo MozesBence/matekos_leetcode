@@ -187,7 +187,7 @@ module.exports = (sequelize, DataTypes) => {
                 model: 'Competitions',
                 key: 'id'
             }
-        }
+        },
     }, { timestamps: false });
     
     Tasks.belongsToMany(Competitions, {  
