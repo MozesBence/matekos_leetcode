@@ -1,5 +1,6 @@
-const { Sequelize, DataTypes } = require('sequelize');
 require('dotenv').config();
+const { Sequelize, DataTypes } = require('sequelize');
+const mysql = require('mysql2/promise');
 
 const sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -8,9 +9,8 @@ const sequelize = new Sequelize(
     {
         host: process.env.DB_HOST,
         dialect: process.env.DB_DIALECT || 'mysql',
-        port: 3306,
         logging: false,
-    }
+    },
 );
 
 const models = require("../models/index")(sequelize, DataTypes);
@@ -18,47 +18,134 @@ const models = require("../models/index")(sequelize, DataTypes);
 const db = {
     sequelize,
     Sequelize,
-    ...models
+    ...models 
 };
-
+// Initialize database and themes
 const initializeDatabase = async () => {
     try {
-        console.log("\n--- Új log ---");
-        console.log('Starting database authentication...');
-
-        await sequelize.authenticate()
-            .then(() => {
-                console.log('Database connected successfully.');
-            })
-            .catch((error) => {
-                console.error('Unable to connect to the database:', error.message);
-            });
-      
-        //await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
-        await sequelize.sync({ force: false })
-        .then(() => {
-            console.log('Database synchronized.');
-        })
-        .catch((error) => {
-            console.error('Error syncing database:', error.message);
+        const connection = await mysql.createConnection({
+            host: process.env.DB_HOST,
+            user: process.env.DB_USERNAME,
+            password: process.env.DB_PASSWORD,
         });
 
-        /*await db.Themes.initializeThemes();
-        console.log('Default themes inserted.');
+        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
+        console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
+        await connection.end();
 
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
+        
+        await db.Users.sync({ force: true });
+        await db.Community_posts.sync({ force: true });
+        await sequelize.sync({ force: true });
+        console.log('Database connected and models synchronized.');
+        
+        await db.Themes.initializeThemes();
+        
         await db.Tasks.initializeTasks();
-        console.log('Default tasks inserted.');
         
         await db.Community_tags.initializeTags();
-        console.log('Default tags inserted.');
-
+        
         await db.Advertisement_Cards.initializeCards();
-        console.log('Cards inserted.');
 
-        await db.StoreItems.initializeStoreItems();
-        console.log('Store items inserted.');
-    
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });*/
+        await db.Competitions.initializeCompetitions();
+        
+        await sequelize.query('SET GLOBAL event_scheduler = ON;');
+
+        await db.CompetitionTasks.bulkCreate([
+            { task_id: 1, competition_id: 1 },
+            { task_id: 1, competition_id: 20 },
+            { task_id: 2, competition_id: 40 },
+            { task_id: 2, competition_id: 24 },
+            { task_id: 3, competition_id: 70 },
+            { task_id: 3, competition_id: 5 },
+            { task_id: 4, competition_id: 2 },
+            { task_id: 4, competition_id: 7 },
+            { task_id: 4, competition_id: 9 },
+            { task_id: 4, competition_id: 66 },
+            { task_id: 5, competition_id: 45 },
+            { task_id: 5, competition_id: 59 },
+            { task_id: 6, competition_id: 92 },
+            { task_id: 6, competition_id: 34 },
+            { task_id: 7, competition_id: 28 },
+            { task_id: 7, competition_id: 39 },
+            { task_id: 7, competition_id: 72 },
+            { task_id: 7, competition_id: 54 }
+        ], { ignoreDuplicates: true });
+        
+        const createEventQuery = `
+        CREATE EVENT IF NOT EXISTS delete_expired_tokens
+        ON SCHEDULE EVERY 10 SECOND
+        DO
+        DELETE FROM Tokenz
+        WHERE expires <= DATE_SUB(NOW(), INTERVAL 1 HOUR) AND type = 'regisztrálás';`;
+        
+        await sequelize.query(createEventQuery);
+        
+        const createConfDeleteEventQuery = `
+        CREATE EVENT IF NOT EXISTS delete_expired_confirm_tokens
+        ON SCHEDULE EVERY 10 SECOND
+        DO
+        DELETE FROM Tokenz
+        WHERE expires <= DATE_SUB(NOW(), INTERVAL 15 MINUTE) AND type = 'beállítások';`;
+        
+        await sequelize.query(createConfDeleteEventQuery);
+
+        const createTriggerQuery = `
+            CREATE TRIGGER IF NOT EXISTS delete_user_when_token_deleted
+            AFTER DELETE ON Tokenz
+            FOR EACH ROW
+            BEGIN
+                IF NOT EXISTS (
+                    SELECT 1 FROM Tokenz WHERE user_id = OLD.user_id
+                ) AND EXISTS (
+                    SELECT 1 FROM Users WHERE id = OLD.user_id AND activated = 0
+                ) THEN
+                    DELETE FROM Users WHERE id = OLD.user_id;
+                END IF;
+            END;`;
+
+        await sequelize.query(createTriggerQuery);
+
+        const createDailyTaskEventQuery = `
+            CREATE EVENT IF NOT EXISTS daily_task_event
+            ON SCHEDULE EVERY 1 DAY
+            STARTS TIMESTAMP(CURRENT_DATE)
+            DO
+            BEGIN
+                IF DAY(CURRENT_DATE) = 1 THEN
+                    DELETE FROM Daily_Tasks;
+                END IF;
+
+                IF NOT EXISTS (SELECT 1 FROM Daily_Tasks WHERE id = DAY(CURRENT_DATE)) THEN
+
+                    INSERT INTO Daily_Tasks (id, task_id)
+                    SELECT 
+                        DAY(CURRENT_DATE) AS id,  -- Az aktuális nap sorszáma
+                        (SELECT id FROM Tasks ORDER BY RAND() LIMIT 1) AS task_id; -- Véletlenszerű task kiválasztása
+                END IF;
+            END;
+        `;
+
+        await sequelize.query(createDailyTaskEventQuery);
+
+        const createTokenRedeemDeleteQuery = `
+            CREATE EVENT IF NOT EXISTS token_redeem_delete_event
+            ON SCHEDULE EVERY 1 DAY
+            STARTS TIMESTAMP(CURRENT_DATE)
+            DO
+            BEGIN
+
+                IF DAY(CURRENT_DATE) = 1 THEN
+                    DELETE FROM tokenredeems;
+                END IF;
+            END;
+        `;
+
+        await sequelize.query(createTokenRedeemDeleteQuery);
+        
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
+
     } catch (error) {
         console.error('Error initializing database:', error);
     }
