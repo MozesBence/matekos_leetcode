@@ -18,9 +18,8 @@ const daily_taskRepository = {
                     task_id: taskid
                 }
             });
-            return task; // Return the task or null
+            return task;
         } catch (error) {
-            console.error("Error in CheckIfDailyTask service:", error);
             throw new Error("Database query failed.");
         }
     }

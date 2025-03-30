@@ -1,10 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/vue-query";
 import axios from "axios";
 import {type Ref} from 'vue'
-import { UseQuote } from "../quote/QuoteQuery";
 
 const wayBackToken = async (userId: number, taskId: number) => {
-    console.log("Sending request with:", userId, taskId);
     try {
         const response = await axios.post('/api/handle-way-back-token/useWayBackToken', null, {
             params: {
@@ -12,7 +10,6 @@ const wayBackToken = async (userId: number, taskId: number) => {
                 taskId: taskId
             }
         });
-        console.log("Response:", response.data);
         return response.data;
     } catch (error) {
         console.error("Error in wayBackToken:", error);
@@ -29,7 +26,6 @@ export const UsewayBackToken = (userId: Ref<number | null>, taskId: Ref<number>)
 
 
 const deactivateToken = async (userId: number, taskId: number) => {
-    console.log(userId, taskId);
     try {
         const response = await axios.put('/api/handle-way-back-token/deactivate-token', null, {
             params: {
@@ -54,7 +50,6 @@ export const UsedeactivateToken = (userId: Ref<number | null>, taskId: Ref<numbe
 
 
 const checkToken = async(userId:Number,taskId:Number) => {
-    console.log(userId,taskId)
     try{
         const response = await axios.get('/api/handle-way-back-token/check-token',{
             params:
