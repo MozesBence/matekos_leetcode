@@ -94,11 +94,6 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue')
     },
     {
-      path: '/task-submit',
-      name: 'task-submit',
-      component: () => import('../views/TaskSubmitView.vue')
-    },
-    {
       path: '/challange/:id/:define',
       name: 'challange',
       component: () => import('../views/ChallangeView.vue')

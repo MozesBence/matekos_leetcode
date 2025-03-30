@@ -46,29 +46,27 @@
       <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/rollback.png" cover />
-
+          <!--Item neve-->
           <v-card-subtitle class="pt-4">
             {{ items.data.value[0].name }}
           </v-card-subtitle>
 
+          <!--Item leírása-->
           <v-card-text>
             <div>{{ items.data.value[0].description }}</div>
           </v-card-text>
 
+          <!--Item kiváltása ha van készleten, vagy nem limitált darabszámú - (ekkor null)-->
           <v-card-actions v-if="items.data.value[0].amount > 0 || items.data.value[0].amount == null">
-            <v-btn
-              color="orange"
-              :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price"
-              @click="openPurchaseDialog(items.data.value[0])"
-            >
+            <!--Disabled ha a usernek nincs rá pénze-->
+            <v-btn color="orange" :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[0].price" @click="openPurchaseDialog(items.data.value[0])" >
               Kiváltom - {{ formatCurrency(items.data.value[0].price) }}
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <!--Ha nincs készleten-->
           <v-card-actions v-else>
-            <v-btn
-              disabled
-            >
+            <v-btn disabled>
               Nincs készleten
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
@@ -80,16 +78,17 @@
       <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Tshirt_item.png" cover />
-
+          <!--Item neve-->
           <v-card-subtitle class="pt-4">
             {{ items.data.value[1].name }}
           </v-card-subtitle>
-
+           <!--Item leírása-->
           <v-card-text>
             <div>{{ items.data.value[1].description }}</div>
           </v-card-text>
-
+          <!--Item kiváltása ha van készleten, vagy nem limitált darabszámú - (ekkor null)-->
           <v-card-actions v-if="items.data.value[1].amount > 0 || items.data.value[1].amount == null">
+             <!--Disabled ha a usernek nincs rá pénze-->
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[1].price"
@@ -99,6 +98,7 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <!--Ha nincs készleten-->
           <v-card-actions v-else>
             <v-btn
               disabled
@@ -114,16 +114,17 @@
       <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Mug_item.png" cover />
-
+          <!--Item neve-->
           <v-card-subtitle class="pt-4">
             {{ items.data.value[2].name }}
           </v-card-subtitle>
-
+           <!--Item leírása-->
           <v-card-text>
             <div>{{ items.data.value[2].description }}</div>
           </v-card-text>
-
+          <!--Item kiváltása ha van készleten, vagy nem limitált darabszámú - (ekkor null)-->
           <v-card-actions v-if="items.data.value[2].amount > 0 || items.data.value[2].amount == null">
+             <!--Disabled ha a usernek nincs rá pénze-->
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[2].price"
@@ -133,6 +134,7 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+          <!--Ha nincs készleten-->
           <v-card-actions v-else>
             <v-btn
               disabled
@@ -148,16 +150,17 @@
       <v-col cols="12" sm="6" lg="3">
         <v-card class="mx-auto centered-row" max-width="400" style="padding: 1em;">
           <img class="align-end text-white" height="200" src="../assets/Notebook_item.png" cover />
-
+          <!--Item neve-->
           <v-card-subtitle class="pt-4">
             {{ items.data.value[3].name }}
           </v-card-subtitle>
-
+           <!--Item leírása-->
           <v-card-text>
             <div>{{ items.data.value[3].description }}</div>
           </v-card-text>
-
+          <!--Item kiváltása ha van készleten, vagy nem limitált darabszámú - (ekkor null)-->
           <v-card-actions v-if="items.data.value[3].amount > 0 || items.data.value[3].amount == null">
+             <!--Disabled ha a usernek nincs rá pénze-->
             <v-btn
               color="orange"
               :disabled="(get_fullUser?.currency_count ?? 0) < items.data.value[3].price"
@@ -167,6 +170,7 @@
               <img src="../assets/coin.png" alt="" height="20" />
             </v-btn>
           </v-card-actions>
+           <!--Ha nincs készleten-->
           <v-card-actions v-else>
             <v-btn
               disabled
@@ -254,9 +258,10 @@ const openPurchaseDialog = (item: { id: number; price: number }) => {
   dialog.value = true;
 };
 
-
+//Mutation a vásárlás folzamatához, ill. UsePurchaseItem-hez
 const { mutate: confirmPurchase } = UsePurchaseItem(purchaseData);
 
+//A vásárlás lekezelése,error handling
 const handleConfirmPurchase = async () => {
   try {
     await confirmPurchase();
@@ -311,6 +316,7 @@ function formatCurrency(amount: number): string {
   return index > 0 ? `${amount.toFixed(1)}${units[index - 1]}` : amount.toString();
 }
 
+//oldal betöltésénél lefutó kérések
 onMounted(async () => {
   try {
     await Promise.all([
