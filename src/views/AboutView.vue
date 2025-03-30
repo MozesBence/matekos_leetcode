@@ -60,8 +60,15 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="UsageOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p>Az oldalon lehet a feladatokra szűrni témakör és nehézségi szint alapján is, ezzel próbáljuk a felhasználók számára
-              megkönnyíteni dolgukat, hogy a lehető legszűkebben tudják tudásukat bővíteni vagy tesztelni.</p>
+            <p>Az oldalon lehetőség van a feladatok szűrésére témakör és nehézségi szint alapján, így célzottan fejlesztheted a tudásodat vagy tesztelheted magad.
+
+              A napi feladatok rendszeres gyakorlást biztosítanak, miközben a teljesítményedet grafikonok és statisztikák segítségével követheted nyomon. Ha versenyszellem hajt, csatlakozhatsz heti és havi kihívásokhoz, ahol aranyat gyűjthetsz, amit később oldalon belüli tokenekre vagy valódi tárgyakra válthatsz.
+              
+              A közösségi funkciók lehetőséget biztosítanak arra, hogy másokkal együtt gondolkodj, megvitassátok a feladatokat, vagy akár saját feladványokat küldjetek be, amelyeket az adminok jóváhagyás után publikálnak.
+              
+              Ha inspirációra vágysz, minden nap egy új matematikai idézet vár rád, és saját playlistjeink is segítenek a tanulásban.
+              
+              Használd ki ezeket a lehetőségeket, és tedd hatékonyabbá a tanulásodat!</p>
           </div>
         </v-expand-transition>
       </section>
@@ -81,8 +88,15 @@
         <!-- Lenyíló tartalom -->
         <v-expand-transition>
           <div v-if="FeaturesOpen" class="dropdown-content" :style="{marginTop: $vuetify.display.smAndDown ? '3vw' : '1vw'}">
-            <p>Az oldalon nyomon tudja követni minden felhasználó saját és társai pontszámait, amit egy globális leaderboarddal szemléltetünk,
-              emellett vannak challengek, amik speciálisabb módon, de beleszámítanak a ranglistába.</p>
+            <p>Oldalunk célja, hogy interaktív és motiváló módon segítse a felhasználókat a matematikai fejlődésben. Nálunk nemcsak feladatokat oldhatsz meg, hanem részt vehetsz heti és havi versenyeken, ahol aranyat gyűjthetsz. Az összegyűjtött aranyat később oldalon belüli tokenre vagy akár valódi tárgyakra válthatod.
+
+              A teljesítményedet nyomon követheted részletes statisztikákkal és grafikonokkal, valamint egy globális ranglistán is megmérettetheted magad másokkal szemben. A kihívások (Challenges) speciális módon számítanak bele a rangsorba, így extra motivációt nyújtanak.
+              
+              Az oldal közösségi funkciókat is kínál: beszélgethetsz más felhasználókkal, megoszthatod gondolataidat a feladatokról, és akár saját feladványokat is beküldhetsz, amelyeket az adminok jóváhagyása után mások is megoldhatnak.
+              
+              Emellett minden nap egy inspiráló matematikai idézet vár rád, és saját playlistjeink segítenek a tanulásban. A napi feladatokkal fenntarthatod a lendületed, és folyamatosan fejlesztheted a tudásodat.
+              
+              Csatlakozz hozzánk, és tedd élvezetessé a matematikát!</p>
           </div>
         </v-expand-transition>
       </section>
