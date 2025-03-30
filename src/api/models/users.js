@@ -77,7 +77,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull:false,
                 defaultValue:0
             }
-            
         },
         {
             sequelize,

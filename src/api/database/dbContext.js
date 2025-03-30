@@ -49,6 +49,8 @@ const initializeDatabase = async () => {
         await db.Advertisement_Cards.initializeCards();
 
         await db.Competitions.initializeCompetitions();
+
+        await db.Daily_Tasks.initializeDailyTask();
         
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
 
@@ -72,6 +74,16 @@ const initializeDatabase = async () => {
             { task_id: 7, competition_id: 72 },
             { task_id: 7, competition_id: 54 }
         ], { ignoreDuplicates: true });
+
+        await db.Users.bulkCreate([
+            { email: "pinteadani88@gmail.com", password: "admin12345", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
+            { email: "pinteaviktoria1@gmail.com", password: "felhasznalo12345", user_name: "teszt_felhasznalo",  activated: 2 }
+        ], { ignoreDuplicates: true })
+
+        await db.User_customization.bulkCreate([
+            { user_id: 1, darkmode: 0 },
+            { user_id: 2, darkmode: 0 }
+        ], { ignoreDuplicates: true })
         
         const createEventQuery = `
         CREATE EVENT IF NOT EXISTS delete_expired_tokens

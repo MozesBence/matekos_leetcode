@@ -27,5 +27,18 @@ module.exports = (sequelize, DataTypes ) => {
             timestamps:false,
         }
     )
+
+    Daily_tasks.initializeDailyTask = async () => {
+        const defaultDailyTasks = [
+            { id: new Date().toISOString().split('T')[0], task_id: 30 },
+        ]
+
+        for (const th of defaultDailyTasks) {
+            await Daily_tasks.findOrCreate({
+                where: { id: th.id },
+                defaults: th,
+            });
+        }
+    };
     return Daily_tasks;
 }
