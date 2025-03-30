@@ -150,16 +150,16 @@
 </v-row>
 <!--Random feladat vége-->
 
-<!--Szűrések menüszalag vége-->
-
-<!---->
+<!--Oldal main kontentje, kártyák és oldalt statisztikák-->
 <v-layout class="rounded-md" height="min-content">
+  <!--jobb oldali menü-->
   <v-navigation-drawer 
   location="right" 
   width="400"
   style="background-color: transparent; border: none; height: 100rem;"
   >
   <v-list>
+    <!--Napi idézet-->
     <v-list-item class="rounded" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
       <div
         style="border-radius: 15px; padding: 10px; width: 380px; margin-bottom:2em"
@@ -167,9 +167,11 @@
       >
         <h1>Napi idézet</h1>
         <br>
+        <!--idézet-->
         <p>{{quote.data}}</p>
       </div>
     </v-list-item>
+    <!--User infók-->
       <v-list-item v-if="get_fullUser.email"
       class="d-flex flex-colum rounded align-center justify-center mt-2" 
       style="text-align: center; height: 13em; width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));"
@@ -178,6 +180,7 @@
           style="width: 380px; height: max-content;" 
           class="d-flex flex-column align-center justify-center rounded pa-2"
         >
+          <!--username megjelenítése-->
           <h1>Üdvözlünk, {{get_fullUser.user_name}}!</h1>
           <div class="my-2">
             <v-progress-linear
@@ -192,10 +195,12 @@
               </template>
             </v-progress-linear>
           </div>
+          <!--Aranyak száma,csak ha bejelentkezett a user-->
           <div class="d-flex align-center">
             <img height="20px" src="../assets/coin.png" class="mr-1">
             <h4>Aranyak száma: {{formatCurrency(get_fullUser.currency_count)}}</h4> 
           </div>
+          <!--Tokenek száma, csak ha bejelentkezett a user-->
           <h4 class=" d-flex align-center mt-1">
             <img src="../assets/rollback.png" alt="" height="20px" class="mr-1">
             Tokenek szama: {{roll_back_token_count_query.data.value?.roll_back_token}}
@@ -203,6 +208,7 @@
         </div>
       </v-list-item>
 
+      <!--Napi feladatok naptár megjelenítése-->
       <v-list-item class="d-flex flex-column align-center justify-center rounded mt-2" 
       style="width:400px; background-color: rgb(var(--v-theme-home_rightdrawer_card));">
         <div 
@@ -214,6 +220,7 @@
               <h3>({{ currentYear }} - {{ currentMonth }})</h3>
             </div>
           <div class="heatmap-grid">
+            <!--Mezők-->
             <div
               v-for="(day, index) in days"
               :key="index"
@@ -236,6 +243,7 @@
           </div>      
         </div>
       </v-list-item>
+      <!--Teljeítési diagram, csak ha be van jelentkezve a user-->
       <v-list-item 
       v-if="get_fullUser.email" 
       class="d-flex flex-column align-center justify-center rounded mt-2" 
@@ -253,7 +261,9 @@
     </v-list>
   </v-navigation-drawer>
   
+  <!--Kártyák kezdete-->
   <v-main class="align-center justify-center" style="height: 145vh">
+    <!--Címszalag létrehozása-->
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="2">
         <span>Státusz</span>
@@ -268,6 +278,8 @@
         <span>Nehézség</span>
       </v-col>
     </v-row>
+
+    <!--Kártyák létrehozása-->
     <v-row 
     v-if="cardsQuery.data && cardsQuery.data.value && cardsQuery.data.value.length > 0"
     class="task_card mx-8 pa-3 cursor-pointer tasks"
@@ -276,7 +288,7 @@
     style="border-bottom: 1px solid #ccc; transition: .3s !important;"
     @click="TaskView(card.id)"
   >
-    <!-- Task Icon and Status -->
+    <!-- Feladat iconja és státusza -->
     <v-col 
       class="d-flex align-center justify-center" 
       cols="2" 
@@ -293,12 +305,12 @@
       <span v-else>&nbsp;</span>
     </v-col>
     
-    <!-- Task Title -->
+    <!-- Feladat címe -->
     <v-col class="d-flex align-center justify-center text-center" cols="10" sm="6">
       <span class="text-h7">{{ card.id }}. {{ card.task_title }}</span>
     </v-col>
   
-    <!-- Completion Rate -->
+    <!-- Teljesítési arány -->
     <v-col class="d-flex align-center justify-center" cols="6" sm="2">
       {{ cardCompRate(completion_rates.data?.value ?? [], Number(card.id)) !== "Na" 
           ? `${cardCompRate(completion_rates.data?.value ?? [], Number(card.id))}%` 
@@ -306,7 +318,7 @@
       }}
     </v-col>
   
-    <!-- Difficulty -->
+    <!-- Nehézség -->
     <v-col class="d-flex align-center justify-center" cols="6" sm="2">
       <v-chip 
         :color="chipColor(card.difficulty)" 
@@ -319,20 +331,23 @@
       </v-chip>
     </v-col>
   </v-row>
-  
+  <!--Akkor jelenik meg ha nincs az adott  szűrésre megfelelő elem-->
   <v-row v-else style="display: flex; vertical-align:middle;justify-content:center;">
     <h4>A megadott szűrési feltételekkel nem található feladat!</h4>
   </v-row>
   </v-main>
 </v-layout>
 
+<!--Lapozás-->
 <v-pagination 
 :length="allTaskCountQuery.data.value ? Math.ceil(allTaskCountQuery.data.value / 15) : 1" 
 @update:modelValue="UpdatePage">
 </v-pagination>
+
+<!--A lejárt feladatra kattintásnál megnyíló dialog-->
 <v-dialog v-model="dialog" width="auto">
   <v-card max-width="800">
-    <!-- Custom Title Slot -->
+    <!-- Cím -->
     <template v-slot:title>
       <div class="d-flex align-center">
         <img
@@ -344,7 +359,7 @@
       </div>
     </template>
 
-    <!-- Card Content -->
+    <!-- Kártya tartalma -->
     <v-card-text>
       De van egy megoldás... Használj egy roll back tokent, hogy megoldhasd ezt a feladatot! Ha ezzel a feladattal szakadt meg a sorozatod vissza kaphatod. Fontos 1 hónapban csak 3-at tudsz használni!
       <br>
@@ -354,7 +369,7 @@
       </div>
     </v-card-text>
 
-    <!-- Action Button -->
+    <!-- Gombok: beváltás, disabled ha nincs a usernek tokenje -->
     <template v-slot:actions>
       <v-btn class="ms-auto" text="Vissza" @click="dialog = false"></v-btn>
       <v-btn @click="UseToken" :disabled="roll_back_token_count_query.data.value?.roll_back_token == 0">Token felhasználása</v-btn>
@@ -362,6 +377,7 @@
   </v-card>
 </v-dialog>
 
+<!--Alert-->
 <v-alert
   v-if="alertMessage.type"
   :key="alertMessage.text"
@@ -378,7 +394,7 @@
 // Redirect to page 1 on load
 router.push({ query: { page: 1, per_page: 15 } });
 
-// Imports
+// Importok kezdete
 import { useAllTaskCount, useRandomTask,useTaskState,useSpecificTask,useSolvedTaskRates,useCompletionRates,UseFetchCards } from '@/api/cards/cardQuery';
 import {UseQuote} from '@/api/quote/QuoteQuery'
 import { UseThemes } from '@/api/themes/themeQuery';
@@ -387,16 +403,15 @@ import router from '@/router';
 import { ref, computed, watch, onMounted,watchEffect } from 'vue';
 import VueApexCharts from 'vue3-apexcharts';
 import {useGetAllAds} from '@/api/adcards/adcardQuery'
-import { useRoute, useRouter } from 'vue-router';
 import {UsegetRollBackTokenCount,UseGetDailyStreak} from '../api/mainPage/mainPageQuery'
 import {get_fullUser,getCookie} from '../stores/userStore'
 import {UsewayBackToken} from '@/api/redeemWayBackToken/WayBackTokenQuery'
-// Query hooks
+//Importok vége
 
+//Változók kezdete
 const userId = ref(get_fullUser.value.id);
 const user_id = ref<number | null>(null);
-const offset = ref<number>(0);
-  const filterData = ref({
+const filterData = ref({
   difficulty: null,
   state: null,
   themes: '',
@@ -404,6 +419,7 @@ const offset = ref<number>(0);
   userId: userId,
   offset: 0
 });
+const days = ref<{ day: number, value: number }[]>([]);
 const themesQuery = UseThemes();
 const themes = computed(() => themesQuery.data.value || []);
 const cardsQuery = UseFetchCards(filterData);
@@ -411,10 +427,8 @@ const completion_rates = useCompletionRates();
 const allTaskCountQuery = useAllTaskCount(filterData);
 const taskCount = ref(0);
 const quote = UseQuote();
-const { data: cards, isLoading, error } = useGetAllAds();
+const { data: cards } = useGetAllAds();
 var dialog = ref(false);
-//----
-
 const apexchart = VueApexCharts;
 const get_user_name = ref<string | null>(null);
 const currentYear = new Date().getFullYear();
@@ -422,6 +436,11 @@ const dailyStreak = UseGetDailyStreak(user_id);
 const solvedTaskStatesQuery = useSolvedTaskRates(user_id);
 const roll_back_token_count_query = UsegetRollBackTokenCount(user_id);
 const task_state = useTaskState(user_id);
+const dailytask_day = ref('');
+const dailytask_dayNum = ref(0);
+const specificTaskquery = useSpecificTask(dailytask_day);
+const randomTaskId = ref<number | null>(null);
+const randomTask = useRandomTask();
 const taskStateMap = computed(() => {
   if (!Array.isArray(task_state.data.value)) return {};
   return task_state.data.value.reduce((acc, task) => ({
@@ -429,45 +448,47 @@ const taskStateMap = computed(() => {
     [task.task_id]: task
   }), {});
 });
+const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
+  type: null,
+  text: "",
+});
+
 const monthsNames = [
   'Január', 'Február', 'Március', 'Április', 'Május', 'Június',
   'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'
 ];
 const currentMonth = monthsNames[new Date().getMonth()];
+//Változók vége
 
-
-const handleToggle = async (theme: string, isSelected: boolean, toggle: Function) => {
+/* 
+  A témákra való szűrés megvalósítása, mely néyi melyik van kiválasztva, illetve ha többet nem szeretnénk akkor a detoggle
+  Ezen felül lefut a szűrés, a többi szűrést figyelembe véve.
+*/
+const handleToggle = async (theme: string, isSelected: boolean, toggle: () => void): Promise<void> => {
   if (!themesQuery.data.value) {
     await themesQuery.refetch();
   }
 
   let selectedThemes = filterData.value.themes ? filterData.value.themes.split(';') : [];
 
-  if (isSelected) {
-    selectedThemes = selectedThemes.filter(t => t !== theme);
-  } else {
-    selectedThemes.push(theme);
-  }
+  selectedThemes = isSelected ? selectedThemes.filter(t => t !== theme) : [...selectedThemes, theme]; 
 
   filterData.value.themes = selectedThemes.join(';');
-
   toggle();
 
-  await cardsQuery.refetch();
-  await allTaskCountQuery.refetch();
+  await Promise.all([
+    cardsQuery.refetch(),
+    allTaskCountQuery.refetch()
+  ]);
 };
 
 
-watch(filterData, () => {
-  filterData.value.userId = Number(user_id.value)
-  cardsQuery.refetch(); 
-  allTaskCountQuery.refetch();
-}, { deep: true });
-
-
+/*
+  Tovább navigál egy oldalra új tabon, ez a hirdető kártyáknál használt
+  például a youtube playlisthez,de ha mondjuk /store-ra dobna ablakon belül teszi ezt.
+*/
 const navigate = (redirect: string) => {
-  if (!redirect) return; // Safety check
-
+  if (!redirect) return;
   if (redirect.startsWith("/")) {
     router.push(redirect);
   } else {
@@ -475,51 +496,69 @@ const navigate = (redirect: string) => {
   }
 };
 
-
-//-------- End filter by completionrate ---------------
-
-// Random task handling
-const randomTaskId = ref<number | null>(null);
-const randomTask = useRandomTask();
-
+// Random task kezelése
 const LoadRandomTask = async () => {
   await randomTask.refetch();
   if (randomTaskId.value !== null) {
     TaskView(randomTaskId.value);
   }
 };
-var dailytask_day = ref('');
-var dailytask_dayNum = ref(0);
-const specificTaskquery = useSpecificTask(dailytask_day);
 
+/*Napi feladatok lekezelésének kezdete*/
+
+/*
+  Megkap egy adott napot, ebből megállapítjuk, hogy aktuális napi feladat-e (CheckIfCurrentTask - leírása közvetlen fölötte)
+  Ez alapján pedig:
+    0 - aktuális és RedirectToDailyTask-el tovább dob,
+    1 - még nem elérhtő feladat arra a napra,
+    2 - régebbi napról való feladat PreviousDailyTaskHandling,
+    default - ha valami hiba van jelez
+
+*/
 const LoadDailyTask = async (day: number) => {
-  console.log(day)
     var tasksDate: any = CheckIfCurrentTask(day.toString());
-
     switch (tasksDate) {
         case 0:
-            dailytask_day.value = day.toString();
-            await specificTaskquery.refetch();
-            TaskView(Number(specificTaskquery.data.value.task_id));
-            break; // Prevent falling through
+            RedirectToDailyTask(day)
+            break;
 
         case 1:
-            alert("Ez a feladat még nem érhető el");
-            break; // Prevent falling through
+            showAlert("error",`A ${day}. napi feladat még nem érhető el!`)
+            break;
 
         case 2:
-            dailytask_day.value = day.toString();
-            dialog.value = true;
-            await specificTaskquery.refetch();
-            dailytask_dayNum.value = Number(specificTaskquery.data.value.task_id);
+            PreviousDailyTaskHandling(day)
             break; 
         default:
-          alert('varatlan hiba')
+          showAlert("error","Váratlan hiba!")
           break;
     }
 };
 
+//Megkap egy napot és arra dob tovább, LoadDailyTaskhoz kapcsolódik
+const RedirectToDailyTask = async(day:number) =>{
+  dailytask_day.value = day.toString();
+  await specificTaskquery.refetch();
+  TaskView(Number(specificTaskquery.data.value.task_id));
+} 
 
+/*Megkap egy napot és lementi az adatokat,megnyitja az ehhez szükséges dialogot,
+ ahol a további műveletek kezelve vannak, LoadDailyTaskhoz kapcsolódik*/
+const PreviousDailyTaskHandling = async(day:number) => {
+  dailytask_day.value = day.toString();
+  dialog.value = true;
+  await specificTaskquery.refetch();
+  dailytask_dayNum.value = Number(specificTaskquery.data.value.task_id);
+}
+/*Napi feladatok lekezelésének kezdete*/
+
+/*
+  Megnézi, hogy egy adott naphoz tartozó feladat napi feladat-e, ennek megfelelően:
+  Visszaad:
+    - 0 adott naphoz tartozó feladat
+    - 1 régebbi, de napi feladat
+    - 2 nem napi feladat
+*/
 const CheckIfCurrentTask =  (day: string) => {
   if(Number(day) == new Date().getDate()){
     return 0;
@@ -530,20 +569,13 @@ const CheckIfCurrentTask =  (day: string) => {
   }
 }
 
+//Átirányít adott id-jú taskra
 const TaskView = (id: number) => {
   router.push({ name: 'task', params: { id } });
-//  window.location.reload();
 };
 
-watch(() => randomTask.data.value, (newVal) => {
-  if (newVal?.id) {
-    randomTaskId.value = newVal.id;
-  } else {
-    randomTaskId.value = null;
-  }
-});
 
-//--------------------
+//Diagramm adatainak kezdete
 const series = ref<number[]>([0, 0, 0]);
 const chartOptions = ref({
   chart: {
@@ -593,12 +625,9 @@ const chartOptions = ref({
     },
   ],
 });
+//Diagramm adatainak, vége
 
-const alertMessage = ref<{ type: "success" | "error" | null; text: string }>({
-  type: null,
-  text: "",
-});
-
+//Kijelzi az adott alertet ami, succes vagy error type-el rendelkezik, illetve adott textet helyez az alertbe, 5mp után bezáródik automatikusan
 const showAlert = (type: "success" | "error", text: string) => {
   alertMessage.value = { type, text };
   setTimeout(() => {
@@ -606,117 +635,140 @@ const showAlert = (type: "success" | "error", text: string) => {
   }, 5000);
 };
 
+/* 
+  A token elköltésére vonatkozó mutate mely UsewayBackToken query-t használja, ha sikeres a beváltás akkor, tovább írányít A taskview segítségével,
+  egyébként hibát dob.
+*/
 const {mutate:SpendToken} = UsewayBackToken(user_id,dailytask_dayNum)
 
+//A token elköltése mely hasznája a mutate-t
 const UseToken = () => {
     SpendToken(undefined, {
       onSuccess: (data: any) => {
-    console.log("Token spent, response:", data);
     if (data != null) {
         TaskView(dailytask_dayNum.value);
     } else {
       dialog.value = false;
-        console.log("Triggering alert...");
         showAlert("error", "Sajnos a hónapban már elhasznált 3 tokent!");
-        console.log("Alert triggered:", alertMessage.value);
     }
 },
 
     });
 };
 
-
+//Hónap napjai
 const getDaysInMonth = (year: number, month: number): number => {
       return new Date(year, month + 1, 0).getDate();
-    };
+};
 
-    const generateDays = (year: number, month: number) => {
-      const daysInMonth = getDaysInMonth(year, month);
-      const daysArray = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        daysArray.push({ day, value: day });
-      }
-      return daysArray;
-    };
-
-    const days = ref<{ day: number, value: number }[]>([]);
-
-    const progressColor = computed(() => {
-      const percentage = progressPercentage.value;
-      if (percentage < 33) return 'green';
-      if (percentage < 66) return 'orange';
-      return 'red';
-    });
-
-    const baseXP = 10;
-
-    const experienceForNextLevel = (level: number): number => {
-      return Math.ceil(baseXP * 5);
-    };
-
-    const totalXPForLevel = (level: number): number => {
-      let totalXP = 0;
-      for (let i = 1; i < level; i++) {
-        totalXP += experienceForNextLevel(i);
-      }
-      return totalXP;
-    };
-
-    const currentLevel = computed(() => {
-      let level = 1;
-      let xp = get_fullUser.value.experience_point || 0;
-
-      while (xp >= totalXPForLevel(level + 1)) {
-        level++;
-      }
-
-      return level;
-    });
-
-    const progressPercentage = computed(() => {
-      const xp = get_fullUser.value.experience_point || 0;
-      const level = currentLevel.value;
-
-      const xpForCurrentLevel = totalXPForLevel(level);
-      const xpForNextLevel = totalXPForLevel(level + 1);
-
-      const progress = ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
-
-      return Math.min(Math.max(progress, 0), 100);
-    });
- const chipColor = (difficulty: number) => {
-      if (difficulty === 0) return 'green';
-      if (difficulty === 1) return 'orange';
-      return 'red';
-    };
-
-    const difficultyLabel = (difficulty: number) => {
-      if (difficulty === 0) return 'Könnyű';
-      if (difficulty === 1) return 'Közepes';
-      return 'Nehéz';
-    };
-
-    function formatCurrency(currency: number): string {
-  if(currency == 0){
-    return '0';
+//Napok lekérése és tömbbé alakítása, amik objectekként vannak tárolva {day, day}, adott év adott hónapjára kéri le őket.
+const generateDays = (year: number, month: number) => {
+  const daysInMonth = getDaysInMonth(year, month);
+  const daysArray = [];
+  for (let day = 1; day <= daysInMonth; day++) {
+    daysArray.push({ day, value: day });
   }
-  const units = ['E', 'M', 'MLRD'];
-  let index = -1;
+  return daysArray;
+};
 
-  while (currency >= 1000 && index < units.length - 1) {
-    currency /= 1000;
+//Az xp(experience ponit) számitással és megjelenítéssel kapcsolatos, függvények, eljárások kezdete
+/*
+    Ez felelős azért, hogy a megjelenítés színezése helyes legyen.
+*/
+const progressColor = computed(() => {
+  const percentage = progressPercentage.value;
+  if (percentage < 33) return 'green';
+  if (percentage < 66) return 'orange';
+  return 'red';
+});
+
+//xp számítás alapjául szolgáló szám
+const baseXP = 10;
+
+//Szintlépéshez szükséges xp mennyiség meghatározásának segédfüggvénze
+const experienceForNextLevel = (): number => {
+  return Math.ceil(baseXP * 5);
+};
+
+//Ey a függvénz addja meg a teljes xp mennyiséget a következő szintre lépéshez
+const totalXPForLevel = (level: number): number => {
+  let totalXP = 0;
+  for (let i = 1; i < level; i++) {
+    totalXP += experienceForNextLevel();
+  }
+  return totalXP;
+};
+
+//A user pillanatnyi szintje, az xp-jét használva
+const currentLevel = computed(() => {
+  let level = 1;
+  let xp = get_fullUser.value.experience_point || 0;
+
+  while (xp >= totalXPForLevel(level + 1)) {
+    level++;
+  }
+
+  return level;
+});
+
+//A megjelenítéshez szükséges xp-k százalékos aránya mely a megjelenítéshez szükséges
+const progressPercentage = computed(() => {
+  const xp = get_fullUser.value.experience_point || 0;
+  const level = currentLevel.value;
+
+  const xpForCurrentLevel = totalXPForLevel(level);
+  const xpForNextLevel = totalXPForLevel(level + 1);
+
+  const progress = ((xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel)) * 100;
+  return Math.min(Math.max(progress, 0), 100);
+});
+//Az xp(experience ponit) számitással és megjelenítéssel kapcsolatos, függvények, eljárások vége
+
+// A nehézség kezelése kártyákon kezdete
+
+//Nehézség szerint eldöntjük a színt (könnyű - zöld, közepes - narancssárga, nehéz - piros)
+const chipColor = (difficulty: number) => {
+    if (difficulty === 0) return 'green';
+    if (difficulty === 1) return 'orange';
+    return 'red';
+  };
+
+/*
+  Nehézség eldöntése a kapott difficulty alapján ami lehet
+    - 0, könnyű,
+    - 1, közepes,
+    - 2, nehéz
+*/
+const difficultyLabel = (difficulty: number) => {
+  if (difficulty === 0) return 'Könnyű';
+  if (difficulty === 1) return 'Közepes';
+  return 'Nehéz';
+};
+// A nehézség kezelése kártyákon vége
+
+/*Az adott éréket átkonvertálja adott formákra:
+  Példák:
+    - 100, (100)
+    - 1,5E, (1500)
+    - 1,4M, (1400000)
+    - 10.2MLRD (10200003400)
+*/
+function formatCurrency(amount: number): string {
+  if (amount === 0) return '0';
+
+  const units = ['E', 'M', 'MLRD'];
+  let index = 0;
+
+  while (amount >= 1000 && index < units.length) {
+    amount /= 1000;
     index++;
   }
-
-  return index >= 0 ? `${currency.toFixed(1)}${units[index]}` : currency.toString();
+  return index > 0 ? `${amount.toFixed(1)}${units[index - 1]}` : amount.toString();
 }
 
-    const cardCompRate = (
-  CompArray: { task_id: number; completionRate: number }[] | undefined,
-  cardId: number
-): number | "Na" => {
+
+const cardCompRate = (CompArray: { task_id: number; completionRate: number }[] | undefined, cardId: number): number | "Na" => {
   if (!Array.isArray(CompArray)) {
-    console.error("CompArray is not defined or not an array");
     return "Na";
   }
   const found = CompArray.find((c) => c.task_id === cardId);
@@ -732,48 +784,6 @@ const getDaysInMonth = (year: number, month: number): number => {
   };
 
 // Watch for changes in task count
-watch(() => allTaskCountQuery.data.value, (newVal) => {
-  if (newVal !== undefined) {
-    taskCount.value = newVal;
-  }
-});
-
-
-
-onMounted(() => {
-        days.value = generateDays(currentYear, new Date().getMonth());
-      });
-
-onMounted(async () => {
-        const userCookie = getCookie('user');
-        if (userCookie) {
-          try {
-            const userData = JSON.parse(atob(userCookie.split('.')[1]));
-            get_user_name.value = userData.id;
-            
-          } catch (error) {
-            console.error('Error parsing user cookie:', error);
-          }
-  }
-});
-
-// Refetch cards on mount
-onMounted(async () => {
-  await cardsQuery.refetch();
-});
-
-onMounted(async () => {
-  await quote.refetch();
-})
-
-
-watch(user_id, async (newUserId) => {
-  if (newUserId) {
-    await roll_back_token_count_query.refetch();
-    await dailyStreak.refetch()
-    //console.log('streak',dailyStreak.data.value?.streak)
-  }
-});
 const UpdatePage = (newPage: number) => {
   filterData.value.offset = 15 *(newPage - 1);
   router.push({ query: { page: newPage, per_page: 15 } });
@@ -784,8 +794,35 @@ const UpdatePage = (newPage: number) => {
   behavior: 'smooth'
 });
 };
+
+/*Betöltésnél lefutó kérések, függvények kezdete*/
+
+//A naptárhoy szükséges napok meghatározása.
+onMounted(() => {
+        days.value = generateDays(currentYear, new Date().getMonth());
+      });
+
+// Kártyák lekérése betöltésnél, ezzel biztosítjuk, hogy biztosan megkapjuk, ill. frissüljön
 onMounted(async () => {
+  await cardsQuery.refetch();
+});
+
+//Napi idézet lekérése betöltésnél, ezzel biztosítjuk, hogy biztosan megkapjuk, ill. frissüljön
+onMounted(async () => {
+  await quote.refetch();
+})
+
+//Napi feladatok naptár napjainak leké
+onMounted(() => {
   days.value = generateDays(currentYear, new Date().getMonth());
+})
+
+/*
+  A cookieból a user id-jének kinyerése, ennek túlnyomó része a a userStoreban van kiszervezve,
+  mivel tööb helyen is használva van.
+*/
+onMounted(async () => {
+  
   const initializeUser = async () => {
     const userCookie = getCookie('user');
     if (!userCookie) return;
@@ -801,13 +838,42 @@ onMounted(async () => {
         }
       });
     } catch (error) {
-      console.error('Initialization error:', error);
+      console.error('Inicializálási hiba! Error:', error);
     }
   };
-
   await initializeUser();
 });
 
+onMounted(() => {
+  /*
+    user_id frissítése ha a get_fullUser új valuet kap, illetve a feladatok állapotának újra
+    kérése ennek függvényében.
+  */
+  watchEffect(() => {
+    const newUser = get_fullUser.value;
+    if (newUser && "id" in newUser) {
+      user_id.value = Number(newUser.id);
+      solvedTaskStatesQuery.refetch();
+    }
+  });
+
+  /*
+    Ez a feladatok megoldásának százalékos arányának lekérésére vonatkozik, aminek adatát betöltjük a series nevű,
+    tömbbe mely az oldalon megjelenített grafikonhoz kapcsolódik.
+  */
+  watchEffect(() => {
+    const newData = solvedTaskStatesQuery.data?.value;
+    if (newData?.countpercenct) {
+      series.value = newData.countpercenct;
+    }
+  });
+});
+/*Betöltésnél lefutó kérések, függvények vége*/
+
+/*trigger eventek kezdete*/
+/*
+  Figyeljük, hogy van-e vagy jött-e új user_id és az ezt érintő elemeket refetcheljük. Fontos, hogy egyből fusson le.
+*/
 watch(user_id, async (newVal) => {
   if (newVal) {
     await Promise.all([
@@ -819,37 +885,37 @@ watch(user_id, async (newVal) => {
   }
 }, { immediate: true });
 
-
-
-onMounted(() => {
-  watch(
-    () => get_fullUser.value, 
-    (newUser) => {
-      if (newUser && typeof newUser === "object" && "id" in newUser) {
-        user_id.value = Number(newUser.id);
-        solvedTaskStatesQuery.refetch();
-      } else {
-        console.warn("Invalid user detected:", newUser);
-      }
-    },
-    { immediate: true }
-  );
-
-  watch(
-    () => solvedTaskStatesQuery.data, 
-    (newData) => {
-      if (newData && typeof newData === "object" && "value" in newData) {
-        if (newData.value && "countpercenct" in newData.value) {
-          series.value = newData.value.countpercenct;
-        }
-      } else {
-        console.warn("Invalid solved task states data:", newData);
-      }
-    },
-    { deep: true }
-  );
+/*
+  Figyeli ha frissül az oldalak száma és frissíti taskCount-ot ami azt tárolja, hogy hány db feladat van.
+*/
+watch(() => allTaskCountQuery.data.value, (newVal) => {
+  if (newVal !== undefined) {
+    taskCount.value = newVal;
+  }
 });
 
+/*
+  Figyeli ha jön új random task akkor megnézi, hogy érvénzes-e. Ha igen akkor randomTaskId megkapja,
+  más esetben null-ra lesz állítva melynek segítségével ki van szűrve azon eset amikor hibás id jön (LoadRandomTask-ban le van kezelve).
+*/
+watch(() => randomTask.data.value, (newVal) => {
+  if (newVal?.id) {
+    randomTaskId.value = newVal.id;
+  } else {
+    randomTaskId.value = null;
+  }
+});
+
+/*
+Figyeli, hogyha változik a filterdata értéke és refetcheli a kártyák infóit, illetve az oldalak számát.
+a filterData a user_id is frissítve van biztosítva a helyes működést.
+*/
+watch(filterData, () => {
+  filterData.value.userId = Number(user_id.value)
+  cardsQuery.refetch(); 
+  allTaskCountQuery.refetch();
+}, { deep: true });
+/*trigger eventek vége*/
 </script>
 
 <style scoped>

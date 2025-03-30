@@ -173,6 +173,7 @@ const task_solutionRepository = {
                         await this.IncreaseExperiencePoints(userId, taskId);
                         if(dailyTask){
                             await this.IncreaseCurrencyCount(userId);
+
                         }
                     }
                     return { state: 1, message: "Solution is correct." };
