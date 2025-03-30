@@ -16,7 +16,7 @@ const tasksRepository = {
         },
         order: [['id', 'ASC']],
         attributes: ['id', 'theme_id', 'difficulty', 'task_title'],
-        limit: 15,
+        limit: 5,
       });
     } catch (error) {
       throw error;
