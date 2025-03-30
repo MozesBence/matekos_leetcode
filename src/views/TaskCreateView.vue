@@ -354,7 +354,7 @@
 
     <v-row>
         <v-col cols="6">
-            <v-btn style="width: 100%;" @click="SendTask" :disabled="!get_user_email || get_user_email?.length === 0">
+            <v-btn style="width: 100%;" @click="SendTask" :disabled="!get_user_name || get_user_name?.length === 0">
                 Beküldés
               </v-btn>              
         </v-col>
@@ -452,6 +452,7 @@ const SendTask = () => {
     if (!CheckData()) {
         showAlert("warning", "Töltsön ki minden mezőt, hogy feladata beküldésre kerüljön!");
     } else {
+        console.log(Task_Data.value)
         submitTask(undefined, {
             onSuccess: () => {
                 showSucces ? showSucces("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!") : console.log("A feladatot sikeresen beküldte! Az bevizsgálás eredményét az oldalon üzenetben kapja meg!")
