@@ -35,9 +35,9 @@ const initializeDatabase = async () => {
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await db.Users.sync({force: true});
-        await db.Community_posts.sync({force: true});
-        await sequelize.sync({ force: true });
+        await db.Users.sync({alter: true});
+        await db.Community_posts.sync({alter: true});
+        await sequelize.sync({ alter: true });
         console.log('Database connected and models synchronized.');
         
         await db.Themes.initializeThemes();
@@ -59,12 +59,12 @@ const initializeDatabase = async () => {
         await db.Users.bulkCreate([
             { email: "pinteadani88@gmail.com", password: "$2b$10$QsxRn8Z5r2LFneDpfH4DD.bUM0S/YBV8FRbx/2Gmj.rV8AGQM8l4O", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
             { email: "pinteaviktoria1@gmail.com", password: "$2b$10$fLB5TCYXBPlKBazYYTDa9OAjcCCxxAuv21lxWLIr/gSV67cNW1VOC", user_name: "teszt_felhasznalo",  activated: 2 }
-        ], { ignoreDuplicates: true })
+        ])
 
         await db.User_customization.bulkCreate([
             { user_id: 1, darkmode: 0 },
             { user_id: 2, darkmode: 0 }
-        ], { ignoreDuplicates: true })
+        ])
 
         await db.CompetitionTasks.bulkCreate([
             { competition_id: 1, task_id: 1 },

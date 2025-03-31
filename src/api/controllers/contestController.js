@@ -86,16 +86,16 @@ exports.uploadSolution = async (req, res, next) => {
         const secretKey = process.env.JWT_KEY;
 
         var decoded = null;
-
+        
         if(token){
             decoded = jwt.verify(token, secretKey, { algorithms: ['HS256'] });
         }
-
+        
         if(!decoded){
             const error = new Error("Nem található a felhasználó!")
-
+            
             error.status = 404;
-
+            
             throw error;
         }
             

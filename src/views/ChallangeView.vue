@@ -28,7 +28,6 @@
         </v-col>
       </v-row>
 
-      <!-- Két feladat egymás mellett -->
       <v-row v-if="!isLoading">
         <v-col v-for="task in tasks.data" :key="task.id" cols="12" md="6">
           <v-card class="pa-2 d-flex flex-column ga-1">
@@ -140,8 +139,9 @@ onMounted(async () => {
     await getChallange({ id: route.params.id, define: route.params.define, token: get_user_by_token }, {
       onSuccess: (response) => {
         isLoading.value = false;
+        Uploaded.value = response.Competitionsubmissions.length > 0
         Competition_id.value = response.id;
-        if ((getISOWeekNumber() == response.identifier || getMonthNumber() == response.identifier) && !response.CompetitionSubmissions?.length) {
+        if ((getISOWeekNumber() == response.identifier || getMonthNumber() == response.identifier) && !response.Competitionsubmissions?.length) {
           response.Tasks.forEach(c => c.solution = "");
         }
         tasks.data = response.Tasks;

@@ -10,7 +10,7 @@
   <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);">
 
     <div class="image-text-container">
-      <h1 class="text" style="font-size: 3.5em; font-family: 'Orbitron', sans-serif;">Math Solve</h1>
+      <h1 class="text" style="font-size: 3em; font-family: 'Orbitron', sans-serif;">Math Solve</h1>
       <h3 class="text" style="font-weight: normal; color: white;">Üdvözli önt az oldal!</h3>
     </div>
 

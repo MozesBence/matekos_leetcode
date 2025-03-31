@@ -331,7 +331,7 @@
     </v-col>
   </v-row>
   <!--Akkor jelenik meg ha nincs az adott  szűrésre megfelelő elem-->
-   <v-row v-else style="display: flex; vertical-align:middle;justify-content:center; margin:2em">
+  <v-row v-else style="display: flex; vertical-align:middle;justify-content:center; margin:2em">
     <h4>A megadott szűrési feltételekkel nem található feladat!</h4>
   </v-row>
   </v-main>

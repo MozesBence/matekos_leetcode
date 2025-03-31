@@ -152,7 +152,7 @@ class contestRepository
     }
 
     async getUploadResults(get_results, id, comp_id){
-        await this.Competetins_submissions.create({
+        await this.Competition_submissions.create({
             experience_level: get_results.exp,
             point: get_results.point,
             competition_id: comp_id,

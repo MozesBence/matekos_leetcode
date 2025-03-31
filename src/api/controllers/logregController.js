@@ -67,9 +67,11 @@ exports.registerUser = async (req, res, next) =>
                 }
 
                 const token_result = await logregServices.uploadToken(newToken);
-                
+
+                const origin = req.get('Origin');
+
                 // Verifikációs link
-                const verificationLink = `http://localhost:5173/success-register?token=${token_result.token}`;
+                const verificationLink = `${origin}/success-register?token=${token_result.token}`;
         
                 // Email küldése
                 const transporter = nodemailer.createTransport({

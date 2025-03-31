@@ -20,7 +20,7 @@
                 {{ weeklyCountdown }}
               </v-card-subtitle>
               <div
-              v-if="currentWeekChallange && currentWeekChallange.CompetitionSubmissions && currentWeekChallange.CompetitionSubmissions.length != 0" 
+              v-if="currentWeekChallange && currentWeekChallange.Competitionsubmissions && currentWeekChallange.Competitionsubmissions.length != 0" 
               style="position: absolute; right: 0; top: 50%; transform: translate(-50%, -50%); background-color: rgb(var(--v-theme-success), .2);" 
               class="pa-3 rounded-lg">
                 <h2 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h2>
@@ -40,7 +40,7 @@
                 {{ monthlyCountdown }}
               </v-card-subtitle>
               <div
-              v-if="currentMonthChallange && currentMonthChallange.CompetitionSubmissions && currentMonthChallange.CompetitionSubmissions.length != 0" 
+              v-if="currentMonthChallange && currentMonthChallange.Competitionsubmissions && currentMonthChallange.Competitionsubmissions.length != 0" 
               style="position: absolute; right: 0; top: 50%; transform: translate(-50%, -50%); background-color: rgb(var(--v-theme-success), .2);" 
               class="pa-3 rounded-lg">
                 <h2 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h2>
@@ -102,7 +102,7 @@
                           <h2>{{ contest.identifier }}. - {{ contest.define == "week" ? "Heti" : "Havi" }} kihívás</h2>
                         </div>
                         <div
-                          v-if="contest.CompetitionSubmissions && contest.CompetitionSubmissions.length != 0" 
+                          v-if="contest.Competitionsubmissions && contest.Competitionsubmissions.length != 0" 
                           style="position: absolute; right: 4rem; background-color: rgb(var(--v-theme-success), .2);" 
                           class="pa-1 px-3 rounded-lg">
                             <h3 style="font-weight: normal; color: rgb(var(--v-theme-success));">Leadva</h3>
