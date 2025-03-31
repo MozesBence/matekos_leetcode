@@ -34,7 +34,6 @@ const initializeDatabase = async () => {
         await connection.end();
         
         await db.Users.sync({alter: true})
-        await db.Community_posts.sync({alter: true})
         await sequelize.sync({ alter: true });
         console.log('Database connected and models synchronized.');
         
