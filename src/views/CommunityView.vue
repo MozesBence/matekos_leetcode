@@ -331,12 +331,12 @@
 
                 <v-card-actions class="position-relative">
                   <v-btn icon @click="like(post,'post')">
-                    <v-icon color="red">{{ post.userReaction == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                    {{ post.like > 0 ? post.like : null }}
+                    <v-icon color="red">{{ post.likes[0].user_reacted == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                    {{ post.likes[0].total_likes > 0 ? post.likes[0].total_likes : null }}
                   </v-btn>
                   <v-btn icon @click="dislike(post,'post')">
-                    <v-icon color="purple">{{ post.userReaction == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                    {{ post.dislike > 0 ? post.dislike : null }}
+                    <v-icon color="purple">{{ post.likes[0].user_reacted == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                    {{ post.likes[0].total_dislikes > 0 ? post.likes[0].total_dislikes : null }}
                   </v-btn>
                   <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
                     <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
@@ -454,12 +454,12 @@
                       </transition-group>
                       <div class="ml-1 position-relative">
                         <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
-                          <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                          {{ comment.like > 0 ? comment.like : null }}
+                          <v-icon color="red">{{ comment.likes[0].user_reacted === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                          {{ comment.likes[0].total_likes > 0 ? comment.likes[0].total_likes : null }}
                         </v-btn>
                         <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
-                          <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                          {{ comment.dislike > 0 ? comment.dislike : null }}
+                          <v-icon color="purple">{{ comment.likes[0].user_reacted === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                          {{ comment.likes[0].total_dislikes > 0 ? comment.likes[0].total_dislikes : null }}
                         </v-btn>
                         <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
                           <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
@@ -581,12 +581,12 @@
                                 </transition-group>
                                 <div class="ml-1">
                                   <v-btn icon @click="like(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                    <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                                    {{ inner_comment.like }}
+                                    <v-icon color="red">{{ inner_comment.likes[0].user_reacted === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                                    {{ comment.likes[0].total_likes > 0 ? comment.likes[0].total_likes : null }}
                                   </v-btn>
                                   <v-btn icon @click="dislike(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                    <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                                    {{ inner_comment.dislike }}
+                                    <v-icon color="purple">{{ inner_comment.likes[0].user_reacted === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                                    {{  comment.likes[0].total_dislikes > 0 ? comment.likes[0].total_dislikes : null }}
                                   </v-btn>
                                   <v-btn v-if="inner_comment.user_name != get_UserName && get_user_by_token" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                     Válasz
@@ -1300,6 +1300,7 @@ watch(get_fullUser, async (User) => {
     search: null
   }, {
     onSuccess: (posts_array) => {
+      console.log(posts_array);
       PostLoading.value = false;
       total_posts.value = posts_array.total_posts;
       posts_array.posts && posts_array.posts.forEach(post =>
