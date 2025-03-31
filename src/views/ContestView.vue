@@ -205,11 +205,13 @@ const getMonthNumber = () => new Date().getMonth() + 1;
 onMounted(async () => {
   await getPrevChallange(get_user_by_token, {
     onSuccess: (response) => {
+      console.log(response);
       const filterChallenges = response.filter(c => {
         if (c.identifier === getISOWeekNumber()) currentWeekChallange.value = c;
         else if (c.identifier === getMonthNumber()) currentMonthChallange.value = c;
         else return true;
       });
+      console.log(currentMonthChallange.value)
       prev_contest.value = filterChallenges;
     }
   });
