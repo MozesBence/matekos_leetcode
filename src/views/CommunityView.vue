@@ -268,7 +268,7 @@
                 style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc)); cursor: pointer;" 
                 @click="router.push({ name: 'profile', params: { id: post.User.id } })">
                   <img v-if="post.User.User_customization.profil_picture" :src="post.User.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                  <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                  <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                   <h4 style="font-weight: normal;">{{ post.user_name }}</h4>
                 </div>
                 <h5 style="font-weight: normal;">{{ post.createdAt }}</h5>
@@ -368,7 +368,7 @@
                       <div class="position-relative mx-4 pa-2" v-if="get_user_by_token">
                         <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                           <img v-if="get_fullUser.User_customization.profil_picture" :src="get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                          <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                          <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                           <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                         </div>
                         <div>
@@ -421,7 +421,7 @@
                                 style="height: 2rem; width: 2rem; border-radius: 50%;" 
                                 class="mr-3"
                               >
-                              <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                              <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                               <h4 style="font-weight: normal;">{{ comment.user_name }}</h4>
                             </div>
                             <h5 style="font-weight: normal;">{{ comment.createdAt }}</h5>
@@ -499,7 +499,7 @@
                               style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));"
                               >
                                 <img v-if="get_fullUser.User_customization.profil_picture" :src="get_fullUser.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                                <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                                 <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                               </div>
                               <div>
@@ -548,7 +548,7 @@
                                       @click="router.push({ name: 'profile', params: { id: inner_comment.User.id } })"
                                       >
                                         <img v-if="inner_comment.User.User_customization.profil_picture" :src="inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                        <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                                        <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                                         <h4 style="font-weight: normal;">{{ inner_comment.user_name }}</h4>
                                       </div>
                                       <h5 style="font-weight: normal;">{{ inner_comment.createdAt }}</h5>
@@ -611,7 +611,7 @@
                                   <div class="position-relative mx-4 pa-2" v-if="inner_comment.prepareReply">
                                     <div class="d-flex flex-row align-center mb-3 pa-1 pr-2 rounded-xl" style="width: max-content; background-color: rgb(var(--v-theme-community_comment_bc));">
                                       <img v-if="inner_comment.User.User_customization.profil_picture" :src="inner_comment.User.User_customization.profil_picture" alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                      <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                                      <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                                       <h4 style="font-weight: normal;">{{ get_UserName }}</h4>
                                     </div>
                                     <div>

@@ -35,9 +35,7 @@ const initializeDatabase = async () => {
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await db.Users.sync({ force: true });
-        await db.Community_posts.sync({ force: true });
-        await sequelize.sync({ force: true });
+        await sequelize.sync({ force: false });
         console.log('Database connected and models synchronized.');
         
         await db.Themes.initializeThemes();
@@ -51,12 +49,14 @@ const initializeDatabase = async () => {
         await db.Competitions.initializeCompetitions();
 
         await db.Daily_Tasks.initializeDailyTask();
+
+        await db.StoreItems.initializeStoreItems();
         
         await sequelize.query('SET GLOBAL event_scheduler = ON;');
 
         await db.Users.bulkCreate([
-            { email: "pinteadani88@gmail.com", password: "admin12345", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
-            { email: "pinteaviktoria1@gmail.com", password: "felhasznalo12345", user_name: "teszt_felhasznalo",  activated: 2 }
+            { email: "pinteadani88@gmail.com", password: "$2b$10$QsxRn8Z5r2LFneDpfH4DD.bUM0S/YBV8FRbx/2Gmj.rV8AGQM8l4O", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
+            { email: "pinteaviktoria1@gmail.com", password: "$2b$10$fLB5TCYXBPlKBazYYTDa9OAjcCCxxAuv21lxWLIr/gSV67cNW1VOC", user_name: "teszt_felhasznalo",  activated: 2 }
         ], { ignoreDuplicates: true })
 
         await db.User_customization.bulkCreate([

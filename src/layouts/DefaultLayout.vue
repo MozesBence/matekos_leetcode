@@ -1120,28 +1120,27 @@
                                 <div 
                                 style="background-color: rgb(var(--v-theme-profile_bc));"
                                 class="rounded py-2 px-2 d-flex align-center">
-                                  <div style="width: 100%;" class="d-flex align-center mr-2">
+                                  <div class="d-flex align-center mr-2">
                                     <v-icon size="25" class="mr-2">mdi-timer-sand</v-icon>
-                                    <h3 style="font-weight: normal;">{{ validate.task_title }}</h3>
+                                    <div style="max-width: 35rem;">
+                                      <h3 style="font-weight: normal;">{{ validate.task_title }}</h3>
+                                    </div>
                                     <v-divider vertical class="mx-2"></v-divider>
-                                    <div style="width: max-content;" class="ml-2"> 
-                                    <div class="d-flex flex-row ga-2 align-center">
-                                      <div 
-                                      class="d-flex flex-row align-center pa-1 pr-3 rounded-xl" 
+                                    <v-row class="ga-1 ml-2 align-center">
+                                      <div
+                                      class="d-flex flex-row align-center pa-1 pr-2 rounded-xl" 
                                       style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                       @click="router.push({ name: 'profile', params: { id: validate.creator.id } })">
                                         <img v-if="validate.creator.User_customization.profil_picture" :src="validate.creator.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
                                         <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                                         <h3 style="font-weight: normal;">{{ validate.creator.user_name }}</h3>
                                       </div>
-                                    </div>
-                                  </div>
-                                  </div>
-
-                                  <div>
-                                    <v-btn elevation="0" @click="router.push({ name: 'approve-task', params: { taskid: validate.id, adminid: get_fullUser.id } }); dialog = false">
-                                      Ellenörzés
-                                    </v-btn>
+                                      <div>
+                                        <v-btn elevation="0" @click="router.push({ name: 'approve-task', params: { taskid: validate.id, adminid: get_fullUser.id } }); dialog = false">
+                                          Ellenörzés
+                                        </v-btn>
+                                      </div>
+                                    </v-row>
                                   </div>
                                 </div>
                               </div>

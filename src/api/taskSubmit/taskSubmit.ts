@@ -3,7 +3,6 @@ import axios from "axios";
 import {type Ref } from "vue";
 
 const submitTask = async (taskData: Ref<{ taskTitle: String, task: String, themeId: any, solution: String, difficulty: any, creatorId: Number, experiencePoints: Number, solutionFormat: String, hint1: String, hint2: String, validated: Number }>) => {
-    console.log(taskData.value);
     const response = await axios.post(
         'api/tasks/submitTask',
         taskData.value
@@ -16,7 +15,7 @@ export const UseSubmitTask = (taskData:Ref<{taskTitle: String,task: String,theme
         mutationFn: () => submitTask(taskData),
         mutationKey:['submitedTask',taskData.value],
         onSuccess(data){
-            console.log(data)
+            
         },
         onError(error){
             console.error(error)

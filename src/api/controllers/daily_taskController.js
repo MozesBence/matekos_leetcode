@@ -23,7 +23,6 @@ const CheckIfDailyTask = async (req, res, next) => {
     }
 };
 
-
 module.exports = {
     getDailyTask,
     CheckIfDailyTask
