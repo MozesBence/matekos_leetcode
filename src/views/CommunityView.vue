@@ -1331,7 +1331,7 @@ const SendReport = async (post) => {
     from_user_id: get_fullUser.value.id,
     content_id: SelectedReportArray.value.id
   }, {
-    onSuccess: console.log,
+    onSuccess: (response) => showSucces ? showSucces("Bejelentés el lett küldve!") : console.log("Bejelentés el lett küldve!"),
     onError: (error) => showError ? showError(error.response.data) : console.log(error.response.data)
   });
 
