@@ -73,7 +73,7 @@ def main():
                 print("A feltöltés végbement!")
                 success = True
             except mysql.connector.Error as err:
-                print(f"DB error: {err}. Újrapróbálkozás 5 másodperc múlva...")
+                print(f"DB error: {err}. Újrapróbálkozás 5 másodperc múlva...") 
                 time.sleep(5)
         
         intervall()
