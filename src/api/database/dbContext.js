@@ -33,6 +33,8 @@ const initializeDatabase = async () => {
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
         
+        await db.Community_posts.sync({alter: true})
+        await db.Users.sync({alter: true})
         await sequelize.sync({ alter: true });
         console.log('Database connected and models synchronized.');
         
