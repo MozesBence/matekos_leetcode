@@ -56,12 +56,12 @@ exports.postUpload = async (req, res, next) => {
         content: content,
         likes: 0,
         dislike: 0,
-        user_id: id,
+        user_id: Number(id),
     }
 
     try{
-        const post_result = await communityService.postUpload(newPost, JSON.parse(chips));
 
+        const post_result = await communityService.postUpload(newPost, JSON.parse(chips));
         if(post_result == null){
             const error = new Error("Sikertelen volt a poszt feltöltés!");
 

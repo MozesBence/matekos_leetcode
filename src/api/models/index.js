@@ -61,9 +61,6 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: "post_id",
         allowNull: true,
     });
-    Community_posts.belongsTo(Users, { // Hiányzott!
-        foreignKey: "user_id",
-    });
 
     // Community_comments kapcsolatai
     Community_comments.hasMany(Community_comments, {
@@ -87,6 +84,8 @@ module.exports = (sequelize, DataTypes) => {
     Users.hasMany(Community_comments, {
         foreignKey: "user_id",
     });
+    Community_posts.belongsTo(Users, { foreignKey: "user_id" });
+    Community_comments.belongsTo(Users, { foreignKey: "user_id" });
 
     Community_likes.belongsTo(Users, {
         foreignKey: "user_id",

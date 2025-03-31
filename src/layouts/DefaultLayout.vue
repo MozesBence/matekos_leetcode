@@ -444,7 +444,7 @@
                           style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;"
                           @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })"
                           >
-                          <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })" size="40">mdi-account</v-icon>
+                          <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover; cursor: pointer;" @click="router.push({ name: 'profile', params: { id: get_fullUser.id } })" size="40">mdi-account</v-icon>
                         </div>
                         <h2 
                         style="font-weight: normal; text-decoration: none; cursor: pointer;" 
@@ -621,7 +621,7 @@
                                       style="width: max-content; background-color: rgb(var(--v-theme-community_posts_bc)); cursor: pointer;" 
                                       @click="router.push({ name: 'profile', params: { id: notif.ReportedUser.id } })">
                                         <img v-if="notif.ReportedUser.User_customization.profil_picture" :src="notif.ReportedUser.User_customization.profil_picture"  alt="" style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">
-                                        <v-icon v-else style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%; object-fit: cover;">mdi-account</v-icon>
+                                        <v-icon v-else style="height: 2rem; width: 2rem; border-radius: 50%;" class="mr-3">mdi-account</v-icon>
                                         <h3 style="font-weight: normal;">{{ notif.ReportedUser.user_name }}</h3>
                                       </div>
                                     </div>

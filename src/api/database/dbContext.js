@@ -32,12 +32,8 @@ const initializeDatabase = async () => {
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
-
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await db.Users.sync({alter: false});
-        await db.Community_posts.sync({alter: false});
-        await sequelize.sync({ alter: false });
+        await sequelize.sync({ alter: true });
         console.log('Database connected and models synchronized.');
         
         await db.Themes.initializeThemes();
@@ -157,8 +153,6 @@ const initializeDatabase = async () => {
         `;
 
         await sequelize.query(createTokenRedeemDeleteQuery);
-        
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1', { raw: true });
 
     } catch (error) {
         console.error('Error initializing database:', error);

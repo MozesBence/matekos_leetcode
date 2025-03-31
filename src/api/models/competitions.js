@@ -46,9 +46,9 @@ module.exports = (sequelize, DataTypes) => {
             { id: 7, define: "week" }
         ].map(item => {
             if (item.define === "week") {
-                return { identifier: weekCounter--, define: "week" };
+                return {id: item.id, identifier: weekCounter--, define: "week" };
             } else {
-                return { identifier: monthCounter--, define: "month" };
+                return {id: item.id,  identifier: monthCounter--, define: "month" };
             }
         });
     

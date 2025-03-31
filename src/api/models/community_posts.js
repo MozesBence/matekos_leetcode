@@ -28,6 +28,11 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.DATE,
                 allowNull: false,
                 defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            },
+            user_id: { 
+                type: DataTypes.INTEGER, 
+                allowNull: false, 
+                references: { model: "Users", key: "id" } 
             }
         },
         {
