@@ -1,6 +1,6 @@
 <template>
     <v-container class="d-flex flex-column ga-2">
-      <!--Fócím div-->
+      <!--Főcím div-->
       <div class="hero">
         <h1 ref="rotatingText">Feladat validálás</h1>
       </div>
@@ -149,6 +149,17 @@ const DenyTask = async () => {
     }
   });
 };
+
+watch(
+  () => task.data?.value?.theme_id,
+  async (newThemeId) => {
+    if (newThemeId) {
+      themeId.value = newThemeId
+      await theme.refetch()
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 
