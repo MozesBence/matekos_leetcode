@@ -65,8 +65,17 @@ def main():
     while True:
         quote = get_random_quote()  
         print(f"Új idézet: {quote}")
-        upload_to_db(quote)
-        print("A feltöltés végbement!")
+        
+        success = False
+        while not success:
+            try:
+                upload_to_db(quote)
+                print("A feltöltés végbement!")
+                success = True
+            except mysql.connector.Error as err:
+                print(f"DB error: {err}. Újrapróbálkozás 5 másodperc múlva...")
+                time.sleep(5)
+        
         intervall()
         print("Várakozás az új napra...")
 
