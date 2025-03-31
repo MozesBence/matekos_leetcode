@@ -70,7 +70,7 @@
               <v-expansion-panel title="Hasonló feladatok">
                 <v-expansion-panel-text>
                   <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px;margin-bottom:1em">
-                    <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex;" @click="TaskView(card.id)"> 
+                    <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex; cursor: pointer;" @click="TaskView(card.id)"> 
                       <v-col cols="3"><v-chip
                         :color="chipColor(card?.difficulty)"
                         outlined
@@ -120,7 +120,7 @@
         <!--Jobb oldali rész melzben a megoldás mezeje helyezkedik el-->
         <v-col cols="12" md="6" style="padding: 2em; background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <v-row style="margin-bottom: 1em;margin-top: 1em;">
-            <h1 style="color:rgb(var(--v-theme-task_solving_right_drawer))">Megoldás:</h1>
+            <h1 style="color:rgb(var(--v-theme-text_color))">Megoldás:</h1>
           </v-row>
           <v-row style="margin-bottom: 1em;">
             <v-text-field label="Megoldás" variant="outlined" v-model="solution"></v-text-field>

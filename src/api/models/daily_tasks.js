@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes ) => {
 
     Daily_tasks.initializeDailyTask = async () => {
         const defaultDailyTasks = [
-            { id: new Date().toISOString().split('T')[0].split('-')[2], task_id: 30 },
+            { id: new Date().getDate(), task_id: 30 },
         ]
 
         for (const th of defaultDailyTasks) {

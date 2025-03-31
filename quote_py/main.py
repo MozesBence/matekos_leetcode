@@ -29,25 +29,22 @@ def upload_to_db(quote):
     if not quote:
         print("Nem volt idézet!")
         return
-    try:
-        db = get_db_connection()
-        cursor = db.cursor()
-        existing_quote = get_quote_from_db(db)
+    db = get_db_connection()
+    cursor = db.cursor()
+    existing_quote = get_quote_from_db(db)
 
-        if existing_quote is None:
-            sql = "INSERT INTO daily_quotes (id, quote) VALUES (1, %s)"
-            cursor.execute(sql, (quote,))
-            print("Új idézet beillesztve!")
-        else:
-            sql = "UPDATE daily_quotes SET quote = %s WHERE id = 1"
-            cursor.execute(sql, (quote,))
-            print("Idézet frissítve!")
+    if existing_quote is None:
+        sql = "INSERT INTO daily_quotes (id, quote) VALUES (1, %s)"
+        cursor.execute(sql, (quote,))
+        print("Új idézet beillesztve!")
+    else:
+        sql = "UPDATE daily_quotes SET quote = %s WHERE id = 1"
+        cursor.execute(sql, (quote,))
+        print("Idézet frissítve!")
 
-        db.commit()
-        cursor.close()
-        db.close()
-    except mysql.connector.Error as err:
-        print(f"DB error: {err}")
+    db.commit()
+    cursor.close()
+    db.close()
 
 def intervall():
     """Várakozik éjfélig, majd újra frissíti az idézetet."""
