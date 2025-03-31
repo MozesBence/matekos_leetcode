@@ -866,10 +866,7 @@ class communityRepository
     }
 
     async postUpload(post, tagIds) {
-      console.log(post)
       const newPost = await this.Community_posts.create(post);
-
-      console.log(newPost)
     
       if (tagIds && tagIds.length > 0) {
         await newPost.addCommunity_tags(tagIds);
