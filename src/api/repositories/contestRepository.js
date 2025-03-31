@@ -167,7 +167,7 @@ class contestRepository
 
         user.experience_point = Number(user.experience_point) + get_results.exp;
 
-        user.experience_point = Number(user.currency_count) + 15;
+        user.currency_count = Number(user.currency_count) + 15;
         
         user.save();
 
