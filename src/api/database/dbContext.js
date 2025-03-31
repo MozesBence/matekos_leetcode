@@ -35,9 +35,9 @@ const initializeDatabase = async () => {
 
         await sequelize.query('SET FOREIGN_KEY_CHECKS = 0', { raw: true });
         
-        await db.Users.sync({alter: true});
-        await db.Community_posts.sync({alter: true});
-        await sequelize.sync({ alter: true });
+        await db.Users.sync({alter: false});
+        await db.Community_posts.sync({alter: false});
+        await sequelize.sync({ alter: false });
         console.log('Database connected and models synchronized.');
         
         await db.Themes.initializeThemes();

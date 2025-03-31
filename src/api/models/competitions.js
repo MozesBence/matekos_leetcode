@@ -37,13 +37,13 @@ module.exports = (sequelize, DataTypes) => {
         let monthCounter = currentMonth;
     
         const items = [
-            { define: "week" },
-            { define: "week" },
-            { define: "week" },
-            { define: "month" },
-            { define: "week" },
-            { define: "week" },
-            { define: "month" }
+            { id: 1, define: "week" },
+            { id: 2, define: "week" },
+            { id: 3, define: "week" },
+            { id: 4, define: "month" },
+            { id: 5, define: "week" },
+            { id: 6, define: "month" },
+            { id: 7, define: "week" }
         ].map(item => {
             if (item.define === "week") {
                 return { identifier: weekCounter--, define: "week" };
