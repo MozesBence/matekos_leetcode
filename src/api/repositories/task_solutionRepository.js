@@ -1,8 +1,6 @@
 const db = require('../database/dbContext');
-const {Task_solutions,Tasks,Users} = db;
+const {Task_solutions, Tasks, Users} = db;
 const sequelize = require('sequelize');
-
-
 
 const task_solutionRepository = {
     async getCompletionRate() {

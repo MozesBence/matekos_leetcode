@@ -13,6 +13,7 @@ const sequelize = new Sequelize(
     },
 );
 
+
 const models = require("../models/index")(sequelize, DataTypes);
 
 const db = {
@@ -20,7 +21,7 @@ const db = {
     Sequelize,
     ...models 
 };
-// Initialize database and themes
+
 const initializeDatabase = async () => {
     try {
         const connection = await mysql.createConnection({
@@ -32,11 +33,14 @@ const initializeDatabase = async () => {
         await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\`;`);
         console.log(`Database "${process.env.DB_NAME}" created or already exists.`);
         await connection.end();
+
+        await sequelize.authenticate();
+        console.log('Database connection successful!');
         
         await db.Users.sync({alter: true})
         await db.User_customization.sync({alter: true})
         await sequelize.sync({ alter: true });
-        console.log('Database connected and models synchronized.');
+        console.log('Database models synchronized.');
         
         await db.Themes.initializeThemes();
         
@@ -57,12 +61,12 @@ const initializeDatabase = async () => {
         await db.Users.bulkCreate([
             { email: "pinteadani88@gmail.com", password: "$2b$10$QsxRn8Z5r2LFneDpfH4DD.bUM0S/YBV8FRbx/2Gmj.rV8AGQM8l4O", user_name: "admin", user_role: "admin", admin: 1, activated: 1 },
             { email: "pinteaviktoria1@gmail.com", password: "$2b$10$fLB5TCYXBPlKBazYYTDa9OAjcCCxxAuv21lxWLIr/gSV67cNW1VOC", user_name: "teszt_felhasznalo",  activated: 2 }
-        ])
+        ], {ignoreDuplicates: true})
 
         await db.User_customization.bulkCreate([
             { user_id: 1, darkmode: 0 },
             { user_id: 2, darkmode: 0 }
-        ])
+        ], {ignoreDuplicates: true})
 
         await db.CompetitionTasks.bulkCreate([
             { competition_id: 1, task_id: 1 },
@@ -83,7 +87,7 @@ const initializeDatabase = async () => {
             { competition_id: 6, task_id: 39 },
             { competition_id: 7, task_id: 72 },
             { competition_id: 7, task_id: 54 }
-        ]);
+        ], {ignoreDuplicates: true});
         
         const createEventQuery = `
         CREATE EVENT IF NOT EXISTS delete_expired_tokens
