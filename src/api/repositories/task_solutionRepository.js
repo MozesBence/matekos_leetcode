@@ -109,24 +109,23 @@ const task_solutionRepository = {
         try {
             const state = await this.CheckSolution(taskId, solution);
             const currentTimestamp = new Date();
-            const dailyTask = await this.CheckIfDailyTask(taskId) 
+            const dailyTask = await this.CheckIfDailyTask(taskId);
             const existingSolution = await Task_solutions.findOne({
                 where: { UserId: userId, task_id: taskId }
             });
     
             if (!existingSolution) {
-                // Full uj rekord hozzaadasa a dbhez ha jo/ ha rossz
                 const newSolution = await Task_solutions.create({
                     UserId: userId,
                     task_id: taskId,
                     state: state,
-                    submission_date: currentTimestamp
+                    submission_date: currentTimestamp,
+                    awarded: dailyTask && state === 1 ? 1 : null
                 });
-    
-                // ha helyes a megoldas xp plussz
+
                 if (state === 1) {
                     await this.IncreaseExperiencePoints(userId, taskId);
-                    if(dailyTask){
+                    if (dailyTask) {
                         await this.IncreaseCurrencyCount(userId);
                     }
                 }
@@ -135,42 +134,46 @@ const task_solutionRepository = {
             } else {
                 if (state === 1) {
                     if (existingSolution.state === 1) {
-                        if(dailyTask){
-                            await this.IncreaseCurrencyCount(userId);
-                            await Task_solutions.update(
-                                { submission_date: currentTimestamp },
-                                { where: { UserId: userId, task_id: taskId } }
-                            );
-                        }
-                        // ha mar alapbol jo volt, csak a datumot frissiti
                         await Task_solutions.update(
                             { submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
-                            );
-                            
+                        );
                     } else {
-                        // ha hibas problakozas volt de most jo akkor update
                         await Task_solutions.update(
                             { state: 1, submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
                         );
-                        // xp plussz
                         await this.IncreaseExperiencePoints(userId, taskId);
-                        if(dailyTask){
-                            await this.IncreaseCurrencyCount(userId);
-
-                        }
                     }
+                    if (dailyTask && !existingSolution.awarded) {
+                        await this.IncreaseCurrencyCount(userId);
+                        await Task_solutions.update(
+                            { awarded: 1 },
+                            { where: { UserId: userId, task_id: taskId } }
+                        );
+                    }
+    
                     return { state: 1, message: "Solution is correct." };
                 } else {
-                    // hibas megoldas vissza state
                     return { state: 0, message: "Solution is incorrect." };
                 }
             }
         } catch (error) {
             throw error;
         }
-    },   
+    },
+    
+    async CheckIfAwarded(userId, taskId) {
+        const result = await db.Task_solutions.findOne({
+            where: {
+                UserId: userId,
+                task_id: taskId,
+                awarded: 1
+            }
+        });
+        return result !== null;
+    }
+,    
     
     //megnezi, hogy az adott task napi feladat-e (true/false)
     async CheckIfDailyTask(taskId){
