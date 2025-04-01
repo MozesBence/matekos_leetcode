@@ -459,7 +459,7 @@
                         </v-btn>
                         <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
                           <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                          {{ comment.dislike > 0 ? comment.dislike : null }}
+                          {{ comment.dislike && comment.dislike > 0 ? comment.dislike : null }}
                         </v-btn>
                         <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
                           <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
@@ -1300,6 +1300,7 @@ watch(get_fullUser, async (User) => {
     search: null
   }, {
     onSuccess: (posts_array) => {
+      console.log(posts_array);
       PostLoading.value = false;
       total_posts.value = posts_array.total_posts;
       posts_array.posts && posts_array.posts.forEach(post =>
@@ -1824,8 +1825,7 @@ const addPost = async () => {
             createdAt: formatDate(new Date()),
             content: cleanedHtmlContent,
             title: newPost.title,
-            like: 0,
-            dislike: 0,
+            likes:[{total_likes: 0, total_dislikes: 0, user_reacted: null}],
             userReaction: null,
             newComment: "",
             gotEdit: false,
@@ -2020,37 +2020,56 @@ function fileDelete(index) {
 
 const toggleReaction = async (post, upload_type, reactionType) => {
   if (!get_user_by_token) return;
+  
   const currentReaction = upload_type === "post" ? post.likes?.[0]?.user_reacted : post.userReaction;
   const removeReaction = currentReaction === reactionType;
   
   if (upload_type === "post") {
+    post.likes[0].total_likes = typeof post.likes[0].total_likes === 'number' ? post.likes[0].total_likes : 0;
+    post.likes[0].total_dislikes = typeof post.likes[0].total_dislikes === 'number' ? post.likes[0].total_dislikes : 0;
+    
     if (!removeReaction) {
       if (reactionType === 'like' && currentReaction === 'dislike') {
-        post.likes[0].total_dislikes--;
-        post.likes[0].total_likes++;
+        post.likes[0].total_dislikes = post.likes[0].total_dislikes > 0 ? post.likes[0].total_dislikes - 1 : 0;
+        post.likes[0].total_likes += 1;
       } else if (reactionType === 'dislike' && currentReaction === 'like') {
-        post.likes[0].total_likes--;
-        post.likes[0].total_dislikes++;
+        post.likes[0].total_likes = post.likes[0].total_likes > 0 ? post.likes[0].total_likes - 1 : 0;
+        post.likes[0].total_dislikes += 1;
+      } else if (!currentReaction) {
+        if (reactionType === 'like') post.likes[0].total_likes += 1;
+        else if (reactionType === 'dislike') post.likes[0].total_dislikes += 1;
       }
       post.likes[0].user_reacted = reactionType;
     } else {
-      if (currentReaction === 'like') post.likes[0].total_likes--;
-      else if (currentReaction === 'dislike') post.likes[0].total_dislikes--;
+      if (currentReaction === 'like') {
+        post.likes[0].total_likes = post.likes[0].total_likes > 0 ? post.likes[0].total_likes - 1 : 0;
+      } else if (currentReaction === 'dislike') {
+        post.likes[0].total_dislikes = post.likes[0].total_dislikes > 0 ? post.likes[0].total_dislikes - 1 : 0;
+      }
       post.likes[0].user_reacted = null;
     }
   } else {
+    post.like = typeof post.like === 'number' ? post.like : 0;
+    post.dislike = typeof post.dislike === 'number' ? post.dislike : 0;
+    
     if (!removeReaction) {
       if (reactionType === 'like' && currentReaction === 'dislike') {
-        post.dislike--;
-        post.like++;
+        post.dislike = post.dislike > 0 ? post.dislike - 1 : 0;
+        post.like += 1;
       } else if (reactionType === 'dislike' && currentReaction === 'like') {
-        post.like--;
-        post.dislike++;
+        post.like = post.like > 0 ? post.like - 1 : 0;
+        post.dislike += 1;
+      } else if (!currentReaction) {
+        if (reactionType === 'like') post.like += 1;
+        else if (reactionType === 'dislike') post.dislike += 1;
       }
       post.userReaction = reactionType;
     } else {
-      if (currentReaction === 'like') post.like--;
-      else if (currentReaction === 'dislike') post.dislike--;
+      if (currentReaction === 'like') {
+        post.like = post.like > 0 ? post.like - 1 : 0;
+      } else if (currentReaction === 'dislike') {
+        post.dislike = post.dislike > 0 ? post.dislike - 1 : 0;
+      }
       post.userReaction = null;
     }
   }
@@ -2133,7 +2152,9 @@ const addCommentToPost = async (post) => {
         showComments: false,
         prepareReply: false,
         gotEdit: false,
-        editable: false
+        editable: false,
+        like: 0,
+        dislike: 0,
       });
       post.total_comments = (post.total_comments || 0) + 1;
     },
@@ -2163,7 +2184,9 @@ const addCommentToComment = async (comment) => {
         prepareReply: false,
         gotEdit: false,
         editable: false,
-        comments: []
+        comments: [],
+        like: 0,
+        dislike: 0,
       });
       comment.prepareReply = false;
       comment.total_comments = (comment.total_comments || 0) + 1;
@@ -2193,7 +2216,9 @@ const addLastCommentToComment = async (comment, inner_comment) => {
         gotEdit: false,
         editable: false,
         linkAuthor: "@" + comment.user_name,
-        comments: []
+        comments: [],
+        like: 0,
+        dislike: 0,
       });
       inner_comment.prepareReply = false;
       comment.total_comments = (comment.total_comments || 0) + 1;
