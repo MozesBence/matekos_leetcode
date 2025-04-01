@@ -331,12 +331,12 @@
 
                 <v-card-actions class="position-relative">
                   <v-btn icon @click="like(post,'post')">
-                    <v-icon color="red">{{ post.likes[0].user_reacted == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                    {{ post.likes[0].total_likes > 0 ? post.likes[0].total_likes : null }}
+                    <v-icon color="red">{{ post.likes.length > 0 && post.likes[0].user_reacted == 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                    {{ post.likes.length > 0 && post.likes[0].total_likes > 0 ? post.likes[0].total_likes : null }}
                   </v-btn>
                   <v-btn icon @click="dislike(post,'post')">
-                    <v-icon color="purple">{{ post.likes[0].user_reacted == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                    {{ post.likes[0].total_dislikes > 0 ? post.likes[0].total_dislikes : null }}
+                    <v-icon color="purple">{{ post.likes.length > 0 && post.likes[0].user_reacted == 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                    {{ post.likes.length > 0 && post.likes[0].total_dislikes > 0 ? post.likes[0].total_dislikes : null }}
                   </v-btn>
                   <v-btn icon color="community_primary_color" @click="post.showComments = !post.showComments" class="rounded-circle" v-if="(post.total_comments) > 0">
                     <v-icon> {{ post.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }} </v-icon>
@@ -454,12 +454,12 @@
                       </transition-group>
                       <div class="ml-1 position-relative">
                         <v-btn icon @click="like(comment,'comment')" elevation="0" style="background-color: transparent;">
-                          <v-icon color="red">{{ comment.likes[0].user_reacted === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                          {{ comment.likes[0].total_likes > 0 ? comment.likes[0].total_likes : null }}
+                          <v-icon color="red">{{ comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                          {{ comment.like > 0 ? comment.like : null }}
                         </v-btn>
                         <v-btn icon @click="dislike(comment,'comment')" elevation="0" style="background-color: transparent;">
-                          <v-icon color="purple">{{ comment.likes[0].user_reacted === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                          {{ comment.likes[0].total_dislikes > 0 ? comment.likes[0].total_dislikes : null }}
+                          <v-icon color="purple">{{ comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                          {{ comment.dislike > 0 ? comment.dislike : null }}
                         </v-btn>
                         <v-btn icon color="transparent" elevation="0" @click="comment.showComments = !comment.showComments" class="rounded-circle" v-if="comment.total_comments > 0">
                           <v-icon> {{ comment.showComments ? "mdi-comment-text" : "mdi-comment-text-outline" }}</v-icon>
@@ -581,12 +581,12 @@
                                 </transition-group>
                                 <div class="ml-1">
                                   <v-btn icon @click="like(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                    <v-icon color="red">{{ inner_comment.likes[0].user_reacted === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
-                                    {{ comment.likes[0].total_likes > 0 ? comment.likes[0].total_likes : null }}
+                                    <v-icon color="red">{{ inner_comment.userReaction === 'like' ? 'mdi-heart' : 'mdi-heart-outline' }}</v-icon>
+                                    {{ inner_comment.like }}
                                   </v-btn>
                                   <v-btn icon @click="dislike(inner_comment,'comment')" elevation="0" style="background-color: transparent;">
-                                    <v-icon color="purple">{{ inner_comment.likes[0].user_reacted === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
-                                    {{  comment.likes[0].total_dislikes > 0 ? comment.likes[0].total_dislikes : null }}
+                                    <v-icon color="purple">{{ inner_comment.userReaction === 'dislike' ? 'mdi-heart-broken' : 'mdi-heart-broken-outline' }}</v-icon>
+                                    {{ inner_comment.dislike }}
                                   </v-btn>
                                   <v-btn v-if="inner_comment.user_name != get_UserName && get_user_by_token" text color="transparent" elevation="0" @click="prepareReply(inner_comment)">
                                     Válasz
@@ -1300,7 +1300,6 @@ watch(get_fullUser, async (User) => {
     search: null
   }, {
     onSuccess: (posts_array) => {
-      console.log(posts_array);
       PostLoading.value = false;
       total_posts.value = posts_array.total_posts;
       posts_array.posts && posts_array.posts.forEach(post =>
@@ -2019,32 +2018,57 @@ function fileDelete(index) {
   targetPost.splice(index, 1);
 }
 
-const like = async (post, upload_type) => {
+const toggleReaction = async (post, upload_type, reactionType) => {
   if (!get_user_by_token) return;
-
-  const oppositeReaction = post.userReaction === 'like' ? 'like' : 'dislike';
-  const change = post.userReaction !== oppositeReaction;
+  const currentReaction = upload_type === "post" ? post.likes?.[0]?.user_reacted : post.userReaction;
+  const removeReaction = currentReaction === reactionType;
   
-  if (change) {
-    if (post.userReaction === 'dislike') post.dislike -= 1;
-    post.like += post.userReaction === 'like' ? -1 : 1;
-    post.userReaction = change ? 'like' : null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id, upload_type, type: 0});
+  if (upload_type === "post") {
+    if (!removeReaction) {
+      if (reactionType === 'like' && currentReaction === 'dislike') {
+        post.likes[0].total_dislikes--;
+        post.likes[0].total_likes++;
+      } else if (reactionType === 'dislike' && currentReaction === 'like') {
+        post.likes[0].total_likes--;
+        post.likes[0].total_dislikes++;
+      }
+      post.likes[0].user_reacted = reactionType;
+    } else {
+      if (currentReaction === 'like') post.likes[0].total_likes--;
+      else if (currentReaction === 'dislike') post.likes[0].total_dislikes--;
+      post.likes[0].user_reacted = null;
+    }
+  } else {
+    if (!removeReaction) {
+      if (reactionType === 'like' && currentReaction === 'dislike') {
+        post.dislike--;
+        post.like++;
+      } else if (reactionType === 'dislike' && currentReaction === 'like') {
+        post.like--;
+        post.dislike++;
+      }
+      post.userReaction = reactionType;
+    } else {
+      if (currentReaction === 'like') post.like--;
+      else if (currentReaction === 'dislike') post.dislike--;
+      post.userReaction = null;
+    }
   }
+  
+  await CommunityLikeDislikeForPost({
+    post_id: post.id,
+    user_id: get_fullUser.value.id,
+    upload_type,
+    type: reactionType === 'like' ? 0 : 1
+  });
+};
+
+const like = async (post, upload_type) => {
+  await toggleReaction(post, upload_type, 'like');
 };
 
 const dislike = async (post, upload_type) => {
-  if (!get_user_by_token) return;
-
-  const oppositeReaction = post.userReaction === 'dislike' ? 'dislike' : 'like';
-  const change = post.userReaction !== oppositeReaction;
-  
-  if (change) {
-    if (post.userReaction === 'like') post.like -= 1;
-    post.dislike += post.userReaction === 'dislike' ? -1 : 1;
-    post.userReaction = change ? 'dislike' : null;
-    await CommunityLikeDislikeForPost({post_id: post.id, user_id: get_fullUser.value.id, upload_type, type: 1});
-  }
+  await toggleReaction(post, upload_type, 'dislike');
 };
 
 function prepareReply(array) {

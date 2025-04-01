@@ -282,7 +282,7 @@ class communityRepository
                 ]
               ] : [])
             ]
-          }
+          },
         ]
       });
 
@@ -346,6 +346,8 @@ class communityRepository
         if (postObj.Community_likes && postObj.Community_likes.length > 0) {
           userReaction = postObj.Community_likes[0].user_reacted;
         }
+
+        postObj.Community_likes = postObj.Community_likes.length == 0 ? [{total_likes: 0, total_dislikes: 0, user_reacted: null}] : postObj.Community_likes;
 
         const Comments = [];
 
