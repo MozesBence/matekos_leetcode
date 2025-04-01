@@ -1,9 +1,7 @@
 const db = require('../database/dbContext');
 const {Task_solutions,Tasks,Users} = db;
 const sequelize = require('sequelize');
-const tasks = require('../models/tasks');
-const task_solution = require('../models/task_solution');
-const { includes } = require('lodash');
+
 
 
 const task_solutionRepository = {
@@ -34,114 +32,100 @@ const task_solutionRepository = {
     },
 
     async getSolvedTasksRate(userId) {
-        const totalTasks = await Task_solutions.count({ where: { UserId: userId } });
-        const completedTasks = await Task_solutions.count({
-            where: {
-                UserId: userId,
-                state: 1
-            }
-        });
-        const completedTasksArray = await Task_solutions.findAll({
-            where: {
-                UserId: userId,
-                state: 1
-            }
-        });
-        
+        const totalTasks = await this.getTotalTasks(userId);
+        const completedTasks = await this.getCompletedTasks(userId);
+        const completedTasksArray = await this.getCompletedTasksArray(userId);
         const countpercenct = await task_solutionRepository.countByDifficulty(completedTasksArray);
         
-        return {
-            userId,
-            totalTasks,
-            completedTasks,
-            completedTasksArray,
-            solvedRate: (completedTasks / totalTasks) * 100,
-            countpercenct
-        };
+        return { userId, totalTasks, completedTasks, completedTasksArray, solvedRate: (completedTasks / totalTasks) * 100, countpercenct };
     },
-    
-    
-    async countByDifficulty(completedTasksArray) {
-        const difficultyPromises = completedTasksArray.map(async (taskSolution) => {
-            const task = await Tasks.findOne({
-                where: { id: taskSolution.task_id },
-                attributes: ['id', 'difficulty']
-            });
-            return task ? task.difficulty : null; 
-        });
-    
-        const difficulties = await Promise.all(difficultyPromises);
-    
-        const difficultyCounts = [0, 0, 0];
-    
-        difficulties.forEach((difficulty) => {
-            if (difficulty !== null && difficulty >= 0 && difficulty <= 2) {
-                difficultyCounts[difficulty]++;
+    async getCompletedTasks(userId){
+        return await Task_solutions.count({
+            where: {
+                UserId: userId,
+                state: 1
             }
         });
+    },
+    async getCompletedTasksArray(userId){
+        return await Task_solutions.findAll({
+            where: {
+                UserId: userId,
+                state: 1
+            }
+        });
+    },
+    async getTotalTasks(userId){
+        return await Task_solutions.count({ 
+            where: { 
+                UserId: userId 
+            } 
+        });
+    },
+    async countByDifficulty(completedTasksArray) {
+        const taskPromises = completedTasksArray.map(taskSolution =>
+            Tasks.findOne({
+                where: { id: taskSolution.task_id },
+                attributes: ['difficulty']
+            })
+        );
+        const tasks = await Promise.all(taskPromises);
+        const difficultyCounts = [0, 0, 0];
+
+        for (const task of tasks) {
+            if (task && task.difficulty >= 0 && task.difficulty <= 2) {
+                difficultyCounts[task.difficulty]++;
+            }
+        }
     
         return difficultyCounts;
     },
+    
     async getTasksByCompletionState(state_value, userId) {
-        if (state_value == 2) {
-            const taskSolutions = await Task_solutions.findAll({
-                attributes: ['task_id'],
-                group: ['task_id']
-            });
-
-            const taskIdsInSolutions = taskSolutions.map(ts => ts.task_id);
-
-            return await Tasks.findAll({
-                limit: 15,
-                where: {
-                    id: {
-                        [db.Sequelize.Op.notIn]: taskIdsInSolutions
-                    }
-                }
-            });
-        } else {
-            const taskSolutions = await Task_solutions.findAll({
-                where: {
-                    state: state_value,
-                    UserId: userId
-                },
-                attributes: ['task_id']
-            });
-
-            const taskIdsInSolutions = taskSolutions.map(ts => ts.task_id);
-
-            return await Tasks.findAll({
-                limit: 15,
-                where: {
-                    id: {
-                        [db.Sequelize.Op.in]: taskIdsInSolutions
-                    }
-                }
-            });
-        }
+        const whereCondition = state_value === 2 ? {} : { state: state_value, UserId: userId };
+        const taskSolutions = this.getTaskSolutions(whereCondition);
+        const solvedTaskIds = taskSolutions.map(ts => ts.task_id);
+        return this.returnStateFilteredTasks(state_value,solvedTaskIds)
     },
+
+    async getTaskSolutions(whereCondition){
+        return await Task_solutions.findAll({
+            where: whereCondition,
+            attributes: ['task_id'],
+            group: state_value === 2 ? ['task_id'] : undefined 
+        });
+    },
+
+    async returnStateFilteredTasks(state_value,solvedTaskIds){
+        return await Tasks.findAll({
+            limit: 15,
+            where: {
+                id: state_value === 2 ? { [db.Sequelize.Op.notIn]: solvedTaskIds } : { [db.Sequelize.Op.in]: solvedTaskIds }
+            }
+        });
+    },
+    
     async submitSolution(userId, taskId, solution) {
         try {
             const state = await this.CheckSolution(taskId, solution);
             const currentTimestamp = new Date();
-            const dailyTask = await this.CheckIfDailyTask(taskId) 
+            const dailyTask = await this.CheckIfDailyTask(taskId);
             const existingSolution = await Task_solutions.findOne({
                 where: { UserId: userId, task_id: taskId }
             });
     
             if (!existingSolution) {
-                // Full uj rekord hozzaadasa a dbhez ha jo/ ha rossz
                 const newSolution = await Task_solutions.create({
                     UserId: userId,
                     task_id: taskId,
                     state: state,
-                    submission_date: currentTimestamp
+                    submission_date: currentTimestamp,
+                    awarded: dailyTask && state === 1 ? 1 : 0
                 });
-    
-                // ha helyes a megoldas xp plussz
+
                 if (state === 1) {
                     await this.IncreaseExperiencePoints(userId, taskId);
-                    if(dailyTask){
+                    if (dailyTask) {
                         await this.IncreaseCurrencyCount(userId);
                     }
                 }
@@ -150,33 +134,46 @@ const task_solutionRepository = {
             } else {
                 if (state === 1) {
                     if (existingSolution.state === 1) {
-                        // ha mar alapbol jo volt, csak a datumot frissiti
                         await Task_solutions.update(
                             { submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
-                            );
+                        );
                     } else {
-                        // ha hibas problakozas volt de most jo akkor update
                         await Task_solutions.update(
                             { state: 1, submission_date: currentTimestamp },
                             { where: { UserId: userId, task_id: taskId } }
                         );
-                        // xp plussz
                         await this.IncreaseExperiencePoints(userId, taskId);
-                        if(dailyTask){
-                            await this.IncreaseCurrencyCount(userId);
-                        }
                     }
+                    if (dailyTask && !existingSolution.awarded) {
+                        await this.IncreaseCurrencyCount(userId);
+                        await Task_solutions.update(
+                            { awarded: 1 },
+                            { where: { UserId: userId, task_id: taskId } }
+                        );
+                    }
+    
                     return { state: 1, message: "Solution is correct." };
                 } else {
-                    // hibas megoldas vissza state
                     return { state: 0, message: "Solution is incorrect." };
                 }
             }
         } catch (error) {
             throw error;
         }
-    },   
+    },
+    
+    async CheckIfAwarded(userId, taskId) {
+        const result = await db.Task_solutions.findOne({
+            where: {
+                UserId: userId,
+                task_id: taskId,
+                awarded: 1
+            }
+        });
+        return result !== null;
+    }
+,    
     
     //megnezi, hogy az adott task napi feladat-e (true/false)
     async CheckIfDailyTask(taskId){
@@ -313,35 +310,35 @@ const task_solutionRepository = {
         return await this.ComputeStreak(userId,result.map(task => task.dataValues));
     },
 
-    async ComputeStreak(userId,solution) {
+    async ComputeStreak(userId, solution) {
         let streak = await this.getStreak(userId);
         let longestStreak = await this.getMaxStreak(userId);
         let missedDays = 0;
-    
-        let smDateMap = solution.map(item => new Date(item.submission_date).getUTCDate());
-    
-        let prevDay = null;
-    
-        smDateMap.forEach(currentDay => {
-            if (prevDay === null) {
+
+        solution.sort((a, b) => a.Task.Daily_Task.id - b.Task.Daily_Task.id);
+        
+        let taskIds = solution.map(item => item.Task.Daily_Task.id);
+        
+        let prevTaskId = null;
+
+        taskIds.forEach(currentTaskId => {
+            if (prevTaskId === null) {
                 streak = 1;
                 longestStreak = 1;
             } else {
-                if (currentDay - prevDay === 1) {
+                const taskDifference = currentTaskId - prevTaskId;
+                if (taskDifference === 1) {
                     streak++;
                     longestStreak = Math.max(longestStreak, streak);
-                } else if (currentDay - prevDay > 1) {
-                    streak = 0;
-                    missedDays++;
-                }
-                if (streak === 0) {
+                } else if (taskDifference > 1) {
+                    missedDays += taskDifference - 1;
                     streak = 1;
                 }
             }
-    
-            prevDay = currentDay;
+            prevTaskId = currentTaskId;
         });
-        return {streak:streak,longestStreak:longestStreak,missedDays:missedDays}
+    
+        return { streak: streak, longestStreak: longestStreak, missedDays: missedDays };
     },
     async getStreak(userId) {
         const user = await db.Users.findOne({
@@ -359,6 +356,17 @@ const task_solutionRepository = {
             raw: true
         });
         return user ? user.max_streak : 0;
+    },
+
+    async getAllTimeMaxStreak(userId){
+        const user = await db.Users.findOne({
+            where:{
+                id:userId
+            },
+            attributes:['all_TimeMax'],
+            raw:true
+        });
+        return user ? user.all_TimeMax : 0;
     }
 };    
 
