@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
           isIn: [[0, 1]],
         },
       },
+      awarded:{
+        type:DataTypes.TINYINT(1),
+        allowNull:true,
+        defaultValue:null
+      }
     },
     {
       sequelize,
