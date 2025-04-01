@@ -1,8 +1,8 @@
 <template>
-  <v-layout  :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}">
+  <v-layout :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}">
     <!-- Main Content -->
     <v-main>
-      <v-row style="min-height: 100vh; padding: 0.5em;">
+      <v-row style="height: 100vh; padding: 0.5em;">
         <!-- Bal oldali rész, feladat infói -->
         <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <br>
@@ -71,7 +71,7 @@
                 <v-expansion-panel-text>
                   <div v-for="card in similarCards.data.value" style="background-color: rgb(var(--v-theme-task_solving_similar_task)); border-radius:15px; width:100%; padding:10px;margin-bottom:1em">
                     <v-row style="vertical-align: middle; text-align:center; justify-content:center; display:flex; cursor: pointer;" @click="TaskView(card.id)"> 
-                      <v-col cols="3"><v-chip
+                      <v-col cols="12" md="3"><v-chip
                         :color="chipColor(card?.difficulty)"
                         outlined
                         small
@@ -82,7 +82,7 @@
                         <p class="ma-0">{{ difficultyLabel(card?.difficulty) }}</p>
                       </v-chip></v-col>
                       <!--Adott feladat sorszáma és címe-->
-                      <v-col cols="9" class="d-flex align-center justify-center">{{card.id}}. {{card.task_title}}</v-col>
+                      <v-col cols="12" md="9" class="d-flex align-center justify-center">{{card.id}}. {{card.task_title}}</v-col>
                     </v-row>
               </div>
                 </v-expansion-panel-text>
@@ -394,8 +394,9 @@ const handleTaskData = async() => {
 
 
 <style scoped>
+
 v-main {
-  overflow-y: auto;
+  overflow-y:hidden;
 }
 
 .solution_format{
