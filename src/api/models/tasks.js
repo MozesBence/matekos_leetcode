@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
 
 Tasks.init(
         {
-            id: {
+             id: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 allowNull: false,
