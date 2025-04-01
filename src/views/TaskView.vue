@@ -2,7 +2,7 @@
   <v-layout  :style="{overflow: $vuetify.display.smAndDown ? 'auto' : 'hidden'}">
     <!-- Main Content -->
     <v-main>
-      <v-row style="height: 100vh; padding: 0.5em;">
+      <v-row style="min-height: 100vh; padding: 0.5em;">
         <!-- Bal oldali rész, feladat infói -->
         <v-col cols="12" md="6" style="background-color: rgb(var(--v-theme-task_solving_left_drawer))">
           <br>
