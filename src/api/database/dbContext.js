@@ -157,16 +157,15 @@ const initializeDatabase = async () => {
         await sequelize.query(createTokenRedeemDeleteQuery);
 
         const awardedDeleteQuery = `
-        DROP EVENT IF EXISTS awarded_delete_event;
-
-        CREATE EVENT awarded_delete_event
-        ON SCHEDULE EVERY 30 DAY
-        STARTS CURRENT_TIMESTAMP
+        CREATE EVENT IF NOT EXISTS awarded_delete_event
+        ON SCHEDULE EVERY 1 DAY
+        STARTS TIMESTAMP(CURRENT_DATE)
         DO
+        BEGIN
             UPDATE Task_solutions 
             SET awarded = NULL
             WHERE awarded = 1;
-        
+        END;
         `
        await sequelize.query(awardedDeleteQuery)
     } catch (error) {
