@@ -35,6 +35,10 @@
             <div style="color: rgb(var(--v-theme-text_color));" class="mx-3">
               <h2 style="font-weight: normal; width: 100%; height: auto;" v-mathjax="task.task"></h2>
             </div>
+            <div class="d-flex ml-3">
+              <h2 style="font-weight: normal; width: 78%; height: auto;">Megoldás formátuma:</h2>
+              <h2 style="font-weight: normal; width: 100%; height: auto;" v-mathjax="task.solution_format"></h2>
+            </div>
             <v-card-text>
               <v-text-field
                 v-model="task.solution"

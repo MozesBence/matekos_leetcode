@@ -132,9 +132,9 @@ exports.setSettings = async (req,res,next) =>{
         }
 
         var setSettings_result = null;
-        if(type == 'profile'){
+        if(type == 'ProfSettingDraw'){
             setSettings_result = await settingsConfirmService.setNewUsername(id,content[0]);
-        }else if(type == 'email'){
+        }else if(type == 'EmailSettingDraw'){
             const isValid = validator.validate(content[0]);
 
             if(!isValid){
@@ -147,7 +147,7 @@ exports.setSettings = async (req,res,next) =>{
 
             setSettings_result = await settingsConfirmService.setNewGmail(id,content[0]);
         }
-        else if(type == 'password'){
+        else if(type == 'PassSettingDraw'){
             if(!await bcrypt.compare(content[0], content[2])){
                 const error = new Error("A jelenlegi jelszó nem egyezik!");
     
