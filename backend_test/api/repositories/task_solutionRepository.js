@@ -92,7 +92,6 @@ const task_solutionRepository = {
         return await Task_solutions.findAll({
             where: whereCondition,
             attributes: ['task_id'],
-            group: state_value === 2 ? ['task_id'] : undefined 
         });
     },
 

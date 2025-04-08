@@ -30,7 +30,6 @@ const databaseAuth = async () =>{
     }
     catch(err)
     {
-        console.log(err);
         console.error("Database connection failed!");
     }
 }
