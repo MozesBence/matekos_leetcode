@@ -29,8 +29,8 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Competitions.initializeCompetitions = async () => {
+        const currentWeek = Math.ceil((((new Date()) - new Date(new Date().getFullYear(), 0, 4 - new Date().getDay() + 1)) / 604800000) + 1);
         const today = new Date();
-        const currentWeek = getISOWeek(today);
         const currentMonth = today.getMonth() + 1;
     
         let weekCounter = currentWeek;
