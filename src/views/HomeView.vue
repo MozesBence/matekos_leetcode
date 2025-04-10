@@ -150,14 +150,15 @@
 <!--Random feladat vége-->
 
 <!--Oldal main kontentje, kártyák és oldalt statisztikák-->
-<v-layout class="rounded-md" height="min-content">
+<v-layout class="rounded-md" style="min-height: 200vh;">
+
   <!--jobb oldali menü-->
   <v-navigation-drawer 
   location="right" 
   width="400"
-  style="background-color: transparent; border: none; height: 100rem;"
+  style="background-color: transparent; border: none; height: 100vh; min-height: 100vh;"
   >
-  <v-list>
+  <v-list style="height: 100%;">
     <!--Napi idézet-->
     <v-list-item class="rounded" style="background-color: rgb(var(--v-theme-home_rightdrawer_card));">
       <div
@@ -261,7 +262,8 @@
   </v-navigation-drawer>
   
   <!--Kártyák kezdete-->
-  <v-main class="align-center justify-center" style="height: auto;">
+  <v-main class="align-center justify-center" style="flex: 1; min-height: 200vh;">
+
     <!--Címszalag létrehozása-->
     <v-row style="margin: 0 2em; border-bottom: 1px solid #ccc;" class="mx-8 px-3" v-if="!$vuetify.display.mobile">
       <v-col class="d-flex align-center justify-center" cols="2">
@@ -331,7 +333,7 @@
     </v-col>
   </v-row>
   <!--Akkor jelenik meg ha nincs az adott  szűrésre megfelelő elem-->
-  <v-row v-else style="display: flex; vertical-align:middle;justify-content:center; margin:2em">
+  <v-row v-else style="display: flex; vertical-align:middle;justify-content:center; margin:2em; min-height:100vh; height:100vh;">
     <h4>A megadott szűrési feltételekkel nem található feladat!</h4>
   </v-row>
   </v-main>
@@ -1012,4 +1014,5 @@ watch(filterData, () => {
     max-width: 400px;
     z-index: 1000;
   }
+
 </style>
